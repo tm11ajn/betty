@@ -1,0 +1,9 @@
+The format of a wta input to the nbesttrees routine is the following:
+
+A rule is described with
+
+a[q0, q1, ..., qn] -> q0 # 0.1
+b
+
+where a and b are symbols and q0, ..., qn are states and 0.1 is the weight of
+the rule.

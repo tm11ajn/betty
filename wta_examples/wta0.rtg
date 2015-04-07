@@ -1,0 +1,18 @@
+a -> pa # 2
+a -> pb # 1
+b -> pa # 1
+b -> pb # 2
+
+ball[pa, pa] -> qa
+ball[qa, qa] -> qa
+
+ball[pb, pb] -> qb
+ball[pb, pb] -> qb
+
+ball[pa, qa] -> pa
+ball[qa, pa] -> pa
+
+ball[pb, qb] -> pb
+ball[qb, pb] -> pb
+
+final qa, qb

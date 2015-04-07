@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
-import se.umu.cs.nfl.aj.nbest.wta.State;
+import se.umu.cs.nfl.aj.wta.State;
 
 public class NBest {
 
