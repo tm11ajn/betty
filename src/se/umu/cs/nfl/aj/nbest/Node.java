@@ -7,9 +7,6 @@ public class Node {
 
 	private String label;
 
-//	// Weight on edge from parent. NULL if root.
-//	private double weight;
-
 	// M^q(this), index with state
 //	private HashMap<String, Double> minRunWeight = new HashMap<>();
 
@@ -36,14 +33,6 @@ public class Node {
 	public String getLabel() {
 		return label;
 	}
-
-//	public double getWeight() {
-//		return weight;
-//	}
-//
-//	public void setWeight(double weight) {
-//		this.weight = weight;
-//	}
 
 	public void addChild(Node child) {
 		children.add(child);

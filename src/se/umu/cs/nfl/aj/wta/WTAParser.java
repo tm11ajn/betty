@@ -73,20 +73,28 @@ public class WTAParser {
 		}
 	}
 
-	private static Rule parseLeafRule(String line, WTA wta) {
-
+	private static void parseLeafRule(String line, WTA wta) {
 
 		String[] labels = line.trim().split("(\\s*((->)|#)\\s*)|\\s+");
 
 		String from = labels[0];
 		State resultingState = wta.getState(labels[1]);
 
-		if (labels.length == 3) {
-			double weight = Double.parseDouble(labels[2]); // TODO handle exception maybe
-			return new Rule(from, weight, resultingState);
+		Rule newRule;
+
+		if (resultingState == null) {
+			resultingState = new State(labels[1]);
+			wta.addState(resultingState);
 		}
 
-		return new Rule(from, resultingState);
+		if (labels.length == 3) {
+			double weight = Double.parseDouble(labels[2]); // TODO handle exception maybe
+			newRule = new Rule(from, weight, resultingState);
+		} else {
+			newRule = new Rule(from, resultingState);
+		}
+
+		wta.addRule(newRule);
 	}
 
 	private static Rule parseRule(String line, WTA wta) {

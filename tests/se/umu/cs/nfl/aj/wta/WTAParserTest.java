@@ -43,17 +43,43 @@ public class WTAParserTest {
 		assertTrue(ruleLine.matches(WTAParser.ruleRegexp));
 	}
 
+	/**
+	 * Tests that states are properly set to final when parsing a
+	 * final rule.
+	 */
 	@Test
 	public void parseFinalLineTest() {
 		WTAParser.parseLine(finalLine, wta);
 		assertTrue(wta.getState("q0").isFinal());
 	}
 
+	/**
+	 * Tests that a leaf rule is parsed properly.
+	 */
 	@Test
 	public void parseLeafRuleLineTest() {
 		WTAParser.parseLine(leafRuleLine, wta);
-//		assertEquals("q0", wta.getRulesBy...);
-		fail();
+		assertEquals("q0", wta.getRulesBySymbol("a").
+				get(0).getResultingState().getLabel());
+	}
+
+	/**
+	 * Tests that a leaf rule is added properly to an empty wta.
+	 */
+	@Test
+	public void parseLeafRuleLineLengthTest() {
+		WTAParser.parseLine(leafRuleLine, wta);
+		assertEquals(1, wta.getRulesBySymbol("a").size());
+	}
+
+	/**
+	 * Tests that multiple rules are not added.
+	 */
+	@Test
+	public void parseLeafRuleLineLengthTest2() {
+		WTAParser.parseLine(leafRuleLine, wta);
+		WTAParser.parseLine(leafRuleLine, wta);
+		assertEquals(1, wta.getRulesBySymbol("a").size());
 	}
 
 }

@@ -10,9 +10,11 @@ public class WTA {
 	private HashMap<State, ArrayList<Rule>> rulesByResultingState =
 			new HashMap<>();
 
-	private ArrayList<Rule> rules = new ArrayList<>();
+//	private ArrayList<Rule> rules = new ArrayList<>();
 
-	private ArrayList<String> symbols = new ArrayList<>(); // or hashmap if we need hasSymbol
+//	private ArrayList<String> symbols = new ArrayList<>(); // or hashmap if we need hasSymbol
+
+	private HashMap<String, String> symbols = new HashMap<>();
 
 	/**
 	 * Labels mapped to their corresponding states.
@@ -24,26 +26,41 @@ public class WTA {
 	}
 
 	public boolean addRule(Rule rule) {
-		return rules.add(rule);
+
+		ArrayList<Rule> ruleListSym = rulesBySymbol.get(rule.getSymbol());
+		ArrayList<Rule> ruleListState = rulesByResultingState.get(
+				rule.getResultingState());
+
+		if (ruleListSym == null) {
+			ruleListSym = new ArrayList<Rule>();
+			rulesBySymbol.put(rule.getSymbol(), ruleListSym);
+		}
+
+		if (ruleListState == null) {
+			ruleListState = new ArrayList<Rule>();
+			rulesByResultingState.put(rule.getResultingState(), ruleListState);
+		}
+
+		return ruleListSym.add(rule) && ruleListState.add(rule);
 	}
 
-	public Rule[] getRulesBySymbol() {
-		return null;
+	public ArrayList<Rule> getRulesBySymbol(String symbol) {
+		return rulesBySymbol.get(symbol);
 	}
 
-	public Rule[] getRulesByResultingState() {
-		return null;
+	public ArrayList<Rule> getRulesByResultingState(State resultingState) {
+		return rulesByResultingState.get(resultingState);
 	}
 
-	public State addState(String label) {
-		return states.put(label, new State(label));
+	public State addState(State state) {
+		return states.put(state.getLabel(), state);
 	}
 
 	public State getState(String label) {
 		return states.get(label);
 	}
 
-	public void setFinalState(String label) {
+	public void setFinalState(String label) { // TODO input State or String?
 
 		State state;
 
@@ -56,8 +73,12 @@ public class WTA {
 		}
 	}
 
-	public boolean addSymbol(String symbol) {
-		return symbols.add(symbol);
+	public String addSymbol(String symbol) {
+		return symbols.put(symbol, symbol);
+	}
+
+	public boolean hasSymbol(String symbol) {
+		return symbols.containsKey(symbol);
 	}
 
 }
