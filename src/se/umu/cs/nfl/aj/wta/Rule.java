@@ -12,15 +12,27 @@ public class Rule {
 
 	private State resultingState;
 
-	public Rule(String symbol, double weight, String resultingStateLabel,
-			String ... stateLabels) {
+	public Rule(String symbol, double weight, State resultingState,
+			State ... states) {
 
 		this.symbol = symbol;
 		this.weight = weight;
-		this.resultingState = new State(resultingStateLabel);
+		this.resultingState = resultingState;
 
-		for (String state : stateLabels) {
-			this.states.add(new State(state));
+		for (State state : states) {
+			this.states.add(state);
+		}
+
+	}
+
+	public Rule(String symbol, State resultingState, State ... states) {
+
+		this.symbol = symbol;
+		weight = 0;
+		this.resultingState = resultingState;
+
+		for (State state : states) {
+			this.states.add(state);
 		}
 
 	}

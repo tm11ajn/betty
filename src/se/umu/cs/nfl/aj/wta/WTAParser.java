@@ -8,11 +8,11 @@ import java.io.IOException;
 
 public class WTAParser {
 
-	private static String emptyLineRegExp = "^\\s*$";
-	private static String finalRegExp = "^\\s*final\\s*\\d+(\\.\\d+)?\\s*$";
-	private static String leafRuleRegExp =
-			"^\\s*[a-z0-9]+\\s*->\\s*[a-z0-9]+\\s*\\#\\s*\\d+(\\.\\d+)?\\s*$";
-	private static String ruleRegexp =
+	public static final String emptyLineRegExp = "^\\s*$";
+	public static final String finalRegExp = "^\\s*final\\s*([a-z0-9]\\s*)+$";
+	public static final String leafRuleRegExp =
+			"^\\s*[a-z0-9]+\\s*->\\s*[a-z0-9]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)?$";
+	public static final String ruleRegexp =
 			"^\\s*[a-z0-9]+\\[\\s*[a-z0-9]+\\s*(,\\s*[a-z0-9]+\\s*)*\\]\\s*->" +
 			"\\s*[a-z0-9]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)*$";
 
@@ -46,7 +46,7 @@ public class WTAParser {
 		return wta;
 	}
 
-	private static void parseLine(String line, WTA wta)
+	public static void parseLine(String line, WTA wta)
 			throws IllegalArgumentException {
 
 		if (line.matches(emptyLineRegExp)) {
@@ -65,14 +65,32 @@ public class WTAParser {
 
 	private static void parseFinal(String line, WTA wta) {
 
+		String[] finals = line.trim().split("\\s+");
+		int size = finals.length;
+
+		for (int i = 1; i < size; i++) {
+			wta.setFinalState(finals[i]);
+		}
 	}
 
-	private static void parseLeafRule(String line, WTA wta) {
+	private static Rule parseLeafRule(String line, WTA wta) {
 
+
+		String[] labels = line.trim().split("(\\s*((->)|#)\\s*)|\\s+");
+
+		String from = labels[0];
+		State resultingState = wta.getState(labels[1]);
+
+		if (labels.length == 3) {
+			double weight = Double.parseDouble(labels[2]); // TODO handle exception maybe
+			return new Rule(from, weight, resultingState);
+		}
+
+		return new Rule(from, resultingState);
 	}
 
-	private static void parseRule(String line, WTA wta) {
-
+	private static Rule parseRule(String line, WTA wta) {
+		return null;
 	}
 
 }
