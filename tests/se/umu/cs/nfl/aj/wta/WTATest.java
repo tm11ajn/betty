@@ -13,8 +13,8 @@ public class WTATest {
 	private Symbol fSymb;
 	private State state;
 	private State finalState;
-	private Rule leafRule;
-	private Rule nonLeafRule;
+//	private Rule leafRule;
+//	private Rule nonLeafRule;
 
 	@Before
 	public void setUp() throws Exception {
@@ -23,8 +23,8 @@ public class WTATest {
 		fSymb = new Symbol("f", 2);
 		state = new State("q0");
 		finalState = new State("qf");
-		leafRule = new Rule(aSymb, state);
-		nonLeafRule = new Rule(fSymb, finalState, state, state);
+//		leafRule = new Rule(aSymb, state);
+//		nonLeafRule = new Rule(fSymb, finalState, state, state);
 	}
 
 	@After
@@ -68,10 +68,18 @@ public class WTATest {
 	}
 
 	@Test
-	public void shouldHaveTwoRulesTest() {
+	public void shouldHaveTwoRulesByResultingStateTest() {
 		wta.addRule(new Rule(new Symbol("f", 2), new State("q0")));
 		wta.addRule(new Rule(new Symbol("g", 2), new State("q0")));
 		assertEquals(2, wta.getRulesByResultingState(new State("q0")).size());
+	}
+
+	@Test
+	public void shouldHaveTwoRulesBySymbolTest() {
+		wta.getSymbol("f", 2);
+		wta.addRule(new Rule(new Symbol("f", 2), new State("q0")));
+		wta.addRule(new Rule(new Symbol("f", 2), new State("q1")));
+		assertEquals(2, wta.getRulesBySymbol(new Symbol("f", 2)).size());
 	}
 
 }

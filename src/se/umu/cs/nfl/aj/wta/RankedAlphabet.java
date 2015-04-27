@@ -11,7 +11,7 @@ public class RankedAlphabet {
 
 	}
 
-	public void addSymbol(Symbol symbol) {
+	public boolean addSymbol(Symbol symbol) {
 
 		int rank = symbol.getRank();
 		ArrayList<Symbol> rankList = null;
@@ -23,7 +23,7 @@ public class RankedAlphabet {
 			rankList = ranking.get(rank);
 		}
 
-		rankList.add(symbol);
+		return rankList.add(symbol);
 	}
 
 	public ArrayList<Symbol> getSymbolsByRank(int rank) {

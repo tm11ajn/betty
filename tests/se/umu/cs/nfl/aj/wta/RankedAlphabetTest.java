@@ -22,7 +22,7 @@ public class RankedAlphabetTest {
 
 	@Test
 	public void shouldInsertSymbolTest() {
-		ranked.addSymbol(new Symbol("a", 0));
+		assertTrue(ranked.addSymbol(new Symbol("a", 0)));
 	}
 
 	@SuppressWarnings("serial")
