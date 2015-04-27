@@ -5,14 +5,14 @@ import java.util.ArrayList;
 
 public class Rule {
 
-	private String symbol;
+	private Symbol symbol;
 	private double weight;
 
 	private ArrayList<State> states = new ArrayList<>();
 
 	private State resultingState;
 
-	public Rule(String symbol, double weight, State resultingState,
+	public Rule(Symbol symbol, double weight, State resultingState,
 			State ... states) {
 
 		this.symbol = symbol;
@@ -25,7 +25,7 @@ public class Rule {
 
 	}
 
-	public Rule(String symbol, State resultingState, State ... states) {
+	public Rule(Symbol symbol, State resultingState, State ... states) {
 
 		this.symbol = symbol;
 		weight = 0;
@@ -37,7 +37,7 @@ public class Rule {
 
 	}
 
-	public String getSymbol() {
+	public Symbol getSymbol() {
 		return symbol;
 	}
 
@@ -52,5 +52,33 @@ public class Rule {
 	public ArrayList<State> getStates() {
 		return states;
 	}
+// TODO: bygg klart
+//	@Override
+//	public boolean equals(Object obj) {
+//		boolean isEqual = true;
+//
+//		if (obj instanceof Rule) {
+//			Rule rule = (Rule) obj;
+//
+//			if (rule.getSymbol().equals(symbol) &&
+//					rule.getResultingState().equals(resultingState)) {
+//
+//				for (State s : states) {
+//
+//					if (s.equals(obj)) {
+//						return false;
+//					}
+//				}
+//			}
+//		}
+//
+//
+//		return false;
+//	}
+//
+//	@Override
+//	public int hashCode() {
+//		return super.hashCode();
+//	}
 
 }

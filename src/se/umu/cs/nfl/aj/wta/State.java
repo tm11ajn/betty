@@ -22,4 +22,23 @@ public class State {
 		return isFinal;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+
+		if (obj instanceof State) {
+			State s = (State) obj;
+
+			if (s.getLabel().equals(this.label)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return label.hashCode();
+	}
+
 }

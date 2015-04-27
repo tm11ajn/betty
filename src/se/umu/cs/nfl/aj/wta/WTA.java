@@ -6,15 +6,15 @@ import java.util.HashMap;
 public class WTA {
 
 	// TODO Bad idea or a 'must'?
-	private HashMap<String, ArrayList<Rule>> rulesBySymbol = new HashMap<>();
+	private HashMap<Symbol, ArrayList<Rule>> rulesBySymbol = new HashMap<>();
 	private HashMap<State, ArrayList<Rule>> rulesByResultingState =
 			new HashMap<>();
 
 //	private ArrayList<Rule> rules = new ArrayList<>();
-
 //	private ArrayList<String> symbols = new ArrayList<>(); // or hashmap if we need hasSymbol
 
-	private HashMap<String, String> symbols = new HashMap<>();
+	private HashMap<String, Symbol> symbols = new HashMap<>();
+	private RankedAlphabet ranked = new RankedAlphabet();
 
 	/**
 	 * Labels mapped to their corresponding states.
@@ -27,24 +27,34 @@ public class WTA {
 
 	public boolean addRule(Rule rule) {
 
-		ArrayList<Rule> ruleListSym = rulesBySymbol.get(rule.getSymbol());
-		ArrayList<Rule> ruleListState = rulesByResultingState.get(
-				rule.getResultingState());
+		System.out.println("Rule:");
+		System.out.println("Symbol=" + rule.getSymbol().getLabel() + " rank="
+				+ rule.getSymbol().getRank());
+		System.out.println("Resulting state= " +
+				rule.getResultingState().getLabel());
+
+		Symbol symbol = rule.getSymbol();
+		State resState = rule.getResultingState();
+
+		ArrayList<Rule> ruleListSym = rulesBySymbol.get(symbol);
+		ArrayList<Rule> ruleListState = rulesByResultingState.get(resState);
 
 		if (ruleListSym == null) {
+			System.out.println("ruleListSym var null");
 			ruleListSym = new ArrayList<Rule>();
-			rulesBySymbol.put(rule.getSymbol(), ruleListSym);
+			rulesBySymbol.put(symbol, ruleListSym);
 		}
 
 		if (ruleListState == null) {
+			System.out.println("ruleListState var null");
 			ruleListState = new ArrayList<Rule>();
-			rulesByResultingState.put(rule.getResultingState(), ruleListState);
+			rulesByResultingState.put(resState, ruleListState);
 		}
 
 		return ruleListSym.add(rule) && ruleListState.add(rule);
 	}
 
-	public ArrayList<Rule> getRulesBySymbol(String symbol) {
+	public ArrayList<Rule> getRulesBySymbol(Symbol symbol) {
 		return rulesBySymbol.get(symbol);
 	}
 
@@ -81,15 +91,21 @@ public class WTA {
 		}
 	}
 
-	public String getSymbol(String symbol) {
+	public Symbol getSymbol(String symbol, int rank) {
 
-		String s = symbols.get(symbol);
+		Symbol s = symbols.get(symbol);
 
 		if (s == null) {
-			symbols.put(symbol, symbol);
+			s = new Symbol(symbol, rank);
+			ranked.addSymbol(s);
+			symbols.put(symbol, s);
+		} else if (s.getRank() != rank) {
+			System.err.println("Rank error: The symbol " + symbol +
+					" cannot be of two different ranks ");
+			System.exit(-1);
 		}
 
-		return symbol;
+		return s;
 	}
 
 //	public String addSymbol(String symbol) {
