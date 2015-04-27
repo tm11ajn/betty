@@ -2,34 +2,16 @@ package se.umu.cs.nfl.aj.wta;
 
 import static org.junit.Assert.*;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 public class WTATest {
 
-	private WTA wta;
-	private Symbol aSymb;
-	private Symbol fSymb;
-	private State state;
-	private State finalState;
-//	private Rule leafRule;
-//	private Rule nonLeafRule;
+	private WTA wta = new WTA();
+	private Symbol aSymb = new Symbol("a", 0);
+	private Symbol fSymb = new Symbol("f", 2);
+	private State state = new State("q0");
+	private State finalState = new State("qf");
 
-	@Before
-	public void setUp() throws Exception {
-		wta = new WTA();
-		aSymb = new Symbol("a", 0);
-		fSymb = new Symbol("f", 2);
-		state = new State("q0");
-		finalState = new State("qf");
-//		leafRule = new Rule(aSymb, state);
-//		nonLeafRule = new Rule(fSymb, finalState, state, state);
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
 
 	@Test
 	public void shouldBeEqualToStateWithSameLabelTest() {
