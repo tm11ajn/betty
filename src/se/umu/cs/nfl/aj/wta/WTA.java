@@ -52,12 +52,20 @@ public class WTA {
 		return rulesByResultingState.get(resultingState);
 	}
 
-	public State addState(State state) {
-		return states.put(state.getLabel(), state);
-	}
+//	public State addState(State state) {
+//		return states.put(state.getLabel(), state);
+//	}
 
 	public State getState(String label) {
-		return states.get(label);
+
+		State state = states.get(label);
+
+		if (state == null) {
+			state = new State(label);
+			states.put(label, state);
+		}
+
+		return state;
 	}
 
 	public void setFinalState(String label) { // TODO input State or String?
@@ -73,12 +81,23 @@ public class WTA {
 		}
 	}
 
-	public String addSymbol(String symbol) {
-		return symbols.put(symbol, symbol);
+	public String getSymbol(String symbol) {
+
+		String s = symbols.get(symbol);
+
+		if (s == null) {
+			symbols.put(symbol, symbol);
+		}
+
+		return symbol;
 	}
 
-	public boolean hasSymbol(String symbol) {
-		return symbols.containsKey(symbol);
-	}
+//	public String addSymbol(String symbol) {
+//		return symbols.put(symbol, symbol);
+//	}
+//
+//	public boolean hasSymbol(String symbol) {
+//		return symbols.containsKey(symbol);
+//	}
 
 }

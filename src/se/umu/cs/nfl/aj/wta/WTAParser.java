@@ -8,15 +8,21 @@ import java.io.IOException;
 
 public class WTAParser {
 
-	public static final String emptyLineRegExp = "^\\s*$";
-	public static final String finalRegExp = "^\\s*final\\s*([a-z0-9]\\s*)+$";
-	public static final String leafRuleRegExp =
-			"^\\s*[a-z0-9]+\\s*->\\s*[a-z0-9]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)?$";
-	public static final String ruleRegexp =
+	public static final String EMPTY_LINE_REGEX = "^\\s*$";
+	public static final String FINAL_REGEX = "^\\s*final\\s*([a-z0-9]\\s*)+$";
+	public static final String LEAF_RULE_REGEX =
+			"^\\s*[a-z0-9]+\\s*->\\s*[a-z0-9]+" +
+			"\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)?$";
+	public static final String NON_LEAF_RULE_REGEX =
 			"^\\s*[a-z0-9]+\\[\\s*[a-z0-9]+\\s*(,\\s*[a-z0-9]+\\s*)*\\]\\s*->" +
 			"\\s*[a-z0-9]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)*$";
 
-	public static WTA parse(String fileName) {
+	public static final String FINAL_SPLIT_REGEX = "\\s+";
+	public static final String LEAF_RULE_SPLIT_REGEX = "\\s*((->)|#)\\s*";
+	public static final String NON_LEAF_RULE_SPLIT_REGEX =
+			"\\s*((\\]\\s*->)|#|\\[|,)\\s*";
+
+	public WTA parse(String fileName) {
 
 		WTA wta = new WTA();
 		int rowCounter = 1;
@@ -46,26 +52,26 @@ public class WTAParser {
 		return wta;
 	}
 
-	public static void parseLine(String line, WTA wta)
+	public void parseLine(String line, WTA wta)
 			throws IllegalArgumentException {
 
-		if (line.matches(emptyLineRegExp)) {
+		if (line.matches(EMPTY_LINE_REGEX)) {
 			// Ignore empty lines.
-		} else if (line.matches(finalRegExp)) {
+		} else if (line.matches(FINAL_REGEX)) {
 			parseFinal(line, wta);
-		} else if (line.matches(leafRuleRegExp)) {
+		} else if (line.matches(LEAF_RULE_REGEX)) {
 			parseLeafRule(line, wta);
-		} else if (line.matches(ruleRegexp)) {
-			parseRule(line, wta);
+		} else if (line.matches(NON_LEAF_RULE_REGEX)) {
+			parseNonLeafRule(line, wta);
 		} else {
 			throw new IllegalArgumentException("Line " + line +
 					" was not correct.");
 		}
 	}
 
-	private static void parseFinal(String line, WTA wta) {
+	private void parseFinal(String line, WTA wta) {
 
-		String[] finals = line.trim().split("\\s+");
+		String[] finals = line.trim().split(FINAL_SPLIT_REGEX);
 		int size = finals.length;
 
 		for (int i = 1; i < size; i++) {
@@ -73,31 +79,54 @@ public class WTAParser {
 		}
 	}
 
-	private static void parseLeafRule(String line, WTA wta) {
+	private void parseLeafRule(String line, WTA wta) {
 
-		String[] labels = line.trim().split("(\\s*((->)|#)\\s*)|\\s+");
+		String[] labels = line.trim().split(LEAF_RULE_SPLIT_REGEX);
 
-		String from = labels[0];
+		String symbol = wta.getSymbol(labels[0]);
 		State resultingState = wta.getState(labels[1]);
 
 		Rule newRule;
 
-		if (resultingState == null) {
-			resultingState = new State(labels[1]);
-			wta.addState(resultingState);
-		}
+//		if (resultingState == null) {
+//			resultingState = new State(labels[1]);
+//			wta.addState(resultingState);
+//		}
 
 		if (labels.length == 3) {
-			double weight = Double.parseDouble(labels[2]); // TODO handle exception maybe
-			newRule = new Rule(from, weight, resultingState);
+			double weight = Double.parseDouble(labels[2]); // TODO handle exception maybe NOT (Trust your input!)
+			newRule = new Rule(symbol, weight, resultingState);
 		} else {
-			newRule = new Rule(from, resultingState);
+			newRule = new Rule(symbol, resultingState);
 		}
 
 		wta.addRule(newRule);
 	}
 
-	private static Rule parseRule(String line, WTA wta) {
+	private Rule parseNonLeafRule(String line, WTA wta) {
+
+		String[] labels = line.trim().split(NON_LEAF_RULE_SPLIT_REGEX);
+		int numberOfLabels = labels.length;
+		int numberOfLeftHandStates = numberOfLabels - 1;
+
+		double weight = 0;
+
+		if (line.contains("#")) {
+			weight = Double.parseDouble(labels[numberOfLabels - 1]);
+			numberOfLeftHandStates -= 1;
+		}
+
+		String symbol = wta.getSymbol(labels[0]);
+		State resultingState = wta.getState(labels[numberOfLabels - 1]);
+
+		Rule newRule;
+
+		for (int i = 1; i < numberOfLeftHandStates + 1; i++) { // TODO FINISH!
+
+		}
+
+
+
 		return null;
 	}
 

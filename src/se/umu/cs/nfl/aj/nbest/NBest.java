@@ -10,18 +10,19 @@ import se.umu.cs.nfl.aj.wta.WTAParser;
 
 public class NBest {
 
-	private static int initialSize = 11;
+	private static final int INITIAL_SIZE = 11;
 
 	private static ArrayList<Node> exploredTrees = new ArrayList<Node>(); // T
 	private static PriorityQueue<Node> treeQueue =
-			new PriorityQueue<Node>(initialSize, new TreeComparator()); // K
+			new PriorityQueue<Node>(INITIAL_SIZE, new TreeComparator()); // K
 	private static NestedMap<Node, State, Double> treeStateValTable =
 			new NestedMap<>(); // C
 
 	public static void main(String[] args) {
 
 		String fileName = getFileName(args);
-		WTA wta = WTAParser.parse(fileName);
+		WTAParser wtaParser = new WTAParser();
+		WTA wta = wtaParser.parse(fileName);
 		List<String> result = run(wta);
 
 		for (String treeString : result) {

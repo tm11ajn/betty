@@ -8,11 +8,15 @@ import org.junit.Test;
 
 public class WTAParserTest {
 
-	private String emptyLine = "		    			";
-	private String finalLine = "	  final    q0   q1 q2	";
-	private String leafRuleLine = " a   -> q0 ";
-	private String ruleLine = "  a[q0, q1] ->   qf ";
+	public static final String emptyLine = "		    			";
+	public static final String finalLine = "	  final    q0   q1 q2	";
+	public static final String leafRuleLine = " a   -> q0 ";
+	public static final String leafRuleLineWithWeight = " a   -> q0  #  2 ";
+	public static final String nonLeafRuleLine = "  f[q0, q1] ->   qf ";
+	public static final String nonLeafRuleLineWithWeight =
+			"  f[q0, q1] ->   qf  #  0.2 ";
 
+	private WTAParser wtaParser = new WTAParser();
 	private WTA wta = new WTA();
 
 	@Before
@@ -23,33 +27,12 @@ public class WTAParserTest {
 	public void tearDown() throws Exception {
 	}
 
-	@Test
-	public void emptyLineRegExpTest() {
-		assertTrue(emptyLine.matches(WTAParser.emptyLineRegExp));
-	}
-
-	@Test
-	public void finalLineRegExpTest() {
-		assertTrue(finalLine.matches(WTAParser.finalRegExp));
-	}
-
-	@Test
-	public void leafRuleLineRegExpTest() {
-		assertTrue(leafRuleLine.matches(WTAParser.leafRuleRegExp));
-	}
-
-	@Test
-	public void ruleLineRegExpTest() {
-		assertTrue(ruleLine.matches(WTAParser.ruleRegexp));
-	}
-
 	/**
-	 * Tests that states are properly set to final when parsing a
-	 * final rule.
+	 * Tests that states are properly set to final when parsing a final rule.
 	 */
 	@Test
 	public void parseFinalLineTest() {
-		WTAParser.parseLine(finalLine, wta);
+		wtaParser.parseLine(finalLine, wta);
 		assertTrue(wta.getState("q0").isFinal());
 	}
 
@@ -58,7 +41,7 @@ public class WTAParserTest {
 	 */
 	@Test
 	public void parseLeafRuleLineTest() {
-		WTAParser.parseLine(leafRuleLine, wta);
+		wtaParser.parseLine(leafRuleLine, wta);
 		assertEquals("q0", wta.getRulesBySymbol("a").
 				get(0).getResultingState().getLabel());
 	}
@@ -68,7 +51,7 @@ public class WTAParserTest {
 	 */
 	@Test
 	public void parseLeafRuleLineLengthTest() {
-		WTAParser.parseLine(leafRuleLine, wta);
+		wtaParser.parseLine(leafRuleLine, wta);
 		assertEquals(1, wta.getRulesBySymbol("a").size());
 	}
 
@@ -77,9 +60,65 @@ public class WTAParserTest {
 	 */
 	@Test
 	public void parseLeafRuleLineLengthTest2() {
-		WTAParser.parseLine(leafRuleLine, wta);
-		WTAParser.parseLine(leafRuleLine, wta);
+		wtaParser.parseLine(leafRuleLine, wta);
+		wtaParser.parseLine(leafRuleLine, wta);
 		assertEquals(1, wta.getRulesBySymbol("a").size());
+	}
+
+	/**
+	 * Tests that a leaf rule with weight is parsed properly.
+	 */
+	@Test
+	public void parseLeafRuleLineWithWeightTest() {
+		wtaParser.parseLine(leafRuleLineWithWeight, wta);
+		assertEquals(2, wta.getRulesBySymbol("a").
+				get(0).getWeight(), 10e-5);
+	}
+
+	/**
+	 * Tests that a leaf rule with weight is added properly to an empty wta.
+	 */
+	@Test
+	public void parseLeafRuleWithWeightLineLengthTest() {
+		wtaParser.parseLine(leafRuleLineWithWeight, wta);
+		assertEquals(1, wta.getRulesBySymbol("a").size());
+	}
+
+	/**
+	 * Tests that a non-leaf rule is parsed properly.
+	 */
+	@Test
+	public void parseNonLeafRuleLineTest() {
+		wtaParser.parseLine(nonLeafRuleLine, wta);
+		assertEquals("q0", wta.getRulesBySymbol("f").
+				get(0).getResultingState().getLabel());
+	}
+
+	/**
+	 * Tests that a non-leaf rule with weight is parsed properly.
+	 */
+	@Test
+	public void parseNonLeafRuleLineWithWeightTest() {
+		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
+		assertEquals(0.2, wta.getRulesBySymbol("f").get(0).getWeight(), 10e-5);
+	}
+
+	/**
+	 * Tests that a non-leaf rule is added properly to an empty wta.
+	 */
+	@Test
+	public void parseNonLeafRuleLineLengthTest() {
+		wtaParser.parseLine(nonLeafRuleLine, wta);
+		assertEquals(1, wta.getRulesBySymbol("f").size());
+	}
+
+	/**
+	 * Tests that a non-leaf rule with weight is added properly to an empty wta.
+	 */
+	@Test
+	public void parseNonLeafRuleLineWithWeightLengthTest() {
+		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
+		assertEquals(1, wta.getRulesBySymbol("f").size());
 	}
 
 }
