@@ -22,7 +22,7 @@ public class Symbol {
 	public boolean equals(Object obj) {
 
 		if (obj instanceof Symbol &&
-				((Symbol) obj).getLabel() == label &&
+				((Symbol) obj).getLabel().equals(label) &&
 				((Symbol) obj).getRank() == rank) {
 			return true;
 		}

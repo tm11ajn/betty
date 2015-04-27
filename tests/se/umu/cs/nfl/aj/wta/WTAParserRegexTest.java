@@ -7,37 +7,43 @@ import org.junit.Test;
 public class WTAParserRegexTest {
 
 	@Test
-	public void emptyLineRegExpTest() {
+	public void shouldFindEmptyLineRegexTest() {
 		assertTrue(WTAParserTest.emptyLine.matches(WTAParser.EMPTY_LINE_REGEX));
 	}
 
 	@Test
-	public void finalLineRegExpTest() {
+	public void shouldFindFinalLineRegexTest() {
 		assertTrue(WTAParserTest.finalLine.matches(WTAParser.FINAL_REGEX));
 	}
 
 	@Test
-	public void leafRuleLineRegExpTest() {
+	public void shouldFindLeafRuleLineRegexTest() {
 		assertTrue(WTAParserTest.leafRuleLine.
 				matches(WTAParser.LEAF_RULE_REGEX));
 	}
 
 	@Test
-	public void leafRuleLineWithWeightRegExpTest() {
+	public void shouldFindLeafRuleLineWithWeightRegexTest() {
 		assertTrue(WTAParserTest.leafRuleLineWithWeight.
 				matches(WTAParser.LEAF_RULE_REGEX));
 	}
 
 	@Test
-	public void ruleLineRegExpTest() {
+	public void shouldFindRuleLineRegexTest() {
 		assertTrue(WTAParserTest.nonLeafRuleLine.
 				matches(WTAParser.NON_LEAF_RULE_REGEX));
 	}
 
 	@Test
-	public void ruleLineWithWeightRegExpTest() {
+	public void shouldFindRuleLineWithWeightRegexTest() {
 		assertTrue(WTAParserTest.nonLeafRuleLineWithWeight.
 				matches(WTAParser.NON_LEAF_RULE_REGEX));
+	}
+
+	@Test
+	public void shouldSplitFinalLineRegexTest() throws Exception {
+		//assertTrue(WTAParser.FINAL_SPLIT_REGEX);
+		fail("Not implemented");
 	}
 
 }

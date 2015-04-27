@@ -34,7 +34,7 @@ public class WTAParserTest {
 	 * Tests that states are properly set to final when parsing a final rule.
 	 */
 	@Test
-	public void parseFinalLineTest() {
+	public void shouldParseFinalLineTest() {
 		wtaParser.parseLine(finalLine, wta);
 		assertTrue(wta.getState("q0").isFinal());
 	}
@@ -43,7 +43,7 @@ public class WTAParserTest {
 	 * Tests that a leaf rule is parsed properly.
 	 */
 	@Test
-	public void parseLeafRuleLineTest() {
+	public void shouldParseLeafRuleLineTest() {
 		wtaParser.parseLine(leafRuleLine, wta);
 		assertEquals("q0", wta.getRulesBySymbol(aSymb).
 				get(0).getResultingState().getLabel());
@@ -53,16 +53,16 @@ public class WTAParserTest {
 	 * Tests that a leaf rule is added properly to an empty wta.
 	 */
 	@Test
-	public void parseLeafRuleLineLengthTest() {
+	public void shouldParseLeafRuleLineLengthTest() {
 		wtaParser.parseLine(leafRuleLine, wta);
-		assertEquals(1, wta.getRulesByResultingState(new State("q0")).size());
+		assertEquals(1, wta.getRulesBySymbol(aSymb).size());
 	}
 
 	/**
 	 * Tests that multiple rules are not added.
 	 */
 	@Test
-	public void parseLeafRuleLineLengthTest2() {
+	public void shouldParseLeafRuleLineLengthTest2() {
 		wtaParser.parseLine(leafRuleLine, wta);
 		wtaParser.parseLine(leafRuleLine, wta);
 		assertEquals(1, wta.getRulesBySymbol(aSymb).size());
@@ -72,7 +72,7 @@ public class WTAParserTest {
 	 * Tests that a leaf rule with weight is parsed properly.
 	 */
 	@Test
-	public void parseLeafRuleLineWithWeightTest() {
+	public void shouldParseLeafRuleLineWithWeightTest() {
 		wtaParser.parseLine(leafRuleLineWithWeight, wta);
 		assertEquals(2, wta.getRulesBySymbol(aSymb).
 				get(0).getWeight(), 10e-5);
@@ -82,7 +82,7 @@ public class WTAParserTest {
 	 * Tests that a leaf rule with weight is added properly to an empty wta.
 	 */
 	@Test
-	public void parseLeafRuleWithWeightLineLengthTest() {
+	public void shouldParseLeafRuleWithWeightLineLengthTest() {
 		wtaParser.parseLine(leafRuleLineWithWeight, wta);
 		assertEquals(1, wta.getRulesBySymbol(aSymb).size());
 	}
@@ -91,7 +91,7 @@ public class WTAParserTest {
 	 * Tests that a non-leaf rule is parsed properly.
 	 */
 	@Test
-	public void parseNonLeafRuleLineTest() {
+	public void shouldParseNonLeafRuleLineTest() {
 		wtaParser.parseLine(nonLeafRuleLine, wta);
 		assertEquals("q0", wta.getRulesBySymbol(fSymb).
 				get(0).getResultingState().getLabel());
@@ -101,7 +101,7 @@ public class WTAParserTest {
 	 * Tests that a non-leaf rule with weight is parsed properly.
 	 */
 	@Test
-	public void parseNonLeafRuleLineWithWeightTest() {
+	public void shouldParseNonLeafRuleLineWithWeightTest() {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
 		assertEquals(0.2, wta.getRulesBySymbol(fSymb).get(0).getWeight(), 10e-5);
 	}
@@ -110,7 +110,7 @@ public class WTAParserTest {
 	 * Tests that a non-leaf rule is added properly to an empty wta.
 	 */
 	@Test
-	public void parseNonLeafRuleLineLengthTest() {
+	public void shouldParseNonLeafRuleLineLengthTest() {
 		wtaParser.parseLine(nonLeafRuleLine, wta);
 		assertEquals(1, wta.getRulesBySymbol(fSymb).size());
 	}
@@ -119,7 +119,7 @@ public class WTAParserTest {
 	 * Tests that a non-leaf rule with weight is added properly to an empty wta.
 	 */
 	@Test
-	public void parseNonLeafRuleLineWithWeightLengthTest() {
+	public void shouldParseNonLeafRuleLineWithWeightLengthTest() {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
 		assertEquals(1, wta.getRulesBySymbol(fSymb).size());
 	}
