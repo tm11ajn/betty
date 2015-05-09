@@ -20,12 +20,12 @@ public class SymbolTest {
 	}
 
 	@Test
-	public void shouldBeCreatedTest() {
+	public void shouldBeCreated() {
 		assertNotNull(new Symbol("a", 0));
 	}
 
 	@Test
-	public void shouldBeEqualToASymbolWithTheSameLabelTest() throws Exception {
+	public void shouldBeEqualToASymbolWithTheSameLabel() throws Exception {
 		fail();
 	}
 

@@ -39,13 +39,8 @@ public class NodeTest {
 		root = null;
 	}
 
-//	@Test
-//	public void test() {
-//		fail("Not yet implemented");
-//	}
-
 	@Test
-	public void toStringTest() {
+	public void shouldGetCorrectString() {
 		assertEquals("S[NP[N[John]], VP[V[loves], NP[N[Mary]]]]",
 				root.toString());
 	}

@@ -21,7 +21,7 @@ public class RankedAlphabetTest {
 	}
 
 	@Test
-	public void shouldInsertSymbolTest() {
+	public void shouldInsertSymbol() {
 		assertTrue(ranked.addSymbol(new Symbol("a", 0)));
 	}
 

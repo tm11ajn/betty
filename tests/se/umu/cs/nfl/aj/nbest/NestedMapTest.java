@@ -43,33 +43,34 @@ public class NestedMapTest {
 	}
 
 	@Test
-	public void insertTest() {
+	public void shouldReturnNullOnNewTreeInsert() {
 		assertNull(map.put(tree, s0, 0.1));
 	}
 
 	@Test
-	public void insertTest2() {
+	public void shouldHaveValueForInsertedTree() {
 		map.put(tree, s0, 0.1);
 		assertEquals(0.1, map.get(tree, s0).doubleValue(), 1e5);
 	}
 
 	@Test
-	public void insertTest3() {
+	public void shouldHaveCorrectValueDespiteNewChildren() {
 		map.put(tree, s0, 0.1);
 		tree.addChild(child3);
 		assertEquals(0.1, map.get(tree, s0).doubleValue(), 1e5);
 	}
 
 	@Test
-	public void insertTest4() {
+	public void shouldGetCorrectValue() {
 		map.put(tree, s0, 0.1);
 		map.put(child3, s1, 0.2);
 		assertEquals(0.2, map.get(child3, s1).doubleValue(), 1e5);
 	}
 
 	@Test
-	public void hashTest() {
+	public void shouldHaveSameHashDespiteNewNode() {
+		tree.addChild(child3);
 		assertEquals(initialTreeHash, tree.hashCode());
 	}
-
+	
 }
