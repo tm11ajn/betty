@@ -53,5 +53,4 @@ public class NBest {
 //		treeQueue = new PriorityQueue<Node>(initialSize, new TreeComparator());
 //		treeStateValTable = new NestedMap<>();
 //	}
-	
 }
