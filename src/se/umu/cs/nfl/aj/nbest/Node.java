@@ -3,6 +3,8 @@ package se.umu.cs.nfl.aj.nbest;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.umu.cs.nfl.aj.wta.State;
+
 public class Node {
 
 	private String label;
@@ -62,14 +64,43 @@ public class Node {
 
 	@Override
 	public boolean equals(Object obj) {
-		// TODO Auto-generated method stub
-		return super.equals(obj);
+
+		if (obj instanceof Node) {
+			Node n = (Node) obj;
+
+			if (n.nOfChildren != this.nOfChildren) {
+				return false;
+			}
+
+			if (n.isLeaf()) {
+				return n.label.equals(this.label);
+			}
+
+			boolean allEqual = true;
+
+			for (int i = 0; i < nOfChildren; i++) {
+
+				if (!n.children.get(i).equals(this.children.get(i))) {
+					allEqual = false;
+				}
+			}
+
+			return allEqual && n.label.equals(this.label);
+		}
+
+		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		// TODO Auto-generated method stub
-		return super.hashCode();
+
+		int hash = 19 * this.label.hashCode();
+
+		for (Node n : children) {
+			hash += 11 *  n.hashCode();
+		}
+
+		return hash;
 	}
 
 	@Override
