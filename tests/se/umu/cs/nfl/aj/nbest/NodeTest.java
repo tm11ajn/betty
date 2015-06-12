@@ -9,7 +9,6 @@ import org.junit.Test;
 public class NodeTest {
 
 	Node root;
-	Node root2;
 
 	@Before
 	public void setUp() throws Exception {
