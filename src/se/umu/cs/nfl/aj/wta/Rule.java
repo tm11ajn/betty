@@ -37,6 +37,10 @@ public class Rule {
 
 	}
 
+	public void addState(State state) {
+		states.add(state);
+	}
+
 	public Symbol getSymbol() {
 		return symbol;
 	}
