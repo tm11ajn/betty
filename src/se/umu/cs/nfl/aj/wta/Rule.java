@@ -52,33 +52,37 @@ public class Rule {
 	public ArrayList<State> getStates() {
 		return states;
 	}
-// TODO: bygg klart
-//	@Override
-//	public boolean equals(Object obj) {
-//		boolean isEqual = true;
-//
-//		if (obj instanceof Rule) {
-//			Rule rule = (Rule) obj;
-//
-//			if (rule.getSymbol().equals(symbol) &&
-//					rule.getResultingState().equals(resultingState)) {
-//
-//				for (State s : states) {
-//
-//					if (s.equals(obj)) {
-//						return false;
-//					}
-//				}
-//			}
-//		}
-//
-//
-//		return false;
-//	}
-//
-//	@Override
-//	public int hashCode() {
-//		return super.hashCode();
-//	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if (obj instanceof Rule) {
+			Rule rule = (Rule) obj;
+
+			if (rule.symbol.equals(this.symbol)
+					&& rule.resultingState.equals(this.resultingState)
+					&& rule.states.size() == this.states.size()) {
+
+				int statesSize = this.states.size();
+
+				for (int i = 0; i < statesSize; i++) {
+
+					if (!rule.states.get(i).equals(this.states.get(i))) {
+						return false;
+					}
+				}
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// TODO implement!
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
 
 }
