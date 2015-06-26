@@ -93,7 +93,7 @@ public class WTAParserTest {
 	@Test
 	public void shouldParseNonLeafRuleLine() {
 		wtaParser.parseLine(nonLeafRuleLine, wta);
-		assertEquals("q0", wta.getRulesBySymbol(fSymb).
+		assertEquals("qf", wta.getRulesBySymbol(fSymb).
 				get(0).getResultingState().getLabel());
 	}
 
@@ -104,6 +104,12 @@ public class WTAParserTest {
 	public void shouldParseNonLeafRuleLineWithWeight() {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
 		assertEquals(0.2, wta.getRulesBySymbol(fSymb).get(0).getWeight(), 10e-5);
+	}
+
+	@Test
+	public void shouldNotBeNull() throws Exception {
+		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
+		assertNotNull(wta.getRulesBySymbol(fSymb));
 	}
 
 	/**

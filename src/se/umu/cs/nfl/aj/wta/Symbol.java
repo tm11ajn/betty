@@ -34,4 +34,9 @@ public class Symbol {
 	public int hashCode() {
 		return label.hashCode() * 11 + rank * 17;
 	}
+
+	@Override
+	public String toString() {
+		return label;
+	}
 }

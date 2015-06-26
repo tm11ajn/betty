@@ -27,12 +27,6 @@ public class WTA {
 
 	public boolean addRule(Rule rule) {
 
-		System.out.println("Rule:");
-		System.out.println("Symbol=" + rule.getSymbol().getLabel() + " rank="
-				+ rule.getSymbol().getRank());
-		System.out.println("Resulting state= " +
-				rule.getResultingState().getLabel());
-
 		Symbol symbol = rule.getSymbol();
 		State resState = rule.getResultingState();
 
@@ -40,13 +34,11 @@ public class WTA {
 		ArrayList<Rule> ruleListState = rulesByResultingState.get(resState);
 
 		if (ruleListSym == null) {
-			System.out.println("ruleListSym var null");
 			ruleListSym = new ArrayList<Rule>();
 			rulesBySymbol.put(symbol, ruleListSym);
 		}
 
 		if (ruleListState == null) {
-			System.out.println("ruleListState var null");
 			ruleListState = new ArrayList<Rule>();
 			rulesByResultingState.put(resState, ruleListState);
 		}
@@ -103,6 +95,7 @@ public class WTA {
 			System.err.println("Rank error: The symbol " + symbol +
 					" cannot be of two different ranks ");
 			System.exit(-1);
+			// TODO throw exception instead
 		}
 
 		return s;

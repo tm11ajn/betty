@@ -89,4 +89,30 @@ public class Rule {
 		return super.hashCode();
 	}
 
+	@Override
+	public String toString() {
+
+		String stateString = "";
+		String weightString = "";
+
+		if (!states.isEmpty()) {
+			stateString += "[";
+
+			int nOfStates = states.size();
+			stateString += states.get(0).toString();
+
+			for (int i = 1; i < nOfStates; i++) {
+				stateString += ", " + states.get(i);
+			}
+
+			stateString += "]";
+		}
+
+		if (weight != 0) {
+			weightString = " # " + weight;
+		}
+
+		return symbol + stateString + " -> " + resultingState + weightString;
+	}
+
 }

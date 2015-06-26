@@ -41,4 +41,9 @@ public class State {
 		return label.hashCode();
 	}
 
+	@Override
+	public String toString() {
+		return label;
+	}
+
 }

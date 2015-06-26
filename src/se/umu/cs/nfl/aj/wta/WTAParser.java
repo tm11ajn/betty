@@ -98,10 +98,6 @@ public class WTAParser {
 			newRule = new Rule(symbol, weight, resultingState);
 		} else {
 			newRule = new Rule(symbol, resultingState);
-			System.out.println("H�R �R JAG");
-			System.out.println("Nya regeln:");
-			System.out.println("Symbol=" + newRule.getSymbol().getLabel());
-			System.out.println("Resulting state (label)=" + newRule.getResultingState().getLabel());
 		}
 
 		wta.addRule(newRule);
@@ -112,12 +108,12 @@ public class WTAParser {
 		//System.out.println(b);
 	}
 
-	private Rule parseNonLeafRule(String line, WTA wta) {
+	private void parseNonLeafRule(String line, WTA wta) {
 
 		String[] labels = line.trim().split(NON_LEAF_RULE_SPLIT_REGEX);
 
 		int numberOfLabels = labels.length;
-		int numberOfLeftHandStates = numberOfLabels - 1;
+		int numberOfLeftHandStates = numberOfLabels - 2;
 
 		double weight = 0;
 
@@ -127,15 +123,15 @@ public class WTAParser {
 		}
 
 		Symbol symbol = wta.getSymbol(labels[0], numberOfLeftHandStates);
-		State resultingState = wta.getState(labels[numberOfLabels - 1]);
+		State resultingState = wta.getState(labels[1 + numberOfLeftHandStates]);
 
 		Rule newRule = new Rule(symbol, weight, resultingState);
 
-		for (int i = 1; i < numberOfLeftHandStates + 1; i++) { // TODO FINISH!
+		for (int i = 1; i < numberOfLeftHandStates + 1; i++) {
 			newRule.addState(wta.getState(labels[i]));
 		}
 
-		return newRule;
+		wta.addRule(newRule);
 	}
 
 }
