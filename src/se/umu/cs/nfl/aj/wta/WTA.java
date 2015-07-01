@@ -5,100 +5,65 @@ import java.util.HashMap;
 
 public class WTA {
 
-	// TODO Bad idea or a 'must'?
-	private HashMap<Symbol, ArrayList<Rule>> rulesBySymbol = new HashMap<>();
-	private HashMap<State, ArrayList<Rule>> rulesByResultingState =
-			new HashMap<>();
-
-//	private ArrayList<Rule> rules = new ArrayList<>();
-//	private ArrayList<String> symbols = new ArrayList<>(); // or hashmap if we need hasSymbol
-
-	private HashMap<String, Symbol> symbols = new HashMap<>();
-	private RankedAlphabet ranked = new RankedAlphabet();
-
 	/**
 	 * Labels mapped to their corresponding states.
 	 */
 	private HashMap<String, State> states = new HashMap<>();
+	private ArrayList<State> finalStates = new ArrayList<>();
+
+	private RankedAlphabet rankedAlphabet = new RankedAlphabet();
+
+	private TransitionFunction transitionFunction = new TransitionFunction();
 
 	public WTA() {
 
 	}
 
 	public boolean addRule(Rule rule) {
-
-		Symbol symbol = rule.getSymbol();
-		State resState = rule.getResultingState();
-
-		ArrayList<Rule> ruleListSym = rulesBySymbol.get(symbol);
-		ArrayList<Rule> ruleListState = rulesByResultingState.get(resState);
-
-		if (ruleListSym == null) {
-			ruleListSym = new ArrayList<Rule>();
-			rulesBySymbol.put(symbol, ruleListSym);
-		}
-
-		if (ruleListState == null) {
-			ruleListState = new ArrayList<Rule>();
-			rulesByResultingState.put(resState, ruleListState);
-		}
-
-		return ruleListSym.add(rule) && ruleListState.add(rule);
+		return transitionFunction.addRule(rule);
 	}
 
 	public ArrayList<Rule> getRulesBySymbol(Symbol symbol) {
-		return rulesBySymbol.get(symbol);
+		return transitionFunction.getRulesBySymbol(symbol);
 	}
 
 	public ArrayList<Rule> getRulesByResultingState(State resultingState) {
-		return rulesByResultingState.get(resultingState);
+		return transitionFunction.getRulesByResultingState(resultingState);
 	}
 
-//	public State addState(State state) {
-//		return states.put(state.getLabel(), state);
-//	}
+	public State addState(String label) {
+		State newState = states.get(label);
 
-	public State getState(String label) {
+		if (newState == null) {
+			newState = new State(label);
+			states.put(label, newState);
+		}
+
+		return newState;
+	}
+
+	public boolean setFinalState(String label) { // TODO input State or String?
 
 		State state = states.get(label);
 
 		if (state == null) {
-			state = new State(label);
-			states.put(label, state);
-		}
-
-		return state;
-	}
-
-	public void setFinalState(String label) { // TODO input State or String?
-
-		State state;
-
-		if ((state = states.get(label)) == null) {
 			state = new State(label);
 			state.setFinal();
 			states.put(label, state);
 		} else {
 			state.setFinal();
 		}
+
+		return finalStates.add(state);
 	}
 
-	public Symbol getSymbol(String symbol, int rank) {
+	public ArrayList<State> getFinalStates() {
+		return finalStates;
+	}
 
-		Symbol s = symbols.get(symbol);
-
-		if (s == null) {
-			s = new Symbol(symbol, rank);
-			ranked.addSymbol(s);
-			symbols.put(symbol, s);
-		} else if (s.getRank() != rank) {
-			System.err.println("Rank error: The symbol " + symbol +
-					" cannot be of two different ranks ");
-			System.exit(-1);
-			// TODO throw exception instead
-		}
-
-		return s;
+	public Symbol addSymbol(String symbol, int rank)
+			throws SymbolUsageException {
+		return rankedAlphabet.addSymbol(symbol, rank);
 	}
 
 //	public String addSymbol(String symbol) {

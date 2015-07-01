@@ -25,10 +25,28 @@ public class SymbolTest {
 	}
 
 	@Test
-	public void shouldBeEqualToASymbolWithTheSameLabel() throws Exception {
-		fail();
+	public void shouldGetLabel() throws Exception {
+		assertEquals("a", symbol1.getLabel());
 	}
 
+	@Test
+	public void shouldGetRank() throws Exception {
+		assertEquals(2, symbol2.getRank());
+	}
 
+	@Test
+	public void shouldBeEqualToASymbolWithTheSameLabelAndRank() throws Exception {
+		assertEquals(new Symbol("a", 0), symbol1);
+	}
+
+	@Test
+	public void shouldNotBeEqualToASymbolWithAnotherLabel() throws Exception {
+		assertNotSame(new Symbol("b", 0), symbol1);
+	}
+
+	@Test
+	public void shouldNotBeEqualToASymbolWithAnotherRank() throws Exception {
+		assertNotSame(new Symbol("a", 1), symbol1);
+	}
 
 }

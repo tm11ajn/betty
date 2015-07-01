@@ -42,8 +42,32 @@ public class WTAParserRegexTest {
 
 	@Test
 	public void shouldSplitFinalLineRegex() throws Exception {
-		//assertTrue(WTAParser.FINAL_SPLIT_REGEX);
-		fail("Not implemented");
+		assertEquals(4, WTAParserTest.finalLine.trim().split(
+				WTAParser.FINAL_SPLIT_REGEX).length);
+	}
+
+	@Test
+	public void shouldSplitLeafRuleLineRegex() throws Exception {
+		assertEquals(2, WTAParserTest.leafRuleLine.trim().split(
+				WTAParser.LEAF_RULE_SPLIT_REGEX).length);
+	}
+
+	@Test
+	public void shouldSplitLeafRuleLineWithWeightRegex() throws Exception {
+		assertEquals(3, WTAParserTest.leafRuleLineWithWeight.trim().split(
+				WTAParser.LEAF_RULE_SPLIT_REGEX).length);
+	}
+
+	@Test
+	public void shouldSplitNonLeafRuleLineRegex() throws Exception {
+		assertEquals(4, WTAParserTest.nonLeafRuleLine.trim().split(
+				WTAParser.NON_LEAF_RULE_SPLIT_REGEX).length);
+	}
+
+	@Test
+	public void shouldSplitNonLeafRuleLineWithWeightRegex() throws Exception {
+		assertEquals(5, WTAParserTest.nonLeafRuleLineWithWeight.trim().split(
+				WTAParser.NON_LEAF_RULE_SPLIT_REGEX).length);
 	}
 
 }

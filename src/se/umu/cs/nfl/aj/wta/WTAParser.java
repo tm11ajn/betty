@@ -47,13 +47,17 @@ public class WTAParser {
 		} catch (IllegalArgumentException e) {
 			System.err.println("Error found in line " + rowCounter +
 					": " + e.getMessage());
+			System.exit(-1);
+		} catch (SymbolUsageException e) {
+			System.err.println(e.getMessage());
+			System.exit(-1);
 		}
 
 		return wta;
 	}
 
 	public void parseLine(String line, WTA wta)
-			throws IllegalArgumentException {
+			throws IllegalArgumentException, SymbolUsageException {
 
 		if (line.matches(EMPTY_LINE_REGEX)) {
 			// Ignore empty lines.
@@ -79,19 +83,15 @@ public class WTAParser {
 		}
 	}
 
-	private void parseLeafRule(String line, WTA wta) {
+	private void parseLeafRule(String line, WTA wta)
+			throws SymbolUsageException {
 
 		String[] labels = line.trim().split(LEAF_RULE_SPLIT_REGEX);
 
-		Symbol symbol = wta.getSymbol(labels[0], 0);
-		State resultingState = wta.getState(labels[1]);
+		Symbol symbol = wta.addSymbol(labels[0], 0);
+		State resultingState = wta.addState(labels[1]);
 
 		Rule newRule;
-
-//		if (resultingState == null) {
-//			resultingState = new State(labels[1]);
-//			wta.addState(resultingState);
-//		}
 
 		if (labels.length == 3) {
 			double weight = Double.parseDouble(labels[2]); // TODO handle exception maybe NOT (Trust your input!)
@@ -101,14 +101,10 @@ public class WTAParser {
 		}
 
 		wta.addRule(newRule);
-		//wta.getRulesBySymbol(new Symbol("a", 0)).isEmpty();
-
-		//boolean b = wta.getRulesBySymbol(new Symbol("a", 0)).isEmpty();
-
-		//System.out.println(b);
 	}
 
-	private void parseNonLeafRule(String line, WTA wta) {
+	private void parseNonLeafRule(String line, WTA wta)
+			throws SymbolUsageException {
 
 		String[] labels = line.trim().split(NON_LEAF_RULE_SPLIT_REGEX);
 
@@ -122,13 +118,13 @@ public class WTAParser {
 			numberOfLeftHandStates -= 1;
 		}
 
-		Symbol symbol = wta.getSymbol(labels[0], numberOfLeftHandStates);
-		State resultingState = wta.getState(labels[1 + numberOfLeftHandStates]);
+		Symbol symbol = wta.addSymbol(labels[0], numberOfLeftHandStates);
+		State resultingState = wta.addState(labels[1 + numberOfLeftHandStates]);
 
 		Rule newRule = new Rule(symbol, weight, resultingState);
 
 		for (int i = 1; i < numberOfLeftHandStates + 1; i++) {
-			newRule.addState(wta.getState(labels[i]));
+			newRule.addState(wta.addState(labels[i]));
 		}
 
 		wta.addRule(newRule);

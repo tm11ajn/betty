@@ -1,9 +1,11 @@
 package se.umu.cs.nfl.aj.nbest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import se.umu.cs.nfl.aj.wta.Rule;
 import se.umu.cs.nfl.aj.wta.State;
 import se.umu.cs.nfl.aj.wta.WTA;
 import se.umu.cs.nfl.aj.wta.WTAParser;
@@ -23,6 +25,9 @@ public class NBest {
 		String fileName = getFileName(args);
 		WTAParser wtaParser = new WTAParser();
 		WTA wta = wtaParser.parse(fileName);
+
+		HashMap<State, Context> smallestCompletions = findSmallestCompletions(wta);
+
 		List<String> result = run(wta);
 
 		for (String treeString : result) {
@@ -40,6 +45,21 @@ public class NBest {
 		return args[1];
 	}
 
+	public static HashMap<State, Context> findSmallestCompletions(WTA wta) {
+		HashMap<State, Context> smallestCompletions = new HashMap();
+
+		ArrayList<State> finalStates = wta.getFinalStates();
+
+		while (!finalStates.isEmpty()) {
+			ArrayList<Rule> currentRules =
+					wta.getRulesByResultingState(finalStates.get(finalStates.size() - 1)); // TODO
+		}
+
+		// TODO Dijkstras
+
+		return smallestCompletions;
+	}
+
 	public static List<String> run(WTA wta) {
 
 		/* For result. */
@@ -53,4 +73,6 @@ public class NBest {
 //		treeQueue = new PriorityQueue<Node>(initialSize, new TreeComparator());
 //		treeStateValTable = new NestedMap<>();
 //	}
+
+
 }

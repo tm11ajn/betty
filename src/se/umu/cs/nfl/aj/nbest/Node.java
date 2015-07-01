@@ -3,8 +3,6 @@ package se.umu.cs.nfl.aj.nbest;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.umu.cs.nfl.aj.wta.State;
-
 public class Node {
 
 	private String label;

@@ -21,9 +21,9 @@ public class NestedMap<KeyType0, KeyType1, ValueType> {
 			newMap.put(key1, value);
 			map.put(key0, newMap);
 			return null;
-		} else {
-			return map.get(key0).put(key1, value);
 		}
+
+		return map.get(key0).put(key1, value);
 	}
 
 	public ValueType get(KeyType0 key0, KeyType1 key1) {
@@ -32,9 +32,9 @@ public class NestedMap<KeyType0, KeyType1, ValueType> {
 
 		if (currentMap == null) {
 			return null;
-		} else {
-			return map.get(key0).get(key1);
 		}
+
+		return map.get(key0).get(key1);
 	}
 
 	// public ValueType remove(KeyType0 key0, KeyType1 key1)  {}

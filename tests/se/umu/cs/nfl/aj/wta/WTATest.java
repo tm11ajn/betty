@@ -15,35 +15,36 @@ public class WTATest {
 
 	@Test
 	public void shouldBeEqualToStateWithSameLabel() {
-		wta.getState("q0");
-		assertEquals(state, wta.getState("q0"));
+		wta.addState("q0");
+		assertEquals(state, wta.addState("q0"));
 	}
 
 	@Test
-	public void shouldBeEqualToSymbolWithSameLabel() {
-		wta.getSymbol("a", 0);
-		assertEquals(aSymb, wta.getSymbol("a", 0));
+	public void shouldBeEqualToSymbolWithSameLabel()
+			throws SymbolUsageException {
+		wta.addSymbol("a", 0);
+		assertEquals(aSymb, wta.addSymbol("a", 0));
 	}
 
 	@Test
 	public void shouldCreateAndSetStateToFinal() {
 		wta.setFinalState("q0");
-		assertTrue(wta.getState("q0").isFinal());
+		assertTrue(wta.addState("q0").isFinal());
 	}
 
 	@Test
-	public void shouldGetRulesByState() {
-		State resState = wta.getState("q0");
-		Symbol symbol = wta.getSymbol("a", 0);
+	public void shouldGetRulesByState() throws SymbolUsageException {
+		State resState = wta.addState("q0");
+		Symbol symbol = wta.addSymbol("a", 0);
 		wta.addRule(new Rule(symbol, resState));
 		Rule rule = wta.getRulesByResultingState(state).get(0);
 		assertEquals(aSymb, rule.getSymbol());
 	}
 
 	@Test
-	public void shouldGetRulesBySymbol() {
-		State resState = wta.getState("qf");
-		Symbol symbol = wta.getSymbol("f", 2);
+	public void shouldGetRulesBySymbol() throws SymbolUsageException {
+		State resState = wta.addState("qf");
+		Symbol symbol = wta.addSymbol("f", 2);
 		wta.addRule(new Rule(symbol, resState));
 		Rule rule = wta.getRulesBySymbol(fSymb).get(0);
 		assertEquals(finalState, rule.getResultingState());
@@ -57,11 +58,19 @@ public class WTATest {
 	}
 
 	@Test
-	public void shouldHaveTwoRulesBySymbol() {
-		wta.getSymbol("f", 2);
+	public void shouldHaveTwoRulesBySymbol() throws SymbolUsageException {
+		wta.addSymbol("f", 2);
 		wta.addRule(new Rule(new Symbol("f", 2), new State("q0")));
 		wta.addRule(new Rule(new Symbol("f", 2), new State("q1")));
 		assertEquals(2, wta.getRulesBySymbol(new Symbol("f", 2)).size());
+	}
+
+	@Test
+	public void shouldGetFinalStates() throws Exception {
+		wta.addState("qf");
+		wta.addState("q0");
+		wta.setFinalState("qf");
+		assertEquals(finalState, wta.getFinalStates().get(0));
 	}
 
 }
