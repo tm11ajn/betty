@@ -14,7 +14,8 @@ public class WTATest {
 
 
 	@Test
-	public void shouldBeEqualToStateWithSameLabel() {
+	public void shouldBeEqualToStateWithSameLabel()
+			throws SymbolUsageException {
 		wta.addState("q0");
 		assertEquals(state, wta.addState("q0"));
 	}
@@ -27,7 +28,7 @@ public class WTATest {
 	}
 
 	@Test
-	public void shouldCreateAndSetStateToFinal() {
+	public void shouldCreateAndSetStateToFinal() throws SymbolUsageException {
 		wta.setFinalState("q0");
 		assertTrue(wta.addState("q0").isFinal());
 	}

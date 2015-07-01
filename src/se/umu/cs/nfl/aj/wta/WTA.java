@@ -31,7 +31,13 @@ public class WTA {
 		return transitionFunction.getRulesByResultingState(resultingState);
 	}
 
-	public State addState(String label) {
+	public State addState(String label) throws SymbolUsageException {
+
+		if (rankedAlphabet.hasSymbol(label)) {
+			throw new SymbolUsageException("The symbol " + label +
+					" is used for both state and symbol.");
+		}
+
 		State newState = states.get(label);
 
 		if (newState == null) {
@@ -42,7 +48,7 @@ public class WTA {
 		return newState;
 	}
 
-	public boolean setFinalState(String label) { // TODO input State or String?
+	public boolean setFinalState(String label) {
 
 		State state = states.get(label);
 
@@ -63,15 +69,13 @@ public class WTA {
 
 	public Symbol addSymbol(String symbol, int rank)
 			throws SymbolUsageException {
+
+		if (states.containsKey(symbol)) {
+			throw new SymbolUsageException("The symbol " + symbol +
+					" is used for both state and symbol.");
+		}
+
 		return rankedAlphabet.addSymbol(symbol, rank);
 	}
-
-//	public String addSymbol(String symbol) {
-//		return symbols.put(symbol, symbol);
-//	}
-//
-//	public boolean hasSymbol(String symbol) {
-//		return symbols.containsKey(symbol);
-//	}
 
 }

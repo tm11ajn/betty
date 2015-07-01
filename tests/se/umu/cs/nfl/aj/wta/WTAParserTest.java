@@ -2,8 +2,6 @@ package se.umu.cs.nfl.aj.wta;
 
 import static org.junit.Assert.*;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 public class WTAParserTest {
@@ -21,14 +19,6 @@ public class WTAParserTest {
 
 	private Symbol aSymb = new Symbol("a", 0);
 	private Symbol fSymb = new Symbol("f", 2);
-
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
 
 	/**
 	 * Tests that states are properly set to final when parsing a final rule.
@@ -89,8 +79,8 @@ public class WTAParserTest {
 	public void shouldParseLeafRuleLineWithWeight()
 			throws IllegalArgumentException, SymbolUsageException {
 		wtaParser.parseLine(leafRuleLineWithWeight, wta);
-		assertEquals(2, wta.getRulesBySymbol(aSymb).
-				get(0).getWeight(), 10e-5);
+		assertEquals(0, wta.getRulesBySymbol(aSymb).
+				get(0).getWeight().compareTo(new Weight(2)));
 	}
 
 	/**
@@ -127,7 +117,8 @@ public class WTAParserTest {
 	public void shouldParseNonLeafRuleLineWithWeight()
 			throws IllegalArgumentException, SymbolUsageException {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
-		assertEquals(0.2, wta.getRulesBySymbol(fSymb).get(0).getWeight(), 10e-5);
+		assertEquals(0, wta.getRulesBySymbol(fSymb).get(0).
+				getWeight().compareTo(new Weight(0.2)));
 	}
 
 

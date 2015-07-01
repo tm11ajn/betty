@@ -1,0 +1,64 @@
+package se.umu.cs.nfl.aj.wta;
+
+public class Weight implements Comparable<Weight> {
+
+	public static final int INF = -1;
+	public static final int NINF = -2;
+
+	private double value;
+
+	public Weight(double value) {
+		this.value = value;
+	}
+
+	public boolean isZero() {
+		return value == 0;
+	}
+
+	public boolean isInfinity() {
+		return value == INF;
+	}
+
+	public boolean isNegativeInfinity() {
+		return value == NINF;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if (obj instanceof Weight) {
+			return this.value == ((Weight) obj).value;
+		}
+
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Double.valueOf(value).hashCode();
+	}
+
+	@Override
+	public int compareTo(Weight o) {
+
+		if (this.value == o.value) {
+			return 0;
+		} else if (this.value == INF || o.value == NINF) {
+			return 1;
+		} else if (this.value == NINF || o.value == INF) {
+			return -1;
+		}
+
+		if (this.value < o.value) {
+			return -1;
+		}
+
+		return 1;
+	}
+
+	@Override
+	public String toString() {
+		return "" + value;
+	}
+
+}

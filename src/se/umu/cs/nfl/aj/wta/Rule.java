@@ -6,13 +6,13 @@ import java.util.ArrayList;
 public class Rule {
 
 	private Symbol symbol;
-	private double weight;
+	private Weight weight;
 
 	private ArrayList<State> states = new ArrayList<>();
 
 	private State resultingState;
 
-	public Rule(Symbol symbol, double weight, State resultingState,
+	public Rule(Symbol symbol, Weight weight, State resultingState,
 			State ... states) {
 
 		this.symbol = symbol;
@@ -28,7 +28,7 @@ public class Rule {
 	public Rule(Symbol symbol, State resultingState, State ... states) {
 
 		this.symbol = symbol;
-		weight = 0;
+		weight = new Weight(0);
 		this.resultingState = resultingState;
 
 		for (State state : states) {
@@ -45,7 +45,7 @@ public class Rule {
 		return symbol;
 	}
 
-	public double getWeight() {
+	public Weight getWeight() {
 		return weight;
 	}
 
@@ -108,7 +108,7 @@ public class Rule {
 			stateString += "]";
 		}
 
-		if (weight != 0) {
+		if (weight.isZero()) {
 			weightString = " # " + weight;
 		}
 

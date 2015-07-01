@@ -2,6 +2,7 @@ package se.umu.cs.nfl.aj.nbest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -26,8 +27,6 @@ public class NBest {
 		WTAParser wtaParser = new WTAParser();
 		WTA wta = wtaParser.parse(fileName);
 
-		HashMap<State, Context> smallestCompletions = findSmallestCompletions(wta);
-
 		List<String> result = run(wta);
 
 		for (String treeString : result) {
@@ -46,9 +45,14 @@ public class NBest {
 	}
 
 	public static HashMap<State, Context> findSmallestCompletions(WTA wta) {
-		HashMap<State, Context> smallestCompletions = new HashMap();
+		HashMap<State, Context> smallestCompletions =
+				new HashMap<State, Context>();
 
 		ArrayList<State> finalStates = wta.getFinalStates();
+
+		HashMap<State, State> visited;
+		LinkedList<State> unvisited;
+		HashMap<State, Double> distances;
 
 		while (!finalStates.isEmpty()) {
 			ArrayList<Rule> currentRules =
@@ -61,6 +65,8 @@ public class NBest {
 	}
 
 	public static List<String> run(WTA wta) {
+
+		HashMap<State, Context> smallestCompletions = findSmallestCompletions(wta);
 
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();

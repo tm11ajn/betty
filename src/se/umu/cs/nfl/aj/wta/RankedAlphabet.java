@@ -40,6 +40,10 @@ public class RankedAlphabet {
 //		return rankList.add(symbol);
 	}
 
+	public boolean hasSymbol(String symbol) {
+		return symbols.containsKey(symbol);
+	}
+
 //	public ArrayList<Symbol> getSymbolsByRank(int rank) {
 //		return ranking.get(rank);
 //	}

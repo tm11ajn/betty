@@ -94,7 +94,8 @@ public class WTAParser {
 		Rule newRule;
 
 		if (labels.length == 3) {
-			double weight = Double.parseDouble(labels[2]); // TODO handle exception maybe NOT (Trust your input!)
+			double value = Double.parseDouble(labels[2]); // TODO handle exception maybe NOT (Trust your input!)
+			Weight weight = new Weight(value);
 			newRule = new Rule(symbol, weight, resultingState);
 		} else {
 			newRule = new Rule(symbol, resultingState);
@@ -111,10 +112,11 @@ public class WTAParser {
 		int numberOfLabels = labels.length;
 		int numberOfLeftHandStates = numberOfLabels - 2;
 
-		double weight = 0;
+		Weight weight = new Weight(0);
 
 		if (line.contains("#")) {
-			weight = Double.parseDouble(labels[numberOfLabels - 1]);
+			double value = Double.parseDouble(labels[numberOfLabels - 1]);
+			weight = new Weight(value);
 			numberOfLeftHandStates -= 1;
 		}
 
