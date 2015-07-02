@@ -47,6 +47,7 @@ public class NBest {
 	public static HashMap<State, Context> findSmallestCompletions(WTA wta) {
 		HashMap<State, Context> smallestCompletions =
 				new HashMap<State, Context>();
+		WTA modifiedWTA = buildModifiedWTA(wta);
 
 		ArrayList<State> finalStates = wta.getFinalStates();
 
@@ -62,6 +63,16 @@ public class NBest {
 		// TODO Dijkstras
 
 		return smallestCompletions;
+	}
+
+	/* Build a new WTA for every state in this case and then use Dijkstras on
+	 * each of them. Is there no better way to do it? TODO
+	 */
+	public static WTA buildModifiedWTA(WTA wta) {
+
+		WTA modWTA = new WTA();
+
+		return null;
 	}
 
 	public static List<String> run(WTA wta) {
