@@ -83,10 +83,16 @@ public class Rule {
 		return false;
 	}
 
-	// TODO implement!
 	@Override
 	public int hashCode() {
-		return super.hashCode();
+		
+		int hash = 7*symbol.hashCode() + 11*resultingState.hashCode();
+		
+		for (State s : states) {
+			hash += s.hashCode();
+		}
+		
+		return hash;
 	}
 
 	@Override
@@ -108,7 +114,7 @@ public class Rule {
 			stateString += "]";
 		}
 
-		if (weight.isZero()) {
+		if (!weight.isZero()) {
 			weightString = " # " + weight;
 		}
 

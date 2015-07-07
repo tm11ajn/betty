@@ -53,5 +53,17 @@ public class TransitionFunction {
 
 		return ruleListSym.add(rule) && ruleListState.add(rule);
 	}
+	
+	@Override
+	public String toString() {
+		ArrayList<Rule> rules = getRules();
+		String string = "";
+		
+		for (Rule r : rules) {
+			string += r + "\n";
+		}
+		
+		return string;
+	}
 
 }

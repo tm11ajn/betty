@@ -58,12 +58,11 @@ public class WTA {
 
 		if (state == null) {
 			state = new State(label);
-			state.setFinal();
 			states.put(label, state);
-		} else {
-			state.setFinal();
 		}
-
+		
+		state.setFinal();
+		
 		return finalStates.add(state);
 	}
 	
@@ -92,6 +91,27 @@ public class WTA {
 	
 	public WTA getModifiedWTAWithLeafOnState() {
 		return null;
+	}
+	
+	@Override
+	public String toString() {
+		
+		String string = "States: ";
+		
+		for (State s : states.values()) {
+			string += s + " ";
+		}
+		
+		string += "\n";
+		string += "Ranked alphabet: " + rankedAlphabet + "\n";
+		string += "Transition function: \n" + transitionFunction;
+		string += "Final states: ";
+		
+		for (State s : finalStates) {
+			string += s + " ";
+		}
+		
+		return string;
 	}
 
 }

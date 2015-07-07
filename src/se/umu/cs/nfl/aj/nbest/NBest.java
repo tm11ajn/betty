@@ -128,11 +128,12 @@ public class NBest {
 		ArrayList<State> finalStates = wta.getFinalStates();
 		ArrayList<Rule> rules = wta.getRules();
 			
-		for (Symbol symbol : symbols) {
-			modWTA.addSymbol(symbol.getLabel(), symbol.getRank());
+		for (Symbol s : symbols) {
+			modWTA.addSymbol(s.getLabel(), s.getRank());
 		}
 
-		Symbol reservedSymbol = modWTA.addSymbol(Symbol.RESERVED_SYMBOL_STRING, 0);
+		Symbol reservedSymbol = modWTA.addSymbol(
+				Symbol.RESERVED_SYMBOL_STRING, 0);
 		State reservedSymbolState = null;
 		
 		for (State s : states) {
@@ -150,13 +151,33 @@ public class NBest {
 					"is not in the WTA.");
 		}
 		
+		for (State s : finalStates) {
+			modWTA.setFinalState(s.getLabel().concat(
+					State.RESERVED_LABEL_EXTENSION_STRING));
+		}
+		
 		Rule reservedSymbolRule = new Rule(reservedSymbol, new Weight(0), 
 				reservedSymbolState); 
 		modWTA.addRule(reservedSymbolRule);
 		
-		for (State s : finalStates) {
-			modWTA.setFinalState(s.getLabel().concat(
-					State.RESERVED_LABEL_EXTENSION_STRING));
+		for (Rule r : rules) {
+			modWTA.addRule(r);
+			
+			ArrayList<State> leftHandStates = r.getStates();
+			
+			for (State s : leftHandStates) {
+				Rule newRule = new Rule(r.getSymbol(), r.getWeight(), 
+						r.getResultingState());
+				
+				for (State s2 : leftHandStates) {
+					if (s2.equals(s)) {
+						newRule.addState(new State(s.getLabel().concat(
+								State.RESERVED_LABEL_EXTENSION_STRING)));
+					} else {
+						newRule.addState(s2);
+					}
+				}
+			}
 		}
 
 		return modWTA;

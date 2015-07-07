@@ -52,5 +52,17 @@ public class RankedAlphabet {
 //	public ArrayList<Symbol> getSymbolsByRank(int rank) {
 //		return ranking.get(rank);
 //	}
+	
+	@Override
+	public String toString() {
+		
+		String string = "";
+		
+		for (Symbol s : symbols.values()) {
+			string += s + "(" + s.getRank() + ") ";
+		}
+		
+		return string;
+	}
 
 }

@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class WTAParserTest {
+	public static final String fileName = "wta_examples/wta0.rtg";
 
 	public static final String emptyLine = "		    			";
 	public static final String finalLine = "	  final    q0   q1 q2	";
@@ -29,6 +30,7 @@ public class WTAParserTest {
 	public void shouldParseFinalLine()
 			throws IllegalArgumentException, SymbolUsageException {
 		wtaParser.parseLine(finalLine, wta);
+		System.out.println(wta);
 		assertTrue(wta.addState("q0").isFinal());
 	}
 
@@ -177,6 +179,12 @@ public class WTAParserTest {
 	public void shouldNotBeNullWhenCollectingParsed() throws Exception {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
 		assertNotNull(wta.getRulesBySymbol(fSymb));
+	}
+	
+	@Test
+	public void shouldParseCorrectFile() throws Exception {
+		wta = wtaParser.parse(fileName);
+		System.out.println(wta);
 	}
 
 }
