@@ -1,5 +1,6 @@
 package se.umu.cs.nfl.aj.wta;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RankedAlphabet {
@@ -42,6 +43,10 @@ public class RankedAlphabet {
 
 	public boolean hasSymbol(String symbol) {
 		return symbols.containsKey(symbol);
+	}
+	
+	public ArrayList<Symbol> getSymbols() {
+		return new ArrayList<Symbol>(symbols.values());
 	}
 
 //	public ArrayList<Symbol> getSymbolsByRank(int rank) {

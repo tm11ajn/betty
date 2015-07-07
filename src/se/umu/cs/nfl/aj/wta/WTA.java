@@ -30,6 +30,10 @@ public class WTA {
 	public ArrayList<Rule> getRulesByResultingState(State resultingState) {
 		return transitionFunction.getRulesByResultingState(resultingState);
 	}
+	
+	public ArrayList<Rule> getRules() {
+		return transitionFunction.getRules();
+	}
 
 	public State addState(String label) throws SymbolUsageException {
 
@@ -62,6 +66,10 @@ public class WTA {
 
 		return finalStates.add(state);
 	}
+	
+	public ArrayList<State> getStates() {
+		return new ArrayList<State>(states.values());
+	}
 
 	public ArrayList<State> getFinalStates() {
 		return finalStates;
@@ -74,8 +82,16 @@ public class WTA {
 			throw new SymbolUsageException("The symbol " + symbol +
 					" is used for both state and symbol.");
 		}
-
+		
 		return rankedAlphabet.addSymbol(symbol, rank);
+	}
+	
+	public ArrayList<Symbol> getSymbols() {
+		return rankedAlphabet.getSymbols();
+	}
+	
+	public WTA getModifiedWTAWithLeafOnState() {
+		return null;
 	}
 
 }

@@ -1,6 +1,8 @@
 package se.umu.cs.nfl.aj.wta;
 
 public class State {
+	
+	public static final String RESERVED_LABEL_EXTENSION_STRING = "_extension";
 
 	private String label;
 	private boolean isFinal;

@@ -1,6 +1,9 @@
 package se.umu.cs.nfl.aj.wta;
 
 public class Symbol {
+	
+	public static final String RESERVED_SYMBOL_STRING = 
+			"context_symbol_with_rank_zero";
 
 	private String label;
 	private int rank;

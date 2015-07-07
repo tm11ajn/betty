@@ -87,6 +87,8 @@ public class WTAParser {
 			throws SymbolUsageException {
 
 		String[] labels = line.trim().split(LEAF_RULE_SPLIT_REGEX);
+		
+		checkSymbol(labels[0]);
 
 		Symbol symbol = wta.addSymbol(labels[0], 0);
 		State resultingState = wta.addState(labels[1]);
@@ -119,6 +121,8 @@ public class WTAParser {
 			weight = new Weight(value);
 			numberOfLeftHandStates -= 1;
 		}
+		
+		checkSymbol(labels[0]);
 
 		Symbol symbol = wta.addSymbol(labels[0], numberOfLeftHandStates);
 		State resultingState = wta.addState(labels[1 + numberOfLeftHandStates]);
@@ -130,6 +134,14 @@ public class WTAParser {
 		}
 
 		wta.addRule(newRule);
+	}
+	
+	private void checkSymbol(String label) throws SymbolUsageException {
+		
+		if (label.equals(Symbol.RESERVED_SYMBOL_STRING)) {
+			throw new SymbolUsageException("The symbol " + label + 
+					" is reserved and cannot be used in the input WTA.");
+		}
 	}
 
 }

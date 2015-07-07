@@ -21,6 +21,18 @@ public class TransitionFunction {
 	public ArrayList<Rule> getRulesByResultingState(State resultingState) {
 		return rulesByResultingState.get(resultingState);
 	}
+	
+	public ArrayList<Rule> getRules() {
+		ArrayList<Rule> valueList = new ArrayList<>();
+		
+		for (ArrayList<Rule> ruleList : rulesBySymbol.values()) {
+			for (Rule rule : ruleList) {
+				valueList.add(rule);
+			}
+		}
+		
+		return valueList;
+	}
 
 	public boolean addRule(Rule rule) {
 		Symbol symbol = rule.getSymbol();
