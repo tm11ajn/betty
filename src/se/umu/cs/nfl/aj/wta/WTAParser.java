@@ -9,7 +9,7 @@ import java.io.IOException;
 public class WTAParser {
 
 	public static final String EMPTY_LINE_REGEX = "^\\s*$";
-	public static final String FINAL_REGEX = "^\\s*final\\s*([a-z0-9]\\s*)+$";
+	public static final String FINAL_REGEX = "^\\s*final\\s*([a-z0-9]+\\s*,\\s*)*([a-z0-9]+\\s*)+$";
 	public static final String LEAF_RULE_REGEX =
 			"^\\s*[a-z0-9]+\\s*->\\s*[a-z0-9]+" +
 			"\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)?$";
@@ -17,7 +17,7 @@ public class WTAParser {
 			"^\\s*[a-z0-9]+\\[\\s*[a-z0-9]+\\s*(,\\s*[a-z0-9]+\\s*)*\\]\\s*->" +
 			"\\s*[a-z0-9]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)*$";
 
-	public static final String FINAL_SPLIT_REGEX = "\\s+";
+	public static final String FINAL_SPLIT_REGEX = "\\s+|(\\s*,\\s*)";
 	public static final String LEAF_RULE_SPLIT_REGEX = "\\s*((->)|#)\\s*";
 	public static final String NON_LEAF_RULE_SPLIT_REGEX =
 			"\\s*((\\]\\s*->)|#|\\[|,)\\s*";
@@ -33,7 +33,6 @@ public class WTAParser {
 
 			while ((line = br.readLine()) != null) {
 				parseLine(line, wta);
-				line = br.readLine();
 				rowCounter++;
 			}
 
@@ -60,12 +59,16 @@ public class WTAParser {
 			throws IllegalArgumentException, SymbolUsageException {
 
 		if (line.matches(EMPTY_LINE_REGEX)) {
+			System.out.println("ONE EMPTY LINE");
 			// Ignore empty lines.
 		} else if (line.matches(FINAL_REGEX)) {
+			System.out.println("ONE FINAL LINE");
 			parseFinal(line, wta);
 		} else if (line.matches(LEAF_RULE_REGEX)) {
+			System.out.println("ONE LEAF RULE LINE");
 			parseLeafRule(line, wta);
 		} else if (line.matches(NON_LEAF_RULE_REGEX)) {
+			System.out.println("ONE NON-LEAF RULE LINE");
 			parseNonLeafRule(line, wta);
 		} else {
 			throw new IllegalArgumentException("Line " + line +

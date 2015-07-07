@@ -8,7 +8,7 @@ public class WTAParserTest {
 	public static final String fileName = "wta_examples/wta0.rtg";
 
 	public static final String emptyLine = "		    			";
-	public static final String finalLine = "	  final    q0   q1 q2	";
+	public static final String finalLine = "	  final    q0,   q1, q2	";
 	public static final String leafRuleLine = " a   -> q0 ";
 	public static final String leafRuleLineWithWeight = " a   -> q0  #  2 ";
 	public static final String nonLeafRuleLine = "  f[q0, q1] ->   qf ";
@@ -30,8 +30,12 @@ public class WTAParserTest {
 	public void shouldParseFinalLine()
 			throws IllegalArgumentException, SymbolUsageException {
 		wtaParser.parseLine(finalLine, wta);
+		wtaParser.parseLine(leafRuleLine, wta);
+		wtaParser.parseLine(finalLine, wta);
 		System.out.println(wta);
-		assertTrue(wta.addState("q0").isFinal());
+		assertTrue(wta.addState("q0").isFinal() 
+				&& wta.addState("q1").isFinal() 
+				&& wta.addState("q2").isFinal());
 	}
 
 	/**
@@ -184,7 +188,23 @@ public class WTAParserTest {
 	@Test
 	public void shouldParseCorrectFile() throws Exception {
 		wta = wtaParser.parse(fileName);
-		System.out.println(wta);
+		assertEquals(wta.toString(), 
+				"States: pa pb qb qa \n"
+				+ "Ranked alphabet: ball(2) b(0) a(0) \n"
+				+ "Transition function: \n"
+				+ "a -> pa # 2.0\n"
+				+ "a -> pb # 1.0\n"
+				+ "ball[pa, pa] -> qa\n"
+				+ "ball[qa, qa] -> qa\n"
+				+ "ball[pb, pb] -> qb\n"
+				+ "ball[pb, pb] -> qb\n"
+				+ "ball[pa, qa] -> pa\n"
+				+ "ball[qa, pa] -> pa\n"
+				+ "ball[pb, qb] -> pb\n"
+				+ "ball[qb, pb] -> pb\n"
+				+ "b -> pa # 1.0\n"
+				+ "b -> pb # 2.0\n"
+				+ "Final states: qa qb ");
 	}
 
 }
