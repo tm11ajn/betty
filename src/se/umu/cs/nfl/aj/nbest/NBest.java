@@ -164,19 +164,23 @@ public class NBest {
 			modWTA.addRule(r);
 			
 			ArrayList<State> leftHandStates = r.getStates();
+			int nOfLHStates = leftHandStates.size();
 			
-			for (State s : leftHandStates) {
+			for (int i = 0; i < nOfLHStates; i++) {
 				Rule newRule = new Rule(r.getSymbol(), r.getWeight(), 
 						r.getResultingState());
 				
-				for (State s2 : leftHandStates) {
-					if (s2.equals(s)) {
-						newRule.addState(new State(s.getLabel().concat(
+				for (int j = 0; j < nOfLHStates; j++) {
+					
+					if (i == j) {
+						newRule.addState(new State(leftHandStates.get(i).getLabel().concat(
 								State.RESERVED_LABEL_EXTENSION_STRING)));
 					} else {
-						newRule.addState(s2);
+						newRule.addState(leftHandStates.get(j));
 					}
 				}
+				
+				modWTA.addRule(newRule);
 			}
 		}
 

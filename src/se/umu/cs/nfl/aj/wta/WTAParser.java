@@ -59,16 +59,12 @@ public class WTAParser {
 			throws IllegalArgumentException, SymbolUsageException {
 
 		if (line.matches(EMPTY_LINE_REGEX)) {
-			System.out.println("ONE EMPTY LINE");
 			// Ignore empty lines.
 		} else if (line.matches(FINAL_REGEX)) {
-			System.out.println("ONE FINAL LINE");
 			parseFinal(line, wta);
 		} else if (line.matches(LEAF_RULE_REGEX)) {
-			System.out.println("ONE LEAF RULE LINE");
 			parseLeafRule(line, wta);
 		} else if (line.matches(NON_LEAF_RULE_REGEX)) {
-			System.out.println("ONE NON-LEAF RULE LINE");
 			parseNonLeafRule(line, wta);
 		} else {
 			throw new IllegalArgumentException("Line " + line +
@@ -139,6 +135,7 @@ public class WTAParser {
 		wta.addRule(newRule);
 	}
 	
+	// TODO unnecessary if the reserved symbol uses unallowed characters
 	private void checkSymbol(String label) throws SymbolUsageException {
 		
 		if (label.equals(Symbol.RESERVED_SYMBOL_STRING)) {
