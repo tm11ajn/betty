@@ -59,5 +59,15 @@ public class WeightTest {
 	public void shouldBeZero() throws Exception {
 		assertTrue(zero.isZero());
 	}
+	
+	@Test
+	public void shouldAddTwoNumbers() throws Exception {
+		assertEquals(new Weight(2+2.1), w.add(wSmaller));
+	}
+	
+	@Test
+	public void shouldAddInfinityAndGetInfinity() throws Exception {
+		assertEquals(inf, w.add(inf));
+	}
 
 }

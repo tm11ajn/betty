@@ -7,7 +7,7 @@ ball[pa, pa] -> qa
 ball[qa, qa] -> qa
 
 ball[pb, pb] -> qb
-ball[pb, pb] -> qb
+ball[qb, qb] -> qb
 
 ball[pa, qa] -> pa
 ball[qa, pa] -> pa

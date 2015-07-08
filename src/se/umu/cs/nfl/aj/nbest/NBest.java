@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
 import se.umu.cs.nfl.aj.wta.Rule;
@@ -77,15 +78,28 @@ public class NBest {
 		return nBest;
 	}
 
+	/**
+	 * Using modification of WTA along with Knuth's generalization of Dijkstra's
+	 * algorithm to get the weights of the smallest completions.
+	 * @param wta
+	 * @return
+	 */
 	public static HashMap<State, Weight> findSmallestCompletionWeights(WTA wta) {
 		HashMap<State, Weight> smallestCompletions =
 				new HashMap<State, Weight>();
 		
 		ArrayList<State> states = wta.getStates();
 		
+		int counter = 0;
+		
+		/*
+		 * Build a modified WTA for each state in the original WTA
+		 * and get the weight of the smallest tree that is accepted
+		 * by the new WTA, that is, the smallest context with the
+		 * current state as the connector.
+		 */
 		for (State state : states) {
-			Weight smallestCompletionWeight = null;
-			
+			System.out.println("CURRENT STATE: " + state);
 			WTA modifiedWTA = null;
 			
 			try {
@@ -95,21 +109,106 @@ public class NBest {
 				System.exit(-1);
 			}
 			
-			ArrayList<State> finalStates = modifiedWTA.getFinalStates();
+			ArrayList<State> modifiedStates = modifiedWTA.getStates();
+			ArrayList<State> modifiedFinalStates = modifiedWTA.getFinalStates();
+			ArrayList<Rule> modifiedRules = modifiedWTA.getRules();
 			
-			HashMap<State, State> visited;
-			LinkedList<State> unvisited;
-			HashMap<State, Double> distances;
-
-			while (!finalStates.isEmpty()) {
-				ArrayList<Rule> currentRules =
-						wta.getRulesByResultingState(finalStates.get(finalStates.size() - 1)); // TODO
+			int nOfModifiedStates = modifiedStates.size();
+			
+			HashMap<State, State> defined = new HashMap<>();
+			HashMap<State, Weight> weights = new HashMap<>();
+			
+			for (State s : modifiedStates) {
+				weights.put(s, new Weight(Weight.INF));
 			}
 
-			// TODO Dijkstras
+			while (defined.size() < nOfModifiedStates) {
+				
+				System.out.println("PRINTTEST");
+				
+				for (Rule r : modifiedRules) {
+					ArrayList<State> leftHandStates = r.getStates();
+					State resultingState = r.getResultingState();
+					Weight newWeight = new Weight(0);
+					boolean allDefined = true;
+					
+					for (State s : leftHandStates) {
+						
+						if (!defined.containsKey(s)) {
+							allDefined = false;
+							break;
+						}
+						
+						newWeight = newWeight.add(weights.get(s));
+					}
+					
+					newWeight = newWeight.add(r.getWeight());
+					System.out.println("Rule: " + r);
+					System.out.println("new weight=" + newWeight);
+					System.out.println("allDefined=" + allDefined);
+					
+					if (allDefined) {
+						Weight oldWeight = weights.get(resultingState);
+						System.out.println("Oldweight=" + oldWeight);
+						
+						if (newWeight.compareTo(oldWeight) == 1) {
+							newWeight = oldWeight;
+						}
+						
+						weights.put(resultingState, newWeight);
+						System.out.println("PUT");
+						System.out.println(resultingState + " " + newWeight);
+					}
+				}
+				
+				Weight smallestWeight = new Weight(Weight.INF);
+				State smallestState = null;
+				
+				for (Entry<State, Weight> e : weights.entrySet()) {
+					Weight tempWeight = e.getValue();
+					State tempState = e.getKey();
+					
+					if (!defined.containsKey(tempState) && 
+							smallestWeight.compareTo(tempWeight) > -1) {
+						smallestWeight = tempWeight;
+						smallestState = tempState;
+					}
+				}
+				
+				defined.put(smallestState, smallestState);
+				modifiedStates.remove(smallestState);
+				
+				System.out.println("Smallest weight: " + smallestWeight);
+				System.out.println("Smallest state: " + smallestState);
+				System.out.println("Size defined: " + defined.size());
+				System.out.println("Size modstates: " + modifiedStates.size());
+				
+				// Add corresponding state to defined and 
+				// remove it from modifiedStates
+			}
 			
+			Weight smallestCompletionWeight = new Weight(Weight.INF);
 			
+			for (State s : modifiedFinalStates) {
+				Weight tempWeight = weights.get(s);
+				
+				if (tempWeight == null) {
+					System.err.println("In getting the smallest completion, "
+							+ "the final state " + s + "did not have any weight"
+							+ "assigned to it");
+					System.exit(-1);
+				}
+				
+				if (tempWeight.compareTo(smallestCompletionWeight) == -1) {
+					smallestCompletionWeight = tempWeight; 
+				}
+			}
+
+			System.out.println("SMALLESTCOMPLETIONWEIGHT FOR CURRENTSTATE: " + 
+					smallestCompletionWeight);
 			smallestCompletions.put(state, smallestCompletionWeight);
+			counter++;
+			System.out.println(counter);
 		}
 
 		return smallestCompletions;
@@ -167,8 +266,10 @@ public class NBest {
 			int nOfLHStates = leftHandStates.size();
 			
 			for (int i = 0; i < nOfLHStates; i++) {
+				State newResultingState = new State(r.getResultingState().
+						getLabel().concat(State.RESERVED_LABEL_EXTENSION_STRING));
 				Rule newRule = new Rule(r.getSymbol(), r.getWeight(), 
-						r.getResultingState());
+						newResultingState);
 				
 				for (int j = 0; j < nOfLHStates; j++) {
 					

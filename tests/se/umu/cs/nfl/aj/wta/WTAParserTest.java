@@ -197,7 +197,7 @@ public class WTAParserTest {
 				+ "ball[pa, pa] -> qa\n"
 				+ "ball[qa, qa] -> qa\n"
 				+ "ball[pb, pb] -> qb\n"
-				+ "ball[pb, pb] -> qb\n"
+				+ "ball[qb, qb] -> qb\n"
 				+ "ball[pa, qa] -> pa\n"
 				+ "ball[qa, pa] -> pa\n"
 				+ "ball[pb, qb] -> pb\n"

@@ -22,6 +22,23 @@ public class Weight implements Comparable<Weight> {
 	public boolean isNegativeInfinity() {
 		return value == NINF;
 	}
+	
+	public Weight add(Weight w) {
+		
+		// TODO remove NINF?
+		if ((value == INF && w.value == NINF) || 
+				(value == NINF && w.value == INF)) {
+			return null;
+		}
+		
+		if (value == INF || w.value == INF) {
+			return new Weight(INF);
+		} else if (value == NINF || w.value == NINF) {
+			return new Weight(NINF);
+		}
+		
+		return new Weight(value + w.value);
+	}
 
 	@Override
 	public boolean equals(Object obj) {
