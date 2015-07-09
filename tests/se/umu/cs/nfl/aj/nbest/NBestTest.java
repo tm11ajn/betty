@@ -3,7 +3,6 @@ package se.umu.cs.nfl.aj.nbest;
 import static org.junit.Assert.*;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import org.junit.After;
 import org.junit.Before;
