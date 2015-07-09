@@ -19,12 +19,6 @@ public class NBest {
 
 	private static final int INITIAL_SIZE = 11;
 
-	private static ArrayList<Node> exploredTrees = new ArrayList<Node>(); // T
-	private static PriorityQueue<Node> treeQueue =
-			new PriorityQueue<Node>(INITIAL_SIZE, new TreeComparator()); // K
-	private static NestedMap<Node, State, Double> treeStateValTable =
-			new NestedMap<>(); // C
-
 	public static void main(String[] args) {
 
 		String fileName = getFileName(args);
@@ -68,12 +62,29 @@ public class NBest {
 	}
 	
 	public static List<String> run(WTA wta, int N) {
-
+		
 		HashMap<State, Weight> smallestCompletionWeights = 
 				findSmallestCompletionWeights(wta);
+		
+		ArrayList<Node> exploredTrees = new ArrayList<Node>(); // T
+		PriorityQueue<Node> treeQueue =
+				new PriorityQueue<Node>(INITIAL_SIZE, new TreeComparator(smallestCompletionWeights)); // K
+		NestedMap<Node, State, Weight> treeStateValTable = new NestedMap<>(); // C
+		
+		ArrayList<Symbol> symbols = wta.getSymbols();
+		
+		for (Symbol s : symbols) {
+			if (s.getRank() == 0) {
+				treeQueue.add(new Node(s.getLabel()));
+			}
+		}
 
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();
+		
+		
+		
+		
 
 		return nBest;
 	}
