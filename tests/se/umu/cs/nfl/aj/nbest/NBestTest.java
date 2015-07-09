@@ -76,11 +76,14 @@ public class NBestTest {
 		HashMap<State, Weight> smallestCompletionWeights = 
 				NBest.findSmallestCompletionWeights(wta);
 		
-		for (Entry<State, Weight> e : smallestCompletionWeights.entrySet()) {
-			System.out.println(e.getKey() + ": " + e.getValue());
-		}
+		HashMap<State, Weight> expected = new HashMap<>();
 		
-		assertEquals(new Weight(1), smallestCompletionWeights.get(new State("pb")));
+		expected.put(new State("pa"), new Weight(1));
+		expected.put(new State("pb"), new Weight(1));
+		expected.put(new State("qa"), new Weight(0));
+		expected.put(new State("qb"), new Weight(0));
+		
+		assertEquals(expected, smallestCompletionWeights);
 	}
 
 }
