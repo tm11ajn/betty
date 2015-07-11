@@ -3,44 +3,44 @@ package se.umu.cs.nfl.aj.nbest;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Node {
+public class Node<LabelType> {
 
-	private String label;
+	private LabelType label;
 
 	// M^q(this), index with state
 //	private HashMap<String, Double> minRunWeight = new HashMap<>();
 
-	private Node parent;
-	private List<Node> children = new ArrayList<Node>();
+	private Node<LabelType> parent;
+	private List<Node<LabelType>> children = new ArrayList<Node<LabelType>>();
 	private int nOfChildren;
 
-	public Node(String label) {
+	public Node(LabelType label) {
 		this.label = label;
 		nOfChildren = 0;
 		parent = null;
 	}
 
-	public Node(String label, List<Node> children) {
+	public Node(LabelType label, List<Node<LabelType>> children) {
 		this.label = label;
 		this.children = children;
 		nOfChildren = children.size();
 
-		for (Node n : children) {
+		for (Node<LabelType> n : children) {
 			n.setParent(this);
 		}
 	}
 
-	public String getLabel() {
+	public LabelType getLabel() {
 		return label;
 	}
 
-	public void addChild(Node child) {
+	public void addChild(Node<LabelType> child) {
 		children.add(child);
 		child.setParent(this);
 		nOfChildren++;
 	}
 
-	public Node getChildAt(int childIndex) {
+	public Node<LabelType> getChildAt(int childIndex) {
 		return children.get(childIndex);
 	}
 
@@ -48,11 +48,11 @@ public class Node {
 		return nOfChildren;
 	}
 
-	public void setParent(Node parent) {
+	public void setParent(Node<LabelType> parent) {
 		this.parent = parent;
 	}
 
-	public Node getParent() {
+	public Node<LabelType> getParent() {
 		return parent;
 	}
 
@@ -63,8 +63,8 @@ public class Node {
 	@Override
 	public boolean equals(Object obj) {
 
-		if (obj instanceof Node) {
-			Node n = (Node) obj;
+		if (obj instanceof Node<?>) {
+			Node<?> n = (Node<?>) obj;
 
 			if (n.nOfChildren != this.nOfChildren) {
 				return false;
@@ -94,7 +94,7 @@ public class Node {
 
 		int hash = 19 * this.label.hashCode();
 
-		for (Node n : children) {
+		for (Node<LabelType> n : children) {
 			hash += 11 *  n.hashCode();
 		}
 

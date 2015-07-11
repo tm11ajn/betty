@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.umu.cs.nfl.aj.wta.State;
+import se.umu.cs.nfl.aj.wta.Symbol;
 import se.umu.cs.nfl.aj.wta.WTA;
 import se.umu.cs.nfl.aj.wta.WTAParser;
 import se.umu.cs.nfl.aj.wta.Weight;
@@ -83,6 +84,52 @@ public class NBestTest {
 		expected.put(new State("qb"), new Weight(0));
 		
 		assertEquals(expected, smallestCompletionWeights);
+	}
+	
+	@Test
+	public void shouldGetOptimalStateForLeafNode() throws Exception {
+		Node<Symbol> leafNode = new Node<Symbol>(new Symbol("a", 0));
+		State optimalState = NBest.getOptimalState(wta, leafNode);
+		assertEquals(new State("pb"), optimalState);
+	}
+	
+	@Test
+	public void shouldGetOptimalStateForLeafNode2() throws Exception {
+		Node<Symbol> leafNode = new Node<Symbol>(new Symbol("b", 0));
+		State optimalState = NBest.getOptimalState(wta, leafNode);
+		assertEquals(new State("pa"), optimalState);
+	}
+	
+	@Test
+	public void shouldGetOptimalStateForNonLeafNode() throws Exception {
+		Node<Symbol> leafNodeA = new Node<Symbol>(new Symbol("a", 0));
+		Node<Symbol> leafNodeB = new Node<Symbol>(new Symbol("b", 0));
+		Node<Symbol> node = new Node<Symbol>(new Symbol("ball", 2));
+		
+		node.addChild(leafNodeA);
+		node.addChild(leafNodeA);
+		
+		NBest.getOptimalState(wta, leafNodeA);
+		NBest.getOptimalState(wta, leafNodeB);
+		
+		State optimalState = NBest.getOptimalState(wta, node);
+		assertEquals(new State("qb"), optimalState);
+	}
+	
+	@Test
+	public void shouldGetOptimalStateForNonLeafNode2() throws Exception {
+		Node<Symbol> leafNodeA = new Node<Symbol>(new Symbol("a", 0));
+		Node<Symbol> leafNodeB = new Node<Symbol>(new Symbol("b", 0));
+		Node<Symbol> node = new Node<Symbol>(new Symbol("ball", 2));
+		
+		node.addChild(leafNodeB);
+		node.addChild(leafNodeB);
+		
+		NBest.getOptimalState(wta, leafNodeA);
+		NBest.getOptimalState(wta, leafNodeB);
+		
+		State optimalState = NBest.getOptimalState(wta, node);
+		assertEquals(new State("qa"), optimalState);
 	}
 
 }
