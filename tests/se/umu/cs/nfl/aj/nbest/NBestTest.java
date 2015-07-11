@@ -17,7 +17,6 @@ public class NBestTest {
 	
 	private String fileName = "wta_examples/wta0.rtg";
 	private WTA wta;
-	
 
 	@Before
 	public void setUp() throws Exception {
