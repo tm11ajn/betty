@@ -63,28 +63,103 @@ public class NBest {
 	
 	public static List<String> run(WTA wta, int N) {
 		
-		HashMap<State, Weight> smallestCompletionWeights = 
-				findSmallestCompletionWeights(wta);
-		
-		ArrayList<Node> exploredTrees = new ArrayList<Node>(); // T
-		PriorityQueue<Node> treeQueue =
-				new PriorityQueue<Node>(INITIAL_SIZE, new TreeComparator(smallestCompletionWeights)); // K
-		NestedMap<Node, State, Weight> treeStateValTable = new NestedMap<>(); // C
-		
-		ArrayList<Symbol> symbols = wta.getSymbols();
-		
-		for (Symbol s : symbols) {
-			if (s.getRank() == 0) {
-				treeQueue.add(new Node(s.getLabel()));
-			}
-		}
-
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();
 		
+		HashMap<State, Weight> smallestCompletionWeights = 
+				findSmallestCompletionWeights(wta);
 		
+		NestedMap<Node, State, Weight> treeStateValTable = new NestedMap<>(); // C
+		HashMap<Node, State> optimalStates = new HashMap<>();
 		
+		// T <- empty
+		ArrayList<Node> exploredTrees = new ArrayList<Node>(); // T
 		
+		// K <- empty
+		LinkedList<Node> treeQueue = new LinkedList<Node>(); // K
+		
+		// enqueue(K, Sigma_0) TODO
+		ArrayList<Symbol> symbols = wta.getSymbols();
+		
+		for (Symbol s : symbols) {
+			
+			if (s.getRank() == 0) {	
+				Node tree = new Node(s.getLabel());
+				
+				ArrayList<Rule> rules = wta.getRulesBySymbol(s);
+				Weight minWeight = new Weight(Weight.INF);
+				State minState = null;
+				
+				for (Rule r : rules) {
+					
+					Weight currentWeight = treeStateValTable.get(tree, 
+							r.getResultingState());
+					
+					// Find smallest weight for each state
+					if (currentWeight == null || 
+							(currentWeight.compareTo(r.getWeight()) == 1)) {
+						treeStateValTable.put(tree, r.getResultingState(), 
+								r.getWeight());
+					}
+					
+					// Find optimal state
+					if (r.getWeight().compareTo(minWeight) < 1) {
+						minWeight = r.getWeight();
+						minState = r.getResultingState();
+						optimalStates.put(tree, r.getResultingState());
+					}
+				}
+				
+				Weight wMinCurrent = minWeight.add(
+						smallestCompletionWeights.get(minState));
+				int queueSize = treeQueue.size();
+				int queueIndex = 0;
+				
+				for (int i = 0; i < queueSize; i++) {
+					Node t = treeQueue.get(i);
+					State optState = optimalStates.get(t);
+					Weight wMinRun = treeStateValTable.get(t, optState);
+					Weight wMinContext = smallestCompletionWeights.get(optState);
+					Weight wMin = wMinRun.add(wMinContext);
+					
+					if (wMin.compareTo(wMinCurrent) == -1) {
+						queueIndex = i + 1;
+					} else if (wMin.compareTo(wMinCurrent) == 0) {
+						
+						if (t.toString().compareTo(tree.toString()) < 1) {
+							queueIndex = i + 1;
+						}
+					}
+				}
+						
+				treeQueue.add(queueIndex, tree);
+			}
+		}
+		
+		// i <- 0
+		int counter = 0;
+		Node currentTree;
+		
+		// while i < N and K nonempty do
+		while (counter < N && !treeQueue.isEmpty()) {
+			// t <- dequeue(K)
+			currentTree = treeQueue.poll();
+			
+			// T <- T u {t}
+			exploredTrees.add(currentTree);
+			
+			// if M(t) = delta(t) then TODO
+			if (currentTree.isLeaf()) {
+				// output(t)
+				nBest.add(currentTree.toString());
+				
+				// i <- i + 1
+				counter++;
+			}
+			
+			// enqueue(K, expand(T, t)) TODO
+			
+		}
 
 		return nBest;
 	}
