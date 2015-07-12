@@ -157,10 +157,11 @@ public class NBest {
 			
 			// enqueue(K, expand(T, t)) TODO
 			
-			expandWith(currentTree);
+			ArrayList<Node<Symbol>> expansion = expandWith(wta, currentTree);
 			
-			for (Node<Symbol> t : exploredTrees) {
-				
+			for (Node<Symbol> t : expansion) {
+				insertTreeIntoQueueByTotalMinimumWeight(t, 
+						smallestCompletionWeights, optimalStates);
 			}
 			
 		}
@@ -483,8 +484,22 @@ public class NBest {
 		treeQueue.add(queueIndex, tree);
 	}
 	
-	public static ArrayList<Node<Symbol>> expandWith(Node<Symbol> tree) {
+	public static ArrayList<Node<Symbol>> expandWith(WTA wta, Node<Symbol> tree) { // TODO
 		ArrayList<Node<Symbol>> expansion = new ArrayList<Node<Symbol>>();
+		ArrayList<Rule> rules = wta.getRules();
+		
+		for (Rule r : rules) {
+			ArrayList<State> states = r.getStates();
+			
+			for (State s : states) {
+				
+				for (Node<Symbol> n : exploredTrees) {
+					if (treeStateValTable.get(n, s) != null) {
+						
+					}
+				}
+			}
+		}
 		
 		return expansion;
 	}

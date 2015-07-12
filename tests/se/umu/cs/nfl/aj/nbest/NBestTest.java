@@ -2,6 +2,7 @@ package se.umu.cs.nfl.aj.nbest;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.junit.After;
@@ -130,6 +131,22 @@ public class NBestTest {
 		
 		State optimalState = NBest.getOptimalState(wta, node);
 		assertEquals(new State("qa"), optimalState);
+	}
+	
+	@Test
+	public void shouldGetExpansion() throws Exception {
+		Node<Symbol> leafNodeA = new Node<Symbol>(new Symbol("a", 0));
+		ArrayList<Node<Symbol>> expansion = NBest.expandWith(wta, leafNodeA);
+		
+		ArrayList<Node<Symbol>> expected = new ArrayList<Node<Symbol>>();
+		expected.add(leafNodeA); // TODO
+		
+		System.out.println("Expansion: ");
+		for (Node<Symbol> n : expansion) {
+			System.out.println(n);
+		}
+		
+		assertEquals(expected, expansion);
 	}
 
 }
