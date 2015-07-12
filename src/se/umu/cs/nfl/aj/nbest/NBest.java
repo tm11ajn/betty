@@ -96,36 +96,11 @@ public class NBest {
 			if (s.getRank() == 0) {	
 				Node<Symbol> tree = new Node<Symbol>(s);
 				
-				State optimalState = getOptimalState(wta, tree);
+				State optimalState = getOptimalState(wta, tree, smallestCompletionWeights);
 				optimalStates.put(tree, optimalState);
-				
-//				ArrayList<Rule> rules = wta.getRulesBySymbol(s);
-//				Weight minWeight = new Weight(Weight.INF);
-//				State minState = null;
-//				
-//				for (Rule r : rules) {
-//					
-//					Weight currentWeight = treeStateValTable.get(tree, 
-//							r.getResultingState());
-//					
-//					// Find smallest weight for each state
-//					if (currentWeight == null || 
-//							(currentWeight.compareTo(r.getWeight()) == 1)) {
-//						treeStateValTable.put(tree, r.getResultingState(), 
-//								r.getWeight());
-//					}
-//					
-//					// Find optimal state
-//					if (r.getWeight().compareTo(minWeight) < 1) {
-//						minWeight = r.getWeight();
-//						minState = r.getResultingState();
-//						optimalStates.put(tree, r.getResultingState());
-//					}
-//				}
 				
 				insertTreeIntoQueueByTotalMinimumWeight(tree, 
 						smallestCompletionWeights, optimalStates);
-								
 			}
 		}
 		
@@ -139,14 +114,18 @@ public class NBest {
 			Node<Symbol> currentTree = treeQueue.poll();
 			
 			// Get optimal state for current tree
-			optimalStates.put(currentTree, getOptimalState(wta, currentTree));
+//			State optimalState = getOptimalState(wta, currentTree, 
+//					smallestCompletionWeights);
+//			optimalStates.put(currentTree, optimalState);
+			State optimalState = optimalStates.get(currentTree);
 			
 			// T <- T u {t}
 			exploredTrees.add(currentTree);
 			
 			// if M(t) = delta(t) then TODO
-			// is this the same thing as smallestcompletion(state) = 0?
-			if (currentTree.isLeaf()) {
+			// is this the same thing as smallestcompletion(optimalstate) = 0 
+			// and optimalstate in final states ?
+			if (optimalState.isFinal()) {
 				
 				// output(t)
 				nBest.add(currentTree.toString());
@@ -160,6 +139,10 @@ public class NBest {
 			ArrayList<Node<Symbol>> expansion = expandWith(wta, currentTree);
 			
 			for (Node<Symbol> t : expansion) {
+				// Need to get the optimal state for each new tree before putting it into the queue?
+				// In that case, this does not need to be done earlier in the while loop.
+				optimalStates.put(t, getOptimalState(wta, t, 
+						smallestCompletionWeights));
 				insertTreeIntoQueueByTotalMinimumWeight(t, 
 						smallestCompletionWeights, optimalStates);
 			}
@@ -379,7 +362,11 @@ public class NBest {
 		return modWTA;
 	}
 	
-	public static State getOptimalState(WTA wta, Node<Symbol> tree) 
+	// TODO
+	// Eventually divide into two methods, one that calculates the M^q's 
+	// and one that gets the optimal state using the M^q's.
+	public static State getOptimalState(WTA wta, Node<Symbol> tree, 
+			HashMap<State, Weight> smallestCompletionWeights) 
 			throws SymbolUsageException {
 		
 		State optimalState = null;
@@ -439,10 +426,14 @@ public class NBest {
 					System.out.println("Putting " + tree + ", " + r.getResultingState() + ", " + weightSum);
 				}
 				
+				// M((c_q)[t]) TODO use deltaWeight-function instead
+				Weight totalWeight = weightSum.add(
+						smallestCompletionWeights.get(r.getResultingState()));
+				
 				// Save optimal state
-				if (weightSum.compareTo(minWeight) < 1) {
+				if (totalWeight.compareTo(minWeight) < 1) {
 					optimalState = r.getResultingState();
-					minWeight = weightSum;
+					minWeight = totalWeight;
 					System.out.println("New optimal state: " + optimalState);
 					System.out.println("New min weight: " + minWeight);
 				}
@@ -456,24 +447,21 @@ public class NBest {
 			Node<Symbol> tree, HashMap<State, Weight> smallestCompletionWeights, 
 			HashMap<Node<Symbol>, State> optimalStates) {
 		
-		State optimalState = optimalStates.get(tree);
+		Weight wMinCurrent = getDeltaWeight(tree, optimalStates, 
+				smallestCompletionWeights);
 		
-		Weight minWeight = treeStateValTable.get(tree, optimalState);
-		Weight wMinCurrent = minWeight.add(
-				smallestCompletionWeights.get(optimalState));
 		int queueSize = treeQueue.size();
 		int queueIndex = 0;
 		
 		for (int i = 0; i < queueSize; i++) {
 			Node<Symbol> t = treeQueue.get(i);
-			State optState = optimalStates.get(t);
-			Weight wMinRun = treeStateValTable.get(t, optState);
-			Weight wMinContext = smallestCompletionWeights.get(optState);
-			Weight wMin = wMinRun.add(wMinContext);
 			
-			if (wMin.compareTo(wMinCurrent) == -1) {
+			Weight wMinTemp = getDeltaWeight(t, optimalStates, 
+					smallestCompletionWeights);
+			
+			if (wMinTemp.compareTo(wMinCurrent) == -1) {
 				queueIndex = i + 1;
-			} else if (wMin.compareTo(wMinCurrent) == 0) {
+			} else if (wMinTemp.compareTo(wMinCurrent) == 0) {
 				
 				if (t.toString().compareTo(tree.toString()) < 1) {
 					queueIndex = i + 1;
@@ -482,6 +470,22 @@ public class NBest {
 		}
 				
 		treeQueue.add(queueIndex, tree);
+	}
+	
+	public static Weight getDeltaWeight(Node<Symbol> tree, 
+			HashMap<Node<Symbol>, State> optimalStates,
+			HashMap<State, Weight> smallestCompletionWeights) {
+		
+		Weight delta = new Weight(0);
+		
+		State optimalState = optimalStates.get(tree);
+		
+		Weight minWeight = treeStateValTable.get(tree, optimalState);
+		Weight smallestCompletionWeight = smallestCompletionWeights.get(optimalState);
+		
+		delta = minWeight.add(smallestCompletionWeight);
+		
+		return delta;
 	}
 	
 	public static ArrayList<Node<Symbol>> expandWith(WTA wta, Node<Symbol> tree) { // TODO
@@ -509,6 +513,5 @@ public class NBest {
 //		treeQueue = new PriorityQueue<Node>(initialSize, new TreeComparator());
 //		treeStateValTable = new NestedMap<>();
 //	}
-
 
 }
