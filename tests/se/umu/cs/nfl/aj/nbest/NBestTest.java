@@ -90,14 +90,20 @@ public class NBestTest {
 	@Test
 	public void shouldGetOptimalStateForLeafNode() throws Exception {
 		Node<Symbol> leafNode = new Node<Symbol>(new Symbol("a", 0));
-		State optimalState = NBest.getOptimalState(wta, leafNode);
+		HashMap<State, Weight> smallestCompletionWeights = 
+				NBest.findSmallestCompletionWeights(wta);
+		State optimalState = NBest.getOptimalState(wta, leafNode, 
+				smallestCompletionWeights);
 		assertEquals(new State("pb"), optimalState);
 	}
 	
 	@Test
 	public void shouldGetOptimalStateForLeafNode2() throws Exception {
 		Node<Symbol> leafNode = new Node<Symbol>(new Symbol("b", 0));
-		State optimalState = NBest.getOptimalState(wta, leafNode);
+		HashMap<State, Weight> smallestCompletionWeights = 
+				NBest.findSmallestCompletionWeights(wta);
+		State optimalState = NBest.getOptimalState(wta, leafNode, 
+				smallestCompletionWeights);
 		assertEquals(new State("pa"), optimalState);
 	}
 	
@@ -107,13 +113,17 @@ public class NBestTest {
 		Node<Symbol> leafNodeB = new Node<Symbol>(new Symbol("b", 0));
 		Node<Symbol> node = new Node<Symbol>(new Symbol("ball", 2));
 		
+		HashMap<State, Weight> smallestCompletionWeights = 
+				NBest.findSmallestCompletionWeights(wta);
+		
 		node.addChild(leafNodeA);
 		node.addChild(leafNodeA);
 		
-		NBest.getOptimalState(wta, leafNodeA);
-		NBest.getOptimalState(wta, leafNodeB);
+		NBest.getOptimalState(wta, leafNodeA, smallestCompletionWeights);
+		NBest.getOptimalState(wta, leafNodeB, smallestCompletionWeights);
 		
-		State optimalState = NBest.getOptimalState(wta, node);
+		State optimalState = NBest.getOptimalState(wta, node, 
+				smallestCompletionWeights);
 		assertEquals(new State("qb"), optimalState);
 	}
 	
@@ -123,13 +133,17 @@ public class NBestTest {
 		Node<Symbol> leafNodeB = new Node<Symbol>(new Symbol("b", 0));
 		Node<Symbol> node = new Node<Symbol>(new Symbol("ball", 2));
 		
+		HashMap<State, Weight> smallestCompletionWeights = 
+				NBest.findSmallestCompletionWeights(wta);
+		
 		node.addChild(leafNodeB);
 		node.addChild(leafNodeB);
 		
-		NBest.getOptimalState(wta, leafNodeA);
-		NBest.getOptimalState(wta, leafNodeB);
+		NBest.getOptimalState(wta, leafNodeA, smallestCompletionWeights);
+		NBest.getOptimalState(wta, leafNodeB, smallestCompletionWeights);
 		
-		State optimalState = NBest.getOptimalState(wta, node);
+		State optimalState = NBest.getOptimalState(wta, node, 
+				smallestCompletionWeights);
 		assertEquals(new State("qa"), optimalState);
 	}
 	
