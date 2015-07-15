@@ -488,17 +488,94 @@ public class NBest {
 		ArrayList<Node<Symbol>> expansion = new ArrayList<Node<Symbol>>();
 		ArrayList<Rule> rules = wta.getRules();
 		
+		boolean usesT = false;
+		
 		for (Rule r : rules) {
 			ArrayList<State> states = r.getStates();
+			HashMap<State, ArrayList<Node<Symbol>>> producableTrees = 
+					new HashMap<>();
+					
+			boolean canUseAllStates = true;
 			
 			for (State s : states) {
 				
 				for (Node<Symbol> n : exploredTrees) {
+					
 					if (treeStateValTable.get(n, s) != null) {
 						
+						if (!producableTrees.containsKey(s)) {
+							producableTrees.put(s, 
+									new ArrayList<Node<Symbol>>());
+						}
+						
+						producableTrees.get(s).add(n);
+					
+						if (n.equals(tree)) {
+							usesT = true;
+						}
 					}
 				}
+				
+				if (!producableTrees.containsKey(s)) {
+					canUseAllStates = false;
+					break;
+				}
 			}
+			
+			if (canUseAllStates && usesT) {
+
+				int nOfStates = states.size();
+
+				int[] indices = new int[nOfStates];
+				int[] maxIndices = new int[nOfStates];
+
+				int combinations = 1;
+
+				for (int i = 0; i < nOfStates; i++) {
+					int nOfTreesForState = 
+							producableTrees.get(states.get(i)).size();
+					indices[i] = 0;
+					maxIndices[i] = nOfTreesForState - 1;
+					combinations *= nOfTreesForState;
+				}
+
+				for (int i = 0; i < combinations; i++ ) {
+					
+					Node<Symbol> expTree = new Node<Symbol>(r.getSymbol());
+					boolean hasT = false;
+
+					for (int j = 0; j < nOfStates; j++) {
+						State currentState = states.get(j);
+						ArrayList<Node<Symbol>> trees = 
+								producableTrees.get(currentState);
+						Node<Symbol> currentTree = trees.get(indices[j]);
+						expTree.addChild(currentTree);
+						
+						if (currentTree.equals(tree)) {
+							hasT = true;
+						}
+					}
+					
+					if (hasT) {
+						expansion.add(expTree);
+					}
+
+					boolean increased = false;
+					int index = 0;
+
+					while (!increased && index < nOfStates) {
+
+						if (indices[index] == maxIndices[index]) {
+							indices[index] = 0;
+						} else {
+							indices[index]++;
+							increased = true;
+						}
+					}
+				}
+
+			}
+			
 		}
 		
 		return expansion;
