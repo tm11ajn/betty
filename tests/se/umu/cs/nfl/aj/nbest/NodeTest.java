@@ -8,21 +8,21 @@ import org.junit.Test;
 
 public class NodeTest {
 
-	Node root;
+	Node<String> root;
 
 	@Before
 	public void setUp() throws Exception {
-		root = new Node("S");
-		Node np1 = new Node("NP");
-		Node np2 = new Node("NP");
-		Node vp = new Node("VP");
-		Node n1 = new Node("N");
-		Node n2 = new Node("N");
-		Node v = new Node("V");
+		root = new Node<String>("S");
+		Node<String> np1 = new Node<String>("NP");
+		Node<String> np2 = new Node<String>("NP");
+		Node<String> vp = new Node<String>("VP");
+		Node<String> n1 = new Node<String>("N");
+		Node<String> n2 = new Node<String>("N");
+		Node<String> v = new Node<String>("V");
 
-		n1.addChild(new Node("John"));
-		v.addChild(new Node("loves"));
-		n2.addChild(new Node("Mary"));
+		n1.addChild(new Node<String>("John"));
+		v.addChild(new Node<String>("loves"));
+		n2.addChild(new Node<String>("Mary"));
 
 		np1.addChild(n1);
 		vp.addChild(v);
@@ -47,31 +47,31 @@ public class NodeTest {
 
 	@Test
 	public void shouldBeEqualLeafNodes() throws Exception {
-		Node n1 = new Node("A");
-		Node n2 = new Node("A");
+		Node<String> n1 = new Node<String>("A");
+		Node<String> n2 = new Node<String>("A");
 		assertTrue(n1.equals(n2));
 	}
 
 	@Test
 	public void shouldNotBeEqualLeafNodes() throws Exception {
-		Node n1 = new Node("A");
-		Node n2 = new Node("B");
+		Node<String> n1 = new Node<String>("A");
+		Node<String> n2 = new Node<String>("B");
 		assertFalse(n1.equals(n2));
 	}
 
 	@Test
 	public void shouldBeEqual() throws Exception {
-		Node root2 = new Node("S");
-		Node np1 = new Node("NP");
-		Node np2 = new Node("NP");
-		Node vp = new Node("VP");
-		Node n1 = new Node("N");
-		Node n2 = new Node("N");
-		Node v = new Node("V");
+		Node<String> root2 = new Node<String>("S");
+		Node<String> np1 = new Node<String>("NP");
+		Node<String> np2 = new Node<String>("NP");
+		Node<String> vp = new Node<String>("VP");
+		Node<String> n1 = new Node<String>("N");
+		Node<String> n2 = new Node<String>("N");
+		Node<String> v = new Node<String>("V");
 
-		n1.addChild(new Node("John"));
-		v.addChild(new Node("loves"));
-		n2.addChild(new Node("Mary"));
+		n1.addChild(new Node<String>("John"));
+		v.addChild(new Node<String>("loves"));
+		n2.addChild(new Node<String>("Mary"));
 
 		np1.addChild(n1);
 		vp.addChild(v);
@@ -87,17 +87,17 @@ public class NodeTest {
 
 	@Test
 	public void shouldNotBeEqual() throws Exception {
-		Node root2 = new Node("S");
-		Node np1 = new Node("NP");
-		Node np2 = new Node("NP");
-		Node vp = new Node("VP");
-		Node n1 = new Node("N");
-		Node n2 = new Node("N");
-		Node v = new Node("V");
+		Node<String> root2 = new Node<String>("S");
+		Node<String> np1 = new Node<String>("NP");
+		Node<String> np2 = new Node<String>("NP");
+		Node<String> vp = new Node<String>("VP");
+		Node<String> n1 = new Node<String>("N");
+		Node<String> n2 = new Node<String>("N");
+		Node<String> v = new Node<String>("V");
 
-		n1.addChild(new Node("Mary"));
-		v.addChild(new Node("loves"));
-		n2.addChild(new Node("John"));
+		n1.addChild(new Node<String>("Mary"));
+		v.addChild(new Node<String>("loves"));
+		n2.addChild(new Node<String>("John"));
 
 		np1.addChild(n1);
 		vp.addChild(v);

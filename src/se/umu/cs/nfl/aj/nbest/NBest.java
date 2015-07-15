@@ -48,7 +48,7 @@ public class NBest {
 			printUsageError();
 		}
 
-		return args[1];
+		return args[0];
 	}
 	
 	private static int getN(String[] args) {
@@ -56,7 +56,7 @@ public class NBest {
 		int N = 0;
 		
 		try {
-			N = Integer.parseInt(args[2]);
+			N = Integer.parseInt(args[1]);
 		} catch (NumberFormatException e) {
 			printUsageError();
 		}
@@ -107,11 +107,26 @@ public class NBest {
 		// i <- 0
 		int counter = 0;
 		
+		System.out.println("After initialization: ");
+		System.out.println("T:");
+		
+		for (Node<Symbol> n : exploredTrees) {
+			System.out.println(n);
+		}
+		
+		System.out.println("K:");
+		
+		for (Node<Symbol> n : treeQueue) {
+			System.out.println(n);
+		}
+		
 		// while i < N and K nonempty do
 		while (counter < N && !treeQueue.isEmpty()) {
 			
 			// t <- dequeue(K)
 			Node<Symbol> currentTree = treeQueue.poll();
+			
+			System.out.println("Dequeue " + currentTree);
 			
 			// Get optimal state for current tree
 //			State optimalState = getOptimalState(wta, currentTree, 
@@ -119,8 +134,24 @@ public class NBest {
 //			optimalStates.put(currentTree, optimalState);
 			State optimalState = optimalStates.get(currentTree);
 			
+			System.out.println("Optimal state is " + optimalState);
+			
 			// T <- T u {t}
 			exploredTrees.add(currentTree);
+			
+			System.out.println("Before checking/expansion");
+			
+			System.out.println("T:");
+			
+			for (Node<Symbol> n : exploredTrees) {
+				System.out.println(n);
+			}
+			
+			System.out.println("K:");
+			
+			for (Node<Symbol> n : treeQueue) {
+				System.out.println(n);
+			}
 			
 			// if M(t) = delta(t) then TODO
 			// is this the same thing as smallestcompletion(optimalstate) = 0 
@@ -129,6 +160,7 @@ public class NBest {
 				
 				// output(t)
 				nBest.add(currentTree.toString());
+				System.out.println("Adds " + currentTree + " to output");
 				
 				// i <- i + 1
 				counter++;
@@ -164,7 +196,7 @@ public class NBest {
 		
 		ArrayList<State> states = wta.getStates();
 		
-		int counter = 0;
+//		int counter = 0;
 		
 		/*
 		 * Build a modified WTA for each state in the original WTA
@@ -173,7 +205,7 @@ public class NBest {
 		 * current state as the connector.
 		 */
 		for (State state : states) {
-			System.out.println("CURRENT STATE: " + state);
+//			System.out.println("CURRENT STATE: " + state);
 			WTA modifiedWTA = null;
 			
 			try {
@@ -198,7 +230,7 @@ public class NBest {
 
 			while (defined.size() < nOfModifiedStates) {
 				
-				System.out.println("PRINTTEST");
+//				System.out.println("PRINTTEST");
 				
 				for (Rule r : modifiedRules) {
 					ArrayList<State> leftHandStates = r.getStates();
@@ -217,21 +249,21 @@ public class NBest {
 					}
 					
 					newWeight = newWeight.add(r.getWeight());
-					System.out.println("Rule: " + r);
-					System.out.println("new weight=" + newWeight);
-					System.out.println("allDefined=" + allDefined);
+//					System.out.println("Rule: " + r);
+//					System.out.println("new weight=" + newWeight);
+//					System.out.println("allDefined=" + allDefined);
 					
 					if (allDefined) {
 						Weight oldWeight = weights.get(resultingState);
-						System.out.println("Oldweight=" + oldWeight);
+//						System.out.println("Oldweight=" + oldWeight);
 						
 						if (newWeight.compareTo(oldWeight) == 1) {
 							newWeight = oldWeight;
 						}
 						
 						weights.put(resultingState, newWeight);
-						System.out.println("PUT");
-						System.out.println(resultingState + " " + newWeight);
+//						System.out.println("PUT");
+//						System.out.println(resultingState + " " + newWeight);
 					}
 				}
 				
@@ -252,10 +284,10 @@ public class NBest {
 				defined.put(smallestState, smallestState);
 				modifiedStates.remove(smallestState);
 				
-				System.out.println("Smallest weight: " + smallestWeight);
-				System.out.println("Smallest state: " + smallestState);
-				System.out.println("Size defined: " + defined.size());
-				System.out.println("Size modstates: " + modifiedStates.size());
+//				System.out.println("Smallest weight: " + smallestWeight);
+//				System.out.println("Smallest state: " + smallestState);
+//				System.out.println("Size defined: " + defined.size());
+//				System.out.println("Size modstates: " + modifiedStates.size());
 				
 				// Add corresponding state to defined and 
 				// remove it from modifiedStates
@@ -278,11 +310,11 @@ public class NBest {
 				}
 			}
 
-			System.out.println("SMALLESTCOMPLETIONWEIGHT FOR CURRENTSTATE: " + 
-					smallestCompletionWeight);
+//			System.out.println("SMALLESTCOMPLETIONWEIGHT FOR CURRENTSTATE: " + 
+//					smallestCompletionWeight);
 			smallestCompletionWeights.put(state, smallestCompletionWeight);
-			counter++;
-			System.out.println(counter);
+//			counter++;
+//			System.out.println(counter);
 		}
 
 		return smallestCompletionWeights;
@@ -378,7 +410,7 @@ public class NBest {
 		
 		for (Rule r : rules) {
 			
-			System.out.println("Rule: " + r);
+//			System.out.println("Rule: " + r);
 			
 			ArrayList<State> states = r.getStates();
 			int nOfStates = states.size();
@@ -407,23 +439,23 @@ public class NBest {
 			
 			weightSum = weightSum.add(r.getWeight());
 			
-			System.out.println("Current weight=" + r.getWeight());
-			System.out.println("Weightsum=" + weightSum);
+//			System.out.println("Current weight=" + r.getWeight());
+//			System.out.println("Weightsum=" + weightSum);
 			
 			if (canUseRule) {
-				System.out.println("In canUseRule-if");
+//				System.out.println("In canUseRule-if");
 				
 				Weight currentWeight = treeStateValTable.get(tree, 
 						r.getResultingState());
 				
-				System.out.println("Current weight: " + currentWeight);
+//				System.out.println("Current weight: " + currentWeight);
 				
 				// Find smallest weight for each state
 				if (currentWeight == null || 
 						(currentWeight.compareTo(weightSum) == 1)) {
 					treeStateValTable.put(tree, r.getResultingState(), 
 							weightSum);
-					System.out.println("Putting " + tree + ", " + r.getResultingState() + ", " + weightSum);
+//					System.out.println("Putting " + tree + ", " + r.getResultingState() + ", " + weightSum);
 				}
 				
 				// M((c_q)[t]) TODO use deltaWeight-function instead
@@ -434,8 +466,8 @@ public class NBest {
 				if (totalWeight.compareTo(minWeight) < 1) {
 					optimalState = r.getResultingState();
 					minWeight = totalWeight;
-					System.out.println("New optimal state: " + optimalState);
-					System.out.println("New min weight: " + minWeight);
+//					System.out.println("New optimal state: " + optimalState);
+//					System.out.println("New min weight: " + minWeight);
 				}
 			}
 		}
@@ -492,16 +524,26 @@ public class NBest {
 		ArrayList<Node<Symbol>> expansion = new ArrayList<Node<Symbol>>();
 		ArrayList<Rule> rules = wta.getRules();
 		
-		boolean usesT = false;
+		System.out.println("ENTERING EXPANSION");
 		
 		for (Rule r : rules) {
 			ArrayList<State> states = r.getStates();
 			HashMap<State, ArrayList<Node<Symbol>>> producableTrees = 
 					new HashMap<>();
 					
+			System.out.println("Current rule: " + r);
+					
 			boolean canUseAllStates = true;
+			boolean usesT = false;
 			
 			for (State s : states) {
+				
+				System.out.println("Current state:" + s);
+				
+//				System.out.println("Explored trees are: ");
+//				for (Node<Symbol> n : exploredTrees) {
+//					System.out.println(n);
+//				}
 				
 				for (Node<Symbol> n : exploredTrees) {
 					
@@ -512,22 +554,32 @@ public class NBest {
 									new ArrayList<Node<Symbol>>());
 						}
 						
-						producableTrees.get(s).add(n);
-					
-						if (n.equals(tree)) {
-							usesT = true;
+						ArrayList<Node<Symbol>> treesForState = 
+								producableTrees.get(s);
+						
+						if (!treesForState.contains(n)) {
+							treesForState.add(n);
+						
+							if (n.equals(tree)) {
+								usesT = true;
+							}
 						}
+					
+						
 					}
 				}
 				
 				if (!producableTrees.containsKey(s)) {
 					canUseAllStates = false;
-					break;
+					break; // TODO while instead?
 				}
 			}
 			
+			System.out.println("canUseAllStates=" + canUseAllStates);
+			System.out.println("usesT=" + usesT);
+			
 			if (canUseAllStates && usesT) {
-
+				
 				int nOfStates = states.size();
 
 				int[] indices = new int[nOfStates];
@@ -542,6 +594,8 @@ public class NBest {
 					maxIndices[i] = nOfTreesForState - 1;
 					combinations *= nOfTreesForState;
 				}
+				
+				System.out.println("combinations=" + combinations);
 
 				for (int i = 0; i < combinations; i++ ) {
 					
@@ -560,14 +614,17 @@ public class NBest {
 						}
 					}
 					
-					if (hasT) {
+					if (hasT && !expansion.contains(expTree)) {
 						expansion.add(expTree);
+						System.out.println("Adds " + expTree + " to expansion");
 					}
 
 					boolean increased = false;
 					int index = 0;
 
 					while (!increased && index < nOfStates) {
+						
+						System.out.println("stuck?");
 
 						if (indices[index] == maxIndices[index]) {
 							indices[index] = 0;
@@ -575,11 +632,17 @@ public class NBest {
 							indices[index]++;
 							increased = true;
 						}
+						
+						index++;
 					}
 				}
-
 			}
-			
+		}
+		
+		System.out.println("RETURNING EXPANSION");
+		
+		for (Node<Symbol> t : expansion) {
+			System.out.println(t);
 		}
 		
 		return expansion;

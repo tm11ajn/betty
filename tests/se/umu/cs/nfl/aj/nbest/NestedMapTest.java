@@ -10,10 +10,10 @@ import se.umu.cs.nfl.aj.wta.State;
 
 public class NestedMapTest {
 
-	NestedMap<Node, State, Double> map = new NestedMap<>();
+	NestedMap<Node<String>, State, Double> map = new NestedMap<>();
 
-	Node tree = new Node("root");
-	Node child3 = new Node("child3");
+	Node<String> tree = new Node<String>("root");
+	Node<String> child3 = new Node<String>("child3");
 
 	State s0 = new State("s0");
 	State s1 = new State("s1");
@@ -26,12 +26,12 @@ public class NestedMapTest {
 	public void setUp() throws Exception {
 		initialTreeHash = tree.hashCode();
 
-		tree.addChild(new Node("child0"));
-		tree.addChild(new Node("child1"));
-		tree.addChild(new Node("child2"));
+		tree.addChild(new Node<String>("child0"));
+		tree.addChild(new Node<String>("child1"));
+		tree.addChild(new Node<String>("child2"));
 
-		child3.addChild(new Node("grandchild30"));
-		child3.addChild(new Node("grandchild31"));
+		child3.addChild(new Node<String>("grandchild30"));
+		child3.addChild(new Node<String>("grandchild31"));
 
 		tree.addChild(child3);
 	}
@@ -68,9 +68,9 @@ public class NestedMapTest {
 	}
 
 	@Test
-	public void shouldHaveSameHashDespiteNewNode() {
+	public void shouldNotHaveSameHashWithAddedNode() {
 		tree.addChild(child3);
-		assertEquals(initialTreeHash, tree.hashCode());
+		assertNotEquals(initialTreeHash, tree.hashCode());
 	}
 	
 }
