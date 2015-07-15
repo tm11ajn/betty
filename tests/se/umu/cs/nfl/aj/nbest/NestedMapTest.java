@@ -57,6 +57,7 @@ public class NestedMapTest {
 	public void shouldHaveCorrectValueDespiteNewChildren() {
 		map.put(tree, s0, 0.1);
 		tree.addChild(child3);
+		map.put(tree, s0, 0.1);
 		assertEquals(0.1, map.get(tree, s0).doubleValue(), 1e5);
 	}
 
@@ -70,7 +71,7 @@ public class NestedMapTest {
 	@Test
 	public void shouldNotHaveSameHashWithAddedNode() {
 		tree.addChild(child3);
-		assertNotEquals(initialTreeHash, tree.hashCode());
+		assertNotSame(initialTreeHash, tree.hashCode());
 	}
 	
 }
