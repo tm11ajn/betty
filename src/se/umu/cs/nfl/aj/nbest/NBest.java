@@ -107,18 +107,18 @@ public class NBest {
 		// i <- 0
 		int counter = 0;
 		
-		System.out.println("After initialization: ");
-		System.out.println("T:");
-		
-		for (Node<Symbol> n : exploredTrees) {
-			System.out.println(n);
-		}
-		
-		System.out.println("K:");
-		
-		for (Node<Symbol> n : treeQueue) {
-			System.out.println(n);
-		}
+//		System.out.println("After initialization: ");
+//		System.out.println("T:");
+//		
+//		for (Node<Symbol> n : exploredTrees) {
+//			System.out.println(n);
+//		}
+//		
+//		System.out.println("K:");
+//		
+//		for (Node<Symbol> n : treeQueue) {
+//			System.out.println(n);
+//		}
 		
 		// while i < N and K nonempty do
 		while (counter < N && !treeQueue.isEmpty()) {
@@ -126,7 +126,7 @@ public class NBest {
 			// t <- dequeue(K)
 			Node<Symbol> currentTree = treeQueue.poll();
 			
-			System.out.println("Dequeue " + currentTree);
+//			System.out.println("Dequeue " + currentTree);
 			
 			// Get optimal state for current tree
 //			State optimalState = getOptimalState(wta, currentTree, 
@@ -134,24 +134,24 @@ public class NBest {
 //			optimalStates.put(currentTree, optimalState);
 			State optimalState = optimalStates.get(currentTree);
 			
-			System.out.println("Optimal state is " + optimalState);
+//			System.out.println("Optimal state is " + optimalState);
 			
 			// T <- T u {t}
 			exploredTrees.add(currentTree);
 			
-			System.out.println("Before checking/expansion");
-			
-			System.out.println("T:");
-			
-			for (Node<Symbol> n : exploredTrees) {
-				System.out.println(n);
-			}
-			
-			System.out.println("K:");
-			
-			for (Node<Symbol> n : treeQueue) {
-				System.out.println(n);
-			}
+//			System.out.println("Before checking/expansion");
+//			
+//			System.out.println("T:");
+//			
+//			for (Node<Symbol> n : exploredTrees) {
+//				System.out.println(n);
+//			}
+//			
+//			System.out.println("K:");
+//			
+//			for (Node<Symbol> n : treeQueue) {
+//				System.out.println(n);
+//			}
 			
 			// if M(t) = delta(t) then TODO
 			// is this the same thing as smallestcompletion(optimalstate) = 0 
@@ -160,7 +160,7 @@ public class NBest {
 				
 				// output(t)
 				nBest.add(currentTree.toString());
-				System.out.println("Adds " + currentTree + " to output");
+//				System.out.println("Adds " + currentTree + " to output");
 				
 				// i <- i + 1
 				counter++;
@@ -524,21 +524,21 @@ public class NBest {
 		ArrayList<Node<Symbol>> expansion = new ArrayList<Node<Symbol>>();
 		ArrayList<Rule> rules = wta.getRules();
 		
-		System.out.println("ENTERING EXPANSION");
+//		System.out.println("ENTERING EXPANSION");
 		
 		for (Rule r : rules) {
 			ArrayList<State> states = r.getStates();
 			HashMap<State, ArrayList<Node<Symbol>>> producableTrees = 
 					new HashMap<>();
 					
-			System.out.println("Current rule: " + r);
+//			System.out.println("Current rule: " + r);
 					
 			boolean canUseAllStates = true;
 			boolean usesT = false;
 			
 			for (State s : states) {
 				
-				System.out.println("Current state:" + s);
+//				System.out.println("Current state:" + s);
 				
 //				System.out.println("Explored trees are: ");
 //				for (Node<Symbol> n : exploredTrees) {
@@ -575,8 +575,8 @@ public class NBest {
 				}
 			}
 			
-			System.out.println("canUseAllStates=" + canUseAllStates);
-			System.out.println("usesT=" + usesT);
+//			System.out.println("canUseAllStates=" + canUseAllStates);
+//			System.out.println("usesT=" + usesT);
 			
 			if (canUseAllStates && usesT) {
 				
@@ -595,7 +595,7 @@ public class NBest {
 					combinations *= nOfTreesForState;
 				}
 				
-				System.out.println("combinations=" + combinations);
+//				System.out.println("combinations=" + combinations);
 
 				for (int i = 0; i < combinations; i++ ) {
 					
@@ -616,7 +616,7 @@ public class NBest {
 					
 					if (hasT && !expansion.contains(expTree)) {
 						expansion.add(expTree);
-						System.out.println("Adds " + expTree + " to expansion");
+//						System.out.println("Adds " + expTree + " to expansion");
 					}
 
 					boolean increased = false;
@@ -624,7 +624,7 @@ public class NBest {
 
 					while (!increased && index < nOfStates) {
 						
-						System.out.println("stuck?");
+//						System.out.println("stuck?");
 
 						if (indices[index] == maxIndices[index]) {
 							indices[index] = 0;
@@ -639,11 +639,11 @@ public class NBest {
 			}
 		}
 		
-		System.out.println("RETURNING EXPANSION");
+//		System.out.println("RETURNING EXPANSION");
 		
-		for (Node<Symbol> t : expansion) {
-			System.out.println(t);
-		}
+//		for (Node<Symbol> t : expansion) {
+//			System.out.println(t);
+//		}
 		
 		return expansion;
 	}
