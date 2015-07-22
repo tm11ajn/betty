@@ -34,7 +34,9 @@ public class WTATest {
 	}
 
 	@Test
-	public void shouldGetRulesByState() throws SymbolUsageException {
+	public void shouldGetRulesByState() 
+			throws SymbolUsageException, DuplicateRuleException {
+		
 		State resState = wta.addState("q0");
 		Symbol symbol = wta.addSymbol("a", 0);
 		wta.addRule(new Rule(symbol, resState));
@@ -43,7 +45,9 @@ public class WTATest {
 	}
 
 	@Test
-	public void shouldGetRulesBySymbol() throws SymbolUsageException {
+	public void shouldGetRulesBySymbol() 
+			throws SymbolUsageException, DuplicateRuleException {
+		
 		State resState = wta.addState("qf");
 		Symbol symbol = wta.addSymbol("f", 2);
 		wta.addRule(new Rule(symbol, resState));
@@ -52,14 +56,18 @@ public class WTATest {
 	}
 
 	@Test
-	public void shouldHaveTwoRulesByResultingState() {
+	public void shouldHaveTwoRulesByResultingState() 
+			throws DuplicateRuleException {
+		
 		wta.addRule(new Rule(new Symbol("f", 2), new State("q0")));
 		wta.addRule(new Rule(new Symbol("g", 2), new State("q0")));
 		assertEquals(2, wta.getRulesByResultingState(new State("q0")).size());
 	}
 
 	@Test
-	public void shouldHaveTwoRulesBySymbol() throws SymbolUsageException {
+	public void shouldHaveTwoRulesBySymbol() 
+			throws SymbolUsageException, DuplicateRuleException {
+		
 		wta.addSymbol("f", 2);
 		wta.addRule(new Rule(new Symbol("f", 2), new State("q0")));
 		wta.addRule(new Rule(new Symbol("f", 2), new State("q1")));

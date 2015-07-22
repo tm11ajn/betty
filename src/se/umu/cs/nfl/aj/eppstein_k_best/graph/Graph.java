@@ -3,13 +3,13 @@ package se.umu.cs.nfl.aj.eppstein_k_best.graph;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
-public class Graph {
+public class Graph<T> {
 	
-	private ArrayList<Vertex> vertices;
-	private PriorityQueue<ST_Node> pathsHeap;
+	private ArrayList<Vertex<T>> vertices;
+	private PriorityQueue<ST_Node<T>> pathsHeap;
 	private boolean ready;
-	private Vertex sourceVertex;
-	private Vertex endVertex;
+	private Vertex<T> sourceVertex;
+	private Vertex<T> endVertex;
 	
 	public Graph() {
 		this.vertices = new ArrayList<>();
@@ -33,16 +33,50 @@ public class Graph {
 			}
 			
 			if (this.getVertex(label) == null) {
-				this.vertices.add(new Vertex(label));
+				this.vertices.add(new Vertex<T>(label));
 			}
 		}
 		
 		return true;
 	}
 	
+	public boolean createEdgeWithLabel(String tail, String head, T label, int weight, String group) {
+		
+		Vertex<T> tailsVertex = getVertex(tail.toUpperCase());
+		Vertex<T> headsVertex = getVertex(head.toUpperCase());
+		
+		Edge<T> e = new Edge<T>(tailsVertex, headsVertex, label, weight, group.toUpperCase());
+		tailsVertex.getRelatedEdges().add(e);
+
+		if (!tailsVertex.equals(headsVertex)) {
+			headsVertex.getRelatedEdges().add(e);
+		}
+		
+		this.ready = false;
+		
+		return true;
+	}
+	
+	public boolean createEdge(String tail, String head, int weight, String group) {
+		
+		Vertex<T> tailsVertex = getVertex(tail.toUpperCase());
+		Vertex<T> headsVertex = getVertex(head.toUpperCase());
+		
+		Edge<T> e = new Edge<T>(tailsVertex, headsVertex, weight, group.toUpperCase());
+		tailsVertex.getRelatedEdges().add(e);
+
+		if (!tailsVertex.equals(headsVertex)) {
+			headsVertex.getRelatedEdges().add(e);
+		}
+		
+		this.ready = false;
+		
+		return true;
+	}
+	
 	public boolean createEdges(String tails, String heads, int weight, String group) {
-		ArrayList<Vertex> tailsList = this.parseVertices(tails.toUpperCase());
-		ArrayList<Vertex> headsList = this.parseVertices(heads.toUpperCase());
+		ArrayList<Vertex<T>> tailsList = this.parseVertices(tails.toUpperCase());
+		ArrayList<Vertex<T>> headsList = this.parseVertices(heads.toUpperCase());
 		String groupUpper = group.toUpperCase();
 		
 		if (tailsList == null || headsList == null) {
@@ -56,10 +90,10 @@ public class Graph {
 		int tailsListSize = tailsList.size();
 		
 		for (int i = 0; i < tailsListSize; i++) {
-			Vertex tailsVertex = tailsList.get(i);
-			Vertex headsVertex = headsList.get(i);
+			Vertex<T> tailsVertex = tailsList.get(i);
+			Vertex<T> headsVertex = headsList.get(i);
 			
-			Edge e = new Edge(tailsVertex, headsVertex, weight, groupUpper);
+			Edge<T> e = new Edge<T>(tailsVertex, headsVertex, weight, groupUpper);
 			tailsVertex.getRelatedEdges().add(e);
 			
 			if (!tailsVertex.equals(headsVertex)) {
@@ -75,9 +109,9 @@ public class Graph {
 	public void edgeGroupWeights(String group, int weight) {
 		String groupUpper = group.toUpperCase();
 		
-		for (Vertex v : this.vertices) {
+		for (Vertex<T> v : this.vertices) {
 			
-			for (Edge e : v.getRelatedEdges()) {
+			for (Edge<T> e : v.getRelatedEdges()) {
 				
 				if (e.getGroup().equals(groupUpper)) {
 					e.setWeight(weight);
@@ -88,14 +122,14 @@ public class Graph {
 		this.ready = false;
 	}
 	
-	public Path findShortestPath(String s, String t) {
+	public Path<T> findShortestPath(String s, String t) {
 		this.ready = false;
 		
 		this.sourceVertex = this.getVertex(s.toUpperCase());
 		this.endVertex = this.getVertex(t.toUpperCase());
 		
 		if (sourceVertex == null || endVertex == null) {
-			return new Path(); // Invalid path
+			return new Path<T>(); // Invalid path
 		}
 		
 		buildShortestPathTree();
@@ -105,32 +139,32 @@ public class Graph {
 		return findNextShortestPath();
 	}
 	
-	public Path findNextShortestPath() {
+	public Path<T> findNextShortestPath() {
 		
 		if (!this.ready) {
-			return new Path(); // Invalid path
+			return new Path<T>(); // Invalid path
 		}
 		
-		ST_Node node = this.pathsHeap.poll();
+		ST_Node<T> node = this.pathsHeap.poll();
 		
 		if (node == null) {
-			return new Path(); // Invalid path
+			return new Path<T>(); // Invalid path
 		}
 		
 		return rebuildPath(node.getSidetracks());
 	}
 	
-	private ArrayList<Vertex> parseVertices(String labels) {
+	private ArrayList<Vertex<T>> parseVertices(String labels) {
 		String[] vertexList = labels.toUpperCase().split(",");
 		
 		if (vertexList.length == 0) {
 			return null;
 		}
 		
-		ArrayList<Vertex> result = new ArrayList<>();
+		ArrayList<Vertex<T>> result = new ArrayList<>();
 		
 		for (String label : vertexList) {
-			Vertex v = this.getVertex(label);
+			Vertex<T> v = this.getVertex(label);
 			
 			if (v == null) {
 				return null;
@@ -143,13 +177,13 @@ public class Graph {
 		return result;
 	}
 	
-	private Vertex getVertex(String label) {
+	private Vertex<T> getVertex(String label) {
 		
 		if (label == null || label == "") {
 			return null;
 		}
 		
-		for (Vertex v : this.vertices) {
+		for (Vertex<T> v : this.vertices) {
 			
 			if (v.equals(label)) {
 				return v;
@@ -161,7 +195,7 @@ public class Graph {
 	
 	private void resetGraphState() {
 		
-		for (Vertex v : this.vertices) {
+		for (Vertex<T> v : this.vertices) {
 			v.setEdgeToPath(null);
 			v.setDistance(Integer.MIN_VALUE);
 		}
@@ -170,31 +204,31 @@ public class Graph {
 	private void buildShortestPathTree() {
 		resetGraphState();
 		
-		Vertex v = this.endVertex;
+		Vertex<T> v = this.endVertex;
 		v.setDistance(0);
 		
-		PriorityQueue<SP_Node> fringe = new PriorityQueue<>(this.vertices.size());
+		PriorityQueue<SP_Node<T>> fringe = new PriorityQueue<>(this.vertices.size());
 		
 		do {
 			
 			if (v != null) {
 				
-				for (Edge e : v.getRelatedEdges()) {
+				for (Edge<T> e : v.getRelatedEdges()) {
 					
 					if (e.getHead().equals(v) && e.getWeight() >= 0) {
-						fringe.add(new SP_Node(e, 
+						fringe.add(new SP_Node<T>(e, 
 								e.getWeight() + e.getHead().getDistance()));
 					}
 				}
 			}
 			
-			SP_Node node = fringe.poll();
+			SP_Node<T> node = fringe.poll();
 			
 			if (node == null) {
 				break;
 			}
 			
-			Edge e = node.getEdge();
+			Edge<T> e = node.getEdge();
 			v = e.getTail();
 			
 			if (v.getDistance() == Integer.MIN_VALUE) {
@@ -210,22 +244,22 @@ public class Graph {
 	
 	private void buildSidetracksHeap() {
 		this.pathsHeap = new PriorityQueue<>(this.vertices.size());
-		Path empty = new Path();
-		this.pathsHeap.add(new ST_Node(empty));
+		Path<T> empty = new Path<>();
+		this.pathsHeap.add(new ST_Node<T>(empty));
 		addSidetracks(empty, this.sourceVertex);
 	}
 	
-	private void addSidetracks(Path path, Vertex vertex) {
+	private void addSidetracks(Path<T> path, Vertex<T> vertex) {
 		
-		for (Edge e : vertex.getRelatedEdges()) {
+		for (Edge<T> e : vertex.getRelatedEdges()) {
 			
 			if (e.isSidetrackOf(vertex) && 
 					(e.getHead().getEdgeToPath() != null || e.getHead().equals(this.endVertex))) {
 				
-				Path p = new Path();
+				Path<T> p = new Path<>();
 				p.addAll(path);
 				p.add(e);
-				this.pathsHeap.add(new ST_Node(p));
+				this.pathsHeap.add(new ST_Node<T>(p));
 				
 				if (!e.getHead().equals(vertex)) {
 					addSidetracks(p, e.getHead());
@@ -238,9 +272,9 @@ public class Graph {
 		}
 	}
 	
-	private Path rebuildPath(Path sidetracks) {
-		Path path = new Path();
-		Vertex v = this.sourceVertex;
+	private Path<T> rebuildPath(Path<T> sidetracks) {
+		Path<T> path = new Path<>();
+		Vertex<T> v = this.sourceVertex;
 		int i = 0;
 		
 		while (v != null) {

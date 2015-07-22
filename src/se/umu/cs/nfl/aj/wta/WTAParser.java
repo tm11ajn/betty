@@ -50,13 +50,17 @@ public class WTAParser {
 		} catch (SymbolUsageException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
+		} catch (DuplicateRuleException e) {
+			System.err.println(e.getMessage());
+			System.exit(-1);
 		}
 
 		return wta;
 	}
 
 	public void parseLine(String line, WTA wta)
-			throws IllegalArgumentException, SymbolUsageException {
+			throws IllegalArgumentException, SymbolUsageException, 
+			DuplicateRuleException {
 
 		if (line.matches(EMPTY_LINE_REGEX)) {
 			// Ignore empty lines.
@@ -83,7 +87,7 @@ public class WTAParser {
 	}
 
 	private void parseLeafRule(String line, WTA wta)
-			throws SymbolUsageException {
+			throws SymbolUsageException, DuplicateRuleException {
 
 		String[] labels = line.trim().split(LEAF_RULE_SPLIT_REGEX);
 		
@@ -106,7 +110,7 @@ public class WTAParser {
 	}
 
 	private void parseNonLeafRule(String line, WTA wta)
-			throws SymbolUsageException {
+			throws SymbolUsageException, DuplicateRuleException {
 
 		String[] labels = line.trim().split(NON_LEAF_RULE_SPLIT_REGEX);
 

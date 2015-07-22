@@ -1,25 +1,38 @@
 package se.umu.cs.nfl.aj.eppstein_k_best.graph;
 
-public class Edge {
+public class Edge<T> {
 	
-	private Vertex tail;
-	private Vertex head;
+	private Vertex<T> tail;
+	private Vertex<T> head;
+	private T label;
 	private int weight;
 	private String group;
 	
-	public Edge(Vertex tail, Vertex head, int weight, String group) {
+	public Edge(Vertex<T> tail, Vertex<T> head, T label, int weight, String group) {
+		this.tail = tail;
+		this.head = head;
+		this.label = label;
+		this.weight = weight;
+		this.group = group;
+	}
+	
+	public Edge(Vertex<T> tail, Vertex<T> head, int weight, String group) {
 		this.tail = tail;
 		this.head = head;
 		this.weight = weight;
 		this.group = group;
 	}
 	
-	public Vertex getTail() {
+	public Vertex<T> getTail() {
 		return this.tail;
 	}
 
-	public Vertex getHead() {
+	public Vertex<T> getHead() {
 		return this.head;
+	}
+	
+	public T getLabel() {
+		return label;
 	}
 	
 	public int getWeight() {
@@ -38,7 +51,7 @@ public class Edge {
 		return this.weight + this.head.getDistance() - this.tail.getDistance();
 	}
 	
-	public boolean isSidetrackOf(Vertex v) {
+	public boolean isSidetrackOf(Vertex<T> v) {
 		return (this.tail == v && this != v.getEdgeToPath() && this.weight >= 0); 
 	}
 	

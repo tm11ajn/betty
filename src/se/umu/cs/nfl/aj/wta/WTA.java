@@ -19,7 +19,7 @@ public class WTA {
 
 	}
 
-	public boolean addRule(Rule rule) {
+	public boolean addRule(Rule rule) throws DuplicateRuleException {
 		return transitionFunction.addRule(rule);
 	}
 

@@ -1,16 +1,16 @@
 package se.umu.cs.nfl.aj.eppstein_k_best.graph;
 
-public class SP_Node implements Comparable<SP_Node> {
+public class SP_Node<T> implements Comparable<SP_Node<T>> {
 
-	private Edge edge;
+	private Edge<T> edge;
 	private int weight;
 	
-	public SP_Node(Edge edge, int weight) {
+	public SP_Node(Edge<T> edge, int weight) {
 		this.edge = edge;
 		this.weight = weight;
 	}
 	
-	public Edge getEdge() {
+	public Edge<T> getEdge() {
 		return this.edge;
 	}
 	
@@ -19,7 +19,7 @@ public class SP_Node implements Comparable<SP_Node> {
 	}
 	
 	@Override
-	public int compareTo(SP_Node o) {
+	public int compareTo(SP_Node<T> o) {
 		
 		if (this.weight == o.weight) {
 			return 0;

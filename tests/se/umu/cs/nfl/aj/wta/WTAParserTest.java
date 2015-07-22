@@ -25,10 +25,12 @@ public class WTAParserTest {
 	 * Tests that states are properly set to final when parsing a final rule.
 	 * @throws SymbolUsageException
 	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException 
 	 */
 	@Test
 	public void shouldParseFinalLine()
-			throws IllegalArgumentException, SymbolUsageException {
+			throws IllegalArgumentException, SymbolUsageException, 
+			DuplicateRuleException {
 		wtaParser.parseLine(finalLine, wta);
 		wtaParser.parseLine(leafRuleLine, wta);
 		wtaParser.parseLine(finalLine, wta);
@@ -42,10 +44,12 @@ public class WTAParserTest {
 	 * Tests that a leaf rule is parsed properly.
 	 * @throws SymbolUsageException
 	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException 
 	 */
 	@Test
 	public void shouldParseLeafRuleLine()
-			throws IllegalArgumentException, SymbolUsageException {
+			throws IllegalArgumentException, SymbolUsageException, 
+			DuplicateRuleException {
 		wtaParser.parseLine(leafRuleLine, wta);
 		assertEquals("q0", wta.getRulesBySymbol(aSymb).
 				get(0).getResultingState().getLabel());
@@ -55,10 +59,12 @@ public class WTAParserTest {
 	 * Tests that a leaf rule is added properly to an empty wta.
 	 * @throws SymbolUsageException
 	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException 
 	 */
 	@Test
 	public void shouldParseLeafRuleLineLength()
-			throws IllegalArgumentException, SymbolUsageException {
+			throws IllegalArgumentException, SymbolUsageException, 
+			DuplicateRuleException {
 		wtaParser.parseLine(leafRuleLine, wta);
 		assertEquals(1, wta.getRulesBySymbol(aSymb).size());
 	}
@@ -67,10 +73,12 @@ public class WTAParserTest {
 	 * Tests that multiple rules are not added.
 	 * @throws SymbolUsageException
 	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException 
 	 */
-	@Test
+	@Test(expected=DuplicateRuleException.class)
 	public void shouldParseLeafRuleLineLengthNoMultiple()
-			throws IllegalArgumentException, SymbolUsageException {
+			throws IllegalArgumentException, SymbolUsageException, 
+			DuplicateRuleException {
 		wtaParser.parseLine(leafRuleLine, wta);
 		wtaParser.parseLine(leafRuleLine, wta);
 		assertEquals(1, wta.getRulesBySymbol(aSymb).size());
@@ -80,10 +88,12 @@ public class WTAParserTest {
 	 * Tests that a leaf rule with weight is parsed properly.
 	 * @throws SymbolUsageException
 	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException 
 	 */
 	@Test
 	public void shouldParseLeafRuleLineWithWeight()
-			throws IllegalArgumentException, SymbolUsageException {
+			throws IllegalArgumentException, SymbolUsageException, 
+			DuplicateRuleException {
 		wtaParser.parseLine(leafRuleLineWithWeight, wta);
 		assertEquals(0, wta.getRulesBySymbol(aSymb).
 				get(0).getWeight().compareTo(new Weight(2)));
@@ -93,10 +103,12 @@ public class WTAParserTest {
 	 * Tests that a leaf rule with weight is added properly to an empty wta.
 	 * @throws SymbolUsageException
 	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException 
 	 */
 	@Test
 	public void shouldParseLeafRuleWithWeightLineLength()
-			throws IllegalArgumentException, SymbolUsageException {
+			throws IllegalArgumentException, SymbolUsageException, 
+			DuplicateRuleException {
 		wtaParser.parseLine(leafRuleLineWithWeight, wta);
 		assertEquals(1, wta.getRulesBySymbol(aSymb).size());
 	}
@@ -105,10 +117,12 @@ public class WTAParserTest {
 	 * Tests that a non-leaf rule is parsed properly.
 	 * @throws SymbolUsageException
 	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException 
 	 */
 	@Test
 	public void shouldParseNonLeafRuleLine()
-			throws IllegalArgumentException, SymbolUsageException {
+			throws IllegalArgumentException, SymbolUsageException, 
+			DuplicateRuleException {
 		wtaParser.parseLine(nonLeafRuleLine, wta);
 		assertEquals("qf", wta.getRulesBySymbol(fSymb).
 				get(0).getResultingState().getLabel());
@@ -118,10 +132,12 @@ public class WTAParserTest {
 	 * Tests that a non-leaf rule with weight is parsed properly.
 	 * @throws SymbolUsageException
 	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException 
 	 */
 	@Test
 	public void shouldParseNonLeafRuleLineWithWeight()
-			throws IllegalArgumentException, SymbolUsageException {
+			throws IllegalArgumentException, SymbolUsageException, 
+			DuplicateRuleException {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
 		assertEquals(0, wta.getRulesBySymbol(fSymb).get(0).
 				getWeight().compareTo(new Weight(0.2)));
@@ -132,10 +148,12 @@ public class WTAParserTest {
 	 * Tests that a non-leaf rule is added properly to an empty wta.
 	 * @throws SymbolUsageException
 	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException 
 	 */
 	@Test
 	public void shouldParseNonLeafRuleLineLength()
-			throws IllegalArgumentException, SymbolUsageException {
+			throws IllegalArgumentException, SymbolUsageException, 
+			DuplicateRuleException {
 		wtaParser.parseLine(nonLeafRuleLine, wta);
 		assertEquals(1, wta.getRulesBySymbol(fSymb).size());
 	}
@@ -144,10 +162,11 @@ public class WTAParserTest {
 	 * Tests that a non-leaf rule with weight is added properly to an empty wta.
 	 * @throws SymbolUsageException
 	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException 
 	 */
 	@Test
 	public void shouldParseNonLeafRuleLineWithWeightLength()
-			throws IllegalArgumentException, SymbolUsageException {
+			throws IllegalArgumentException, SymbolUsageException, DuplicateRuleException {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
 		assertEquals(1, wta.getRulesBySymbol(fSymb).size());
 	}
@@ -160,7 +179,7 @@ public class WTAParserTest {
 	public void shouldAllowForSymbolToBeUsedWithSameRank()
 			throws Exception {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
-		wtaParser.parseLine(nonLeafRuleLine, wta);
+		wtaParser.parseLine("f[q1, q0] -> qf", wta);
 		assertEquals(2, wta.getRulesBySymbol(fSymb).size());
 	}
 

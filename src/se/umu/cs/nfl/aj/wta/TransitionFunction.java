@@ -34,7 +34,7 @@ public class TransitionFunction {
 		return valueList;
 	}
 
-	public boolean addRule(Rule rule) {
+	public boolean addRule(Rule rule) throws DuplicateRuleException {
 		Symbol symbol = rule.getSymbol();
 		State resState = rule.getResultingState();
 
@@ -49,6 +49,12 @@ public class TransitionFunction {
 		if (ruleListState == null) {
 			ruleListState = new ArrayList<Rule>();
 			rulesByResultingState.put(resState, ruleListState);
+		}
+		
+		if (ruleListSym.contains(rule) || ruleListState.contains(rule)) {
+			throw new DuplicateRuleException("The rule " + rule + 
+					" is already defined by " + 
+					ruleListSym.get(ruleListSym.indexOf(rule)));
 		}
 
 		return ruleListSym.add(rule) && ruleListState.add(rule);

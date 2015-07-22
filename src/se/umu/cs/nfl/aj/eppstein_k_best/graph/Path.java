@@ -2,7 +2,7 @@ package se.umu.cs.nfl.aj.eppstein_k_best.graph;
 
 import java.util.ArrayList;
 
-public class Path extends ArrayList<Edge> {
+public class Path<T> extends ArrayList<Edge<T>> {
 
 	/**
 	 * 
@@ -21,7 +21,7 @@ public class Path extends ArrayList<Edge> {
 		
 		String string = "" + this.get(0).getTail();
 		
-		for (Edge e : this) {
+		for (Edge<T> e : this) {
 			string += "" + e.getHead();
 		}
 		
@@ -31,7 +31,7 @@ public class Path extends ArrayList<Edge> {
 	public int getWeight() {
 		int weightSum = 0;
 		
-		for (Edge e : this) {
+		for (Edge<T> e : this) {
 			weightSum += e.getWeight();
 		}
 		
@@ -41,7 +41,7 @@ public class Path extends ArrayList<Edge> {
 	public int getDeltaWeight() {
 		int deltaWeightSum = 0;
 		
-		for (Edge e : this) {
+		for (Edge<T> e : this) {
 			deltaWeightSum += e.getDelta();
 		}
 		

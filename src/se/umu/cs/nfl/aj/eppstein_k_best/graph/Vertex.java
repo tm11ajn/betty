@@ -2,19 +2,19 @@ package se.umu.cs.nfl.aj.eppstein_k_best.graph;
 
 import java.util.ArrayList;
 
-public class Vertex {
+public class Vertex<T> {
 	
 	private String label;
 	
-	private Edge edgeToPath = null;
+	private Edge<T> edgeToPath = null;
 	private int distance = Integer.MIN_VALUE;
-	private ArrayList<Edge> relatedEdges = new ArrayList<>();
+	private ArrayList<Edge<T>> relatedEdges = new ArrayList<>();
 	
 	public Vertex(String label) {
 		this.label = label;
 	}
 	
-	public Vertex next() {
+	public Vertex<T> next() {
 		
 		if (edgeToPath == null) {
 			return null;
@@ -27,11 +27,11 @@ public class Vertex {
 		return this.label;
 	}
 	
-	public Edge getEdgeToPath() {
+	public Edge<T> getEdgeToPath() {
 		return this.edgeToPath;
 	}
 	
-	public void setEdgeToPath(Edge edgeToPath) {
+	public void setEdgeToPath(Edge<T> edgeToPath) {
 		this.edgeToPath = edgeToPath;
 	}
 
@@ -43,7 +43,7 @@ public class Vertex {
 		this.distance = distance;
 	}
 
-	public ArrayList<Edge> getRelatedEdges() {
+	public ArrayList<Edge<T>> getRelatedEdges() {
 		return this.relatedEdges;
 	}
 	
@@ -56,7 +56,7 @@ public class Vertex {
 	public boolean equals(Object obj) {
 		
 		if (obj instanceof Vertex) {
-			return this.label.equals(((Vertex) obj).label);
+			return this.label.equals(((Vertex<?>) obj).label);
 		} else if (obj instanceof String) {
 			return this.label.equals(((String) obj));
 		}

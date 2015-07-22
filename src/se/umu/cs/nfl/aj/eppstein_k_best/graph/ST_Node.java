@@ -1,16 +1,16 @@
 package se.umu.cs.nfl.aj.eppstein_k_best.graph;
 
-public class ST_Node implements Comparable<ST_Node> {
+public class ST_Node<T> implements Comparable<ST_Node<T>> {
 
-	private Path sidetracks;
+	private Path<T> sidetracks;
 	private int weight;
 	
-	public ST_Node(Path sidetracks) {
+	public ST_Node(Path<T> sidetracks) {
 		this.sidetracks = sidetracks;
 		this.weight = sidetracks.getDeltaWeight();
 	}
 	
-	public Path getSidetracks() {
+	public Path<T> getSidetracks() {
 		return this.sidetracks;
 	}
 	
@@ -19,7 +19,7 @@ public class ST_Node implements Comparable<ST_Node> {
 	}
 	
 	@Override
-	public int compareTo(ST_Node o) {
+	public int compareTo(ST_Node<T> o) {
 		
 		if (this.weight == o.weight) {
 			return 0;

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import se.umu.cs.nfl.aj.wta.DuplicateRuleException;
 import se.umu.cs.nfl.aj.wta.Rule;
 import se.umu.cs.nfl.aj.wta.State;
 import se.umu.cs.nfl.aj.wta.Symbol;
@@ -213,6 +214,9 @@ public class NBest {
 			} catch (SymbolUsageException e) {
 				System.err.println("Cannot build modified WTA: " + e.getMessage());
 				System.exit(-1);
+			} catch (DuplicateRuleException e) {
+				System.err.println("Cannot build modified WTA: " + e.getMessage());
+				System.exit(-1);
 			}
 			
 			ArrayList<State> modifiedStates = modifiedWTA.getStates();
@@ -324,7 +328,7 @@ public class NBest {
 	 * each of them. Is there no better way to do it? TODO
 	 */
 	public static WTA buildModifiedWTA(WTA wta, State state) 
-			throws SymbolUsageException {
+			throws SymbolUsageException, DuplicateRuleException {
 
 		WTA modWTA = new WTA();
 		
@@ -520,15 +524,21 @@ public class NBest {
 		return delta;
 	}
 	
-	public static ArrayList<Node<Symbol>> expandWith(WTA wta, Node<Symbol> tree) { // TODO
+	public static ArrayList<Node<Symbol>> expandWith(WTA wta, Node<Symbol> tree) {
 		ArrayList<Node<Symbol>> expansion = new ArrayList<Node<Symbol>>();
 		ArrayList<Rule> rules = wta.getRules();
+		
+//		System.out.println("EXPLORED TREES:");
+//		
+//		for (Node<Symbol> t : exploredTrees) {
+//			System.out.println(t);
+//		}
 		
 //		System.out.println("ENTERING EXPANSION");
 		
 		for (Rule r : rules) {
 			ArrayList<State> states = r.getStates();
-			HashMap<State, ArrayList<Node<Symbol>>> producableTrees = 
+			HashMap<State, ArrayList<Node<Symbol>>> producibleTrees = 
 					new HashMap<>();
 					
 //			System.out.println("Current rule: " + r);
@@ -547,33 +557,45 @@ public class NBest {
 				
 				for (Node<Symbol> n : exploredTrees) {
 					
+					//System.out.println("Current explored tree: " + n);
+					
 					if (treeStateValTable.get(n, s) != null) {
 						
-						if (!producableTrees.containsKey(s)) {
-							producableTrees.put(s, 
+						if (!producibleTrees.containsKey(s)) {
+							producibleTrees.put(s, 
 									new ArrayList<Node<Symbol>>());
 						}
 						
 						ArrayList<Node<Symbol>> treesForState = 
-								producableTrees.get(s);
+								producibleTrees.get(s);
 						
 						if (!treesForState.contains(n)) {
 							treesForState.add(n);
+//							System.out.println("Sets " + s + ":" + n);
 						
 							if (n.equals(tree)) {
 								usesT = true;
 							}
 						}
-					
-						
 					}
 				}
 				
-				if (!producableTrees.containsKey(s)) {
+				if (!producibleTrees.containsKey(s)) {
 					canUseAllStates = false;
 					break; // TODO while instead?
 				}
 			}
+			
+			
+//			System.out.println("PRODUCIBLE TREES:");
+//			
+//			for (Entry<State, ArrayList<Node<Symbol>>> e : producibleTrees.entrySet()) {
+//				System.out.println(e.getKey());
+//				
+//				for (Node<Symbol> v : e.getValue()) {
+//					System.out.println(v);
+//				}
+//			}
 			
 //			System.out.println("canUseAllStates=" + canUseAllStates);
 //			System.out.println("usesT=" + usesT);
@@ -589,7 +611,7 @@ public class NBest {
 
 				for (int i = 0; i < nOfStates; i++) {
 					int nOfTreesForState = 
-							producableTrees.get(states.get(i)).size();
+							producibleTrees.get(states.get(i)).size();
 					indices[i] = 0;
 					maxIndices[i] = nOfTreesForState - 1;
 					combinations *= nOfTreesForState;
@@ -605,7 +627,7 @@ public class NBest {
 					for (int j = 0; j < nOfStates; j++) {
 						State currentState = states.get(j);
 						ArrayList<Node<Symbol>> trees = 
-								producableTrees.get(currentState);
+								producibleTrees.get(currentState);
 						Node<Symbol> currentTree = trees.get(indices[j]);
 						expTree.addChild(currentTree);
 						
@@ -644,6 +666,12 @@ public class NBest {
 //		for (Node<Symbol> t : expansion) {
 //			System.out.println(t);
 //		}
+		
+		return expansion;
+	}
+	
+	public static ArrayList<Node<Symbol>> expandUsingPruning(WTA wta, Node<Symbol> tree) {
+		ArrayList<Node<Symbol>> expansion = new ArrayList<>();
 		
 		return expansion;
 	}
