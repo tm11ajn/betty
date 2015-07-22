@@ -7,7 +7,7 @@ public class Vertex<T> {
 	private String label;
 	
 	private Edge<T> edgeToPath = null;
-	private int distance = Integer.MIN_VALUE;
+	private double distance = Double.MIN_VALUE;
 	private ArrayList<Edge<T>> relatedEdges = new ArrayList<>();
 	
 	public Vertex(String label) {
@@ -35,11 +35,11 @@ public class Vertex<T> {
 		this.edgeToPath = edgeToPath;
 	}
 
-	public int getDistance() {
+	public double getDistance() {
 		return this.distance;
 	}
 	
-	public void setDistance(int distance) {
+	public void setDistance(double distance) {
 		this.distance = distance;
 	}
 

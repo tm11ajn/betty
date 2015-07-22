@@ -28,8 +28,8 @@ public class Path<T> extends ArrayList<Edge<T>> {
 		return string;
 	}
 	
-	public int getWeight() {
-		int weightSum = 0;
+	public double getWeight() {
+		double weightSum = 0;
 		
 		for (Edge<T> e : this) {
 			weightSum += e.getWeight();
@@ -38,8 +38,9 @@ public class Path<T> extends ArrayList<Edge<T>> {
 		return weightSum;
 	}
 	
-	public int getDeltaWeight() {
-		int deltaWeightSum = 0;
+	public double getDeltaWeight() {
+		
+		double deltaWeightSum = 0;
 		
 		for (Edge<T> e : this) {
 			deltaWeightSum += e.getDelta();

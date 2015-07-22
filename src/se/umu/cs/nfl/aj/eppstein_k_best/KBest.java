@@ -10,24 +10,24 @@ public class KBest {
 		Graph<String> g = new Graph<>();
 		g.createVertices("S,A,B,C,D,E,F,G,H,I,J,K,T");
 		
-		g.createEdges("S", 	 "A",   2,  "alpha");
-		g.createEdges("A", "B", 20, "alpha");
-		g.createEdges("E", "I", 20, "alpha");
-        g.createEdges("B", "C", 14, "alpha");
-        g.createEdges("B", "F", 14, "alpha");
-        g.createEdges("D",   "E",   9,  "alpha");
-        g.createEdges("E",   "F",   10, "alpha");
-        g.createEdges("F",   "G",   25, "alpha");
-        g.createEdges("H",   "I",   18, "alpha");
-        g.createEdges("I",   "J",   8,  "alpha");
-        g.createEdges("J",   "T",   11, "alpha");
-        g.createEdges("S",   "D",   13, "alpha");
-        //g.createEdges("S",   "D",   12, "alpha");
-        g.createEdges("A",   "E",   27, "alpha");
-        g.createEdges("C", "G", 15, "alpha");
-        g.createEdges("D", "H", 15, "alpha");
-        g.createEdges("F",   "J",   12, "alpha");
-        g.createEdges("G",   "T",   7,  "alpha");
+		g.createEdge("S", "A", "2", 2);
+		g.createEdge("A", "B", "20", 20);
+		g.createEdge("E", "I", "20", 20);
+        g.createEdge("B", "C", "14", 14);
+        g.createEdge("B", "F", "14", 14);
+        g.createEdge("D", "E", "9", 9);
+        g.createEdge("E", "F", "10", 10);
+        g.createEdge("F", "G", "25", 25);
+        g.createEdge("H", "I", "18", 18);
+        g.createEdge("I", "J", "8", 8);
+        g.createEdge("J", "T", "11", 11);
+        g.createEdge("S", "D", "13", 13);
+        g.createEdge("S", "D", "12", 12);
+        g.createEdge("A", "E", "27", 27);
+        g.createEdge("C", "G", "15", 15);
+        g.createEdge("D", "H", "15", 15);
+        g.createEdge("F", "J", "12", 12);
+        g.createEdge("G", "T", "7", 7);
         
         Path<String> p = g.findShortestPath("S", "T");
         

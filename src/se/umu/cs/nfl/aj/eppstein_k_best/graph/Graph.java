@@ -40,12 +40,12 @@ public class Graph<T> {
 		return true;
 	}
 	
-	public boolean createEdgeWithLabel(String tail, String head, T label, int weight, String group) {
+	public boolean createEdge(String tail, String head, T label, double weight/*, String group*/) {
 		
 		Vertex<T> tailsVertex = getVertex(tail.toUpperCase());
 		Vertex<T> headsVertex = getVertex(head.toUpperCase());
 		
-		Edge<T> e = new Edge<T>(tailsVertex, headsVertex, label, weight, group.toUpperCase());
+		Edge<T> e = new Edge<T>(tailsVertex, headsVertex, label, weight/*, group.toUpperCase()*/);
 		tailsVertex.getRelatedEdges().add(e);
 
 		if (!tailsVertex.equals(headsVertex)) {
@@ -57,12 +57,12 @@ public class Graph<T> {
 		return true;
 	}
 	
-	public boolean createEdge(String tail, String head, int weight, String group) {
+	public boolean createEdge(String tail, String head, double weight/*, String group*/) {
 		
 		Vertex<T> tailsVertex = getVertex(tail.toUpperCase());
 		Vertex<T> headsVertex = getVertex(head.toUpperCase());
 		
-		Edge<T> e = new Edge<T>(tailsVertex, headsVertex, weight, group.toUpperCase());
+		Edge<T> e = new Edge<T>(tailsVertex, headsVertex, weight/*, group.toUpperCase()*/);
 		tailsVertex.getRelatedEdges().add(e);
 
 		if (!tailsVertex.equals(headsVertex)) {
@@ -74,10 +74,10 @@ public class Graph<T> {
 		return true;
 	}
 	
-	public boolean createEdges(String tails, String heads, int weight, String group) {
+	public boolean createEdges(String tails, String heads, double weight/*, String group*/) {
 		ArrayList<Vertex<T>> tailsList = this.parseVertices(tails.toUpperCase());
 		ArrayList<Vertex<T>> headsList = this.parseVertices(heads.toUpperCase());
-		String groupUpper = group.toUpperCase();
+//		String groupUpper = group.toUpperCase();
 		
 		if (tailsList == null || headsList == null) {
 			return false;
@@ -93,7 +93,7 @@ public class Graph<T> {
 			Vertex<T> tailsVertex = tailsList.get(i);
 			Vertex<T> headsVertex = headsList.get(i);
 			
-			Edge<T> e = new Edge<T>(tailsVertex, headsVertex, weight, groupUpper);
+			Edge<T> e = new Edge<T>(tailsVertex, headsVertex, weight/*, groupUpper*/);
 			tailsVertex.getRelatedEdges().add(e);
 			
 			if (!tailsVertex.equals(headsVertex)) {
@@ -106,21 +106,21 @@ public class Graph<T> {
 		return true;
 	}
 	
-	public void edgeGroupWeights(String group, int weight) {
-		String groupUpper = group.toUpperCase();
-		
-		for (Vertex<T> v : this.vertices) {
-			
-			for (Edge<T> e : v.getRelatedEdges()) {
-				
-				if (e.getGroup().equals(groupUpper)) {
-					e.setWeight(weight);
-				}
-			}
-		}
-		
-		this.ready = false;
-	}
+//	public void edgeGroupWeights(String group, double weight) {
+//		String groupUpper = group.toUpperCase();
+//		
+//		for (Vertex<T> v : this.vertices) {
+//			
+//			for (Edge<T> e : v.getRelatedEdges()) {
+//				
+//				if (e.getGroup().equals(groupUpper)) {
+//					e.setWeight(weight);
+//				}
+//			}
+//		}
+//		
+//		this.ready = false;
+//	}
 	
 	public Path<T> findShortestPath(String s, String t) {
 		this.ready = false;
@@ -197,7 +197,7 @@ public class Graph<T> {
 		
 		for (Vertex<T> v : this.vertices) {
 			v.setEdgeToPath(null);
-			v.setDistance(Integer.MIN_VALUE);
+			v.setDistance(Double.MIN_VALUE);
 		}
 	}
 	
@@ -231,7 +231,7 @@ public class Graph<T> {
 			Edge<T> e = node.getEdge();
 			v = e.getTail();
 			
-			if (v.getDistance() == Integer.MIN_VALUE) {
+			if (v.getDistance() == Double.MIN_VALUE) {
 				v.setDistance(e.getWeight() + e.getHead().getDistance());
 				v.setEdgeToPath(e);
 			} else {

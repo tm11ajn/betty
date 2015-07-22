@@ -2,8 +2,8 @@ package se.umu.cs.nfl.aj.wta;
 
 public class Weight implements Comparable<Weight> {
 
-	public static final int INF = -1;
-	public static final int NINF = -2;
+	public static final double INF = Double.MAX_VALUE;
+	public static final double NINF = Double.MIN_VALUE;
 
 	private double value;
 
@@ -38,6 +38,23 @@ public class Weight implements Comparable<Weight> {
 		}
 		
 		return new Weight(value + w.value);
+	}
+	
+	public Weight subtract(Weight w) {
+		
+		// TODO remove NINF?
+		if ((value == INF && w.value == INF) || 
+				(value == NINF && w.value == NINF)) {
+			return null;
+		}
+		
+		if (value == INF || w.value == NINF) {
+			return new Weight(INF);
+		} else if (value == NINF || w.value == INF) {
+			return new Weight(NINF);
+		}
+		
+		return new Weight(value - w.value);
 	}
 
 	@Override

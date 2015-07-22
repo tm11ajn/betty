@@ -3,7 +3,7 @@ package se.umu.cs.nfl.aj.eppstein_k_best.graph;
 public class ST_Node<T> implements Comparable<ST_Node<T>> {
 
 	private Path<T> sidetracks;
-	private int weight;
+	private double weight;
 	
 	public ST_Node(Path<T> sidetracks) {
 		this.sidetracks = sidetracks;
@@ -14,7 +14,7 @@ public class ST_Node<T> implements Comparable<ST_Node<T>> {
 		return this.sidetracks;
 	}
 	
-	public int getWeight() {
+	public double getWeight() {
 		return this.weight;
 	}
 	

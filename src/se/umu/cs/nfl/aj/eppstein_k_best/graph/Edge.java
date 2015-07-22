@@ -5,22 +5,22 @@ public class Edge<T> {
 	private Vertex<T> tail;
 	private Vertex<T> head;
 	private T label;
-	private int weight;
-	private String group;
+	private double weight;
+	//private String group;
 	
-	public Edge(Vertex<T> tail, Vertex<T> head, T label, int weight, String group) {
+	public Edge(Vertex<T> tail, Vertex<T> head, T label, double weight/*, String group*/) {
 		this.tail = tail;
 		this.head = head;
 		this.label = label;
 		this.weight = weight;
-		this.group = group;
+		//this.group = group;
 	}
 	
-	public Edge(Vertex<T> tail, Vertex<T> head, int weight, String group) {
+	public Edge(Vertex<T> tail, Vertex<T> head, double weight/*, String group*/) {
 		this.tail = tail;
 		this.head = head;
 		this.weight = weight;
-		this.group = group;
+		//this.group = group;
 	}
 	
 	public Vertex<T> getTail() {
@@ -35,19 +35,19 @@ public class Edge<T> {
 		return label;
 	}
 	
-	public int getWeight() {
+	public double getWeight() {
 		return this.weight;
 	}
 	
-	public void setWeight(int weight) {
+	public void setWeight(double weight) {
 		this.weight = weight;
 	}
 	
-	public String getGroup() {
-		return this.group;
-	}
+//	public String getGroup() {
+//		return this.group;
+//	}
 	
-	public int getDelta() {
+	public double getDelta() {
 		return this.weight + this.head.getDistance() - this.tail.getDistance();
 	}
 	

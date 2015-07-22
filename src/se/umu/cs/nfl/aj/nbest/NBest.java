@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import se.umu.cs.nfl.aj.eppstein_k_best.graph.Graph;
 import se.umu.cs.nfl.aj.wta.DuplicateRuleException;
 import se.umu.cs.nfl.aj.wta.Rule;
 import se.umu.cs.nfl.aj.wta.State;
@@ -674,6 +675,50 @@ public class NBest {
 		ArrayList<Node<Symbol>> expansion = new ArrayList<>();
 		
 		return expansion;
+	}
+	
+	public static void useEppstein(WTA wta, Node<Symbol> tree) {
+		
+		Graph<Node<Symbol>> graph = new Graph<>();
+		
+		for (State q : wta.getStates()) {
+			ArrayList<Rule> rules = wta.getRulesByResultingState(q);
+			
+			for (Rule r : rules) {
+				ArrayList<State> states = r.getStates();
+				int nOfStates = states.size();
+				
+				String vertices = "";
+				
+				for (int i = 0; i < nOfStates + 1; i++) {
+					vertices += "u" + i + "," + "v" + i;
+					
+					if (i != nOfStates) {
+						vertices += ",";
+					}
+				}
+				
+				graph.createVertices(vertices);
+				
+				for (int i = 1; i < nOfStates; i++) {
+					State currentState = states.get(i-1);
+					
+					for (Node<Symbol> n : exploredTrees) {
+						
+						//graph.createEdge("u" + (i - 1), "u" + i, treeStateValTable.get(n, currentState));
+						
+						if (n.equals(tree)) {
+							
+						}
+					}
+				}
+				
+			}
+			
+			
+		}
+		
+		
 	}
 
 //	private static void reset() {
