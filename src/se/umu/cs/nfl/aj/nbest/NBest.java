@@ -6,7 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import se.umu.cs.nfl.aj.eppstein_k_best.graph.Edge;
 import se.umu.cs.nfl.aj.eppstein_k_best.graph.Graph;
+import se.umu.cs.nfl.aj.eppstein_k_best.graph.Path;
 import se.umu.cs.nfl.aj.wta.DuplicateRuleException;
 import se.umu.cs.nfl.aj.wta.Rule;
 import se.umu.cs.nfl.aj.wta.State;
@@ -671,18 +673,23 @@ public class NBest {
 		return expansion;
 	}
 	
-	public static ArrayList<Node<Symbol>> expandUsingPruning(WTA wta, Node<Symbol> tree) {
+	public static ArrayList<Node<Symbol>> expandUsingPruning(WTA wta, int N, Node<Symbol> tree) {
 		ArrayList<Node<Symbol>> expansion = new ArrayList<>();
+		
+		useEppstein(wta, N, tree);
 		
 		return expansion;
 	}
 	
-	public static void useEppstein(WTA wta, Node<Symbol> tree) {
+	public static void useEppstein(WTA wta, int N, Node<Symbol> tree) {
 		
 		Graph<Node<Symbol>> graph = new Graph<>();
 		
+		HashMap<State, LinkedList<Run<Symbol>>> runs = new HashMap<>();
+		
 		for (State q : wta.getStates()) {
 			ArrayList<Rule> rules = wta.getRulesByResultingState(q);
+			LinkedList<Run<Symbol>> runList = new LinkedList<>();
 			
 			for (Rule r : rules) {
 				ArrayList<State> states = r.getStates();
@@ -703,22 +710,95 @@ public class NBest {
 				for (int i = 1; i < nOfStates; i++) {
 					State currentState = states.get(i-1);
 					
-					for (Node<Symbol> n : exploredTrees) {
+					for (Node<Symbol> n : exploredTrees) { // TODO include only N edges for each pair of nodes
 						
-						//graph.createEdge("u" + (i - 1), "u" + i, treeStateValTable.get(n, currentState));
+						double weight = Double.parseDouble(
+								treeStateValTable.get(n, currentState).
+								toString());
 						
-						if (n.equals(tree)) {
-							
+						boolean isT = n.equals(tree);
+						
+						if (!isT) {
+							graph.createEdge("u" + (i - 1), "u" + i, n, weight);
+							graph.createEdge("v" + (i - 1), "v" + i, n, weight);
+						}
+						
+						if (isT) {
+							graph.createEdge("u" + (i - 1), "v" + i, n, weight);
+							graph.createEdge("v" + (i - 1), "v" + i, n, weight);
 						}
 					}
+				}		
+				
+				int counter = 0;
+				
+				Path<Node<Symbol>> path = 
+						graph.findShortestPath("u0", "v" + (nOfStates + 1));
+				
+				while (path.isValid() && counter < N) {
+					Node<Symbol> pathTree = extractTreeFromPath(path, r);
+					Weight pathWeight = new Weight(path.getWeight());
+					
+					Run<Symbol> run = new Run<>(pathTree, pathWeight);
+					runList.add(run);
+					
+					path = graph.findNextShortestPath();
+					counter++;
 				}
 				
+				runs.put(q, mergeRunLists(N, runList, runs.get(q)));
 			}
 			
-			
+			// merge all lists with K, remember to get the delta value!
 		}
 		
 		
+	}
+	
+	private static Node<Symbol> extractTreeFromPath(Path<Node<Symbol>> path, 
+			Rule r) {
+		
+		Node<Symbol> root = new Node<>(r.getSymbol());
+		
+		for (Edge<Node<Symbol>> e : path) {
+			root.addChild(e.getLabel());
+		}
+		
+		return root;
+	}
+	
+	private static LinkedList<Run<Symbol>> mergeRunLists(int N,
+			LinkedList<Run<Symbol>> list1, LinkedList<Run<Symbol>> list2) {
+		
+		LinkedList<Run<Symbol>> result = new LinkedList<>();
+		
+		int added = 0;
+		
+		while (added < N || (list1.isEmpty() && list2.isEmpty())) {
+			
+			Run<Symbol> run1 = list1.peek();
+			Run<Symbol> run2 = list2.peek();
+			
+			if (run1 != null && run2 != null) {
+
+				Weight weight1 = list1.peek().getWeight();
+				Weight weight2 = list2.peek().getWeight();
+
+				if (weight1.compareTo(weight2) < 1) {
+					result.addLast(list1.poll());
+				} else {
+					result.addLast(list2.poll());
+				}
+				
+			} else if (run1 != null) {
+				result.addLast(list1.poll());
+			} else {
+				result.addLast(list2.poll());
+			}
+			
+		}
+		
+		return result;
 	}
 
 //	private static void reset() {
