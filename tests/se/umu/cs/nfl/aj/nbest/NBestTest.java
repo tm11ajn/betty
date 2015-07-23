@@ -30,13 +30,11 @@ public class NBestTest {
 		wta = null;
 	}
 	
-
-	
 	@Test
 	public void shouldGetOptimalStateForLeafNode() throws Exception {
 		Node<Symbol> leafNode = new Node<Symbol>(new Symbol("a", 0));
 		NBest.init(wta);
-		State optimalState = NBest.getOptimalState(wta, leafNode);
+		State optimalState = NBest.getOptimalStates(wta, leafNode).get(0);
 		assertEquals(new State("pb"), optimalState);
 	}
 	
@@ -44,14 +42,13 @@ public class NBestTest {
 	public void shouldGetOptimalStateForLeafNode2() throws Exception {
 		Node<Symbol> leafNode = new Node<Symbol>(new Symbol("b", 0));
 		NBest.init(wta);
-		State optimalState = NBest.getOptimalState(wta, leafNode);
+		State optimalState = NBest.getOptimalStates(wta, leafNode).get(0);
 		assertEquals(new State("pa"), optimalState);
 	}
 	
 	@Test
-	public void shouldGetOptimalStateForNonLeafNode() throws Exception {
+	public void shouldGetOptimalStatesForNonLeafNode() throws Exception {
 		Node<Symbol> leafNodeA = new Node<Symbol>(new Symbol("a", 0));
-		Node<Symbol> leafNodeB = new Node<Symbol>(new Symbol("b", 0));
 		Node<Symbol> node = new Node<Symbol>(new Symbol("ball", 2));
 		
 		NBest.init(wta);
@@ -59,15 +56,16 @@ public class NBestTest {
 		node.addChild(leafNodeA);
 		node.addChild(leafNodeA);
 		
-		NBest.getOptimalState(wta, leafNodeA);
-		NBest.getOptimalState(wta, leafNodeB);
+		NBest.getOptimalStates(wta, leafNodeA);
 		
-		State optimalState = NBest.getOptimalState(wta, node);
-		assertEquals(new State("qb"), optimalState);
+		ArrayList<State> expected = new ArrayList<>();
+		expected.add(new State("qb"));
+		
+		assertEquals(expected, NBest.getOptimalStates(wta, node));
 	}
 	
 	@Test
-	public void shouldGetOptimalStateForNonLeafNode2() throws Exception {
+	public void shouldGetOptimalStatesForNonLeafNode2() throws Exception {
 		Node<Symbol> leafNodeA = new Node<Symbol>(new Symbol("a", 0));
 		Node<Symbol> leafNodeB = new Node<Symbol>(new Symbol("b", 0));
 		Node<Symbol> node = new Node<Symbol>(new Symbol("ball", 2));
@@ -75,13 +73,16 @@ public class NBestTest {
 		NBest.init(wta);
 		
 		node.addChild(leafNodeB);
-		node.addChild(leafNodeB);
+		node.addChild(leafNodeA);
 		
-		NBest.getOptimalState(wta, leafNodeA);
-		NBest.getOptimalState(wta, leafNodeB);
+		NBest.getOptimalStates(wta, leafNodeA);
+		NBest.getOptimalStates(wta, leafNodeB);
 		
-		State optimalState = NBest.getOptimalState(wta, node);
-		assertEquals(new State("qa"), optimalState);
+		ArrayList<State> expected = new ArrayList<>();
+		expected.add(new State("qa"));
+		expected.add(new State("qb"));
+		
+		assertEquals(expected, NBest.getOptimalStates(wta, node));
 	}
 	
 	@Test

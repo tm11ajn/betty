@@ -29,7 +29,7 @@ public class NBest {
 	private static LinkedList<Node<Symbol>> treeQueue = new LinkedList<>(); // K
 	
 	private static HashMap<State, Weight> smallestCompletionWeights;
-	private static HashMap<Node<Symbol>, State> optimalStates = new HashMap<>();
+	private static HashMap<Node<Symbol>, ArrayList<State>> optimalStates = new HashMap<>();
 	private static HashMap<State, Integer> optimalStatesUsage = new HashMap<>();
 
 	public static void main(String[] args) {
@@ -109,8 +109,8 @@ public class NBest {
 			if (s.getRank() == 0) {	
 				Node<Symbol> tree = new Node<Symbol>(s);
 				
-				State optimalState = getOptimalState(wta, tree);
-				optimalStates.put(tree, optimalState);
+				//State optimalState = getOptimalStates(wta, tree).get(0);
+				optimalStates.put(tree, getOptimalStates(wta, tree));
 				
 				insertTreeIntoQueueByTotalMinimumWeight(tree);
 			}
@@ -144,7 +144,7 @@ public class NBest {
 //			State optimalState = getOptimalState(wta, currentTree, 
 //					smallestCompletionWeights);
 //			optimalStates.put(currentTree, optimalState);
-			State optimalState = optimalStates.get(currentTree);
+			State optimalState = optimalStates.get(currentTree).get(0);
 			
 //			System.out.println("Optimal state is " + optimalState);
 			
@@ -185,7 +185,7 @@ public class NBest {
 			for (Node<Symbol> t : expansion) {
 				// Need to get the optimal state for each new tree before putting it into the queue?
 				// In that case, this does not need to be done earlier in the while loop.
-				optimalStates.put(t, getOptimalState(wta, t));
+				optimalStates.put(t, getOptimalStates(wta, t));
 				insertTreeIntoQueueByTotalMinimumWeight(t);
 			}
 			
@@ -197,9 +197,10 @@ public class NBest {
 	// TODO
 	// Eventually divide into two methods, one that calculates the M^q's 
 	// and one that gets the optimal state using the M^q's.
-	public static State getOptimalState(WTA wta, Node<Symbol> tree) 
+	public static ArrayList<State> getOptimalStates(WTA wta, Node<Symbol> tree) 
 			throws SymbolUsageException {
 		
+		ArrayList<State> optStatesList = new ArrayList<>();
 		State optimalState = null;
 		Weight minWeight = new Weight(Weight.INF);
 		
@@ -262,16 +263,23 @@ public class NBest {
 						smallestCompletionWeights.get(r.getResultingState()));
 				
 				// Save optimal state
-				if (totalWeight.compareTo(minWeight) < 1) {
+				if (totalWeight.compareTo(minWeight) == -1) {
 					optimalState = r.getResultingState();
 					minWeight = totalWeight;
+					
+					optStatesList = new ArrayList<>();
+					optStatesList.add(optimalState);
+					
 //					System.out.println("New optimal state: " + optimalState);
 //					System.out.println("New min weight: " + minWeight);
+				} else if (totalWeight.compareTo(minWeight) == 0) {
+					optimalState = r.getResultingState();
+					optStatesList.add(optimalState);
 				}
 			}
 		}
 		
-		return optimalState;
+		return optStatesList;
 	}
 	
 	public static void insertTreeIntoQueueByTotalMinimumWeight(
@@ -304,7 +312,7 @@ public class NBest {
 		
 		Weight delta = new Weight(0);
 		
-		State optimalState = optimalStates.get(tree);
+		State optimalState = optimalStates.get(tree).get(0);
 		
 		Weight minWeight = treeStateValTable.get(tree, optimalState);
 		Weight smallestCompletionWeight = smallestCompletionWeights.get(optimalState);
