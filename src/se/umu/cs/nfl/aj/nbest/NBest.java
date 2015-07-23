@@ -4,27 +4,33 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import se.umu.cs.nfl.aj.eppstein_k_best.graph.Edge;
 import se.umu.cs.nfl.aj.eppstein_k_best.graph.Graph;
 import se.umu.cs.nfl.aj.eppstein_k_best.graph.Path;
-import se.umu.cs.nfl.aj.wta.DuplicateRuleException;
+import se.umu.cs.nfl.aj.nbest.data.NestedMap;
+import se.umu.cs.nfl.aj.nbest.data.Node;
+import se.umu.cs.nfl.aj.nbest.data.Run;
 import se.umu.cs.nfl.aj.wta.Rule;
 import se.umu.cs.nfl.aj.wta.State;
 import se.umu.cs.nfl.aj.wta.Symbol;
-import se.umu.cs.nfl.aj.wta.SymbolUsageException;
 import se.umu.cs.nfl.aj.wta.WTA;
-import se.umu.cs.nfl.aj.wta.WTAParser;
 import se.umu.cs.nfl.aj.wta.Weight;
+import se.umu.cs.nfl.aj.wta.exceptions.SymbolUsageException;
+import se.umu.cs.nfl.aj.wta_handlers.WTABuilder;
+import se.umu.cs.nfl.aj.wta_handlers.WTAParser;
 
 public class NBest {
 
-	private static NestedMap<Node<Symbol>, State, Weight> treeStateValTable = new NestedMap<>(); // C
-	
-	private static ArrayList<Node<Symbol>> exploredTrees = new ArrayList<Node<Symbol>>(); // T
-	
+	private static NestedMap<Node<Symbol>, State, Weight> treeStateValTable = 
+			new NestedMap<>(); // C
+	private static ArrayList<Node<Symbol>> exploredTrees = 
+			new ArrayList<Node<Symbol>>(); // T
 	private static LinkedList<Node<Symbol>> treeQueue = new LinkedList<>(); // K
+	
+	private static HashMap<State, Weight> smallestCompletionWeights;
+	private static HashMap<Node<Symbol>, State> optimalStates = new HashMap<>();
+	private static HashMap<State, Integer> optimalStatesUsage = new HashMap<>();
 
 	public static void main(String[] args) {
 
@@ -34,6 +40,7 @@ public class NBest {
 		WTA wta = wtaParser.parse(fileName);
 
 		List<String> result = null;
+		
 		try {
 			result = run(wta, N);
 		} catch (SymbolUsageException e) {
@@ -74,22 +81,24 @@ public class NBest {
 		System.exit(-1);
 	}
 	
+	public static void init(WTA wta) {
+		WTABuilder b = new WTABuilder();
+		smallestCompletionWeights = b.findSmallestCompletionWeights(wta);
+		treeStateValTable = new NestedMap<>();
+	}
+	
 	public static List<String> run(WTA wta, int N) throws SymbolUsageException {
 		
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();
 		
-		HashMap<State, Weight> smallestCompletionWeights = 
-				findSmallestCompletionWeights(wta);
-		
-		treeStateValTable = new NestedMap<>(); // C
-		HashMap<Node<Symbol>, State> optimalStates = new HashMap<>();
+		init(wta);
 		
 		// T <- empty
-		exploredTrees = new ArrayList<Node<Symbol>>(); // T
+		exploredTrees = new ArrayList<Node<Symbol>>(); 
 		
 		// K <- empty
-		treeQueue = new LinkedList<Node<Symbol>>(); // K
+		treeQueue = new LinkedList<Node<Symbol>>(); 
 		
 		// enqueue(K, Sigma_0) TODO
 		
@@ -100,11 +109,10 @@ public class NBest {
 			if (s.getRank() == 0) {	
 				Node<Symbol> tree = new Node<Symbol>(s);
 				
-				State optimalState = getOptimalState(wta, tree, smallestCompletionWeights);
+				State optimalState = getOptimalState(wta, tree);
 				optimalStates.put(tree, optimalState);
 				
-				insertTreeIntoQueueByTotalMinimumWeight(tree, 
-						smallestCompletionWeights, optimalStates);
+				insertTreeIntoQueueByTotalMinimumWeight(tree);
 			}
 		}
 		
@@ -177,235 +185,19 @@ public class NBest {
 			for (Node<Symbol> t : expansion) {
 				// Need to get the optimal state for each new tree before putting it into the queue?
 				// In that case, this does not need to be done earlier in the while loop.
-				optimalStates.put(t, getOptimalState(wta, t, 
-						smallestCompletionWeights));
-				insertTreeIntoQueueByTotalMinimumWeight(t, 
-						smallestCompletionWeights, optimalStates);
+				optimalStates.put(t, getOptimalState(wta, t));
+				insertTreeIntoQueueByTotalMinimumWeight(t);
 			}
 			
 		}
 
 		return nBest;
 	}
-
-	/**
-	 * Using modification of WTA along with Knuth's generalization of Dijkstra's
-	 * algorithm to get the weights of the smallest completions.
-	 * @param wta
-	 * @return
-	 */
-	public static HashMap<State, Weight> findSmallestCompletionWeights(WTA wta) {
-		HashMap<State, Weight> smallestCompletionWeights =
-				new HashMap<State, Weight>();
-		
-		ArrayList<State> states = wta.getStates();
-		
-//		int counter = 0;
-		
-		/*
-		 * Build a modified WTA for each state in the original WTA
-		 * and get the weight of the smallest tree that is accepted
-		 * by the new WTA, that is, the smallest context with the
-		 * current state as the connector.
-		 */
-		for (State state : states) {
-//			System.out.println("CURRENT STATE: " + state);
-			WTA modifiedWTA = null;
-			
-			try {
-				modifiedWTA = buildModifiedWTA(wta, state);
-			} catch (SymbolUsageException e) {
-				System.err.println("Cannot build modified WTA: " + e.getMessage());
-				System.exit(-1);
-			} catch (DuplicateRuleException e) {
-				System.err.println("Cannot build modified WTA: " + e.getMessage());
-				System.exit(-1);
-			}
-			
-			ArrayList<State> modifiedStates = modifiedWTA.getStates();
-			ArrayList<State> modifiedFinalStates = modifiedWTA.getFinalStates();
-			ArrayList<Rule> modifiedRules = modifiedWTA.getRules();
-			
-			int nOfModifiedStates = modifiedStates.size();
-			
-			HashMap<State, State> defined = new HashMap<>();
-			HashMap<State, Weight> weights = new HashMap<>();
-			
-			for (State s : modifiedStates) {
-				weights.put(s, new Weight(Weight.INF));
-			}
-
-			while (defined.size() < nOfModifiedStates) {
-				
-//				System.out.println("PRINTTEST");
-				
-				for (Rule r : modifiedRules) {
-					ArrayList<State> leftHandStates = r.getStates();
-					State resultingState = r.getResultingState();
-					Weight newWeight = new Weight(0);
-					boolean allDefined = true;
-					
-					for (State s : leftHandStates) {
-						
-						if (!defined.containsKey(s)) {
-							allDefined = false;
-							break;
-						}
-						
-						newWeight = newWeight.add(weights.get(s));
-					}
-					
-					newWeight = newWeight.add(r.getWeight());
-//					System.out.println("Rule: " + r);
-//					System.out.println("new weight=" + newWeight);
-//					System.out.println("allDefined=" + allDefined);
-					
-					if (allDefined) {
-						Weight oldWeight = weights.get(resultingState);
-//						System.out.println("Oldweight=" + oldWeight);
-						
-						if (newWeight.compareTo(oldWeight) == 1) {
-							newWeight = oldWeight;
-						}
-						
-						weights.put(resultingState, newWeight);
-//						System.out.println("PUT");
-//						System.out.println(resultingState + " " + newWeight);
-					}
-				}
-				
-				Weight smallestWeight = new Weight(Weight.INF);
-				State smallestState = null;
-				
-				for (Entry<State, Weight> e : weights.entrySet()) {
-					Weight tempWeight = e.getValue();
-					State tempState = e.getKey();
-					
-					if (!defined.containsKey(tempState) && 
-							smallestWeight.compareTo(tempWeight) > -1) {
-						smallestWeight = tempWeight;
-						smallestState = tempState;
-					}
-				}
-				
-				defined.put(smallestState, smallestState);
-				modifiedStates.remove(smallestState);
-				
-//				System.out.println("Smallest weight: " + smallestWeight);
-//				System.out.println("Smallest state: " + smallestState);
-//				System.out.println("Size defined: " + defined.size());
-//				System.out.println("Size modstates: " + modifiedStates.size());
-				
-				// Add corresponding state to defined and 
-				// remove it from modifiedStates
-			}
-			
-			Weight smallestCompletionWeight = new Weight(Weight.INF);
-			
-			for (State s : modifiedFinalStates) {
-				Weight tempWeight = weights.get(s);
-				
-				if (tempWeight == null) {
-					System.err.println("In getting the smallest completion, "
-							+ "the final state " + s + "did not have any weight"
-							+ "assigned to it");
-					System.exit(-1);
-				}
-				
-				if (tempWeight.compareTo(smallestCompletionWeight) == -1) {
-					smallestCompletionWeight = tempWeight; 
-				}
-			}
-
-//			System.out.println("SMALLESTCOMPLETIONWEIGHT FOR CURRENTSTATE: " + 
-//					smallestCompletionWeight);
-			smallestCompletionWeights.put(state, smallestCompletionWeight);
-//			counter++;
-//			System.out.println(counter);
-		}
-
-		return smallestCompletionWeights;
-	}
-
-	/* Build a new WTA for every state in this case and then use Dijkstras on
-	 * each of them. Is there no better way to do it? TODO
-	 */
-	public static WTA buildModifiedWTA(WTA wta, State state) 
-			throws SymbolUsageException, DuplicateRuleException {
-
-		WTA modWTA = new WTA();
-		
-		ArrayList<Symbol> symbols = wta.getSymbols();
-		ArrayList<State> states = wta.getStates();
-		ArrayList<State> finalStates = wta.getFinalStates();
-		ArrayList<Rule> rules = wta.getRules();
-			
-		for (Symbol s : symbols) {
-			modWTA.addSymbol(s.getLabel(), s.getRank());
-		}
-
-		Symbol reservedSymbol = modWTA.addSymbol(
-				Symbol.RESERVED_SYMBOL_STRING, 0);
-		State reservedSymbolState = null;
-		
-		for (State s : states) {
-			modWTA.addState(s.getLabel());
-			State temp = modWTA.addState(s.getLabel().concat(
-					State.RESERVED_LABEL_EXTENSION_STRING));
-			
-			if (s.equals(state)) {
-				reservedSymbolState = temp;
-			}
-		}
-		
-		if (reservedSymbolState == null) {
-			throw new SymbolUsageException("The state " + state + 
-					"is not in the WTA.");
-		}
-		
-		for (State s : finalStates) {
-			modWTA.setFinalState(s.getLabel().concat(
-					State.RESERVED_LABEL_EXTENSION_STRING));
-		}
-		
-		Rule reservedSymbolRule = new Rule(reservedSymbol, new Weight(0), 
-				reservedSymbolState); 
-		modWTA.addRule(reservedSymbolRule);
-		
-		for (Rule r : rules) {
-			modWTA.addRule(r);
-			
-			ArrayList<State> leftHandStates = r.getStates();
-			int nOfLHStates = leftHandStates.size();
-			
-			for (int i = 0; i < nOfLHStates; i++) {
-				State newResultingState = new State(r.getResultingState().
-						getLabel().concat(State.RESERVED_LABEL_EXTENSION_STRING));
-				Rule newRule = new Rule(r.getSymbol(), r.getWeight(), 
-						newResultingState);
-				
-				for (int j = 0; j < nOfLHStates; j++) {
-					
-					if (i == j) {
-						newRule.addState(new State(leftHandStates.get(i).getLabel().concat(
-								State.RESERVED_LABEL_EXTENSION_STRING)));
-					} else {
-						newRule.addState(leftHandStates.get(j));
-					}
-				}
-				
-				modWTA.addRule(newRule);
-			}
-		}
-
-		return modWTA;
-	}
 	
 	// TODO
 	// Eventually divide into two methods, one that calculates the M^q's 
 	// and one that gets the optimal state using the M^q's.
-	public static State getOptimalState(WTA wta, Node<Symbol> tree, 
-			HashMap<State, Weight> smallestCompletionWeights) 
+	public static State getOptimalState(WTA wta, Node<Symbol> tree) 
 			throws SymbolUsageException {
 		
 		State optimalState = null;
@@ -483,11 +275,9 @@ public class NBest {
 	}
 	
 	public static void insertTreeIntoQueueByTotalMinimumWeight(
-			Node<Symbol> tree, HashMap<State, Weight> smallestCompletionWeights, 
-			HashMap<Node<Symbol>, State> optimalStates) {
+			Node<Symbol> tree) {
 		
-		Weight wMinCurrent = getDeltaWeight(tree, optimalStates, 
-				smallestCompletionWeights);
+		Weight wMinCurrent = getDeltaWeight(tree);
 		
 		int queueSize = treeQueue.size();
 		int queueIndex = 0;
@@ -495,8 +285,7 @@ public class NBest {
 		for (int i = 0; i < queueSize; i++) {
 			Node<Symbol> t = treeQueue.get(i);
 			
-			Weight wMinTemp = getDeltaWeight(t, optimalStates, 
-					smallestCompletionWeights);
+			Weight wMinTemp = getDeltaWeight(t);
 			
 			if (wMinTemp.compareTo(wMinCurrent) == -1) {
 				queueIndex = i + 1;
@@ -511,9 +300,7 @@ public class NBest {
 		treeQueue.add(queueIndex, tree);
 	}
 	
-	public static Weight getDeltaWeight(Node<Symbol> tree, 
-			HashMap<Node<Symbol>, State> optimalStates,
-			HashMap<State, Weight> smallestCompletionWeights) {
+	public static Weight getDeltaWeight(Node<Symbol> tree) {
 		
 		Weight delta = new Weight(0);
 		

@@ -4,6 +4,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import se.umu.cs.nfl.aj.wta.exceptions.DuplicateRuleException;
+import se.umu.cs.nfl.aj.wta.exceptions.SymbolUsageException;
+
 public class WTATest {
 
 	private WTA wta = new WTA();

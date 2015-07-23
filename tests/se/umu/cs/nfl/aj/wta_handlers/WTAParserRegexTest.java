@@ -1,4 +1,4 @@
-package se.umu.cs.nfl.aj.wta;
+package se.umu.cs.nfl.aj.wta_handlers;
 
 import static org.junit.Assert.*;
 

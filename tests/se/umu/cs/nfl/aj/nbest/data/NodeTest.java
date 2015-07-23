@@ -1,4 +1,4 @@
-package se.umu.cs.nfl.aj.nbest;
+package se.umu.cs.nfl.aj.nbest.data;
 
 import static org.junit.Assert.*;
 

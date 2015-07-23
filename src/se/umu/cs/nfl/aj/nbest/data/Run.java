@@ -1,4 +1,4 @@
-package se.umu.cs.nfl.aj.nbest;
+package se.umu.cs.nfl.aj.nbest.data;
 
 import se.umu.cs.nfl.aj.wta.Weight;
 

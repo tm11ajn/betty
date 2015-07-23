@@ -3,6 +3,8 @@ package se.umu.cs.nfl.aj.wta;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import se.umu.cs.nfl.aj.wta.exceptions.SymbolUsageException;
+
 public class RankedAlphabet {
 
 //	private HashMap<Integer, ArrayList<Symbol>> ranking = new HashMap<>();

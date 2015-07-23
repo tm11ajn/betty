@@ -1,8 +1,14 @@
-package se.umu.cs.nfl.aj.wta;
+package se.umu.cs.nfl.aj.wta_handlers;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import se.umu.cs.nfl.aj.wta.Symbol;
+import se.umu.cs.nfl.aj.wta.WTA;
+import se.umu.cs.nfl.aj.wta.Weight;
+import se.umu.cs.nfl.aj.wta.exceptions.DuplicateRuleException;
+import se.umu.cs.nfl.aj.wta.exceptions.SymbolUsageException;
 
 public class WTAParserTest {
 	public static final String fileName = "wta_examples/wta0.rtg";

@@ -6,6 +6,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.umu.cs.nfl.aj.wta.exceptions.SymbolUsageException;
+
 public class RankedAlphabetTest {
 
 	RankedAlphabet ranked = new RankedAlphabet();

@@ -1,4 +1,4 @@
-package se.umu.cs.nfl.aj.wta;
+package se.umu.cs.nfl.aj.wta.exceptions;
 
 public class DuplicateRuleException extends Exception {
 

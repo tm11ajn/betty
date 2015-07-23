@@ -1,9 +1,17 @@
-package se.umu.cs.nfl.aj.wta;
+package se.umu.cs.nfl.aj.wta_handlers;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
+import se.umu.cs.nfl.aj.wta.Rule;
+import se.umu.cs.nfl.aj.wta.State;
+import se.umu.cs.nfl.aj.wta.Symbol;
+import se.umu.cs.nfl.aj.wta.WTA;
+import se.umu.cs.nfl.aj.wta.Weight;
+import se.umu.cs.nfl.aj.wta.exceptions.DuplicateRuleException;
+import se.umu.cs.nfl.aj.wta.exceptions.SymbolUsageException;
 
 
 public class WTAParser {
