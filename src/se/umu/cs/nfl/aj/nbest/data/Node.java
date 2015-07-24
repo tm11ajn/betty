@@ -3,7 +3,7 @@ package se.umu.cs.nfl.aj.nbest.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Node<LabelType> {
+public class Node<LabelType> implements Comparable<Node<LabelType>> {
 
 	private LabelType label;
 
@@ -121,5 +121,20 @@ public class Node<LabelType> {
 		}
 
 		return treeString;
+	}
+
+	@Override
+	public int compareTo(Node<LabelType> o) {
+		
+		String thisString = this.toString();
+		String oString = o.toString();
+		
+		if (thisString.length() < oString.length()) {
+			return -1;
+		} else if (thisString.length() > oString.length()) {
+			return 1;
+		}
+		
+		return this.toString().compareTo(o.toString());
 	}
 }

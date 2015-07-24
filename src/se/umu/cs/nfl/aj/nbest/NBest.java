@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import se.umu.cs.nfl.aj.eppstein_k_best.graph.Edge;
 import se.umu.cs.nfl.aj.eppstein_k_best.graph.Graph;
@@ -16,7 +17,6 @@ import se.umu.cs.nfl.aj.wta.State;
 import se.umu.cs.nfl.aj.wta.Symbol;
 import se.umu.cs.nfl.aj.wta.WTA;
 import se.umu.cs.nfl.aj.wta.Weight;
-import se.umu.cs.nfl.aj.wta.exceptions.SymbolUsageException;
 import se.umu.cs.nfl.aj.wta_handlers.WTABuilder;
 import se.umu.cs.nfl.aj.wta_handlers.WTAParser;
 
@@ -41,12 +41,8 @@ public class NBest {
 
 		List<String> result = null;
 		
-		try {
-			result = run(wta, N);
-		} catch (SymbolUsageException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println("START");
+		result = run(wta, N);		
 
 		for (String treeString : result) {
 			System.out.println(treeString);
@@ -87,7 +83,7 @@ public class NBest {
 		treeStateValTable = new NestedMap<>();
 	}
 	
-	public static List<String> run(WTA wta, int N) throws SymbolUsageException {
+	public static List<String> run(WTA wta, int N) {
 		
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();
@@ -194,11 +190,172 @@ public class NBest {
 		return nBest;
 	}
 	
+	public static List<String> run2(WTA wta, int N) {
+		
+		/* For result. */
+		List<String> nBest = new ArrayList<String>();
+		
+		init(wta);
+		
+		// T <- empty. K <- empty
+		exploredTrees = new ArrayList<Node<Symbol>>(); 
+		treeQueue = new LinkedList<Node<Symbol>>(); 
+		
+		// enqueue(K, Sigma_0) TODO
+		enqueueRankZeroSymbols(wta, N);
+		
+		// i <- 0
+		int counter = 0;
+		
+		// while i < N and K nonempty do
+		while (counter < N && !treeQueue.isEmpty()) {
+			
+			// t <- dequeue(K)
+			Node<Symbol> currentTree = treeQueue.poll();
+						
+			// T <- T u {t}
+			exploredTrees.add(currentTree);
+			
+			// Get optimal state for current tree
+			State optimalState = optimalStates.get(currentTree).get(0);
+			
+			// if M(t) = delta(t) then TODO
+			// is this the same thing as smallestcompletion(optimalstate) = 0 
+			// and optimalstate in final states ?
+			if (optimalState.isFinal()) {
+				
+				// output(t)
+				nBest.add(currentTree.toString());
+				
+				// i <- i + 1
+				counter++;
+			}
+			
+			// prune(T, enqueue(K, expand(T, t))) TODO
+			
+			enqueueWithExpansionAndPruning(wta, currentTree);
+			
+		}
+
+		return nBest;
+	}
+	
+	private static void enqueueRankZeroSymbols(WTA wta, int N) {
+		
+		ArrayList<Symbol> symbols = wta.getSymbols();
+		LinkedList<Node<Symbol>> tempQueue = new LinkedList<>();
+		
+		for (Symbol s : symbols) {
+			
+			if (s.getRank() == 0) {	
+				Node<Symbol> tree = new Node<Symbol>(s);
+				
+				ArrayList<Rule> rules = wta.getRulesBySymbol(s);
+				
+				for (Rule r : rules) {
+					State resState = r.getResultingState();
+					Weight weight = r.getWeight();
+					Weight oldWeight = treeStateValTable.get(tree, resState);
+					
+					if (oldWeight == null || 
+							weight.compareTo(oldWeight) == -1) {
+						treeStateValTable.put(tree, resState, weight);
+					}
+				}
+				
+				HashMap<State, Weight> stateValTable = 
+						treeStateValTable.getAll(tree);
+				ArrayList<State> optStates = new ArrayList<>();
+				
+				for (Entry<State, Weight> e : stateValTable.entrySet()) {
+					
+					Weight minWeight = new Weight(Weight.INF);
+					Weight currentWeight = e.getValue();
+					
+					int comparison = currentWeight.compareTo(minWeight);
+					
+					if (comparison == -1) {
+						minWeight = currentWeight;
+						optStates = new ArrayList<>();
+						optStates.add(e.getKey());
+					} else if (comparison == 0) {
+						optStates.add(e.getKey());
+					}
+					
+				}
+				
+				optimalStates.put(tree, optStates);
+				
+				State treeOptState = optimalStates.get(tree).get(0);
+				Weight treeDeltaWeight = smallestCompletionWeights.
+						get(treeOptState).add(treeStateValTable.
+								get(tree, treeOptState));
+				
+				int tempQueueSize = tempQueue.size();
+				int insertIndex = 0;
+				
+				for (int i = 0; i < tempQueueSize; i++) {
+					
+					Node<Symbol> currentTree = tempQueue.get(i);
+					State currentTreeOptState = optimalStates.get(currentTree).
+							get(0);
+					Weight currentTreeDeltaWeight = smallestCompletionWeights.
+							get(currentTreeOptState).add(treeStateValTable.
+									get(currentTree, currentTreeOptState));
+					
+					int comparison = currentTreeDeltaWeight.compareTo(
+							treeDeltaWeight);
+					
+					if (comparison == 1) {
+						insertIndex = i;
+						break;
+					} else if (comparison == 0) {
+						
+						if (currentTree.compareTo(tree) == 1) {
+							insertIndex = i;
+							break;
+						}
+					}
+				}
+				
+				tempQueue.add(insertIndex, tree);
+				
+				for (Node<Symbol> n : tempQueue) {
+					boolean shallPrune = true;
+					
+					for (State optState : optimalStates.get(n)) {
+						int usage = optimalStatesUsage.get(optState);
+						
+						if (usage >= N) {
+							shallPrune = false;
+						}
+					}
+					
+					if (!shallPrune) {
+						
+						for (State optState : optimalStates.get(n)) {
+							int usage = optimalStatesUsage.get(optState);
+							usage++;
+							optimalStatesUsage.put(optState, usage);
+						}
+						
+						insertTreeIntoQueueByTotalMinimumWeight(n);
+					}
+					
+				}
+				
+			}
+		}
+	}
+	
+	private static void enqueueWithExpansionAndPruning(WTA wta, Node<Symbol> tree) {
+		
+	}
+	
 	// TODO
 	// Eventually divide into two methods, one that calculates the M^q's 
 	// and one that gets the optimal state using the M^q's.
-	public static ArrayList<State> getOptimalStates(WTA wta, Node<Symbol> tree) 
-			throws SymbolUsageException {
+	public static ArrayList<State> getOptimalStates(WTA wta, Node<Symbol> tree) {
 		
 		ArrayList<State> optStatesList = new ArrayList<>();
 		State optimalState = null;
@@ -213,14 +370,6 @@ public class NBest {
 //			System.out.println("Rule: " + r);
 			
 			ArrayList<State> states = r.getStates();
-			int nOfStates = states.size();
-			
-			// TODO this is already checked in parsing, right?
-			if (nOfStates != nOfSubtrees) {
-				throw new SymbolUsageException("The symbol " + r.getSymbol() + 
-						" with rank " + r.getSymbol().getRank() + "" +
-						" is used in a rule " + r + " with rank " + nOfStates);
-			}
 			
 			boolean canUseRule = true;
 			Weight weightSum = new Weight(0);
@@ -247,6 +396,8 @@ public class NBest {
 				
 				Weight currentWeight = treeStateValTable.get(tree, 
 						r.getResultingState());
+				
+				System.out.println(currentWeight);
 				
 //				System.out.println("Current weight: " + currentWeight);
 				
@@ -468,7 +619,9 @@ public class NBest {
 		return expansion;
 	}
 	
-	public static ArrayList<Node<Symbol>> expandUsingPruning(WTA wta, int N, Node<Symbol> tree) {
+	public static ArrayList<Node<Symbol>> expandUsingPruning(WTA wta, int N, 
+			Node<Symbol> tree) {
+		
 		ArrayList<Node<Symbol>> expansion = new ArrayList<>();
 		
 		useEppstein(wta, N, tree);
@@ -485,6 +638,7 @@ public class NBest {
 		for (State q : wta.getStates()) {
 			ArrayList<Rule> rules = wta.getRulesByResultingState(q);
 			LinkedList<Run<Symbol>> runList = new LinkedList<>();
+			Weight qSmallestCompletionWeight = smallestCompletionWeights.get(q);
 			
 			for (Rule r : rules) {
 				ArrayList<State> states = r.getStates();
@@ -534,7 +688,10 @@ public class NBest {
 					Node<Symbol> pathTree = extractTreeFromPath(path, r);
 					Weight pathWeight = new Weight(path.getWeight());
 					
-					Run<Symbol> run = new Run<>(pathTree, pathWeight);
+					// CHEATING
+					pathWeight = pathWeight.add(qSmallestCompletionWeight);
+					
+					Run<Symbol> run = new Run<>(pathTree, pathWeight, q);
 					runList.add(run);
 					
 					path = graph.findNextShortestPath();
@@ -543,11 +700,23 @@ public class NBest {
 				
 				runs.put(q, mergeRunLists(N, runList, runs.get(q)));
 			}
-			
-			// merge all lists with K, remember to get the delta value!
 		}
 		
+		// merge all lists with K, remember to get the delta value!
 		
+		LinkedList<Run<Symbol>> mergedList = new LinkedList<>();
+		int nOfStatesInWTA = wta.getStates().size();
+		
+		for (LinkedList<Run<Symbol>> currentList : runs.values()) {
+			mergedList = mergeRunLists(N*nOfStatesInWTA, currentList, 
+					mergedList);
+		}
+		
+		// merge with K, add all values to treeStateVal and get optstates for each tree added?
+		for (Run<Symbol> r : mergedList) {
+		
+		
+		}
 	}
 	
 	private static Node<Symbol> extractTreeFromPath(Path<Node<Symbol>> path, 
@@ -591,15 +760,10 @@ public class NBest {
 				result.addLast(list2.poll());
 			}
 			
+			added++;
 		}
 		
 		return result;
 	}
-
-//	private static void reset() {
-//		exploredTrees = new ArrayList<Node>();
-//		treeQueue = new PriorityQueue<Node>(initialSize, new TreeComparator());
-//		treeStateValTable = new NestedMap<>();
-//	}
 
 }
