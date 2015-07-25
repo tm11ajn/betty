@@ -503,8 +503,7 @@ public class NBest {
 		HashMap<State, LinkedList<Node<Symbol>>> nRuns = new HashMap<>();
 		
 		for (State q : wta.getStates()) {
-			ArrayList<LinkedList<Node<Symbol>>> hej;
-			allRuns.put(q, (hej = useEppstein(wta, N, tree, q)));
+			allRuns.put(q, useEppstein(wta, N, tree, q));
 		}
 		
 		// Merge into one list for each Q
@@ -602,10 +601,6 @@ public class NBest {
 			Path<Node<Symbol>> path = 
 					graph.findShortestPath("u0", "v" + nOfStates);
 			
-			for (Edge<Node<Symbol>> e : path) {
-				System.out.println(e.getLabel() + " : " + e.getWeight());
-			}
-			
 			while (path.isValid() && counter < k) {
 				Node<Symbol> pathTree = extractTreeFromPath(path, r);
 				Weight pathWeight = new Weight(path.getWeight());
@@ -615,7 +610,7 @@ public class NBest {
 				}
 				
 				// TODO Might have to add the weight of the rule here
-				//pathWeight = pathWeight.add(r.getWeight());
+				pathWeight = pathWeight.add(r.getWeight());
 
 				Weight oldWeight = treeStateValTable.get(pathTree, q);
 
