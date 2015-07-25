@@ -9,7 +9,8 @@ import org.junit.runners.Suite;
 	se.umu.cs.nfl.aj.nbest.data.AllDataTests.class, 
 	se.umu.cs.nfl.aj.wta.AllWTATests.class,
 	se.umu.cs.nfl.aj.wta_handlers.AllWTAHandlerTests.class,
-	se.umu.cs.nfl.aj.nbest.NBestTest.class})
+	se.umu.cs.nfl.aj.nbest.BestTreesBasicTest.class,
+	se.umu.cs.nfl.aj.nbest.BestTreesTest.class})
 public class AllTests {
 	
 }

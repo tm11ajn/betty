@@ -14,7 +14,7 @@ import se.umu.cs.nfl.aj.wta.Symbol;
 import se.umu.cs.nfl.aj.wta.WTA;
 import se.umu.cs.nfl.aj.wta_handlers.WTAParser;
 
-public class NBestTest {
+public class BestTreesBasicTest {
 	
 	private String fileName = "wta_examples/wta0.rtg";
 	private WTA wta;
@@ -33,16 +33,18 @@ public class NBestTest {
 	@Test
 	public void shouldGetOptimalStateForLeafNode() throws Exception {
 		Node<Symbol> leafNode = new Node<Symbol>(new Symbol("a", 0));
-		NBest.init(wta);
-		State optimalState = NBest.getOptimalStates(wta, leafNode).get(0);
+		BestTreesBasic.init(wta);
+		State optimalState = BestTreesBasic.
+				getOptimalStates(wta, leafNode).get(0);
 		assertEquals(new State("pb"), optimalState);
 	}
 	
 	@Test
 	public void shouldGetOptimalStateForLeafNode2() throws Exception {
 		Node<Symbol> leafNode = new Node<Symbol>(new Symbol("b", 0));
-		NBest.init(wta);
-		State optimalState = NBest.getOptimalStates(wta, leafNode).get(0);
+		BestTreesBasic.init(wta);
+		State optimalState = BestTreesBasic.
+				getOptimalStates(wta, leafNode).get(0);
 		assertEquals(new State("pa"), optimalState);
 	}
 	
@@ -51,17 +53,17 @@ public class NBestTest {
 		Node<Symbol> leafNodeA = new Node<Symbol>(new Symbol("a", 0));
 		Node<Symbol> node = new Node<Symbol>(new Symbol("ball", 2));
 		
-		NBest.init(wta);
+		BestTreesBasic.init(wta);
 		
 		node.addChild(leafNodeA);
 		node.addChild(leafNodeA);
 		
-		NBest.getOptimalStates(wta, leafNodeA);
+		BestTreesBasic.getOptimalStates(wta, leafNodeA);
 		
 		ArrayList<State> expected = new ArrayList<>();
 		expected.add(new State("qb"));
 		
-		assertEquals(expected, NBest.getOptimalStates(wta, node));
+		assertEquals(expected, BestTreesBasic.getOptimalStates(wta, node));
 	}
 	
 	@Test
@@ -70,25 +72,26 @@ public class NBestTest {
 		Node<Symbol> leafNodeB = new Node<Symbol>(new Symbol("b", 0));
 		Node<Symbol> node = new Node<Symbol>(new Symbol("ball", 2));
 		
-		NBest.init(wta);
+		BestTreesBasic.init(wta);
 		
 		node.addChild(leafNodeB);
 		node.addChild(leafNodeA);
 		
-		NBest.getOptimalStates(wta, leafNodeA);
-		NBest.getOptimalStates(wta, leafNodeB);
+		BestTreesBasic.getOptimalStates(wta, leafNodeA);
+		BestTreesBasic.getOptimalStates(wta, leafNodeB);
 		
 		ArrayList<State> expected = new ArrayList<>();
 		expected.add(new State("qa"));
 		expected.add(new State("qb"));
 		
-		assertEquals(expected, NBest.getOptimalStates(wta, node));
+		assertEquals(expected, BestTreesBasic.getOptimalStates(wta, node));
 	}
 	
 	@Test
 	public void shouldGetExpansion() throws Exception {
 		Node<Symbol> leafNodeA = new Node<Symbol>(new Symbol("a", 0));
-		ArrayList<Node<Symbol>> expansion = NBest.expandWith(wta, leafNodeA);
+		ArrayList<Node<Symbol>> expansion = 
+				BestTreesBasic.expandWith(wta, leafNodeA);
 		
 		ArrayList<Node<Symbol>> expected = new ArrayList<Node<Symbol>>();
 		expected.add(leafNodeA); // TODO
