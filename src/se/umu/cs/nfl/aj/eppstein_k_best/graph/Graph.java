@@ -33,6 +33,7 @@ public class Graph<T> {
 			}
 			
 			if (this.getVertex(label) == null) {
+//				System.out.println("Adding vertex " + label);
 				this.vertices.add(new Vertex<T>(label));
 			}
 		}
@@ -49,6 +50,7 @@ public class Graph<T> {
 		tailsVertex.getRelatedEdges().add(e);
 
 		if (!tailsVertex.equals(headsVertex)) {
+//			System.out.println("Adding edge " + label + " with weight " + weight + " from " + tailsVertex + " to " + headsVertex);
 			headsVertex.getRelatedEdges().add(e);
 		}
 		

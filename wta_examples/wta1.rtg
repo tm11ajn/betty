@@ -1,0 +1,11 @@
+a -> qb # 1
+b -> qb # 3
+a -> qa # 2
+b -> qa # 1
+
+ball[qa, qa] -> qf
+ball[qb, qb] -> qf
+
+end[qf] -> qf
+
+final qf
