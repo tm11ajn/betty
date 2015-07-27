@@ -123,6 +123,7 @@ public class Node<LabelType> implements Comparable<Node<LabelType>> {
 		return treeString;
 	}
 
+	// TODO size of a tree?
 	@Override
 	public int compareTo(Node<LabelType> o) {
 		
