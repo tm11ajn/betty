@@ -1,16 +1,19 @@
 package se.umu.cs.nfl.aj.nbest;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.PriorityQueue;
 
 import se.umu.cs.nfl.aj.eppstein_k_best.graph.Edge;
 import se.umu.cs.nfl.aj.eppstein_k_best.graph.Graph;
 import se.umu.cs.nfl.aj.eppstein_k_best.graph.Path;
 import se.umu.cs.nfl.aj.nbest.data.NestedMap;
 import se.umu.cs.nfl.aj.nbest.data.Node;
+import se.umu.cs.nfl.aj.nbest.data.Run;
 import se.umu.cs.nfl.aj.wta.Rule;
 import se.umu.cs.nfl.aj.wta.State;
 import se.umu.cs.nfl.aj.wta.Symbol;
@@ -343,6 +346,17 @@ public class BestTrees {
 			}
 
 			graph.createVertices(vertices);
+			
+			Comparator<Run> smallestRunComparator = new Comparator<Run>() {
+
+				@Override
+				public int compare(Run o1, Run o2) {
+					return o1.getWeight().compareTo(o2.getWeight());
+				}
+			};
+			
+			NestedMap<String, String, PriorityQueue<Run>> edgeMap = 
+					new NestedMap<>();
 
 			for (int i = 1; i < nOfStates + 1; i++) {
 				State currentState = states.get(i-1);
@@ -350,24 +364,87 @@ public class BestTrees {
 				for (Node<Symbol> n : exploredTrees) { // TODO include only N edges for each pair of nodes
 
 					Weight w = treeStateValTable.get(n, currentState);
-					double weight = Double.MAX_VALUE;
+//					double weight = Double.MAX_VALUE;
+//					
+//					if (w != null) {
+//						weight = Double.parseDouble(w.toString());
+//					} else {
+//						continue;
+//					}
 					
-					if (w != null) {
-						weight = Double.parseDouble(w.toString());
-					} else {
+					if (w == null) {
 						continue;
 					}
 
 					boolean isT = n.equals(tree);
+					
+					PriorityQueue<Run> pu;
+					PriorityQueue<Run> pv;
 
 					if (!isT) {
-						graph.createEdge("u" + (i - 1), "u" + i, n, weight);
-						graph.createEdge("v" + (i - 1), "v" + i, n, weight);
+						
+						pu = edgeMap.get("u" + (i - 1), "u" + i);
+						pv = edgeMap.get("v" + (i - 1), "v" + i);
+						
+						if (pu == null) {
+							pu = new PriorityQueue<>(nOfStates, // TODO choose a better initial capacity? 
+									smallestRunComparator);
+							edgeMap.put("u" + (i - 1), "u" + i, pu);
+						}
+						
+						if (pv == null) {
+							pv = new PriorityQueue<>(nOfStates, // TODO choose a better initial capacity? 
+									smallestRunComparator);
+							edgeMap.put("v" + (i - 1), "v" + i, pv);
+						}
+						
+						pu.add(new Run(n, w));
+						pv.add(new Run(n, w));
+						
+//						graph.createEdge("u" + (i - 1), "u" + i, n, weight);
+//						graph.createEdge("v" + (i - 1), "v" + i, n, weight);
 					}
 
 					if (isT) {
-						graph.createEdge("u" + (i - 1), "v" + i, n, weight);
-						graph.createEdge("v" + (i - 1), "v" + i, n, weight);
+						
+						pu = edgeMap.get("u" + (i - 1), "v" + i);
+						pv = edgeMap.get("v" + (i - 1), "v" + i);
+						
+						if (pu == null) {
+							pu = new PriorityQueue<>(nOfStates, // TODO choose a better initial capacity? 
+									smallestRunComparator);
+							edgeMap.put("u" + (i - 1), "v" + i, pu);
+						}
+						
+						if (pv == null) {
+							pv = new PriorityQueue<>(nOfStates, // TODO choose a better initial capacity? 
+									smallestRunComparator);
+							edgeMap.put("v" + (i - 1), "v" + i, pv);
+						}
+						
+						pu.add(new Run(n, w));
+						pv.add(new Run(n, w));
+						
+//						graph.createEdge("u" + (i - 1), "v" + i, n, weight);
+//						graph.createEdge("v" + (i - 1), "v" + i, n, weight);
+					}
+				}
+			}
+			
+			// Adds only the N smallest edges to Eppstein graph.
+			for (String vertex1 : edgeMap.keySet()) {
+				
+				for (String vertex2 : edgeMap.get(vertex1).keySet()) {
+				
+					PriorityQueue<Run> p = edgeMap.get(vertex1, vertex2);
+					
+					int counter = 0;
+					
+					while (!p.isEmpty() && counter < k) {
+						Run run = p.poll();
+						graph.createEdge(vertex1, vertex2, run.getTree(), 
+								Double.parseDouble(run.getWeight().toString()));
+						counter++;
 					}
 				}
 			}
@@ -420,125 +497,125 @@ public class BestTrees {
 	}
 	
 	// Does not add same tree twice
-		private static LinkedList<Node<Symbol>> mergeTreeLists(State q, 
-				int listSizeLimit, LinkedList<Node<Symbol>> list1, 
-				LinkedList<Node<Symbol>> list2) {
-			
-			LinkedList<Node<Symbol>> result = new LinkedList<>();
-			
-			int added = 0;
-			
-			while (added < listSizeLimit && !(list1.isEmpty() && list2.isEmpty())) {
-				
-				Node<Symbol> tree1 = list1.peek();
-				Node<Symbol> tree2 = list2.peek();
-				
-				if (tree1 != null && result.contains(tree1)) {
-					list1.poll();
-				} else if (tree2 != null && result.contains(tree2)) {
-					list2.poll();
-				} else if (tree1 != null && tree2 != null) {
+	private static LinkedList<Node<Symbol>> mergeTreeLists(State q, 
+			int listSizeLimit, LinkedList<Node<Symbol>> list1, 
+			LinkedList<Node<Symbol>> list2) {
 
-					Weight weight1 = treeStateValTable.get(tree1, q);
-					Weight weight2 = treeStateValTable.get(tree2, q);
+		LinkedList<Node<Symbol>> result = new LinkedList<>();
 
-					if (weight1.compareTo(weight2) == -1) {
-						result.addLast(list1.poll());
-					} else if (weight1.compareTo(weight2) == 1) {
-						result.addLast(list2.poll());
-					} else {
-						
-						if (tree1.compareTo(tree2) == 0) {
-							result.addLast(list1.poll());
-							list2.poll();
-						} else if (tree1.compareTo(tree2) == -1) {
-							result.addLast(list1.poll());
-						} else {
-							result.addLast(list2.poll());
-						}
-					}
-					
-				} else if (tree1 != null) {
+		int added = 0;
+
+		while (added < listSizeLimit && !(list1.isEmpty() && list2.isEmpty())) {
+
+			Node<Symbol> tree1 = list1.peek();
+			Node<Symbol> tree2 = list2.peek();
+
+			if (tree1 != null && result.contains(tree1)) {
+				list1.poll();
+			} else if (tree2 != null && result.contains(tree2)) {
+				list2.poll();
+			} else if (tree1 != null && tree2 != null) {
+
+				Weight weight1 = treeStateValTable.get(tree1, q);
+				Weight weight2 = treeStateValTable.get(tree2, q);
+
+				if (weight1.compareTo(weight2) == -1) {
 					result.addLast(list1.poll());
-				} else {
+				} else if (weight1.compareTo(weight2) == 1) {
 					result.addLast(list2.poll());
-				}
-				
-				added++;
-			}
-			
-			return result;
-		}
-		
-		// Does not add same tree twice
-		private static LinkedList<Node<Symbol>> mergeTreeListsByDeltaWeights( 
-				int listSizeLimit, LinkedList<Node<Symbol>> list1, 
-				LinkedList<Node<Symbol>> list2) {
+				} else {
 
-			LinkedList<Node<Symbol>> result = new LinkedList<>();
-
-			int added = 0;
-
-			while (added < listSizeLimit && !(list1.isEmpty() && list2.isEmpty())) {
-
-				Node<Symbol> tree1 = list1.peek();
-				Node<Symbol> tree2 = list2.peek();
-
-				ArrayList<State> optStates1 = optimalStates.get(tree1);
-				ArrayList<State> optStates2 = optimalStates.get(tree2);
-
-
-				if (optStates1 == null) {
-					optStates1 = getOptimalStates(tree1);
-					optimalStates.put(tree1, optStates1);
-				} 
-				
-				if (optStates2 == null) {
-					optStates2 = getOptimalStates(tree1);
-					optimalStates.put(tree2, optStates2);
-				}
-				
-				State opt1 = optStates1.get(0);
-				State opt2 = optStates2.get(0);
-				
-				Weight compl1 = smallestCompletionWeights.get(optStates1.get(0));
-				Weight compl2 = smallestCompletionWeights.get(optStates2.get(0));
-
-				if (tree1 != null && result.contains(tree1)) {
-					list1.poll();
-				} else if (tree2 != null && result.contains(tree2)) {
-					list2.poll();
-				} else if (tree1 != null && tree2 != null) {
-
-					Weight weight1 = treeStateValTable.get(tree1, opt1).add(compl1);
-					Weight weight2 = treeStateValTable.get(tree2, opt2).add(compl2);
-
-					if (weight1.compareTo(weight2) == -1) {
+					if (tree1.compareTo(tree2) == 0) {
 						result.addLast(list1.poll());
-					} else if (weight1.compareTo(weight2) == 1) {
-						result.addLast(list2.poll());
+						list2.poll();
+					} else if (tree1.compareTo(tree2) == -1) {
+						result.addLast(list1.poll());
 					} else {
-
-						if (tree1.equals(tree2)) {
-							result.addLast(list1.poll());
-							list2.poll();
-						} else if (tree1.compareTo(tree2) == -1) {
-							result.addLast(list1.poll());
-						} else {
-							result.addLast(list2.poll());
-						}
+						result.addLast(list2.poll());
 					}
-
-				} else if (tree1 != null) {
-					result.addLast(list1.poll());
-				} else {
-					result.addLast(list2.poll());
 				}
 
-				added++;
+			} else if (tree1 != null) {
+				result.addLast(list1.poll());
+			} else {
+				result.addLast(list2.poll());
 			}
 
-			return result;
+			added++;
 		}
-	
+
+		return result;
+	}
+
+	// Does not add same tree twice
+	private static LinkedList<Node<Symbol>> mergeTreeListsByDeltaWeights( 
+			int listSizeLimit, LinkedList<Node<Symbol>> list1, 
+			LinkedList<Node<Symbol>> list2) {
+
+		LinkedList<Node<Symbol>> result = new LinkedList<>();
+
+		int added = 0;
+
+		while (added < listSizeLimit && !(list1.isEmpty() && list2.isEmpty())) {
+
+			Node<Symbol> tree1 = list1.peek();
+			Node<Symbol> tree2 = list2.peek();
+
+			ArrayList<State> optStates1 = optimalStates.get(tree1);
+			ArrayList<State> optStates2 = optimalStates.get(tree2);
+
+
+			if (optStates1 == null) {
+				optStates1 = getOptimalStates(tree1);
+				optimalStates.put(tree1, optStates1);
+			} 
+
+			if (optStates2 == null) {
+				optStates2 = getOptimalStates(tree1);
+				optimalStates.put(tree2, optStates2);
+			}
+
+			State opt1 = optStates1.get(0);
+			State opt2 = optStates2.get(0);
+
+			Weight compl1 = smallestCompletionWeights.get(optStates1.get(0));
+			Weight compl2 = smallestCompletionWeights.get(optStates2.get(0));
+
+			if (tree1 != null && result.contains(tree1)) {
+				list1.poll();
+			} else if (tree2 != null && result.contains(tree2)) {
+				list2.poll();
+			} else if (tree1 != null && tree2 != null) {
+
+				Weight weight1 = treeStateValTable.get(tree1, opt1).add(compl1);
+				Weight weight2 = treeStateValTable.get(tree2, opt2).add(compl2);
+
+				if (weight1.compareTo(weight2) == -1) {
+					result.addLast(list1.poll());
+				} else if (weight1.compareTo(weight2) == 1) {
+					result.addLast(list2.poll());
+				} else {
+
+					if (tree1.equals(tree2)) {
+						result.addLast(list1.poll());
+						list2.poll();
+					} else if (tree1.compareTo(tree2) == -1) {
+						result.addLast(list1.poll());
+					} else {
+						result.addLast(list2.poll());
+					}
+				}
+
+			} else if (tree1 != null) {
+				result.addLast(list1.poll());
+			} else {
+				result.addLast(list2.poll());
+			}
+
+			added++;
+		}
+
+		return result;
+	}
+
 }

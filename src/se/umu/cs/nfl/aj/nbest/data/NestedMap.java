@@ -1,6 +1,7 @@
 package se.umu.cs.nfl.aj.nbest.data;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class NestedMap<KeyType0, KeyType1, ValueType> {
 
@@ -37,6 +38,10 @@ public class NestedMap<KeyType0, KeyType1, ValueType> {
 		return map.get(key0).get(key1);
 	}
 	
+	public HashMap<KeyType1, ValueType> get(KeyType0 key0) {
+		return map.get(key0);
+	}
+	
 	public HashMap<KeyType1, ValueType> getAll(KeyType0 key0) {
 		return map.get(key0);
 	}
@@ -45,6 +50,10 @@ public class NestedMap<KeyType0, KeyType1, ValueType> {
 
 	public boolean containsKey(KeyType0 key) {
 		return map.containsKey(key);
+	}
+	
+	public Set<KeyType0> keySet() {
+		return map.keySet();
 	}
 
 }
