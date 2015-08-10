@@ -96,7 +96,8 @@ public class BestTrees {
 			if (s.getRank() == 0) {	
 				Node<Symbol> tree = new Node<Symbol>(s);
 				
-				ArrayList<Rule> rules = wta.getRulesBySymbol(s);
+				ArrayList<Rule> rules = wta.getTransitionFunction().
+						getRulesBySymbol(s);
 				
 				for (Rule r : rules) {
 					State resState = r.getResultingState();
@@ -314,16 +315,16 @@ public class BestTrees {
 		
 	}
 	
-	public static ArrayList<LinkedList<Node<Symbol>>> useEppstein(WTA wta, int k, 
-			Node<Symbol> tree, State q) {
+	public static ArrayList<LinkedList<Node<Symbol>>> useEppstein(WTA wta, 
+			int k, Node<Symbol> tree, State q) {
 		
 		ArrayList<LinkedList<Node<Symbol>>> kBestTreesForEachQRule = 
 				new ArrayList<>();
 
 		Graph<Node<Symbol>> graph = new Graph<>();
 
-		ArrayList<Rule> rules = wta.getRulesByResultingState(q);
-		
+		ArrayList<Rule> rules = wta.getTransitionFunction().
+				getRulesByResultingState(q);
 
 		for (Rule r : rules) {
 			LinkedList<Node<Symbol>> treeList = new LinkedList<>();

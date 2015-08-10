@@ -114,7 +114,7 @@ public class WTAParser {
 			newRule = new Rule(symbol, resultingState);
 		}
 
-		wta.addRule(newRule);
+		wta.getTransitionFunction().addRule(newRule);
 	}
 
 	private void parseNonLeafRule(String line, WTA wta)
@@ -144,7 +144,7 @@ public class WTAParser {
 			newRule.addState(wta.addState(labels[i]));
 		}
 
-		wta.addRule(newRule);
+		wta.getTransitionFunction().addRule(newRule);
 	}
 	
 	// TODO unnecessary if the reserved symbol uses unallowed characters

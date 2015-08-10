@@ -6,10 +6,6 @@ import java.util.List;
 public class Node<LabelType> implements Comparable<Node<LabelType>> {
 
 	private LabelType label;
-
-	// M^q(this), index with state
-//	private HashMap<String, Double> minRunWeight = new HashMap<>();
-
 	private Node<LabelType> parent;
 	private List<Node<LabelType>> children = new ArrayList<Node<LabelType>>();
 	private int nOfChildren;

@@ -121,7 +121,8 @@ public class BestTreesBasic {
 		State optimalState = null;
 		Weight minWeight = new Weight(Weight.INF);
 		
-		ArrayList<Rule> rules = wta.getRulesBySymbol(tree.getLabel());
+		ArrayList<Rule> rules = wta.getTransitionFunction().
+				getRulesBySymbol(tree.getLabel());
 		
 		int nOfSubtrees = tree.getChildCount();
 		
@@ -221,7 +222,7 @@ public class BestTreesBasic {
 	
 	public static ArrayList<Node<Symbol>> expandWith(WTA wta, Node<Symbol> tree) {
 		ArrayList<Node<Symbol>> expansion = new ArrayList<Node<Symbol>>();
-		ArrayList<Rule> rules = wta.getRules();
+		ArrayList<Rule> rules = wta.getTransitionFunction().getRules();
 		
 		for (Rule r : rules) {
 			ArrayList<State> states = r.getStates();

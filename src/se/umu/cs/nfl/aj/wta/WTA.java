@@ -3,7 +3,6 @@ package se.umu.cs.nfl.aj.wta;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import se.umu.cs.nfl.aj.wta.exceptions.DuplicateRuleException;
 import se.umu.cs.nfl.aj.wta.exceptions.SymbolUsageException;
 
 public class WTA {
@@ -21,21 +20,9 @@ public class WTA {
 	public WTA() {
 
 	}
-
-	public boolean addRule(Rule rule) throws DuplicateRuleException {
-		return transitionFunction.addRule(rule);
-	}
-
-	public ArrayList<Rule> getRulesBySymbol(Symbol symbol) {
-		return transitionFunction.getRulesBySymbol(symbol);
-	}
-
-	public ArrayList<Rule> getRulesByResultingState(State resultingState) {
-		return transitionFunction.getRulesByResultingState(resultingState);
-	}
 	
-	public ArrayList<Rule> getRules() {
-		return transitionFunction.getRules();
+	public TransitionFunction getTransitionFunction() {
+		return transitionFunction;
 	}
 
 	public State addState(String label) throws SymbolUsageException {

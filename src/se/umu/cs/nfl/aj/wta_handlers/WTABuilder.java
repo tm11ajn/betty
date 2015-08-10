@@ -54,7 +54,8 @@ public class WTABuilder {
 			
 			ArrayList<State> modifiedStates = modifiedWTA.getStates();
 			ArrayList<State> modifiedFinalStates = modifiedWTA.getFinalStates();
-			ArrayList<Rule> modifiedRules = modifiedWTA.getRules();
+			ArrayList<Rule> modifiedRules = modifiedWTA.
+					getTransitionFunction().getRules();
 			
 			int nOfModifiedStates = modifiedStates.size();
 			
@@ -168,7 +169,7 @@ public class WTABuilder {
 		ArrayList<Symbol> symbols = wta.getSymbols();
 		ArrayList<State> states = wta.getStates();
 		ArrayList<State> finalStates = wta.getFinalStates();
-		ArrayList<Rule> rules = wta.getRules();
+		ArrayList<Rule> rules = wta.getTransitionFunction().getRules();
 			
 		for (Symbol s : symbols) {
 			modWTA.addSymbol(s.getLabel(), s.getRank());
@@ -200,10 +201,10 @@ public class WTABuilder {
 		
 		Rule reservedSymbolRule = new Rule(reservedSymbol, new Weight(0), 
 				reservedSymbolState); 
-		modWTA.addRule(reservedSymbolRule);
+		modWTA.getTransitionFunction().addRule(reservedSymbolRule);
 		
 		for (Rule r : rules) {
-			modWTA.addRule(r);
+			modWTA.getTransitionFunction().addRule(r);
 			
 			ArrayList<State> leftHandStates = r.getStates();
 			int nOfLHStates = leftHandStates.size();
@@ -224,7 +225,7 @@ public class WTABuilder {
 					}
 				}
 				
-				modWTA.addRule(newRule);
+				modWTA.getTransitionFunction().addRule(newRule);
 			}
 		}
 
