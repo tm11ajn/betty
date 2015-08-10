@@ -46,8 +46,6 @@ public class NestedMap<KeyType0, KeyType1, ValueType> {
 		return map.get(key0);
 	}
 
-	// public ValueType remove(KeyType0 key0, KeyType1 key1)  {}
-
 	public boolean containsKey(KeyType0 key) {
 		return map.containsKey(key);
 	}

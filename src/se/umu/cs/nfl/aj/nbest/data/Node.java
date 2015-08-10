@@ -55,6 +55,16 @@ public class Node<LabelType> implements Comparable<Node<LabelType>> {
 	public boolean isLeaf() {
 		return nOfChildren == 0;
 	}
+	
+	public int getSize() {
+		int size = 0;
+		
+		for (Node<LabelType> child : children) {
+			size += child.getSize();
+		}
+		
+		return size + 1;
+	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -119,19 +129,27 @@ public class Node<LabelType> implements Comparable<Node<LabelType>> {
 		return treeString;
 	}
 
-	// TODO size of a tree?
 	@Override
 	public int compareTo(Node<LabelType> o) {
+		
+		int thisSize = this.getSize();
+		int oSize = o.getSize();
+		
+		if (thisSize < oSize) {
+			return -1;
+		} else if (thisSize > oSize) {
+			return 1;
+		}
 		
 		String thisString = this.toString();
 		String oString = o.toString();
 		
-		if (thisString.length() < oString.length()) {
+		if (thisString.compareTo(oString) < 0) {
 			return -1;
-		} else if (thisString.length() > oString.length()) {
+		} else if (thisString.compareTo(oString) > 0) {
 			return 1;
 		}
 		
-		return this.toString().compareTo(o.toString());
+		return 0;
 	}
 }

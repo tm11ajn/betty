@@ -196,7 +196,7 @@ public class BestTreesBasic {
 				queueIndex = i + 1;
 			} else if (wMinTemp.compareTo(wMinCurrent) == 0) {
 				
-				if (t.toString().compareTo(tree.toString()) < 1) {
+				if (t.compareTo(tree) < 1) {
 					queueIndex = i + 1;
 				}
 			}

@@ -218,7 +218,7 @@ public class BestTrees {
 				isSmaller = false;
 			} else if (lastDeltaWeight.compareTo(deltaWeight) == 0) {
 
-				if (last.toString().compareTo(tree.toString()) != 1) {
+				if (last.compareTo(tree) != 1) {
 					isSmaller = false;
 				}
 			}
@@ -258,7 +258,7 @@ public class BestTrees {
 					break; // TODO boolean and while instead
 				} else if (currentDeltaWeight.compareTo(deltaWeight) == 0) {
 
-					if (n.toString().compareTo(tree.toString()) == 1) {
+					if (n.compareTo(tree) == 1) {
 						insertIndex = i;
 						break; // TODO boolean and while instead
 					}
