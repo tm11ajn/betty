@@ -1,6 +1,6 @@
 BESTTREES
 
-BestTrees.jar contains the implementation of the algorithm presented in
+This repo contains the implementation of the BestTrees algorithm presented in
 "An Efficient Best-Trees Algorithm for Weighted Tree Automata over the Tropical 
 Semiring" by Johanna Björklund, Frank Drewes, and Niklas Zechner for generating
 the N best trees given a weighted tree automaton (WTA).
