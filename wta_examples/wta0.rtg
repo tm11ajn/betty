@@ -1,3 +1,5 @@
+// The example graph from the "Best trees" paper
+
 a -> pa # 2
 a -> pb # 1
 b -> pa # 1
