@@ -9,6 +9,8 @@ The file wta.format contains the description of the format of the input WTAs.
 The example WTA from the paper can be found in wta0.rtg, and another example
 used for testing is in wta1.rtg.
 
+Quick start: 
+
 Run the .jar file by 
 
 java -jar BestTrees.jar <RTG file> N [ --no-pruning | -timer ]
@@ -16,5 +18,7 @@ java -jar BestTrees.jar <RTG file> N [ --no-pruning | -timer ]
     N is an nonnegative integer
     --no-pruning runs the BestTreesBasic algorithm
     -timer compares BestTrees and BestTreesBasic
+    
+Enjoy the forest.
     
 /aj@cs.umu.se
