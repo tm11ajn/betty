@@ -1,0 +1,15 @@
+The format of a WTA input to the BestTrees routine is the following:
+
+a -> q0 
+b -> q1 # 0.2
+
+a[q0, q1, ..., qn] -> qf  # 0.4
+b[q0, q1, ..., qn] -> qf2 
+
+final qf, qf2 
+
+where the first two rows represent leaf rules, the second two are non-leaf rules 
+and the "final" keyword allows for listing of the final states. Moreover, a and 
+b are symbols, q0, ..., qn, qf and qf2 are states and the positive real number 
+following # is the weight of the rule. No weight implies zero weight. Comments
+can be done using "//" at the beginning of a row.
