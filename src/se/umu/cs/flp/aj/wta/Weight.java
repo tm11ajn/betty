@@ -23,7 +23,7 @@ package se.umu.cs.flp.aj.wta;
 public class Weight implements Comparable<Weight> {
 
 	public static final double INF = Double.MAX_VALUE;
-	public static final double NINF = Double.MIN_VALUE;
+	public static final double NINF = Double.MIN_VALUE; // TODO remove
 
 	private double value;
 
@@ -45,7 +45,6 @@ public class Weight implements Comparable<Weight> {
 	
 	public Weight add(Weight w) {
 		
-		// TODO remove NINF?
 		if ((value == INF && w.value == NINF) || 
 				(value == NINF && w.value == INF)) {
 			return null;
@@ -62,7 +61,6 @@ public class Weight implements Comparable<Weight> {
 	
 	public Weight subtract(Weight w) {
 		
-		// TODO remove NINF?
 		if ((value == INF && w.value == INF) || 
 				(value == NINF && w.value == NINF)) {
 			return null;

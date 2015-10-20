@@ -27,8 +27,6 @@ import se.umu.cs.flp.aj.wta.exceptions.SymbolUsageException;
 
 public class RankedAlphabet {
 
-//	private HashMap<Integer, ArrayList<Symbol>> ranking = new HashMap<>();
-
 	private HashMap<String, Symbol> symbols = new HashMap<>();
 
 	public RankedAlphabet() {
@@ -49,18 +47,6 @@ public class RankedAlphabet {
 		}
 
 		return s;
-
-//		int rank = symbol.getRank();
-//		ArrayList<Symbol> rankList = null;
-//
-//		if (!ranking.containsKey(rank)) {
-//			rankList = new ArrayList<>();
-//			ranking.put(rank, rankList);
-//		} else {
-//			rankList = ranking.get(rank);
-//		}
-//
-//		return rankList.add(symbol);
 	}
 
 	public boolean hasSymbol(String symbol) {
@@ -70,10 +56,6 @@ public class RankedAlphabet {
 	public ArrayList<Symbol> getSymbols() {
 		return new ArrayList<Symbol>(symbols.values());
 	}
-
-//	public ArrayList<Symbol> getSymbolsByRank(int rank) {
-//		return ranking.get(rank);
-//	}
 	
 	@Override
 	public String toString() {

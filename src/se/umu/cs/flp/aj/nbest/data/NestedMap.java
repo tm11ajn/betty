@@ -25,7 +25,6 @@ import java.util.Set;
 
 public class NestedMap<KeyType0, KeyType1, ValueType> {
 
-//	private Map<KeyType0, Map<KeyType1, ValueType>> map = new HashMap<>();
 	private HashMap<KeyType0, HashMap<KeyType1, ValueType>> map =
 			new HashMap<>();
 

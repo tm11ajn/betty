@@ -50,8 +50,6 @@ public class WTABuilder {
 		
 		ArrayList<State> states = wta.getStates();
 		
-//		int counter = 0;
-		
 		/*
 		 * Build a modified WTA for each state in the original WTA
 		 * and get the weight of the smallest tree that is accepted
@@ -59,7 +57,7 @@ public class WTABuilder {
 		 * current state as the connector.
 		 */
 		for (State state : states) {
-//			System.out.println("CURRENT STATE: " + state);
+			
 			WTA modifiedWTA = null;
 			
 			try {
@@ -88,8 +86,6 @@ public class WTABuilder {
 
 			while (defined.size() < nOfModifiedStates) {
 				
-//				System.out.println("PRINTTEST");
-				
 				for (Rule r : modifiedRules) {
 					ArrayList<State> leftHandStates = r.getStates();
 					State resultingState = r.getResultingState();
@@ -107,21 +103,15 @@ public class WTABuilder {
 					}
 					
 					newWeight = newWeight.add(r.getWeight());
-//					System.out.println("Rule: " + r);
-//					System.out.println("new weight=" + newWeight);
-//					System.out.println("allDefined=" + allDefined);
 					
 					if (allDefined) {
 						Weight oldWeight = weights.get(resultingState);
-//						System.out.println("Oldweight=" + oldWeight);
 						
 						if (newWeight.compareTo(oldWeight) == 1) {
 							newWeight = oldWeight;
 						}
 						
 						weights.put(resultingState, newWeight);
-//						System.out.println("PUT");
-//						System.out.println(resultingState + " " + newWeight);
 					}
 				}
 				
@@ -142,13 +132,6 @@ public class WTABuilder {
 				defined.put(smallestState, smallestState);
 				modifiedStates.remove(smallestState);
 				
-//				System.out.println("Smallest weight: " + smallestWeight);
-//				System.out.println("Smallest state: " + smallestState);
-//				System.out.println("Size defined: " + defined.size());
-//				System.out.println("Size modstates: " + modifiedStates.size());
-				
-				// Add corresponding state to defined and 
-				// remove it from modifiedStates
 			}
 			
 			Weight smallestCompletionWeight = new Weight(Weight.INF);
@@ -168,11 +151,8 @@ public class WTABuilder {
 				}
 			}
 
-//			System.out.println("SMALLESTCOMPLETIONWEIGHT FOR CURRENTSTATE: " + 
-//					smallestCompletionWeight);
 			smallestCompletionWeights.put(state, smallestCompletionWeight);
-//			counter++;
-//			System.out.println(counter);
+
 		}
 
 		return smallestCompletionWeights;
@@ -231,15 +211,17 @@ public class WTABuilder {
 			
 			for (int i = 0; i < nOfLHStates; i++) {
 				State newResultingState = new State(r.getResultingState().
-						getLabel().concat(State.RESERVED_LABEL_EXTENSION_STRING));
+						getLabel().concat(
+								State.RESERVED_LABEL_EXTENSION_STRING));
 				Rule newRule = new Rule(r.getSymbol(), r.getWeight(), 
 						newResultingState);
 				
 				for (int j = 0; j < nOfLHStates; j++) {
 					
 					if (i == j) {
-						newRule.addState(new State(leftHandStates.get(i).getLabel().concat(
-								State.RESERVED_LABEL_EXTENSION_STRING)));
+						newRule.addState(new State(leftHandStates.get(i).
+								getLabel().
+								concat(State.RESERVED_LABEL_EXTENSION_STRING)));
 					} else {
 						newRule.addState(leftHandStates.get(j));
 					}

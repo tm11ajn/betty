@@ -36,7 +36,8 @@ public class Edge<T> {
 	private double weight;
 	//private String group;
 	
-	public Edge(Vertex<T> tail, Vertex<T> head, T label, double weight/*, String group*/) {
+	public Edge(Vertex<T> tail, Vertex<T> head, T label, double weight
+			/*, String group*/) {
 		this.tail = tail;
 		this.head = head;
 		this.label = label;
@@ -44,7 +45,8 @@ public class Edge<T> {
 		//this.group = group;
 	}
 	
-	public Edge(Vertex<T> tail, Vertex<T> head, double weight/*, String group*/) {
+	public Edge(Vertex<T> tail, Vertex<T> head, double weight
+			/*, String group*/) {
 		this.tail = tail;
 		this.head = head;
 		this.weight = weight;

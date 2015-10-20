@@ -69,16 +69,17 @@ public class Graph<T> {
 		return true;
 	}
 	
-	public boolean createEdge(String tail, String head, T label, double weight/*, String group*/) {
+	public boolean createEdge(String tail, String head, T label, double weight
+			/*, String group*/) {
 		
 		Vertex<T> tailsVertex = getVertex(tail.toUpperCase());
 		Vertex<T> headsVertex = getVertex(head.toUpperCase());
 		
-		Edge<T> e = new Edge<T>(tailsVertex, headsVertex, label, weight/*, group.toUpperCase()*/);
+		Edge<T> e = new Edge<T>(tailsVertex, headsVertex, label, weight
+				/*, group.toUpperCase()*/);
 		tailsVertex.getRelatedEdges().add(e);
 
 		if (!tailsVertex.equals(headsVertex)) {
-//			System.out.println("Adding edge " + label + " with weight " + weight + " from " + tailsVertex + " to " + headsVertex);
 			headsVertex.getRelatedEdges().add(e);
 		}
 		
@@ -104,7 +105,8 @@ public class Graph<T> {
 		return true;
 	}
 	
-	public boolean createEdges(String tails, String heads, double weight/*, String group*/) {
+	public boolean createEdges(String tails, String heads, double weight
+			/*, String group*/) {
 		ArrayList<Vertex<T>> tailsList = this.parseVertices(tails.toUpperCase());
 		ArrayList<Vertex<T>> headsList = this.parseVertices(heads.toUpperCase());
 //		String groupUpper = group.toUpperCase();
@@ -123,7 +125,8 @@ public class Graph<T> {
 			Vertex<T> tailsVertex = tailsList.get(i);
 			Vertex<T> headsVertex = headsList.get(i);
 			
-			Edge<T> e = new Edge<T>(tailsVertex, headsVertex, weight/*, groupUpper*/);
+			Edge<T> e = new Edge<T>(tailsVertex, headsVertex, weight
+					/*, groupUpper*/);
 			tailsVertex.getRelatedEdges().add(e);
 			
 			if (!tailsVertex.equals(headsVertex)) {

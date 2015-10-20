@@ -66,7 +66,7 @@ public class BestTrees {
 		exploredTrees = new ArrayList<Node<Symbol>>();
 		treeQueue = new LinkedList<Node<Symbol>>();
 
-		// enqueue(K, Sigma_0) TODO
+		// enqueue(K, Sigma_0)
 		enqueueRankZeroSymbols(wta, N);
 
 		// i <- 0
@@ -84,9 +84,7 @@ public class BestTrees {
 			// Get optimal state for current tree
 			State optimalState = optimalStates.get(currentTree).get(0);
 
-			// if M(t) = delta(t) then TODO
-			// is this the same thing as smallestcompletion(optimalstate) = 0
-			// and optimalstate in final states ?
+			// if M(t) = delta(t) then
 			if (optimalState.isFinal()) {
 
 				// output(t)
@@ -321,10 +319,6 @@ public class BestTrees {
 			nRuns.put(q, mergedTreeList);
 		}
 
-		// merge with K, add all values to treeStateVal and get optstates for each tree added?
-
-		// Merge all lists, remember to get the delta value!
-
 		LinkedList<Node<Symbol>> mergedList = new LinkedList<>();
 		int nOfStatesInWTA = wta.getStates().size();
 
@@ -383,16 +377,9 @@ public class BestTrees {
 			for (int i = 1; i < nOfStates + 1; i++) {
 				State currentState = states.get(i-1);
 
-				for (Node<Symbol> n : exploredTrees) { // TODO include only N edges for each pair of nodes
+				for (Node<Symbol> n : exploredTrees) {
 
 					Weight w = treeStateValTable.get(n, currentState);
-//					double weight = Double.MAX_VALUE;
-//
-//					if (w != null) {
-//						weight = Double.parseDouble(w.toString());
-//					} else {
-//						continue;
-//					}
 
 					if (w == null) {
 						continue;
@@ -409,13 +396,13 @@ public class BestTrees {
 						pv = edgeMap.get("v" + (i - 1), "v" + i);
 
 						if (pu == null) {
-							pu = new PriorityQueue<>(nOfStates, // TODO choose a better initial capacity?
+							pu = new PriorityQueue<>(nOfStates,
 									smallestRunComparator);
 							edgeMap.put("u" + (i - 1), "u" + i, pu);
 						}
 
 						if (pv == null) {
-							pv = new PriorityQueue<>(nOfStates, // TODO choose a better initial capacity?
+							pv = new PriorityQueue<>(nOfStates,
 									smallestRunComparator);
 							edgeMap.put("v" + (i - 1), "v" + i, pv);
 						}
@@ -423,8 +410,6 @@ public class BestTrees {
 						pu.add(new Run(n, w));
 						pv.add(new Run(n, w));
 
-//						graph.createEdge("u" + (i - 1), "u" + i, n, weight);
-//						graph.createEdge("v" + (i - 1), "v" + i, n, weight);
 					}
 
 					if (isT) {
@@ -433,13 +418,13 @@ public class BestTrees {
 						pv = edgeMap.get("v" + (i - 1), "v" + i);
 
 						if (pu == null) {
-							pu = new PriorityQueue<>(nOfStates, // TODO choose a better initial capacity?
+							pu = new PriorityQueue<>(nOfStates,
 									smallestRunComparator);
 							edgeMap.put("u" + (i - 1), "v" + i, pu);
 						}
 
 						if (pv == null) {
-							pv = new PriorityQueue<>(nOfStates, // TODO choose a better initial capacity?
+							pv = new PriorityQueue<>(nOfStates,
 									smallestRunComparator);
 							edgeMap.put("v" + (i - 1), "v" + i, pv);
 						}
@@ -447,13 +432,11 @@ public class BestTrees {
 						pu.add(new Run(n, w));
 						pv.add(new Run(n, w));
 
-//						graph.createEdge("u" + (i - 1), "v" + i, n, weight);
-//						graph.createEdge("v" + (i - 1), "v" + i, n, weight);
 					}
 				}
 			}
 
-			// Adds only the N smallest edges to Eppstein graph.
+			// Adds only the N smallest edges to the Eppstein graph.
 			for (String vertex1 : edgeMap.keySet()) {
 
 				for (String vertex2 : edgeMap.get(vertex1).keySet()) {
@@ -484,7 +467,6 @@ public class BestTrees {
 					pathWeight = new Weight(Weight.INF);
 				}
 
-				// TODO Might have to add the weight of the rule here
 				pathWeight = pathWeight.add(r.getWeight());
 
 				Weight oldWeight = treeStateValTable.get(pathTree, q);

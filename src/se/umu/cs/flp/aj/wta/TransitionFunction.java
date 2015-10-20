@@ -27,7 +27,6 @@ import se.umu.cs.flp.aj.wta.exceptions.DuplicateRuleException;
 
 public class TransitionFunction {
 
-	// TODO Bad idea or a 'must'?
 	private HashMap<Symbol, ArrayList<Rule>> rulesBySymbol = new HashMap<>();
 	private HashMap<State, ArrayList<Rule>> rulesByResultingState =
 			new HashMap<>();

@@ -73,7 +73,6 @@ public class BestTreesBasic {
 			if (s.getRank() == 0) {	
 				Node<Symbol> tree = new Node<Symbol>(s);
 				
-				//State optimalState = getOptimalStates(wta, tree).get(0);
 				optimalStates.put(tree, getOptimalStates(wta, tree));
 				
 				insertTreeIntoQueueByTotalMinimumWeight(tree);
