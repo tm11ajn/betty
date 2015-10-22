@@ -14,11 +14,12 @@ Quick start:
 
 Download and run the .jar file by 
 
-java -jar BestTrees<version>.jar <RTG file> N [ --no-pruning | -timer ]
+java -jar BestTrees<version>.jar <RTG file> N [ --no-pruning | -both ] [-timer] 
 
     N is an nonnegative integer
     --no-pruning runs the BestTreesBasic algorithm
-    -timer compares BestTrees and BestTreesBasic
+    -both runs both BestTrees and BestTreesBasic
+    -timer measures the run-time for the algorithm(s)
 
 Enjoy the forest.
     

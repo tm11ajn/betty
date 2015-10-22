@@ -28,6 +28,7 @@ import se.umu.cs.flp.aj.wta_handlers.WTAParser;
 public class NBest {
 	
 	private static final String NO_PRUNING_FLAG = "--no-pruning";
+	private static final String BOTH_FLAG = "-both";
 	private static final String TIMER_FLAG = "-timer";
 	
 	public static void main(String[] args) {
@@ -40,34 +41,38 @@ public class NBest {
 		WTAParser wtaParser = new WTAParser();
 		WTA wta = wtaParser.parse(fileName);
 
-		if (useTimer(args)) {
-			long startTime = System.nanoTime();
-			List<String> resultBasic = BestTreesBasic.run(wta, N);
-			long endTime = System.nanoTime();
-
-			long duration = (endTime - startTime)/1000000;
-			System.out.println("BestTreesBasic took " + duration + 
-					" milliseconds");
-
-			printResult(resultBasic);
-			
+		long startTime;
+		long endTime;
+		long duration;
+		
+		if (usePruning(args) || runBoth(args)) {
+			System.out.println("Running BestTrees...");
 			startTime = System.nanoTime();
 			List<String> result = BestTrees.run(wta, N);
 			endTime = System.nanoTime();
-
-			duration = (endTime - startTime)/1000000;
-			System.out.println("BestTrees took " + duration + " milliseconds");
-
+			
 			printResult(result);
+			
+			if (useTimer(args)) {
+				duration = (endTime - startTime)/1000000;
+				System.out.println("BestTrees took " + duration + 
+						" milliseconds");
+			}
+		}
 		
-		} else if (!usePruning(args)) {
-			System.out.println("BestTreesBasic");
+		if (!usePruning(args) || runBoth(args)) {
+			System.out.println("Running BestTreesBasic...");
+			startTime = System.nanoTime();
 			List<String> resultBasic = BestTreesBasic.run(wta, N);
+			endTime = System.nanoTime();
+
 			printResult(resultBasic);
-		} else {
-			System.out.println("BestTrees");
-			List<String> result = BestTrees.run(wta, N);
-			printResult(result);
+			
+			if (useTimer(args)) {
+				duration = (endTime - startTime)/1000000;
+				System.out.println("BestTreesBasic took " + duration + 
+					" milliseconds");
+			}
 		}
 		
 	}
@@ -76,15 +81,35 @@ public class NBest {
 		
 		int nOfArgs = args.length;
 		
-		if (nOfArgs < 2 || nOfArgs > 3) {
+		if (nOfArgs < 2 || nOfArgs > 4) {
 			printUsageError();
 		} else if (nOfArgs == 3) {
+			String arg2 = args[2];
 			
-			if (!args[2].equals(NO_PRUNING_FLAG) && 
-					!args[2].equals(TIMER_FLAG)) {
+			if (!arg2.equals(NO_PRUNING_FLAG) && 
+					!arg2.equals(BOTH_FLAG) &&
+					!arg2.equals(TIMER_FLAG)) {
 				printUsageError();
 			}
 			
+		} else if (nOfArgs == 4) {
+			String arg2 = args[2];
+			String arg3 = args[3];
+			
+			if (!arg2.equals(NO_PRUNING_FLAG) && 
+					!arg2.equals(BOTH_FLAG) &&
+					!arg2.equals(TIMER_FLAG)) {
+				printUsageError();
+			} else if (!arg3.equals(NO_PRUNING_FLAG) && 
+					!arg3.equals(BOTH_FLAG) &&
+					!arg3.equals(TIMER_FLAG)) {
+				printUsageError();
+			} else if ((arg2.equals(NO_PRUNING_FLAG) && 
+					arg3.equals(BOTH_FLAG))|| 
+					(arg3.equals(NO_PRUNING_FLAG) && 
+							arg2.equals(BOTH_FLAG))) {
+				printUsageError();
+			}
 		}
 	}
 
@@ -107,16 +132,28 @@ public class NBest {
 	
 	private static boolean usePruning(String[] args) {
 		
-		if (args.length == 3 && args[2].equals(NO_PRUNING_FLAG)) {
+		if ((args.length == 3 && args[2].equals(NO_PRUNING_FLAG)) ||
+				(args.length == 4 && args[3].equals(NO_PRUNING_FLAG))) {
 			return false;
 		}
 		
 		return true;
 	}
 	
+	private static boolean runBoth(String[] args) {
+		
+		if ((args.length == 3 && args[2].equals(BOTH_FLAG)) ||
+				(args.length == 4 && args[3].equals(BOTH_FLAG))) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	private static boolean useTimer(String[] args) {
 		
-		if (args.length == 3 && args[2].equals(TIMER_FLAG)) {
+		if ((args.length >= 3 && args[2].equals(TIMER_FLAG)) ||
+				(args.length == 4 && args[3].equals(TIMER_FLAG))) {
 			return true;
 		}
 		
@@ -126,10 +163,11 @@ public class NBest {
 	private static void printUsageError() {
 		System.err.println("\n"
 				+ "Usage: BestTrees <RTG file> N "
-				+ "[ --no-pruning | -timer ] \n\n"
+				+ "[ --no-pruning | -both ] [-timer] \n\n"
 				+ "    N is an nonnegative integer \n"
-				+ "    --no-pruning runs the BestTreesBasic algorithm \n"
-				+ "    -timer compares BestTrees and BestTreesBasic\n");
+				+ "    --no-pruning runs the BestTreesBasic algorithm\n"
+				+ "    -both runs both BestTrees and BestTreesBasic\n"
+				+ "    -timer measures the run-time for the algorithm(s)\n");
 		System.exit(-1);
 	}
 	

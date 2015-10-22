@@ -42,6 +42,7 @@ import se.umu.cs.flp.aj.wta_handlers.WTABuilder;
 
 import java.util.PriorityQueue;
 
+
 public class BestTrees {
 
 	private static NestedMap<Node<Symbol>, State, Weight> treeStateValTable =
@@ -97,6 +98,7 @@ public class BestTrees {
 
 			// prune(T, enqueue(K, expand(T, t)))
 			enqueueWithExpansionAndPruning(wta, N, currentTree);
+			
 		}
 
 		return nBest;
@@ -158,6 +160,8 @@ public class BestTrees {
 						}
 					}
 				}
+				
+				
 
 				tempQueue.add(insertIndex, tree);
 			}
@@ -170,7 +174,6 @@ public class BestTrees {
 	}
 
 	private static ArrayList<State> getOptimalStates(Node<Symbol> tree) {
-
 		HashMap<State, Weight> stateValTable =
 				treeStateValTable.getAll(tree);
 		ArrayList<State> optStates = new ArrayList<>();
@@ -178,7 +181,10 @@ public class BestTrees {
 
 		for (Entry<State, Weight> e : stateValTable.entrySet()) {
 
-			Weight currentWeight = e.getValue();
+			State currentState = e.getKey();
+			Weight smallestCompletionWeight = smallestCompletionWeights.get(
+					currentState);
+			Weight currentWeight = e.getValue().add(smallestCompletionWeight);
 			int comparison = currentWeight.compareTo(minWeight);
 
 			if (comparison == -1) {
@@ -250,6 +256,12 @@ public class BestTrees {
 					if (optStatesLast.contains(optState)) {
 						canInsert = true;
 						treeQueue.remove(index);
+						
+						for (State optRemove : optStatesLast) { // ADDED
+							optimalStatesUsage.put(optRemove, 
+									optimalStatesUsage.get(optRemove) - 1);
+						}
+						
 						break;
 					}
 				}
@@ -564,26 +576,20 @@ public class BestTrees {
 
 			Node<Symbol> tree1 = list1.peek();
 			Node<Symbol> tree2 = list2.peek();
-
+			
 			ArrayList<State> optStates1 = optimalStates.get(tree1);
-			ArrayList<State> optStates2 = optimalStates.get(tree2);
-
-
-			if (optStates1 == null) {
+			
+			if (optStates1 == null && tree1 != null) {
 				optStates1 = getOptimalStates(tree1);
 				optimalStates.put(tree1, optStates1);
 			}
 
-			if (optStates2 == null) {
-				optStates2 = getOptimalStates(tree1);
+			ArrayList<State> optStates2 = optimalStates.get(tree2);
+
+			if (optStates2 == null && tree2 != null) {
+				optStates2 = getOptimalStates(tree2);
 				optimalStates.put(tree2, optStates2);
 			}
-
-			State opt1 = optStates1.get(0);
-			State opt2 = optStates2.get(0);
-
-			Weight compl1 = smallestCompletionWeights.get(optStates1.get(0));
-			Weight compl2 = smallestCompletionWeights.get(optStates2.get(0));
 
 			if (tree1 != null && result.contains(tree1)) {
 				list1.poll();
@@ -591,6 +597,14 @@ public class BestTrees {
 				list2.poll();
 			} else if (tree1 != null && tree2 != null) {
 
+				State opt1 = optStates1.get(0);
+				State opt2 = optStates2.get(0);
+
+				Weight compl1 = smallestCompletionWeights.get( 
+						optStates1.get(0));
+				Weight compl2 = smallestCompletionWeights.get( 
+						optStates2.get(0));
+				
 				Weight weight1 = treeStateValTable.get(tree1, opt1).add(compl1);
 				Weight weight2 = treeStateValTable.get(tree2, opt2).add(compl2);
 
