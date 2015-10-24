@@ -1,0 +1,1656 @@
+// An extension of the graph from the BestTrees paper
+
+
+// MAIN GRAMMAR
+// Number of states (n): 4
+// Number of rules  (m): 12
+// Largest rank     (r): 2
+
+a -> pa # 2
+a -> pb # 1
+b -> pa # 1
+b -> pb # 2
+
+ball[pa, pa] -> qa
+ball[qa, qa] -> qa
+ball[pb, pb] -> qb
+ball[qb, qb] -> qb
+
+ball[pa, qa] -> pa
+ball[qa, pa] -> pa
+ball[pb, qb] -> pb
+ball[qb, pb] -> pb
+
+final qa, qb
+
+
+// 2 LEAVES
+// Number of states (n): 4
+// Number of rules  (m): 6
+// Largest rank     (r): 2
+
+a -> pa1 # 2
+a -> pb1 # 1
+b -> pa1 # 1
+b -> pb1 # 2
+
+ball[pa1, pa1] -> qa1
+
+ball[pb1, pb1] -> qb1
+
+final qa1, qb1
+
+// Total number of states (n) in file this far: 8
+// Total number of rules  (m) in file this far: 18
+
+
+// 4 LEAVES
+// Number of states (n): 6
+// Number of rules  (m): 8
+// Largest rank     (r): 2
+
+a -> pa2 # 2
+a -> pb2 # 1
+b -> pa2 # 1
+b -> pb2 # 2
+
+ball[pa2, pa2] -> pa20
+ball[pa20, pa20] -> qa2
+
+ball[pb2, pb2] -> pb20
+ball[pb20, pb20] -> qb2
+
+final qa2, qb2
+
+// Total number of states (n) in file this far: 14
+// Total number of rules  (m) in file this far: 26
+
+
+// 6 LEAVES
+// Number of states (n): 8
+// Number of rules  (m): 10
+// Largest rank     (r): 2
+
+a -> pa3 # 2
+a -> pb3 # 1
+b -> pa3 # 1
+b -> pb3 # 2
+
+ball[pa3, pa3] -> pa30
+ball[pa30, pa30] -> pa31
+ball[pa31, pa31] -> qa3
+
+ball[pb3, pb3] -> pb30
+ball[pb30, pb30] -> pb31
+ball[pb31, pb31] -> qb3
+
+final qa3, qb3
+
+// Total number of states (n) in file this far: 22
+// Total number of rules  (m) in file this far: 36
+
+
+// 8 LEAVES
+// Number of states (n): 10
+// Number of rules  (m): 12
+// Largest rank     (r): 2
+
+a -> pa4 # 2
+a -> pb4 # 1
+b -> pa4 # 1
+b -> pb4 # 2
+
+ball[pa4, pa4] -> pa40
+ball[pa40, pa40] -> pa41
+ball[pa41, pa41] -> pa42
+ball[pa42, pa42] -> qa4
+
+ball[pb4, pb4] -> pb40
+ball[pb40, pb40] -> pb41
+ball[pb41, pb41] -> pb42
+ball[pb42, pb42] -> qb4
+
+final qa4, qb4
+
+// Total number of states (n) in file this far: 32
+// Total number of rules  (m) in file this far: 48
+
+
+// 10 LEAVES
+// Number of states (n): 12
+// Number of rules  (m): 14
+// Largest rank     (r): 2
+
+a -> pa5 # 2
+a -> pb5 # 1
+b -> pa5 # 1
+b -> pb5 # 2
+
+ball[pa5, pa5] -> pa50
+ball[pa50, pa50] -> pa51
+ball[pa51, pa51] -> pa52
+ball[pa52, pa52] -> pa53
+ball[pa53, pa53] -> qa5
+
+ball[pb5, pb5] -> pb50
+ball[pb50, pb50] -> pb51
+ball[pb51, pb51] -> pb52
+ball[pb52, pb52] -> pb53
+ball[pb53, pb53] -> qb5
+
+final qa5, qb5
+
+// Total number of states (n) in file this far: 44
+// Total number of rules  (m) in file this far: 62
+
+
+// 12 LEAVES
+// Number of states (n): 14
+// Number of rules  (m): 16
+// Largest rank     (r): 2
+
+a -> pa6 # 2
+a -> pb6 # 1
+b -> pa6 # 1
+b -> pb6 # 2
+
+ball[pa6, pa6] -> pa60
+ball[pa60, pa60] -> pa61
+ball[pa61, pa61] -> pa62
+ball[pa62, pa62] -> pa63
+ball[pa63, pa63] -> pa64
+ball[pa64, pa64] -> qa6
+
+ball[pb6, pb6] -> pb60
+ball[pb60, pb60] -> pb61
+ball[pb61, pb61] -> pb62
+ball[pb62, pb62] -> pb63
+ball[pb63, pb63] -> pb64
+ball[pb64, pb64] -> qb6
+
+final qa6, qb6
+
+// Total number of states (n) in file this far: 58
+// Total number of rules  (m) in file this far: 78
+
+
+// 14 LEAVES
+// Number of states (n): 16
+// Number of rules  (m): 18
+// Largest rank     (r): 2
+
+a -> pa7 # 2
+a -> pb7 # 1
+b -> pa7 # 1
+b -> pb7 # 2
+
+ball[pa7, pa7] -> pa70
+ball[pa70, pa70] -> pa71
+ball[pa71, pa71] -> pa72
+ball[pa72, pa72] -> pa73
+ball[pa73, pa73] -> pa74
+ball[pa74, pa74] -> pa75
+ball[pa75, pa75] -> qa7
+
+ball[pb7, pb7] -> pb70
+ball[pb70, pb70] -> pb71
+ball[pb71, pb71] -> pb72
+ball[pb72, pb72] -> pb73
+ball[pb73, pb73] -> pb74
+ball[pb74, pb74] -> pb75
+ball[pb75, pb75] -> qb7
+
+final qa7, qb7
+
+// Total number of states (n) in file this far: 74
+// Total number of rules  (m) in file this far: 96
+
+
+// 16 LEAVES
+// Number of states (n): 18
+// Number of rules  (m): 20
+// Largest rank     (r): 2
+
+a -> pa8 # 2
+a -> pb8 # 1
+b -> pa8 # 1
+b -> pb8 # 2
+
+ball[pa8, pa8] -> pa80
+ball[pa80, pa80] -> pa81
+ball[pa81, pa81] -> pa82
+ball[pa82, pa82] -> pa83
+ball[pa83, pa83] -> pa84
+ball[pa84, pa84] -> pa85
+ball[pa85, pa85] -> pa86
+ball[pa86, pa86] -> qa8
+
+ball[pb8, pb8] -> pb80
+ball[pb80, pb80] -> pb81
+ball[pb81, pb81] -> pb82
+ball[pb82, pb82] -> pb83
+ball[pb83, pb83] -> pb84
+ball[pb84, pb84] -> pb85
+ball[pb85, pb85] -> pb86
+ball[pb86, pb86] -> qb8
+
+final qa8, qb8
+
+// Total number of states (n) in file this far: 92
+// Total number of rules  (m) in file this far: 116
+
+
+// 18 LEAVES
+// Number of states (n): 20
+// Number of rules  (m): 22
+// Largest rank     (r): 2
+
+a -> pa9 # 2
+a -> pb9 # 1
+b -> pa9 # 1
+b -> pb9 # 2
+
+ball[pa9, pa9] -> pa90
+ball[pa90, pa90] -> pa91
+ball[pa91, pa91] -> pa92
+ball[pa92, pa92] -> pa93
+ball[pa93, pa93] -> pa94
+ball[pa94, pa94] -> pa95
+ball[pa95, pa95] -> pa96
+ball[pa96, pa96] -> pa97
+ball[pa97, pa97] -> qa9
+
+ball[pb9, pb9] -> pb90
+ball[pb90, pb90] -> pb91
+ball[pb91, pb91] -> pb92
+ball[pb92, pb92] -> pb93
+ball[pb93, pb93] -> pb94
+ball[pb94, pb94] -> pb95
+ball[pb95, pb95] -> pb96
+ball[pb96, pb96] -> pb97
+ball[pb97, pb97] -> qb9
+
+final qa9, qb9
+
+// Total number of states (n) in file this far: 112
+// Total number of rules  (m) in file this far: 138
+
+
+// 20 LEAVES
+// Number of states (n): 22
+// Number of rules  (m): 24
+// Largest rank     (r): 2
+
+a -> pa10 # 2
+a -> pb10 # 1
+b -> pa10 # 1
+b -> pb10 # 2
+
+ball[pa10, pa10] -> pa100
+ball[pa100, pa100] -> pa101
+ball[pa101, pa101] -> pa102
+ball[pa102, pa102] -> pa103
+ball[pa103, pa103] -> pa104
+ball[pa104, pa104] -> pa105
+ball[pa105, pa105] -> pa106
+ball[pa106, pa106] -> pa107
+ball[pa107, pa107] -> pa108
+ball[pa108, pa108] -> qa10
+
+ball[pb10, pb10] -> pb100
+ball[pb100, pb100] -> pb101
+ball[pb101, pb101] -> pb102
+ball[pb102, pb102] -> pb103
+ball[pb103, pb103] -> pb104
+ball[pb104, pb104] -> pb105
+ball[pb105, pb105] -> pb106
+ball[pb106, pb106] -> pb107
+ball[pb107, pb107] -> pb108
+ball[pb108, pb108] -> qb10
+
+final qa10, qb10
+
+// Total number of states (n) in file this far: 134
+// Total number of rules  (m) in file this far: 162
+
+
+// 22 LEAVES
+// Number of states (n): 24
+// Number of rules  (m): 26
+// Largest rank     (r): 2
+
+a -> pa11 # 2
+a -> pb11 # 1
+b -> pa11 # 1
+b -> pb11 # 2
+
+ball[pa11, pa11] -> pa110
+ball[pa110, pa110] -> pa111
+ball[pa111, pa111] -> pa112
+ball[pa112, pa112] -> pa113
+ball[pa113, pa113] -> pa114
+ball[pa114, pa114] -> pa115
+ball[pa115, pa115] -> pa116
+ball[pa116, pa116] -> pa117
+ball[pa117, pa117] -> pa118
+ball[pa118, pa118] -> pa119
+ball[pa119, pa119] -> qa11
+
+ball[pb11, pb11] -> pb110
+ball[pb110, pb110] -> pb111
+ball[pb111, pb111] -> pb112
+ball[pb112, pb112] -> pb113
+ball[pb113, pb113] -> pb114
+ball[pb114, pb114] -> pb115
+ball[pb115, pb115] -> pb116
+ball[pb116, pb116] -> pb117
+ball[pb117, pb117] -> pb118
+ball[pb118, pb118] -> pb119
+ball[pb119, pb119] -> qb11
+
+final qa11, qb11
+
+// Total number of states (n) in file this far: 158
+// Total number of rules  (m) in file this far: 188
+
+
+// 24 LEAVES
+// Number of states (n): 26
+// Number of rules  (m): 28
+// Largest rank     (r): 2
+
+a -> pa12 # 2
+a -> pb12 # 1
+b -> pa12 # 1
+b -> pb12 # 2
+
+ball[pa12, pa12] -> pa120
+ball[pa120, pa120] -> pa121
+ball[pa121, pa121] -> pa122
+ball[pa122, pa122] -> pa123
+ball[pa123, pa123] -> pa124
+ball[pa124, pa124] -> pa125
+ball[pa125, pa125] -> pa126
+ball[pa126, pa126] -> pa127
+ball[pa127, pa127] -> pa128
+ball[pa128, pa128] -> pa129
+ball[pa129, pa129] -> pa1210
+ball[pa1210, pa1210] -> qa12
+
+ball[pb12, pb12] -> pb120
+ball[pb120, pb120] -> pb121
+ball[pb121, pb121] -> pb122
+ball[pb122, pb122] -> pb123
+ball[pb123, pb123] -> pb124
+ball[pb124, pb124] -> pb125
+ball[pb125, pb125] -> pb126
+ball[pb126, pb126] -> pb127
+ball[pb127, pb127] -> pb128
+ball[pb128, pb128] -> pb129
+ball[pb129, pb129] -> pb1210
+ball[pb1210, pb1210] -> qb12
+
+final qa12, qb12
+
+// Total number of states (n) in file this far: 184
+// Total number of rules  (m) in file this far: 216
+
+
+// 26 LEAVES
+// Number of states (n): 28
+// Number of rules  (m): 30
+// Largest rank     (r): 2
+
+a -> pa13 # 2
+a -> pb13 # 1
+b -> pa13 # 1
+b -> pb13 # 2
+
+ball[pa13, pa13] -> pa130
+ball[pa130, pa130] -> pa131
+ball[pa131, pa131] -> pa132
+ball[pa132, pa132] -> pa133
+ball[pa133, pa133] -> pa134
+ball[pa134, pa134] -> pa135
+ball[pa135, pa135] -> pa136
+ball[pa136, pa136] -> pa137
+ball[pa137, pa137] -> pa138
+ball[pa138, pa138] -> pa139
+ball[pa139, pa139] -> pa1310
+ball[pa1310, pa1310] -> pa1311
+ball[pa1311, pa1311] -> qa13
+
+ball[pb13, pb13] -> pb130
+ball[pb130, pb130] -> pb131
+ball[pb131, pb131] -> pb132
+ball[pb132, pb132] -> pb133
+ball[pb133, pb133] -> pb134
+ball[pb134, pb134] -> pb135
+ball[pb135, pb135] -> pb136
+ball[pb136, pb136] -> pb137
+ball[pb137, pb137] -> pb138
+ball[pb138, pb138] -> pb139
+ball[pb139, pb139] -> pb1310
+ball[pb1310, pb1310] -> pb1311
+ball[pb1311, pb1311] -> qb13
+
+final qa13, qb13
+
+// Total number of states (n) in file this far: 212
+// Total number of rules  (m) in file this far: 246
+
+
+// 28 LEAVES
+// Number of states (n): 30
+// Number of rules  (m): 32
+// Largest rank     (r): 2
+
+a -> pa14 # 2
+a -> pb14 # 1
+b -> pa14 # 1
+b -> pb14 # 2
+
+ball[pa14, pa14] -> pa140
+ball[pa140, pa140] -> pa141
+ball[pa141, pa141] -> pa142
+ball[pa142, pa142] -> pa143
+ball[pa143, pa143] -> pa144
+ball[pa144, pa144] -> pa145
+ball[pa145, pa145] -> pa146
+ball[pa146, pa146] -> pa147
+ball[pa147, pa147] -> pa148
+ball[pa148, pa148] -> pa149
+ball[pa149, pa149] -> pa1410
+ball[pa1410, pa1410] -> pa1411
+ball[pa1411, pa1411] -> pa1412
+ball[pa1412, pa1412] -> qa14
+
+ball[pb14, pb14] -> pb140
+ball[pb140, pb140] -> pb141
+ball[pb141, pb141] -> pb142
+ball[pb142, pb142] -> pb143
+ball[pb143, pb143] -> pb144
+ball[pb144, pb144] -> pb145
+ball[pb145, pb145] -> pb146
+ball[pb146, pb146] -> pb147
+ball[pb147, pb147] -> pb148
+ball[pb148, pb148] -> pb149
+ball[pb149, pb149] -> pb1410
+ball[pb1410, pb1410] -> pb1411
+ball[pb1411, pb1411] -> pb1412
+ball[pb1412, pb1412] -> qb14
+
+final qa14, qb14
+
+// Total number of states (n) in file this far: 242
+// Total number of rules  (m) in file this far: 278
+
+
+// 30 LEAVES
+// Number of states (n): 32
+// Number of rules  (m): 34
+// Largest rank     (r): 2
+
+a -> pa15 # 2
+a -> pb15 # 1
+b -> pa15 # 1
+b -> pb15 # 2
+
+ball[pa15, pa15] -> pa150
+ball[pa150, pa150] -> pa151
+ball[pa151, pa151] -> pa152
+ball[pa152, pa152] -> pa153
+ball[pa153, pa153] -> pa154
+ball[pa154, pa154] -> pa155
+ball[pa155, pa155] -> pa156
+ball[pa156, pa156] -> pa157
+ball[pa157, pa157] -> pa158
+ball[pa158, pa158] -> pa159
+ball[pa159, pa159] -> pa1510
+ball[pa1510, pa1510] -> pa1511
+ball[pa1511, pa1511] -> pa1512
+ball[pa1512, pa1512] -> pa1513
+ball[pa1513, pa1513] -> qa15
+
+ball[pb15, pb15] -> pb150
+ball[pb150, pb150] -> pb151
+ball[pb151, pb151] -> pb152
+ball[pb152, pb152] -> pb153
+ball[pb153, pb153] -> pb154
+ball[pb154, pb154] -> pb155
+ball[pb155, pb155] -> pb156
+ball[pb156, pb156] -> pb157
+ball[pb157, pb157] -> pb158
+ball[pb158, pb158] -> pb159
+ball[pb159, pb159] -> pb1510
+ball[pb1510, pb1510] -> pb1511
+ball[pb1511, pb1511] -> pb1512
+ball[pb1512, pb1512] -> pb1513
+ball[pb1513, pb1513] -> qb15
+
+final qa15, qb15
+
+// Total number of states (n) in file this far: 274
+// Total number of rules  (m) in file this far: 312
+
+
+// 32 LEAVES
+// Number of states (n): 34
+// Number of rules  (m): 36
+// Largest rank     (r): 2
+
+a -> pa16 # 2
+a -> pb16 # 1
+b -> pa16 # 1
+b -> pb16 # 2
+
+ball[pa16, pa16] -> pa160
+ball[pa160, pa160] -> pa161
+ball[pa161, pa161] -> pa162
+ball[pa162, pa162] -> pa163
+ball[pa163, pa163] -> pa164
+ball[pa164, pa164] -> pa165
+ball[pa165, pa165] -> pa166
+ball[pa166, pa166] -> pa167
+ball[pa167, pa167] -> pa168
+ball[pa168, pa168] -> pa169
+ball[pa169, pa169] -> pa1610
+ball[pa1610, pa1610] -> pa1611
+ball[pa1611, pa1611] -> pa1612
+ball[pa1612, pa1612] -> pa1613
+ball[pa1613, pa1613] -> pa1614
+ball[pa1614, pa1614] -> qa16
+
+ball[pb16, pb16] -> pb160
+ball[pb160, pb160] -> pb161
+ball[pb161, pb161] -> pb162
+ball[pb162, pb162] -> pb163
+ball[pb163, pb163] -> pb164
+ball[pb164, pb164] -> pb165
+ball[pb165, pb165] -> pb166
+ball[pb166, pb166] -> pb167
+ball[pb167, pb167] -> pb168
+ball[pb168, pb168] -> pb169
+ball[pb169, pb169] -> pb1610
+ball[pb1610, pb1610] -> pb1611
+ball[pb1611, pb1611] -> pb1612
+ball[pb1612, pb1612] -> pb1613
+ball[pb1613, pb1613] -> pb1614
+ball[pb1614, pb1614] -> qb16
+
+final qa16, qb16
+
+// Total number of states (n) in file this far: 308
+// Total number of rules  (m) in file this far: 348
+
+
+// 34 LEAVES
+// Number of states (n): 36
+// Number of rules  (m): 38
+// Largest rank     (r): 2
+
+a -> pa17 # 2
+a -> pb17 # 1
+b -> pa17 # 1
+b -> pb17 # 2
+
+ball[pa17, pa17] -> pa170
+ball[pa170, pa170] -> pa171
+ball[pa171, pa171] -> pa172
+ball[pa172, pa172] -> pa173
+ball[pa173, pa173] -> pa174
+ball[pa174, pa174] -> pa175
+ball[pa175, pa175] -> pa176
+ball[pa176, pa176] -> pa177
+ball[pa177, pa177] -> pa178
+ball[pa178, pa178] -> pa179
+ball[pa179, pa179] -> pa1710
+ball[pa1710, pa1710] -> pa1711
+ball[pa1711, pa1711] -> pa1712
+ball[pa1712, pa1712] -> pa1713
+ball[pa1713, pa1713] -> pa1714
+ball[pa1714, pa1714] -> pa1715
+ball[pa1715, pa1715] -> qa17
+
+ball[pb17, pb17] -> pb170
+ball[pb170, pb170] -> pb171
+ball[pb171, pb171] -> pb172
+ball[pb172, pb172] -> pb173
+ball[pb173, pb173] -> pb174
+ball[pb174, pb174] -> pb175
+ball[pb175, pb175] -> pb176
+ball[pb176, pb176] -> pb177
+ball[pb177, pb177] -> pb178
+ball[pb178, pb178] -> pb179
+ball[pb179, pb179] -> pb1710
+ball[pb1710, pb1710] -> pb1711
+ball[pb1711, pb1711] -> pb1712
+ball[pb1712, pb1712] -> pb1713
+ball[pb1713, pb1713] -> pb1714
+ball[pb1714, pb1714] -> pb1715
+ball[pb1715, pb1715] -> qb17
+
+final qa17, qb17
+
+// Total number of states (n) in file this far: 344
+// Total number of rules  (m) in file this far: 386
+
+
+// 36 LEAVES
+// Number of states (n): 38
+// Number of rules  (m): 40
+// Largest rank     (r): 2
+
+a -> pa18 # 2
+a -> pb18 # 1
+b -> pa18 # 1
+b -> pb18 # 2
+
+ball[pa18, pa18] -> pa180
+ball[pa180, pa180] -> pa181
+ball[pa181, pa181] -> pa182
+ball[pa182, pa182] -> pa183
+ball[pa183, pa183] -> pa184
+ball[pa184, pa184] -> pa185
+ball[pa185, pa185] -> pa186
+ball[pa186, pa186] -> pa187
+ball[pa187, pa187] -> pa188
+ball[pa188, pa188] -> pa189
+ball[pa189, pa189] -> pa1810
+ball[pa1810, pa1810] -> pa1811
+ball[pa1811, pa1811] -> pa1812
+ball[pa1812, pa1812] -> pa1813
+ball[pa1813, pa1813] -> pa1814
+ball[pa1814, pa1814] -> pa1815
+ball[pa1815, pa1815] -> pa1816
+ball[pa1816, pa1816] -> qa18
+
+ball[pb18, pb18] -> pb180
+ball[pb180, pb180] -> pb181
+ball[pb181, pb181] -> pb182
+ball[pb182, pb182] -> pb183
+ball[pb183, pb183] -> pb184
+ball[pb184, pb184] -> pb185
+ball[pb185, pb185] -> pb186
+ball[pb186, pb186] -> pb187
+ball[pb187, pb187] -> pb188
+ball[pb188, pb188] -> pb189
+ball[pb189, pb189] -> pb1810
+ball[pb1810, pb1810] -> pb1811
+ball[pb1811, pb1811] -> pb1812
+ball[pb1812, pb1812] -> pb1813
+ball[pb1813, pb1813] -> pb1814
+ball[pb1814, pb1814] -> pb1815
+ball[pb1815, pb1815] -> pb1816
+ball[pb1816, pb1816] -> qb18
+
+final qa18, qb18
+
+// Total number of states (n) in file this far: 382
+// Total number of rules  (m) in file this far: 426
+
+
+// 38 LEAVES
+// Number of states (n): 40
+// Number of rules  (m): 42
+// Largest rank     (r): 2
+
+a -> pa19 # 2
+a -> pb19 # 1
+b -> pa19 # 1
+b -> pb19 # 2
+
+ball[pa19, pa19] -> pa190
+ball[pa190, pa190] -> pa191
+ball[pa191, pa191] -> pa192
+ball[pa192, pa192] -> pa193
+ball[pa193, pa193] -> pa194
+ball[pa194, pa194] -> pa195
+ball[pa195, pa195] -> pa196
+ball[pa196, pa196] -> pa197
+ball[pa197, pa197] -> pa198
+ball[pa198, pa198] -> pa199
+ball[pa199, pa199] -> pa1910
+ball[pa1910, pa1910] -> pa1911
+ball[pa1911, pa1911] -> pa1912
+ball[pa1912, pa1912] -> pa1913
+ball[pa1913, pa1913] -> pa1914
+ball[pa1914, pa1914] -> pa1915
+ball[pa1915, pa1915] -> pa1916
+ball[pa1916, pa1916] -> pa1917
+ball[pa1917, pa1917] -> qa19
+
+ball[pb19, pb19] -> pb190
+ball[pb190, pb190] -> pb191
+ball[pb191, pb191] -> pb192
+ball[pb192, pb192] -> pb193
+ball[pb193, pb193] -> pb194
+ball[pb194, pb194] -> pb195
+ball[pb195, pb195] -> pb196
+ball[pb196, pb196] -> pb197
+ball[pb197, pb197] -> pb198
+ball[pb198, pb198] -> pb199
+ball[pb199, pb199] -> pb1910
+ball[pb1910, pb1910] -> pb1911
+ball[pb1911, pb1911] -> pb1912
+ball[pb1912, pb1912] -> pb1913
+ball[pb1913, pb1913] -> pb1914
+ball[pb1914, pb1914] -> pb1915
+ball[pb1915, pb1915] -> pb1916
+ball[pb1916, pb1916] -> pb1917
+ball[pb1917, pb1917] -> qb19
+
+final qa19, qb19
+
+// Total number of states (n) in file this far: 422
+// Total number of rules  (m) in file this far: 468
+
+
+// 40 LEAVES
+// Number of states (n): 42
+// Number of rules  (m): 44
+// Largest rank     (r): 2
+
+a -> pa20 # 2
+a -> pb20 # 1
+b -> pa20 # 1
+b -> pb20 # 2
+
+ball[pa20, pa20] -> pa200
+ball[pa200, pa200] -> pa201
+ball[pa201, pa201] -> pa202
+ball[pa202, pa202] -> pa203
+ball[pa203, pa203] -> pa204
+ball[pa204, pa204] -> pa205
+ball[pa205, pa205] -> pa206
+ball[pa206, pa206] -> pa207
+ball[pa207, pa207] -> pa208
+ball[pa208, pa208] -> pa209
+ball[pa209, pa209] -> pa2010
+ball[pa2010, pa2010] -> pa2011
+ball[pa2011, pa2011] -> pa2012
+ball[pa2012, pa2012] -> pa2013
+ball[pa2013, pa2013] -> pa2014
+ball[pa2014, pa2014] -> pa2015
+ball[pa2015, pa2015] -> pa2016
+ball[pa2016, pa2016] -> pa2017
+ball[pa2017, pa2017] -> pa2018
+ball[pa2018, pa2018] -> qa20
+
+ball[pb20, pb20] -> pb200
+ball[pb200, pb200] -> pb201
+ball[pb201, pb201] -> pb202
+ball[pb202, pb202] -> pb203
+ball[pb203, pb203] -> pb204
+ball[pb204, pb204] -> pb205
+ball[pb205, pb205] -> pb206
+ball[pb206, pb206] -> pb207
+ball[pb207, pb207] -> pb208
+ball[pb208, pb208] -> pb209
+ball[pb209, pb209] -> pb2010
+ball[pb2010, pb2010] -> pb2011
+ball[pb2011, pb2011] -> pb2012
+ball[pb2012, pb2012] -> pb2013
+ball[pb2013, pb2013] -> pb2014
+ball[pb2014, pb2014] -> pb2015
+ball[pb2015, pb2015] -> pb2016
+ball[pb2016, pb2016] -> pb2017
+ball[pb2017, pb2017] -> pb2018
+ball[pb2018, pb2018] -> qb20
+
+final qa20, qb20
+
+// Total number of states (n) in file this far: 464
+// Total number of rules  (m) in file this far: 512
+
+
+// 42 LEAVES
+// Number of states (n): 44
+// Number of rules  (m): 46
+// Largest rank     (r): 2
+
+a -> pa21 # 2
+a -> pb21 # 1
+b -> pa21 # 1
+b -> pb21 # 2
+
+ball[pa21, pa21] -> pa210
+ball[pa210, pa210] -> pa211
+ball[pa211, pa211] -> pa212
+ball[pa212, pa212] -> pa213
+ball[pa213, pa213] -> pa214
+ball[pa214, pa214] -> pa215
+ball[pa215, pa215] -> pa216
+ball[pa216, pa216] -> pa217
+ball[pa217, pa217] -> pa218
+ball[pa218, pa218] -> pa219
+ball[pa219, pa219] -> pa2110
+ball[pa2110, pa2110] -> pa2111
+ball[pa2111, pa2111] -> pa2112
+ball[pa2112, pa2112] -> pa2113
+ball[pa2113, pa2113] -> pa2114
+ball[pa2114, pa2114] -> pa2115
+ball[pa2115, pa2115] -> pa2116
+ball[pa2116, pa2116] -> pa2117
+ball[pa2117, pa2117] -> pa2118
+ball[pa2118, pa2118] -> pa2119
+ball[pa2119, pa2119] -> qa21
+
+ball[pb21, pb21] -> pb210
+ball[pb210, pb210] -> pb211
+ball[pb211, pb211] -> pb212
+ball[pb212, pb212] -> pb213
+ball[pb213, pb213] -> pb214
+ball[pb214, pb214] -> pb215
+ball[pb215, pb215] -> pb216
+ball[pb216, pb216] -> pb217
+ball[pb217, pb217] -> pb218
+ball[pb218, pb218] -> pb219
+ball[pb219, pb219] -> pb2110
+ball[pb2110, pb2110] -> pb2111
+ball[pb2111, pb2111] -> pb2112
+ball[pb2112, pb2112] -> pb2113
+ball[pb2113, pb2113] -> pb2114
+ball[pb2114, pb2114] -> pb2115
+ball[pb2115, pb2115] -> pb2116
+ball[pb2116, pb2116] -> pb2117
+ball[pb2117, pb2117] -> pb2118
+ball[pb2118, pb2118] -> pb2119
+ball[pb2119, pb2119] -> qb21
+
+final qa21, qb21
+
+// Total number of states (n) in file this far: 508
+// Total number of rules  (m) in file this far: 558
+
+
+// 44 LEAVES
+// Number of states (n): 46
+// Number of rules  (m): 48
+// Largest rank     (r): 2
+
+a -> pa22 # 2
+a -> pb22 # 1
+b -> pa22 # 1
+b -> pb22 # 2
+
+ball[pa22, pa22] -> pa220
+ball[pa220, pa220] -> pa221
+ball[pa221, pa221] -> pa222
+ball[pa222, pa222] -> pa223
+ball[pa223, pa223] -> pa224
+ball[pa224, pa224] -> pa225
+ball[pa225, pa225] -> pa226
+ball[pa226, pa226] -> pa227
+ball[pa227, pa227] -> pa228
+ball[pa228, pa228] -> pa229
+ball[pa229, pa229] -> pa2210
+ball[pa2210, pa2210] -> pa2211
+ball[pa2211, pa2211] -> pa2212
+ball[pa2212, pa2212] -> pa2213
+ball[pa2213, pa2213] -> pa2214
+ball[pa2214, pa2214] -> pa2215
+ball[pa2215, pa2215] -> pa2216
+ball[pa2216, pa2216] -> pa2217
+ball[pa2217, pa2217] -> pa2218
+ball[pa2218, pa2218] -> pa2219
+ball[pa2219, pa2219] -> pa2220
+ball[pa2220, pa2220] -> qa22
+
+ball[pb22, pb22] -> pb220
+ball[pb220, pb220] -> pb221
+ball[pb221, pb221] -> pb222
+ball[pb222, pb222] -> pb223
+ball[pb223, pb223] -> pb224
+ball[pb224, pb224] -> pb225
+ball[pb225, pb225] -> pb226
+ball[pb226, pb226] -> pb227
+ball[pb227, pb227] -> pb228
+ball[pb228, pb228] -> pb229
+ball[pb229, pb229] -> pb2210
+ball[pb2210, pb2210] -> pb2211
+ball[pb2211, pb2211] -> pb2212
+ball[pb2212, pb2212] -> pb2213
+ball[pb2213, pb2213] -> pb2214
+ball[pb2214, pb2214] -> pb2215
+ball[pb2215, pb2215] -> pb2216
+ball[pb2216, pb2216] -> pb2217
+ball[pb2217, pb2217] -> pb2218
+ball[pb2218, pb2218] -> pb2219
+ball[pb2219, pb2219] -> pb2220
+ball[pb2220, pb2220] -> qb22
+
+final qa22, qb22
+
+// Total number of states (n) in file this far: 554
+// Total number of rules  (m) in file this far: 606
+
+
+// 46 LEAVES
+// Number of states (n): 48
+// Number of rules  (m): 50
+// Largest rank     (r): 2
+
+a -> pa23 # 2
+a -> pb23 # 1
+b -> pa23 # 1
+b -> pb23 # 2
+
+ball[pa23, pa23] -> pa230
+ball[pa230, pa230] -> pa231
+ball[pa231, pa231] -> pa232
+ball[pa232, pa232] -> pa233
+ball[pa233, pa233] -> pa234
+ball[pa234, pa234] -> pa235
+ball[pa235, pa235] -> pa236
+ball[pa236, pa236] -> pa237
+ball[pa237, pa237] -> pa238
+ball[pa238, pa238] -> pa239
+ball[pa239, pa239] -> pa2310
+ball[pa2310, pa2310] -> pa2311
+ball[pa2311, pa2311] -> pa2312
+ball[pa2312, pa2312] -> pa2313
+ball[pa2313, pa2313] -> pa2314
+ball[pa2314, pa2314] -> pa2315
+ball[pa2315, pa2315] -> pa2316
+ball[pa2316, pa2316] -> pa2317
+ball[pa2317, pa2317] -> pa2318
+ball[pa2318, pa2318] -> pa2319
+ball[pa2319, pa2319] -> pa2320
+ball[pa2320, pa2320] -> pa2321
+ball[pa2321, pa2321] -> qa23
+
+ball[pb23, pb23] -> pb230
+ball[pb230, pb230] -> pb231
+ball[pb231, pb231] -> pb232
+ball[pb232, pb232] -> pb233
+ball[pb233, pb233] -> pb234
+ball[pb234, pb234] -> pb235
+ball[pb235, pb235] -> pb236
+ball[pb236, pb236] -> pb237
+ball[pb237, pb237] -> pb238
+ball[pb238, pb238] -> pb239
+ball[pb239, pb239] -> pb2310
+ball[pb2310, pb2310] -> pb2311
+ball[pb2311, pb2311] -> pb2312
+ball[pb2312, pb2312] -> pb2313
+ball[pb2313, pb2313] -> pb2314
+ball[pb2314, pb2314] -> pb2315
+ball[pb2315, pb2315] -> pb2316
+ball[pb2316, pb2316] -> pb2317
+ball[pb2317, pb2317] -> pb2318
+ball[pb2318, pb2318] -> pb2319
+ball[pb2319, pb2319] -> pb2320
+ball[pb2320, pb2320] -> pb2321
+ball[pb2321, pb2321] -> qb23
+
+final qa23, qb23
+
+// Total number of states (n) in file this far: 602
+// Total number of rules  (m) in file this far: 656
+
+
+// 48 LEAVES
+// Number of states (n): 50
+// Number of rules  (m): 52
+// Largest rank     (r): 2
+
+a -> pa24 # 2
+a -> pb24 # 1
+b -> pa24 # 1
+b -> pb24 # 2
+
+ball[pa24, pa24] -> pa240
+ball[pa240, pa240] -> pa241
+ball[pa241, pa241] -> pa242
+ball[pa242, pa242] -> pa243
+ball[pa243, pa243] -> pa244
+ball[pa244, pa244] -> pa245
+ball[pa245, pa245] -> pa246
+ball[pa246, pa246] -> pa247
+ball[pa247, pa247] -> pa248
+ball[pa248, pa248] -> pa249
+ball[pa249, pa249] -> pa2410
+ball[pa2410, pa2410] -> pa2411
+ball[pa2411, pa2411] -> pa2412
+ball[pa2412, pa2412] -> pa2413
+ball[pa2413, pa2413] -> pa2414
+ball[pa2414, pa2414] -> pa2415
+ball[pa2415, pa2415] -> pa2416
+ball[pa2416, pa2416] -> pa2417
+ball[pa2417, pa2417] -> pa2418
+ball[pa2418, pa2418] -> pa2419
+ball[pa2419, pa2419] -> pa2420
+ball[pa2420, pa2420] -> pa2421
+ball[pa2421, pa2421] -> pa2422
+ball[pa2422, pa2422] -> qa24
+
+ball[pb24, pb24] -> pb240
+ball[pb240, pb240] -> pb241
+ball[pb241, pb241] -> pb242
+ball[pb242, pb242] -> pb243
+ball[pb243, pb243] -> pb244
+ball[pb244, pb244] -> pb245
+ball[pb245, pb245] -> pb246
+ball[pb246, pb246] -> pb247
+ball[pb247, pb247] -> pb248
+ball[pb248, pb248] -> pb249
+ball[pb249, pb249] -> pb2410
+ball[pb2410, pb2410] -> pb2411
+ball[pb2411, pb2411] -> pb2412
+ball[pb2412, pb2412] -> pb2413
+ball[pb2413, pb2413] -> pb2414
+ball[pb2414, pb2414] -> pb2415
+ball[pb2415, pb2415] -> pb2416
+ball[pb2416, pb2416] -> pb2417
+ball[pb2417, pb2417] -> pb2418
+ball[pb2418, pb2418] -> pb2419
+ball[pb2419, pb2419] -> pb2420
+ball[pb2420, pb2420] -> pb2421
+ball[pb2421, pb2421] -> pb2422
+ball[pb2422, pb2422] -> qb24
+
+final qa24, qb24
+
+// Total number of states (n) in file this far: 652
+// Total number of rules  (m) in file this far: 708
+
+
+// 50 LEAVES
+// Number of states (n): 52
+// Number of rules  (m): 54
+// Largest rank     (r): 2
+
+a -> pa25 # 2
+a -> pb25 # 1
+b -> pa25 # 1
+b -> pb25 # 2
+
+ball[pa25, pa25] -> pa250
+ball[pa250, pa250] -> pa251
+ball[pa251, pa251] -> pa252
+ball[pa252, pa252] -> pa253
+ball[pa253, pa253] -> pa254
+ball[pa254, pa254] -> pa255
+ball[pa255, pa255] -> pa256
+ball[pa256, pa256] -> pa257
+ball[pa257, pa257] -> pa258
+ball[pa258, pa258] -> pa259
+ball[pa259, pa259] -> pa2510
+ball[pa2510, pa2510] -> pa2511
+ball[pa2511, pa2511] -> pa2512
+ball[pa2512, pa2512] -> pa2513
+ball[pa2513, pa2513] -> pa2514
+ball[pa2514, pa2514] -> pa2515
+ball[pa2515, pa2515] -> pa2516
+ball[pa2516, pa2516] -> pa2517
+ball[pa2517, pa2517] -> pa2518
+ball[pa2518, pa2518] -> pa2519
+ball[pa2519, pa2519] -> pa2520
+ball[pa2520, pa2520] -> pa2521
+ball[pa2521, pa2521] -> pa2522
+ball[pa2522, pa2522] -> pa2523
+ball[pa2523, pa2523] -> qa25
+
+ball[pb25, pb25] -> pb250
+ball[pb250, pb250] -> pb251
+ball[pb251, pb251] -> pb252
+ball[pb252, pb252] -> pb253
+ball[pb253, pb253] -> pb254
+ball[pb254, pb254] -> pb255
+ball[pb255, pb255] -> pb256
+ball[pb256, pb256] -> pb257
+ball[pb257, pb257] -> pb258
+ball[pb258, pb258] -> pb259
+ball[pb259, pb259] -> pb2510
+ball[pb2510, pb2510] -> pb2511
+ball[pb2511, pb2511] -> pb2512
+ball[pb2512, pb2512] -> pb2513
+ball[pb2513, pb2513] -> pb2514
+ball[pb2514, pb2514] -> pb2515
+ball[pb2515, pb2515] -> pb2516
+ball[pb2516, pb2516] -> pb2517
+ball[pb2517, pb2517] -> pb2518
+ball[pb2518, pb2518] -> pb2519
+ball[pb2519, pb2519] -> pb2520
+ball[pb2520, pb2520] -> pb2521
+ball[pb2521, pb2521] -> pb2522
+ball[pb2522, pb2522] -> pb2523
+ball[pb2523, pb2523] -> qb25
+
+final qa25, qb25
+
+// Total number of states (n) in file this far: 704
+// Total number of rules  (m) in file this far: 762
+
+
+// 52 LEAVES
+// Number of states (n): 54
+// Number of rules  (m): 56
+// Largest rank     (r): 2
+
+a -> pa26 # 2
+a -> pb26 # 1
+b -> pa26 # 1
+b -> pb26 # 2
+
+ball[pa26, pa26] -> pa260
+ball[pa260, pa260] -> pa261
+ball[pa261, pa261] -> pa262
+ball[pa262, pa262] -> pa263
+ball[pa263, pa263] -> pa264
+ball[pa264, pa264] -> pa265
+ball[pa265, pa265] -> pa266
+ball[pa266, pa266] -> pa267
+ball[pa267, pa267] -> pa268
+ball[pa268, pa268] -> pa269
+ball[pa269, pa269] -> pa2610
+ball[pa2610, pa2610] -> pa2611
+ball[pa2611, pa2611] -> pa2612
+ball[pa2612, pa2612] -> pa2613
+ball[pa2613, pa2613] -> pa2614
+ball[pa2614, pa2614] -> pa2615
+ball[pa2615, pa2615] -> pa2616
+ball[pa2616, pa2616] -> pa2617
+ball[pa2617, pa2617] -> pa2618
+ball[pa2618, pa2618] -> pa2619
+ball[pa2619, pa2619] -> pa2620
+ball[pa2620, pa2620] -> pa2621
+ball[pa2621, pa2621] -> pa2622
+ball[pa2622, pa2622] -> pa2623
+ball[pa2623, pa2623] -> pa2624
+ball[pa2624, pa2624] -> qa26
+
+ball[pb26, pb26] -> pb260
+ball[pb260, pb260] -> pb261
+ball[pb261, pb261] -> pb262
+ball[pb262, pb262] -> pb263
+ball[pb263, pb263] -> pb264
+ball[pb264, pb264] -> pb265
+ball[pb265, pb265] -> pb266
+ball[pb266, pb266] -> pb267
+ball[pb267, pb267] -> pb268
+ball[pb268, pb268] -> pb269
+ball[pb269, pb269] -> pb2610
+ball[pb2610, pb2610] -> pb2611
+ball[pb2611, pb2611] -> pb2612
+ball[pb2612, pb2612] -> pb2613
+ball[pb2613, pb2613] -> pb2614
+ball[pb2614, pb2614] -> pb2615
+ball[pb2615, pb2615] -> pb2616
+ball[pb2616, pb2616] -> pb2617
+ball[pb2617, pb2617] -> pb2618
+ball[pb2618, pb2618] -> pb2619
+ball[pb2619, pb2619] -> pb2620
+ball[pb2620, pb2620] -> pb2621
+ball[pb2621, pb2621] -> pb2622
+ball[pb2622, pb2622] -> pb2623
+ball[pb2623, pb2623] -> pb2624
+ball[pb2624, pb2624] -> qb26
+
+final qa26, qb26
+
+// Total number of states (n) in file this far: 758
+// Total number of rules  (m) in file this far: 818
+
+
+// 54 LEAVES
+// Number of states (n): 56
+// Number of rules  (m): 58
+// Largest rank     (r): 2
+
+a -> pa27 # 2
+a -> pb27 # 1
+b -> pa27 # 1
+b -> pb27 # 2
+
+ball[pa27, pa27] -> pa270
+ball[pa270, pa270] -> pa271
+ball[pa271, pa271] -> pa272
+ball[pa272, pa272] -> pa273
+ball[pa273, pa273] -> pa274
+ball[pa274, pa274] -> pa275
+ball[pa275, pa275] -> pa276
+ball[pa276, pa276] -> pa277
+ball[pa277, pa277] -> pa278
+ball[pa278, pa278] -> pa279
+ball[pa279, pa279] -> pa2710
+ball[pa2710, pa2710] -> pa2711
+ball[pa2711, pa2711] -> pa2712
+ball[pa2712, pa2712] -> pa2713
+ball[pa2713, pa2713] -> pa2714
+ball[pa2714, pa2714] -> pa2715
+ball[pa2715, pa2715] -> pa2716
+ball[pa2716, pa2716] -> pa2717
+ball[pa2717, pa2717] -> pa2718
+ball[pa2718, pa2718] -> pa2719
+ball[pa2719, pa2719] -> pa2720
+ball[pa2720, pa2720] -> pa2721
+ball[pa2721, pa2721] -> pa2722
+ball[pa2722, pa2722] -> pa2723
+ball[pa2723, pa2723] -> pa2724
+ball[pa2724, pa2724] -> pa2725
+ball[pa2725, pa2725] -> qa27
+
+ball[pb27, pb27] -> pb270
+ball[pb270, pb270] -> pb271
+ball[pb271, pb271] -> pb272
+ball[pb272, pb272] -> pb273
+ball[pb273, pb273] -> pb274
+ball[pb274, pb274] -> pb275
+ball[pb275, pb275] -> pb276
+ball[pb276, pb276] -> pb277
+ball[pb277, pb277] -> pb278
+ball[pb278, pb278] -> pb279
+ball[pb279, pb279] -> pb2710
+ball[pb2710, pb2710] -> pb2711
+ball[pb2711, pb2711] -> pb2712
+ball[pb2712, pb2712] -> pb2713
+ball[pb2713, pb2713] -> pb2714
+ball[pb2714, pb2714] -> pb2715
+ball[pb2715, pb2715] -> pb2716
+ball[pb2716, pb2716] -> pb2717
+ball[pb2717, pb2717] -> pb2718
+ball[pb2718, pb2718] -> pb2719
+ball[pb2719, pb2719] -> pb2720
+ball[pb2720, pb2720] -> pb2721
+ball[pb2721, pb2721] -> pb2722
+ball[pb2722, pb2722] -> pb2723
+ball[pb2723, pb2723] -> pb2724
+ball[pb2724, pb2724] -> pb2725
+ball[pb2725, pb2725] -> qb27
+
+final qa27, qb27
+
+// Total number of states (n) in file this far: 814
+// Total number of rules  (m) in file this far: 876
+
+
+// 56 LEAVES
+// Number of states (n): 58
+// Number of rules  (m): 60
+// Largest rank     (r): 2
+
+a -> pa28 # 2
+a -> pb28 # 1
+b -> pa28 # 1
+b -> pb28 # 2
+
+ball[pa28, pa28] -> pa280
+ball[pa280, pa280] -> pa281
+ball[pa281, pa281] -> pa282
+ball[pa282, pa282] -> pa283
+ball[pa283, pa283] -> pa284
+ball[pa284, pa284] -> pa285
+ball[pa285, pa285] -> pa286
+ball[pa286, pa286] -> pa287
+ball[pa287, pa287] -> pa288
+ball[pa288, pa288] -> pa289
+ball[pa289, pa289] -> pa2810
+ball[pa2810, pa2810] -> pa2811
+ball[pa2811, pa2811] -> pa2812
+ball[pa2812, pa2812] -> pa2813
+ball[pa2813, pa2813] -> pa2814
+ball[pa2814, pa2814] -> pa2815
+ball[pa2815, pa2815] -> pa2816
+ball[pa2816, pa2816] -> pa2817
+ball[pa2817, pa2817] -> pa2818
+ball[pa2818, pa2818] -> pa2819
+ball[pa2819, pa2819] -> pa2820
+ball[pa2820, pa2820] -> pa2821
+ball[pa2821, pa2821] -> pa2822
+ball[pa2822, pa2822] -> pa2823
+ball[pa2823, pa2823] -> pa2824
+ball[pa2824, pa2824] -> pa2825
+ball[pa2825, pa2825] -> pa2826
+ball[pa2826, pa2826] -> qa28
+
+ball[pb28, pb28] -> pb280
+ball[pb280, pb280] -> pb281
+ball[pb281, pb281] -> pb282
+ball[pb282, pb282] -> pb283
+ball[pb283, pb283] -> pb284
+ball[pb284, pb284] -> pb285
+ball[pb285, pb285] -> pb286
+ball[pb286, pb286] -> pb287
+ball[pb287, pb287] -> pb288
+ball[pb288, pb288] -> pb289
+ball[pb289, pb289] -> pb2810
+ball[pb2810, pb2810] -> pb2811
+ball[pb2811, pb2811] -> pb2812
+ball[pb2812, pb2812] -> pb2813
+ball[pb2813, pb2813] -> pb2814
+ball[pb2814, pb2814] -> pb2815
+ball[pb2815, pb2815] -> pb2816
+ball[pb2816, pb2816] -> pb2817
+ball[pb2817, pb2817] -> pb2818
+ball[pb2818, pb2818] -> pb2819
+ball[pb2819, pb2819] -> pb2820
+ball[pb2820, pb2820] -> pb2821
+ball[pb2821, pb2821] -> pb2822
+ball[pb2822, pb2822] -> pb2823
+ball[pb2823, pb2823] -> pb2824
+ball[pb2824, pb2824] -> pb2825
+ball[pb2825, pb2825] -> pb2826
+ball[pb2826, pb2826] -> qb28
+
+final qa28, qb28
+
+// Total number of states (n) in file this far: 872
+// Total number of rules  (m) in file this far: 936
+
+
+// 58 LEAVES
+// Number of states (n): 60
+// Number of rules  (m): 62
+// Largest rank     (r): 2
+
+a -> pa29 # 2
+a -> pb29 # 1
+b -> pa29 # 1
+b -> pb29 # 2
+
+ball[pa29, pa29] -> pa290
+ball[pa290, pa290] -> pa291
+ball[pa291, pa291] -> pa292
+ball[pa292, pa292] -> pa293
+ball[pa293, pa293] -> pa294
+ball[pa294, pa294] -> pa295
+ball[pa295, pa295] -> pa296
+ball[pa296, pa296] -> pa297
+ball[pa297, pa297] -> pa298
+ball[pa298, pa298] -> pa299
+ball[pa299, pa299] -> pa2910
+ball[pa2910, pa2910] -> pa2911
+ball[pa2911, pa2911] -> pa2912
+ball[pa2912, pa2912] -> pa2913
+ball[pa2913, pa2913] -> pa2914
+ball[pa2914, pa2914] -> pa2915
+ball[pa2915, pa2915] -> pa2916
+ball[pa2916, pa2916] -> pa2917
+ball[pa2917, pa2917] -> pa2918
+ball[pa2918, pa2918] -> pa2919
+ball[pa2919, pa2919] -> pa2920
+ball[pa2920, pa2920] -> pa2921
+ball[pa2921, pa2921] -> pa2922
+ball[pa2922, pa2922] -> pa2923
+ball[pa2923, pa2923] -> pa2924
+ball[pa2924, pa2924] -> pa2925
+ball[pa2925, pa2925] -> pa2926
+ball[pa2926, pa2926] -> pa2927
+ball[pa2927, pa2927] -> qa29
+
+ball[pb29, pb29] -> pb290
+ball[pb290, pb290] -> pb291
+ball[pb291, pb291] -> pb292
+ball[pb292, pb292] -> pb293
+ball[pb293, pb293] -> pb294
+ball[pb294, pb294] -> pb295
+ball[pb295, pb295] -> pb296
+ball[pb296, pb296] -> pb297
+ball[pb297, pb297] -> pb298
+ball[pb298, pb298] -> pb299
+ball[pb299, pb299] -> pb2910
+ball[pb2910, pb2910] -> pb2911
+ball[pb2911, pb2911] -> pb2912
+ball[pb2912, pb2912] -> pb2913
+ball[pb2913, pb2913] -> pb2914
+ball[pb2914, pb2914] -> pb2915
+ball[pb2915, pb2915] -> pb2916
+ball[pb2916, pb2916] -> pb2917
+ball[pb2917, pb2917] -> pb2918
+ball[pb2918, pb2918] -> pb2919
+ball[pb2919, pb2919] -> pb2920
+ball[pb2920, pb2920] -> pb2921
+ball[pb2921, pb2921] -> pb2922
+ball[pb2922, pb2922] -> pb2923
+ball[pb2923, pb2923] -> pb2924
+ball[pb2924, pb2924] -> pb2925
+ball[pb2925, pb2925] -> pb2926
+ball[pb2926, pb2926] -> pb2927
+ball[pb2927, pb2927] -> qb29
+
+final qa29, qb29
+
+// Total number of states (n) in file this far: 932
+// Total number of rules  (m) in file this far: 998
+
+
+// 60 LEAVES
+// Number of states (n): 62
+// Number of rules  (m): 64
+// Largest rank     (r): 2
+
+a -> pa30 # 2
+a -> pb30 # 1
+b -> pa30 # 1
+b -> pb30 # 2
+
+ball[pa30, pa30] -> pa300
+ball[pa300, pa300] -> pa301
+ball[pa301, pa301] -> pa302
+ball[pa302, pa302] -> pa303
+ball[pa303, pa303] -> pa304
+ball[pa304, pa304] -> pa305
+ball[pa305, pa305] -> pa306
+ball[pa306, pa306] -> pa307
+ball[pa307, pa307] -> pa308
+ball[pa308, pa308] -> pa309
+ball[pa309, pa309] -> pa3010
+ball[pa3010, pa3010] -> pa3011
+ball[pa3011, pa3011] -> pa3012
+ball[pa3012, pa3012] -> pa3013
+ball[pa3013, pa3013] -> pa3014
+ball[pa3014, pa3014] -> pa3015
+ball[pa3015, pa3015] -> pa3016
+ball[pa3016, pa3016] -> pa3017
+ball[pa3017, pa3017] -> pa3018
+ball[pa3018, pa3018] -> pa3019
+ball[pa3019, pa3019] -> pa3020
+ball[pa3020, pa3020] -> pa3021
+ball[pa3021, pa3021] -> pa3022
+ball[pa3022, pa3022] -> pa3023
+ball[pa3023, pa3023] -> pa3024
+ball[pa3024, pa3024] -> pa3025
+ball[pa3025, pa3025] -> pa3026
+ball[pa3026, pa3026] -> pa3027
+ball[pa3027, pa3027] -> pa3028
+ball[pa3028, pa3028] -> qa30
+
+ball[pb30, pb30] -> pb300
+ball[pb300, pb300] -> pb301
+ball[pb301, pb301] -> pb302
+ball[pb302, pb302] -> pb303
+ball[pb303, pb303] -> pb304
+ball[pb304, pb304] -> pb305
+ball[pb305, pb305] -> pb306
+ball[pb306, pb306] -> pb307
+ball[pb307, pb307] -> pb308
+ball[pb308, pb308] -> pb309
+ball[pb309, pb309] -> pb3010
+ball[pb3010, pb3010] -> pb3011
+ball[pb3011, pb3011] -> pb3012
+ball[pb3012, pb3012] -> pb3013
+ball[pb3013, pb3013] -> pb3014
+ball[pb3014, pb3014] -> pb3015
+ball[pb3015, pb3015] -> pb3016
+ball[pb3016, pb3016] -> pb3017
+ball[pb3017, pb3017] -> pb3018
+ball[pb3018, pb3018] -> pb3019
+ball[pb3019, pb3019] -> pb3020
+ball[pb3020, pb3020] -> pb3021
+ball[pb3021, pb3021] -> pb3022
+ball[pb3022, pb3022] -> pb3023
+ball[pb3023, pb3023] -> pb3024
+ball[pb3024, pb3024] -> pb3025
+ball[pb3025, pb3025] -> pb3026
+ball[pb3026, pb3026] -> pb3027
+ball[pb3027, pb3027] -> pb3028
+ball[pb3028, pb3028] -> qb30
+
+final qa30, qb30
+
+// Total number of states (n) in file this far: 994
+// Total number of rules  (m) in file this far: 1062
+
+
+// 62 LEAVES
+// Number of states (n): 64
+// Number of rules  (m): 66
+// Largest rank     (r): 2
+
+a -> pa31 # 2
+a -> pb31 # 1
+b -> pa31 # 1
+b -> pb31 # 2
+
+ball[pa31, pa31] -> pa310
+ball[pa310, pa310] -> pa311
+ball[pa311, pa311] -> pa312
+ball[pa312, pa312] -> pa313
+ball[pa313, pa313] -> pa314
+ball[pa314, pa314] -> pa315
+ball[pa315, pa315] -> pa316
+ball[pa316, pa316] -> pa317
+ball[pa317, pa317] -> pa318
+ball[pa318, pa318] -> pa319
+ball[pa319, pa319] -> pa3110
+ball[pa3110, pa3110] -> pa3111
+ball[pa3111, pa3111] -> pa3112
+ball[pa3112, pa3112] -> pa3113
+ball[pa3113, pa3113] -> pa3114
+ball[pa3114, pa3114] -> pa3115
+ball[pa3115, pa3115] -> pa3116
+ball[pa3116, pa3116] -> pa3117
+ball[pa3117, pa3117] -> pa3118
+ball[pa3118, pa3118] -> pa3119
+ball[pa3119, pa3119] -> pa3120
+ball[pa3120, pa3120] -> pa3121
+ball[pa3121, pa3121] -> pa3122
+ball[pa3122, pa3122] -> pa3123
+ball[pa3123, pa3123] -> pa3124
+ball[pa3124, pa3124] -> pa3125
+ball[pa3125, pa3125] -> pa3126
+ball[pa3126, pa3126] -> pa3127
+ball[pa3127, pa3127] -> pa3128
+ball[pa3128, pa3128] -> pa3129
+ball[pa3129, pa3129] -> qa31
+
+ball[pb31, pb31] -> pb310
+ball[pb310, pb310] -> pb311
+ball[pb311, pb311] -> pb312
+ball[pb312, pb312] -> pb313
+ball[pb313, pb313] -> pb314
+ball[pb314, pb314] -> pb315
+ball[pb315, pb315] -> pb316
+ball[pb316, pb316] -> pb317
+ball[pb317, pb317] -> pb318
+ball[pb318, pb318] -> pb319
+ball[pb319, pb319] -> pb3110
+ball[pb3110, pb3110] -> pb3111
+ball[pb3111, pb3111] -> pb3112
+ball[pb3112, pb3112] -> pb3113
+ball[pb3113, pb3113] -> pb3114
+ball[pb3114, pb3114] -> pb3115
+ball[pb3115, pb3115] -> pb3116
+ball[pb3116, pb3116] -> pb3117
+ball[pb3117, pb3117] -> pb3118
+ball[pb3118, pb3118] -> pb3119
+ball[pb3119, pb3119] -> pb3120
+ball[pb3120, pb3120] -> pb3121
+ball[pb3121, pb3121] -> pb3122
+ball[pb3122, pb3122] -> pb3123
+ball[pb3123, pb3123] -> pb3124
+ball[pb3124, pb3124] -> pb3125
+ball[pb3125, pb3125] -> pb3126
+ball[pb3126, pb3126] -> pb3127
+ball[pb3127, pb3127] -> pb3128
+ball[pb3128, pb3128] -> pb3129
+ball[pb3129, pb3129] -> qb31
+
+final qa31, qb31
+
+// Total number of states (n) in file this far: 1058
+// Total number of rules  (m) in file this far: 1128
+
+
+// 64 LEAVES
+// Number of states (n): 66
+// Number of rules  (m): 68
+// Largest rank     (r): 2
+
+a -> pa32 # 2
+a -> pb32 # 1
+b -> pa32 # 1
+b -> pb32 # 2
+
+ball[pa32, pa32] -> pa320
+ball[pa320, pa320] -> pa321
+ball[pa321, pa321] -> pa322
+ball[pa322, pa322] -> pa323
+ball[pa323, pa323] -> pa324
+ball[pa324, pa324] -> pa325
+ball[pa325, pa325] -> pa326
+ball[pa326, pa326] -> pa327
+ball[pa327, pa327] -> pa328
+ball[pa328, pa328] -> pa329
+ball[pa329, pa329] -> pa3210
+ball[pa3210, pa3210] -> pa3211
+ball[pa3211, pa3211] -> pa3212
+ball[pa3212, pa3212] -> pa3213
+ball[pa3213, pa3213] -> pa3214
+ball[pa3214, pa3214] -> pa3215
+ball[pa3215, pa3215] -> pa3216
+ball[pa3216, pa3216] -> pa3217
+ball[pa3217, pa3217] -> pa3218
+ball[pa3218, pa3218] -> pa3219
+ball[pa3219, pa3219] -> pa3220
+ball[pa3220, pa3220] -> pa3221
+ball[pa3221, pa3221] -> pa3222
+ball[pa3222, pa3222] -> pa3223
+ball[pa3223, pa3223] -> pa3224
+ball[pa3224, pa3224] -> pa3225
+ball[pa3225, pa3225] -> pa3226
+ball[pa3226, pa3226] -> pa3227
+ball[pa3227, pa3227] -> pa3228
+ball[pa3228, pa3228] -> pa3229
+ball[pa3229, pa3229] -> pa3230
+ball[pa3230, pa3230] -> qa32
+
+ball[pb32, pb32] -> pb320
+ball[pb320, pb320] -> pb321
+ball[pb321, pb321] -> pb322
+ball[pb322, pb322] -> pb323
+ball[pb323, pb323] -> pb324
+ball[pb324, pb324] -> pb325
+ball[pb325, pb325] -> pb326
+ball[pb326, pb326] -> pb327
+ball[pb327, pb327] -> pb328
+ball[pb328, pb328] -> pb329
+ball[pb329, pb329] -> pb3210
+ball[pb3210, pb3210] -> pb3211
+ball[pb3211, pb3211] -> pb3212
+ball[pb3212, pb3212] -> pb3213
+ball[pb3213, pb3213] -> pb3214
+ball[pb3214, pb3214] -> pb3215
+ball[pb3215, pb3215] -> pb3216
+ball[pb3216, pb3216] -> pb3217
+ball[pb3217, pb3217] -> pb3218
+ball[pb3218, pb3218] -> pb3219
+ball[pb3219, pb3219] -> pb3220
+ball[pb3220, pb3220] -> pb3221
+ball[pb3221, pb3221] -> pb3222
+ball[pb3222, pb3222] -> pb3223
+ball[pb3223, pb3223] -> pb3224
+ball[pb3224, pb3224] -> pb3225
+ball[pb3225, pb3225] -> pb3226
+ball[pb3226, pb3226] -> pb3227
+ball[pb3227, pb3227] -> pb3228
+ball[pb3228, pb3228] -> pb3229
+ball[pb3229, pb3229] -> pb3230
+ball[pb3230, pb3230] -> qb32
+
+final qa32, qb32
+
+// Total number of states (n) in file this far: 1124
+// Total number of rules  (m) in file this far: 1196

@@ -32,7 +32,6 @@ import se.umu.cs.flp.aj.wta.State;
 import se.umu.cs.flp.aj.wta.Symbol;
 import se.umu.cs.flp.aj.wta.WTA;
 import se.umu.cs.flp.aj.wta.Weight;
-import se.umu.cs.flp.aj.wta_handlers.WTABuilder;
 
 public class BestTreesBasic {
 	
@@ -45,19 +44,16 @@ public class BestTreesBasic {
 	private static HashMap<State, Weight> smallestCompletionWeights;
 	private static HashMap<Node<Symbol>, ArrayList<State>> optimalStates = 
 			new HashMap<>();
-			
-	public static void init(WTA wta) {
-		WTABuilder b = new WTABuilder();
-		smallestCompletionWeights = b.findSmallestCompletionWeights(wta);
-		treeStateValTable = new NestedMap<>();
+	
+	public static void setSmallestCompletions(
+			HashMap<State, Weight> smallestCompletions) {
+		smallestCompletionWeights = smallestCompletions;
 	}
 	
 	public static List<String> run(WTA wta, int N) {
 		
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();
-		
-		init(wta);
 		
 		// T <- empty
 		exploredTrees = new ArrayList<Node<Symbol>>(); 

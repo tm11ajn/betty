@@ -20,9 +20,13 @@
 
 package se.umu.cs.flp.aj.nbest;
 
+import java.util.HashMap;
 import java.util.List;
 
+import se.umu.cs.flp.aj.wta.State;
 import se.umu.cs.flp.aj.wta.WTA;
+import se.umu.cs.flp.aj.wta.Weight;
+import se.umu.cs.flp.aj.wta_handlers.WTABuilder;
 import se.umu.cs.flp.aj.wta_handlers.WTAParser;
 
 public class NBest {
@@ -40,6 +44,11 @@ public class NBest {
 		
 		WTAParser wtaParser = new WTAParser();
 		WTA wta = wtaParser.parse(fileName);
+		
+		System.out.println("Pre-computing smallest completions...");
+		HashMap<State, Weight> smallestCompletions = 
+				getSmallestCompletions(wta);
+		System.out.println("Smallest completions done.");
 
 		long startTime;
 		long endTime;
@@ -47,6 +56,8 @@ public class NBest {
 		
 		if (usePruning(args) || runBoth(args)) {
 			System.out.println("Running BestTrees...");
+			BestTrees.setSmallestCompletions(smallestCompletions);
+			
 			startTime = System.nanoTime();
 			List<String> result = BestTrees.run(wta, N);
 			endTime = System.nanoTime();
@@ -62,6 +73,8 @@ public class NBest {
 		
 		if (!usePruning(args) || runBoth(args)) {
 			System.out.println("Running BestTreesBasic...");
+			BestTreesBasic.setSmallestCompletions(smallestCompletions);
+			
 			startTime = System.nanoTime();
 			List<String> resultBasic = BestTreesBasic.run(wta, N);
 			endTime = System.nanoTime();
@@ -75,6 +88,11 @@ public class NBest {
 			}
 		}
 		
+	}
+	
+	public static HashMap<State, Weight> getSmallestCompletions(WTA wta) {
+		WTABuilder b = new WTABuilder();
+		return b.findSmallestCompletionWeights(wta);
 	}
 	
 	private static void checkArgs(String[] args) {

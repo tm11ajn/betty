@@ -38,7 +38,6 @@ import se.umu.cs.flp.aj.wta.State;
 import se.umu.cs.flp.aj.wta.Symbol;
 import se.umu.cs.flp.aj.wta.WTA;
 import se.umu.cs.flp.aj.wta.Weight;
-import se.umu.cs.flp.aj.wta_handlers.WTABuilder;
 
 import java.util.PriorityQueue;
 
@@ -55,13 +54,16 @@ public class BestTrees {
 	private static HashMap<Node<Symbol>, ArrayList<State>> optimalStates =
 			new HashMap<>();
 	private static HashMap<State, Integer> optimalStatesUsage = new HashMap<>();
+	
+	public static void setSmallestCompletions(
+			HashMap<State, Weight> smallestCompletions) {
+		smallestCompletionWeights = smallestCompletions;
+	}
 
 	public static List<String> run(WTA wta, int N) {
 
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();
-
-		init(wta);
 
 		// T <- empty. K <- empty
 		exploredTrees = new ArrayList<Node<Symbol>>();
@@ -102,12 +104,6 @@ public class BestTrees {
 		}
 
 		return nBest;
-	}
-
-	public static void init(WTA wta) {
-		WTABuilder b = new WTABuilder();
-		smallestCompletionWeights = b.findSmallestCompletionWeights(wta);
-		treeStateValTable = new NestedMap<>();
 	}
 
 	private static void enqueueRankZeroSymbols(WTA wta, int N) {
@@ -164,6 +160,7 @@ public class BestTrees {
 				
 
 				tempQueue.add(insertIndex, tree);
+				
 			}
 		}
 

@@ -3,6 +3,7 @@ package se.umu.cs.flp.aj.nbest;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -12,6 +13,7 @@ import se.umu.cs.flp.aj.nbest.data.Node;
 import se.umu.cs.flp.aj.wta.State;
 import se.umu.cs.flp.aj.wta.Symbol;
 import se.umu.cs.flp.aj.wta.WTA;
+import se.umu.cs.flp.aj.wta.Weight;
 import se.umu.cs.flp.aj.wta_handlers.WTAParser;
 
 public class BestTreesBasicTest {
@@ -33,7 +35,11 @@ public class BestTreesBasicTest {
 	@Test
 	public void shouldGetOptimalStateForLeafNode() throws Exception {
 		Node<Symbol> leafNode = new Node<Symbol>(new Symbol("a", 0));
-		BestTreesBasic.init(wta);
+
+		HashMap<State, Weight> smallestCompletions = 
+				NBest.getSmallestCompletions(wta);
+		BestTreesBasic.setSmallestCompletions(smallestCompletions);
+
 		State optimalState = BestTreesBasic.
 				getOptimalStates(wta, leafNode).get(0);
 		assertEquals(new State("pb"), optimalState);
@@ -42,7 +48,7 @@ public class BestTreesBasicTest {
 	@Test
 	public void shouldGetOptimalStateForLeafNode2() throws Exception {
 		Node<Symbol> leafNode = new Node<Symbol>(new Symbol("b", 0));
-		BestTreesBasic.init(wta);
+		NBest.getSmallestCompletions(wta);
 		State optimalState = BestTreesBasic.
 				getOptimalStates(wta, leafNode).get(0);
 		assertEquals(new State("pa"), optimalState);
@@ -53,7 +59,9 @@ public class BestTreesBasicTest {
 		Node<Symbol> leafNodeA = new Node<Symbol>(new Symbol("a", 0));
 		Node<Symbol> node = new Node<Symbol>(new Symbol("ball", 2));
 		
-		BestTreesBasic.init(wta);
+		HashMap<State, Weight> smallestCompletions = 
+				NBest.getSmallestCompletions(wta);
+		BestTreesBasic.setSmallestCompletions(smallestCompletions);
 		
 		node.addChild(leafNodeA);
 		node.addChild(leafNodeA);
@@ -72,7 +80,9 @@ public class BestTreesBasicTest {
 		Node<Symbol> leafNodeB = new Node<Symbol>(new Symbol("b", 0));
 		Node<Symbol> node = new Node<Symbol>(new Symbol("ball", 2));
 		
-		BestTreesBasic.init(wta);
+		HashMap<State, Weight> smallestCompletions = 
+				NBest.getSmallestCompletions(wta);
+		BestTreesBasic.setSmallestCompletions(smallestCompletions);
 		
 		node.addChild(leafNodeB);
 		node.addChild(leafNodeA);
