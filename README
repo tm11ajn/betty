@@ -7,8 +7,8 @@ Semiring" by Johanna Björklund, Frank Drewes, and Niklas Zechner
 for generating the N best trees given a weighted tree automaton (WTA).
 
 The file wta.format contains the description of the format of the input WTAs.
-The example WTA from the paper can be found in wta0.rtg, and another example
-used for testing is in wta1.rtg, both in directory wta_examples/.
+The example WTA from the paper (wta0.rtg) can be found along with other examples
+used for testing in directory wta_examples/.
 
 Quick start: 
 
