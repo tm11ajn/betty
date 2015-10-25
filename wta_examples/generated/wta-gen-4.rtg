@@ -1,0 +1,116 @@
+// An extension of the graph from the BestTrees paper
+
+
+// MAIN GRAMMAR
+// Number of states (n): 4
+// Number of rules  (m): 12
+// Largest rank     (r): 2
+
+a -> pa # 2
+a -> pb # 1
+b -> pa # 1
+b -> pb # 2
+
+ball[pa, pa] -> qa
+ball[qa, qa] -> qa
+ball[pb, pb] -> qb
+ball[qb, qb] -> qb
+
+ball[pa, qa] -> pa
+ball[qa, pa] -> pa
+ball[pb, qb] -> pb
+ball[qb, pb] -> pb
+
+final qa, qb
+
+
+// 2 LEAVES
+// Number of states (n): 4
+// Number of rules  (m): 6
+// Largest rank     (r): 2
+
+a -> pa1 # 2
+a -> pb1 # 1
+b -> pa1 # 1
+b -> pb1 # 2
+
+ball[pa1, pa1] -> qa1
+
+ball[pb1, pb1] -> qb1
+
+final qa1, qb1
+
+// Total number of states (n) in file this far: 8
+// Total number of rules  (m) in file this far: 18
+
+
+// 4 LEAVES
+// Number of states (n): 6
+// Number of rules  (m): 8
+// Largest rank     (r): 2
+
+a -> pa2 # 2
+a -> pb2 # 1
+b -> pa2 # 1
+b -> pb2 # 2
+
+ball[pa2, pa2] -> pa2s0
+ball[pa2s0, pa2s0] -> qa2
+
+ball[pb2, pb2] -> pb2s0
+ball[pb2s0, pb2s0] -> qb2
+
+final qa2, qb2
+
+// Total number of states (n) in file this far: 14
+// Total number of rules  (m) in file this far: 26
+
+
+// 6 LEAVES
+// Number of states (n): 8
+// Number of rules  (m): 10
+// Largest rank     (r): 2
+
+a -> pa3 # 2
+a -> pb3 # 1
+b -> pa3 # 1
+b -> pb3 # 2
+
+ball[pa3, pa3] -> pa3s0
+ball[pa3s0, pa3s0] -> pa3s1
+ball[pa3s1, pa3s1] -> qa3
+
+ball[pb3, pb3] -> pb3s0
+ball[pb3s0, pb3s0] -> pb3s1
+ball[pb3s1, pb3s1] -> qb3
+
+final qa3, qb3
+
+// Total number of states (n) in file this far: 22
+// Total number of rules  (m) in file this far: 36
+
+
+// 8 LEAVES
+// Number of states (n): 10
+// Number of rules  (m): 12
+// Largest rank     (r): 2
+
+a -> pa4 # 2
+a -> pb4 # 1
+b -> pa4 # 1
+b -> pb4 # 2
+
+ball[pa4, pa4] -> pa4s0
+ball[pa4s0, pa4s0] -> pa4s1
+ball[pa4s1, pa4s1] -> pa4s2
+ball[pa4s2, pa4s2] -> qa4
+
+ball[pb4, pb4] -> pb4s0
+ball[pb4s0, pb4s0] -> pb4s1
+ball[pb4s1, pb4s1] -> pb4s2
+ball[pb4s2, pb4s2] -> qb4
+
+final qa4, qb4
+
+// Total number of states (n) in file this far: 32
+// Total number of rules  (m) in file this far: 48

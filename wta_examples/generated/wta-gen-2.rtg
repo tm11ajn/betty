@@ -1,0 +1,66 @@
+// An extension of the graph from the BestTrees paper
+
+
+// MAIN GRAMMAR
+// Number of states (n): 4
+// Number of rules  (m): 12
+// Largest rank     (r): 2
+
+a -> pa # 2
+a -> pb # 1
+b -> pa # 1
+b -> pb # 2
+
+ball[pa, pa] -> qa
+ball[qa, qa] -> qa
+ball[pb, pb] -> qb
+ball[qb, qb] -> qb
+
+ball[pa, qa] -> pa
+ball[qa, pa] -> pa
+ball[pb, qb] -> pb
+ball[qb, pb] -> pb
+
+final qa, qb
+
+
+// 2 LEAVES
+// Number of states (n): 4
+// Number of rules  (m): 6
+// Largest rank     (r): 2
+
+a -> pa1 # 2
+a -> pb1 # 1
+b -> pa1 # 1
+b -> pb1 # 2
+
+ball[pa1, pa1] -> qa1
+
+ball[pb1, pb1] -> qb1
+
+final qa1, qb1
+
+// Total number of states (n) in file this far: 8
+// Total number of rules  (m) in file this far: 18
+
+
+// 4 LEAVES
+// Number of states (n): 6
+// Number of rules  (m): 8
+// Largest rank     (r): 2
+
+a -> pa2 # 2
+a -> pb2 # 1
+b -> pa2 # 1
+b -> pb2 # 2
+
+ball[pa2, pa2] -> pa2s0
+ball[pa2s0, pa2s0] -> qa2
+
+ball[pb2, pb2] -> pb2s0
+ball[pb2s0, pb2s0] -> qb2
+
+final qa2, qb2
+
+// Total number of states (n) in file this far: 14
+// Total number of rules  (m) in file this far: 26
