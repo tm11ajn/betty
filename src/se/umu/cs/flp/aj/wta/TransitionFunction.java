@@ -36,11 +36,25 @@ public class TransitionFunction {
 	}
 
 	public ArrayList<Rule> getRulesBySymbol(Symbol symbol) {
-		return rulesBySymbol.get(symbol);
+		
+		ArrayList<Rule> rules = rulesBySymbol.get(symbol);
+		
+		if (rules == null) {
+			return new ArrayList<Rule>();
+		}
+		
+		return rules;
 	}
 
 	public ArrayList<Rule> getRulesByResultingState(State resultingState) {
-		return rulesByResultingState.get(resultingState);
+		
+		ArrayList<Rule> rules = rulesByResultingState.get(resultingState);
+		
+		if (rules == null) {
+			return new ArrayList<Rule>();
+		}
+		
+		return rules;
 	}
 	
 	public ArrayList<Rule> getRules() {
