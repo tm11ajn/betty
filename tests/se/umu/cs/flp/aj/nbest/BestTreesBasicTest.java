@@ -25,6 +25,10 @@ public class BestTreesBasicTest {
 	public void setUp() throws Exception {
 		WTAParser parser = new WTAParser();
 		wta = parser.parse(fileName);
+		
+		HashMap<State, Weight> smallestCompletions = 
+				NBest.getSmallestCompletions(wta);
+		BestTreesBasic.setSmallestCompletions(smallestCompletions);
 	}
 
 	@After
@@ -35,22 +39,18 @@ public class BestTreesBasicTest {
 	@Test
 	public void shouldGetOptimalStateForLeafNode() throws Exception {
 		Node<Symbol> leafNode = new Node<Symbol>(new Symbol("a", 0));
-
-		HashMap<State, Weight> smallestCompletions = 
-				NBest.getSmallestCompletions(wta);
-		BestTreesBasic.setSmallestCompletions(smallestCompletions);
-
 		State optimalState = BestTreesBasic.
-				getOptimalStates(wta, leafNode).get(0);
+				getOptimalStates(leafNode).get(0);
+		
 		assertEquals(new State("pb"), optimalState);
 	}
 	
 	@Test
 	public void shouldGetOptimalStateForLeafNode2() throws Exception {
 		Node<Symbol> leafNode = new Node<Symbol>(new Symbol("b", 0));
-		NBest.getSmallestCompletions(wta);
 		State optimalState = BestTreesBasic.
-				getOptimalStates(wta, leafNode).get(0);
+				getOptimalStates(leafNode).get(0);
+		
 		assertEquals(new State("pa"), optimalState);
 	}
 	
@@ -59,19 +59,16 @@ public class BestTreesBasicTest {
 		Node<Symbol> leafNodeA = new Node<Symbol>(new Symbol("a", 0));
 		Node<Symbol> node = new Node<Symbol>(new Symbol("ball", 2));
 		
-		HashMap<State, Weight> smallestCompletions = 
-				NBest.getSmallestCompletions(wta);
-		BestTreesBasic.setSmallestCompletions(smallestCompletions);
-		
 		node.addChild(leafNodeA);
 		node.addChild(leafNodeA);
 		
-		BestTreesBasic.getOptimalStates(wta, leafNodeA);
+		BestTreesBasic.computeCurrentWeight(wta, leafNodeA);
+		BestTreesBasic.computeCurrentWeight(wta, node);
 		
 		ArrayList<State> expected = new ArrayList<>();
 		expected.add(new State("qb"));
 		
-		assertEquals(expected, BestTreesBasic.getOptimalStates(wta, node));
+		assertEquals(expected, BestTreesBasic.getOptimalStates(node));
 	}
 	
 	@Test
@@ -80,38 +77,35 @@ public class BestTreesBasicTest {
 		Node<Symbol> leafNodeB = new Node<Symbol>(new Symbol("b", 0));
 		Node<Symbol> node = new Node<Symbol>(new Symbol("ball", 2));
 		
-		HashMap<State, Weight> smallestCompletions = 
-				NBest.getSmallestCompletions(wta);
-		BestTreesBasic.setSmallestCompletions(smallestCompletions);
-		
 		node.addChild(leafNodeB);
 		node.addChild(leafNodeA);
 		
-		BestTreesBasic.getOptimalStates(wta, leafNodeA);
-		BestTreesBasic.getOptimalStates(wta, leafNodeB);
+		BestTreesBasic.computeCurrentWeight(wta, leafNodeA);
+		BestTreesBasic.computeCurrentWeight(wta, leafNodeB);
+		BestTreesBasic.computeCurrentWeight(wta, node);
 		
 		ArrayList<State> expected = new ArrayList<>();
-		expected.add(new State("qa"));
 		expected.add(new State("qb"));
+		expected.add(new State("qa"));
 		
-		assertEquals(expected, BestTreesBasic.getOptimalStates(wta, node));
+		assertEquals(expected, BestTreesBasic.getOptimalStates(node));
 	}
 	
-	@Test
-	public void shouldGetExpansion() throws Exception {
-		Node<Symbol> leafNodeA = new Node<Symbol>(new Symbol("a", 0));
-		ArrayList<Node<Symbol>> expansion = 
-				BestTreesBasic.expandWith(wta, leafNodeA);
-		
-		ArrayList<Node<Symbol>> expected = new ArrayList<Node<Symbol>>();
-		//expected.add(leafNodeA); // TODO
-		
+//	@Test
+//	public void shouldGetExpansion() throws Exception {
+//		Node<Symbol> leafNodeA = new Node<Symbol>(new Symbol("a", 0));
+//		ArrayList<Node<Symbol>> expansion = 
+//				BestTreesBasic.expandWith(wta, leafNodeA);
+//		
+//		ArrayList<Node<Symbol>> expected = new ArrayList<Node<Symbol>>();
+//		//expected.add(leafNodeA); // TODO
+//		
 //		System.out.println("Expansion: ");
 //		for (Node<Symbol> n : expansion) {
 //			System.out.println(n);
 //		}
-		
-		assertEquals(expected, expansion);
-	}
+//		
+//		assertEquals(expected, expansion);
+//	}
 
 }

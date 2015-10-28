@@ -25,6 +25,7 @@ public class WTAParserTest {
 	private WTAParser wtaParser = new WTAParser();
 	private WTA wta = new WTA();
 
+	private Symbol ASymb = new Symbol("A", 0);
 	private Symbol aSymb = new Symbol("a", 0);
 	private Symbol fSymb = new Symbol("f", 2);
 
@@ -58,7 +59,7 @@ public class WTAParserTest {
 			throws IllegalArgumentException, SymbolUsageException, 
 			DuplicateRuleException {
 		wtaParser.parseLine(leafRuleLine, wta);
-		assertEquals("q0", wta.getTransitionFunction().getRulesBySymbol(aSymb).
+		assertEquals("q0", wta.getTransitionFunction().getRulesBySymbol(ASymb).
 				get(0).getResultingState().getLabel());
 	}
 
@@ -74,7 +75,7 @@ public class WTAParserTest {
 			DuplicateRuleException {
 		wtaParser.parseLine(leafRuleLine, wta);
 		assertEquals(1, wta.getTransitionFunction().
-				getRulesBySymbol(aSymb).size());
+				getRulesBySymbol(ASymb).size());
 	}
 
 	/**

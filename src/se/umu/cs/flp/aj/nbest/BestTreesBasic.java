@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import se.umu.cs.flp.aj.nbest.data.NestedMap;
 import se.umu.cs.flp.aj.nbest.data.Node;
@@ -61,19 +62,8 @@ public class BestTreesBasic {
 		// K <- empty
 		treeQueue = new LinkedList<Node<Symbol>>(); 
 		
-		// enqueue(K, Sigma_0)
-		ArrayList<Symbol> symbols = wta.getSymbols();
-		
-		for (Symbol s : symbols) {
-			
-			if (s.getRank() == 0) {	
-				Node<Symbol> tree = new Node<Symbol>(s);
-				
-				optimalStates.put(tree, getOptimalStates(wta, tree));
-				
-				insertTreeIntoQueueByTotalMinimumWeight(tree);
-			}
-		}
+		// enqueue(K, Sigma_0)		
+		enqueueRankZeroSymbols(wta);
 		
 		// i <- 0
 		int counter = 0;
@@ -87,19 +77,16 @@ public class BestTreesBasic {
 			// Get optimal state for current tree
 			State optimalState = optimalStates.get(currentTree).get(0);
 			
-			
 			// T <- T u {t}
 			exploredTrees.add(currentTree);
 			
 			// if M(t) = delta(t)
 			// (this the same thing as the optimal state being a final state)
-			// then
 			if (optimalState.isFinal()) {
 				
 				// output(t)
 				nBest.add(currentTree.toString() + " " + 
-						treeStateValTable.get(currentTree, 
-								optimalState).toString());
+						treeStateValTable.get(currentTree, optimalState));
 
 				// i <- i + 1
 				counter++;
@@ -109,27 +96,45 @@ public class BestTreesBasic {
 			ArrayList<Node<Symbol>> expansion = expandWith(wta, currentTree);
 			
 			for (Node<Symbol> t : expansion) {
-				optimalStates.put(t, getOptimalStates(wta, t));
+				computeCurrentWeight(wta, t);
+				optimalStates.put(t, getOptimalStates(t));
 				insertTreeIntoQueueByTotalMinimumWeight(t);
 			}
-			
 		}
 
 		return nBest;
 	}
+
+	private static void enqueueRankZeroSymbols(WTA wta) {
+
+		ArrayList<Symbol> symbols = wta.getSymbols();
+
+		for (Symbol s : symbols) {
+
+			if (s.getRank() == 0) {
+				Node<Symbol> tree = new Node<Symbol>(s);
+
+				ArrayList<Rule> rules = wta.getTransitionFunction().
+						getRulesBySymbol(s);
+
+				for (Rule r : rules) {
+					State resState = r.getResultingState();
+					Weight weight = r.getWeight();
+					Weight oldWeight = treeStateValTable.get(tree, resState);
+
+					if (oldWeight == null ||
+							weight.compareTo(oldWeight) == -1) {
+						treeStateValTable.put(tree, resState, weight);
+					}
+				}
+
+				optimalStates.put(tree, getOptimalStates(tree));
+				insertTreeIntoQueueByTotalMinimumWeight(tree);
+			}
+		}
+	}
 	
-	
-	
-	
-	
-	// TODO
-	// Eventually divide into two methods, one that calculates the M^q's 
-	// and one that gets the optimal state using the M^q's.
-	public static ArrayList<State> getOptimalStates(WTA wta, Node<Symbol> tree) {
-		
-		ArrayList<State> optStatesList = new ArrayList<>();
-		State optimalState = null;
-		Weight minWeight = new Weight(Weight.INF);
+	public static void computeCurrentWeight(WTA wta, Node<Symbol> tree) {
 		
 		ArrayList<Rule> rules = wta.getTransitionFunction().
 				getRulesBySymbol(tree.getLabel());
@@ -148,7 +153,7 @@ public class BestTreesBasic {
 				Weight wTemp = treeStateValTable.get(subTree, s);
 				
 				if (wTemp == null) {
-					canUseRule = false; // TODO throw exception instead?
+					canUseRule = false;
 				} else {
 					weightSum = weightSum.add(wTemp);
 				}
@@ -160,33 +165,39 @@ public class BestTreesBasic {
 				Weight currentWeight = treeStateValTable.get(tree, 
 						r.getResultingState());
 				
-				// Find smallest weight for each state
 				if (currentWeight == null || 
 						(currentWeight.compareTo(weightSum) == 1)) {
 					treeStateValTable.put(tree, r.getResultingState(), 
 							weightSum);
 				}
-				
-				// M((c_q)[t]) TODO use deltaWeight-function instead
-				Weight totalWeight = weightSum.add(
-						smallestCompletionWeights.get(r.getResultingState()));
-				
-				// Save optimal state
-				if (totalWeight.compareTo(minWeight) == -1) {
-					optimalState = r.getResultingState();
-					minWeight = totalWeight;
-					
-					optStatesList = new ArrayList<>();
-					optStatesList.add(optimalState);
-					
-				} else if (totalWeight.compareTo(minWeight) == 0) {
-					optimalState = r.getResultingState();
-					optStatesList.add(optimalState);
-				}
 			}
 		}
-		
-		return optStatesList;
+	}
+	
+	public static ArrayList<State> getOptimalStates(Node<Symbol> tree) {
+		HashMap<State, Weight> stateValTable =
+				treeStateValTable.getAll(tree);
+		ArrayList<State> optStates = new ArrayList<>();
+		Weight minWeight = new Weight(Weight.INF);
+
+		for (Entry<State, Weight> e : stateValTable.entrySet()) {
+
+			State currentState = e.getKey();
+			Weight smallestCompletionWeight = smallestCompletionWeights.get(
+					currentState);
+			Weight currentWeight = e.getValue().add(smallestCompletionWeight);
+			int comparison = currentWeight.compareTo(minWeight);
+
+			if (comparison == -1) {
+				minWeight = currentWeight;
+				optStates = new ArrayList<>();
+				optStates.add(e.getKey());
+			} else if (comparison == 0) {
+				optStates.add(e.getKey());
+			}
+		}
+
+		return optStates;
 	}
 	
 	public static void insertTreeIntoQueueByTotalMinimumWeight(
