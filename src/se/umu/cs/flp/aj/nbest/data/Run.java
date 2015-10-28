@@ -23,7 +23,7 @@ package se.umu.cs.flp.aj.nbest.data;
 import se.umu.cs.flp.aj.wta.Symbol;
 import se.umu.cs.flp.aj.wta.Weight;
 
-public class Run {
+public class Run implements Comparable<Run> {
 	
 	private Node<Symbol> tree;
 	private Weight weight;
@@ -41,5 +41,9 @@ public class Run {
 		return this.weight;
 	}
 	
-	
+	@Override
+	public int compareTo(Run o) {
+		return this.getWeight().compareTo(o.getWeight());
+	}
+
 }

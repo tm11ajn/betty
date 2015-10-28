@@ -39,13 +39,13 @@ public class WTAParser {
 	public static final String EMPTY_LINE_REGEX = "^\\s*$";
 	public static final String COMMENT_LINE_REGEX = "^//.*";
 	public static final String FINAL_REGEX = 
-			"^\\s*final\\s*([a-z0-9]+\\s*,\\s*)*([a-z0-9]+\\s*)+$";
+			"^\\s*final\\s*([a-zA-Z0-9]+\\s*,\\s*)*([a-zA-Z0-9]+\\s*)+$";
 	public static final String LEAF_RULE_REGEX =
-			"^\\s*[a-z0-9]+\\s*->\\s*[a-z0-9]+" +
+			"^\\s*[a-zA-Z0-9]+\\s*->\\s*[a-zA-Z0-9]+" +
 			"\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)?$";
 	public static final String NON_LEAF_RULE_REGEX =
-			"^\\s*[a-z0-9]+\\[\\s*[a-z0-9]+\\s*(,\\s*[a-z0-9]+\\s*)*\\]\\s*->" +
-			"\\s*[a-z0-9]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)*$";
+			"^\\s*[a-zA-Z0-9]+\\[\\s*[a-zA-Z0-9]+\\s*(,\\s*[a-zA-Z0-9]+\\s*)*"
+			+ "\\]\\s*->\\s*[a-zA-Z0-9]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)*$";
 
 	public static final String FINAL_SPLIT_REGEX = "\\s+|(\\s*,\\s*)";
 	public static final String LEAF_RULE_SPLIT_REGEX = "\\s*((->)|#)\\s*";

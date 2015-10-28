@@ -21,25 +21,19 @@
 package se.umu.cs.flp.aj.nbest;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import se.umu.cs.flp.aj.eppstein_k_best.graph.Edge;
-import se.umu.cs.flp.aj.eppstein_k_best.graph.Graph;
-import se.umu.cs.flp.aj.eppstein_k_best.graph.Path;
+import se.umu.cs.flp.aj.eppstein_k_best.runner.EppsteinRunner;
 import se.umu.cs.flp.aj.nbest.data.NestedMap;
 import se.umu.cs.flp.aj.nbest.data.Node;
-import se.umu.cs.flp.aj.nbest.data.Run;
 import se.umu.cs.flp.aj.wta.Rule;
 import se.umu.cs.flp.aj.wta.State;
 import se.umu.cs.flp.aj.wta.Symbol;
 import se.umu.cs.flp.aj.wta.WTA;
 import se.umu.cs.flp.aj.wta.Weight;
-
-import java.util.PriorityQueue;
 
 
 public class BestTrees {
@@ -109,7 +103,6 @@ public class BestTrees {
 	private static void enqueueRankZeroSymbols(WTA wta, int N) {
 
 		ArrayList<Symbol> symbols = wta.getSymbols();
-		LinkedList<Node<Symbol>> tempQueue = new LinkedList<>();
 
 		for (Symbol s : symbols) {
 
@@ -131,43 +124,9 @@ public class BestTrees {
 				}
 
 				optimalStates.put(tree, getOptimalStates(tree));
-
-				Weight treeDeltaWeight = getDeltaWeight(tree);
-
-				int tempQueueSize = tempQueue.size();
-				int insertIndex = 0;
-
-				for (int i = 0; i < tempQueueSize; i++) {
-
-					Node<Symbol> currentTree = tempQueue.get(i);
-					Weight currentTreeDeltaWeight = getDeltaWeight(currentTree);
-
-					int comparison = currentTreeDeltaWeight.compareTo(
-							treeDeltaWeight);
-
-					if (comparison == 1) {
-						insertIndex = i;
-						break;
-					} else if (comparison == 0) {
-
-						if (currentTree.compareTo(tree) == 1) {
-							insertIndex = i;
-							break;
-						}
-					}
-				}
-				
-				
-
-				tempQueue.add(insertIndex, tree);
-				
+				insertIntoQueueUsingPruning(tree, N);
 			}
 		}
-
-		for (Node<Symbol> n : tempQueue) {
-			insertIntoQueueUsingPruning(n, N);
-		}
-
 	}
 
 	private static ArrayList<State> getOptimalStates(Node<Symbol> tree) {
@@ -211,110 +170,112 @@ public class BestTrees {
 		return delta;
 	}
 
-	private static boolean insertIntoQueueUsingPruning(Node<Symbol> tree, int N) {
+	private static boolean insertIntoQueueUsingPruning(Node<Symbol> tree, 
+			int N) {
+		
+		boolean inserted = false;
+		int insertIndex = getInsertIndex(tree);
 
-		ArrayList<State> optStates = optimalStates.get(tree);
+		treeQueue.add(insertIndex, tree);
+		inserted = true;
+
+		prune(tree, N);
+
+		return inserted;
+	}
+	
+	private static int getInsertIndex(Node<Symbol> tree) {
 		Weight deltaWeight = getDeltaWeight(tree);
+		
+		int queueSize = treeQueue.size();
+		int insertIndex = 0;
+		int currentIndex = queueSize - 1;
 
-		boolean canInsert = false;
+		while (insertIndex == 0 && currentIndex > -1) {
 
+			Node<Symbol> currentTree = treeQueue.get(currentIndex);
+			Weight currentDeltaWeight = getDeltaWeight(currentTree);
+
+			if (currentDeltaWeight.compareTo(deltaWeight) == -1) {
+				insertIndex = currentIndex + 1;
+			} else if (currentDeltaWeight.compareTo(deltaWeight) == 0) {
+
+				if (currentTree.compareTo(tree) == -1) {
+					insertIndex = currentIndex + 1;
+				}
+			}
+
+			currentIndex--;
+		}
+		
+		return insertIndex;
+	}
+	
+	private static void prune(Node<Symbol> tree, int N) {
+		ArrayList<State> optStates = optimalStates.get(tree);
+		
 		for (State q : optStates) {
+			int qUsage = 0;
 
-			if (optimalStatesUsage.get(q) == null) {
-				optimalStatesUsage.put(q, 0);
+			if (optimalStatesUsage.get(q) != null) {
+				qUsage = optimalStatesUsage.get(q);
 			}
 
-			if (optimalStatesUsage.get(q) < N) {
-				canInsert = true;
-			}
-		}
+			optimalStatesUsage.put(q, qUsage + 1);
 
-		int index = treeQueue.size() - 1;
-		boolean isSmaller = true;
+			if (qUsage + 1 > N) {
+				int removeIndex = getRemoveIndex(tree, q);
+				
+				if (removeIndex < treeQueue.size()) {
+					Node<Symbol> removeTree = treeQueue.get(removeIndex);
+					ArrayList<State> optStatesRemove = 
+							optimalStates.get(removeTree);
+					treeQueue.remove(removeIndex);
 
-		while (!canInsert && isSmaller && index > -1) {
-			Node<Symbol> last = treeQueue.get(index);
-			Weight lastDeltaWeight = getDeltaWeight(last);
-
-			if (lastDeltaWeight.compareTo(deltaWeight) == -1) {
-				isSmaller = false;
-			} else if (lastDeltaWeight.compareTo(deltaWeight) == 0) {
-
-				if (last.compareTo(tree) != 1) {
-					isSmaller = false;
-				}
-			}
-
-			if (isSmaller) {
-				ArrayList<State> optStatesLast = optimalStates.get(last);
-
-				for (State optState : optStates) {
-
-					if (optStatesLast.contains(optState)) {
-						canInsert = true;
-						treeQueue.remove(index);
-						
-						for (State optRemove : optStatesLast) { // ADDED
-							optimalStatesUsage.put(optRemove, 
-									optimalStatesUsage.get(optRemove) - 1);
-						}
-						
-						break;
+					for (State optRemove : optStatesRemove) {
+						optimalStatesUsage.put(optRemove, 
+								optimalStatesUsage.get(optRemove) - 1);
 					}
 				}
-			}
 
-			index--;
+			}
 		}
+	}
+	
+	private static int getRemoveIndex(Node<Symbol> tree, State q) {
+		int queueSize = treeQueue.size();
+		int currentIndex = queueSize - 1;
+		int removeIndex = queueSize;
+		
+		while (removeIndex == queueSize && currentIndex > -1) {
+			Node<Symbol> currentTree = treeQueue.get(currentIndex);
+			ArrayList<State> optStatesCurrent = 
+					optimalStates.get(currentTree);
 
-		if (canInsert) {
-
-			for (State q : optStates) {
-				optimalStatesUsage.put(q, optimalStatesUsage.get(q) + 1);
+			if (optStatesCurrent.contains(q)) {
+				removeIndex = currentIndex;
 			}
-
-			int queueSize = treeQueue.size();
-			int insertIndex = 0;
-
-			for (int i = 0; i < queueSize; i++) {
-				Node<Symbol> n = treeQueue.get(i);
-
-				Weight currentDeltaWeight = getDeltaWeight(n);
-
-				if (currentDeltaWeight.compareTo(deltaWeight) == 1) {
-					insertIndex = i;
-					break; // TODO boolean and while instead
-				} else if (currentDeltaWeight.compareTo(deltaWeight) == 0) {
-
-					if (n.compareTo(tree) == 1) {
-						insertIndex = i;
-						break; // TODO boolean and while instead
-					}
-
-					insertIndex = i + 1;
-
-				} else {
-					insertIndex = i + 1;
-				}
-			}
-
-			treeQueue.add(insertIndex, tree);
+			
+			currentIndex--;
 		}
-
-		return canInsert;
+		
+		return removeIndex;
 	}
 
 	public static void enqueueWithExpansionAndPruning(WTA wta, int N,
 			Node<Symbol> tree) {
 
-		HashMap<State, ArrayList<LinkedList<Node<Symbol>>>> allRuns = new HashMap<>();
+		HashMap<State, ArrayList<LinkedList<Node<Symbol>>>> allRuns = 
+				new HashMap<>();
 		HashMap<State, LinkedList<Node<Symbol>>> nRuns = new HashMap<>();
+		
+		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees, 
+				treeStateValTable);
 
 		for (State q : wta.getStates()) {
-			allRuns.put(q, useEppstein(wta, N, tree, q));
+			allRuns.put(q, eRunner.runEppstein(wta, N, tree, q));
 		}
 
-		// Merge into one list for each Q
 		for (Entry<State, ArrayList<LinkedList<Node<Symbol>>>> e :
 			allRuns.entrySet()) {
 
@@ -322,7 +283,8 @@ public class BestTrees {
 			State q = e.getKey();
 
 			for (LinkedList<Node<Symbol>> treeList : e.getValue()) {
-				mergedTreeList = mergeTreeLists(q, N, treeList, mergedTreeList);
+				mergedTreeList = mergeTreeListsForState(treeList, 
+						mergedTreeList, N, q);
 			}
 
 			nRuns.put(q, mergedTreeList);
@@ -332,187 +294,18 @@ public class BestTrees {
 		int nOfStatesInWTA = wta.getStates().size();
 
 		for (LinkedList<Node<Symbol>> currentList : nRuns.values()) {
-			mergedList = mergeTreeListsByDeltaWeights(N*nOfStatesInWTA,
-					currentList, mergedList);
+			mergedList = mergeTreeListsByDeltaWeights(currentList, mergedList, 
+					N*nOfStatesInWTA);
 		}
 
-		// Merge sorted list with K
 		for (Node<Symbol> n : mergedList) {
 			insertIntoQueueUsingPruning(n, N);
 		}
-
 	}
 
-	public static ArrayList<LinkedList<Node<Symbol>>> useEppstein(WTA wta,
-			int k, Node<Symbol> tree, State q) {
-
-		ArrayList<LinkedList<Node<Symbol>>> kBestTreesForEachQRule =
-				new ArrayList<>();
-
-		Graph<Node<Symbol>> graph = new Graph<>();
-
-		ArrayList<Rule> rules = wta.getTransitionFunction().
-				getRulesByResultingState(q);
-
-		for (Rule r : rules) {
-			LinkedList<Node<Symbol>> treeList = new LinkedList<>();
-
-			ArrayList<State> states = r.getStates();
-			int nOfStates = states.size();
-
-			String vertices = "";
-
-			for (int i = 0; i < nOfStates + 1; i++) {
-				vertices += "u" + i + "," + "v" + i;
-
-				if (i != nOfStates) {
-					vertices += ",";
-				}
-			}
-
-			graph.createVertices(vertices);
-
-			Comparator<Run> smallestRunComparator = new Comparator<Run>() {
-
-				@Override
-				public int compare(Run o1, Run o2) {
-					return o1.getWeight().compareTo(o2.getWeight());
-				}
-			};
-
-			NestedMap<String, String, PriorityQueue<Run>> edgeMap =
-					new NestedMap<>();
-
-			for (int i = 1; i < nOfStates + 1; i++) {
-				State currentState = states.get(i-1);
-
-				for (Node<Symbol> n : exploredTrees) {
-
-					Weight w = treeStateValTable.get(n, currentState);
-
-					if (w == null) {
-						continue;
-					}
-
-					boolean isT = n.equals(tree);
-
-					PriorityQueue<Run> pu;
-					PriorityQueue<Run> pv;
-
-					if (!isT) {
-
-						pu = edgeMap.get("u" + (i - 1), "u" + i);
-						pv = edgeMap.get("v" + (i - 1), "v" + i);
-
-						if (pu == null) {
-							pu = new PriorityQueue<>(nOfStates,
-									smallestRunComparator);
-							edgeMap.put("u" + (i - 1), "u" + i, pu);
-						}
-
-						if (pv == null) {
-							pv = new PriorityQueue<>(nOfStates,
-									smallestRunComparator);
-							edgeMap.put("v" + (i - 1), "v" + i, pv);
-						}
-
-						pu.add(new Run(n, w));
-						pv.add(new Run(n, w));
-
-					}
-
-					if (isT) {
-
-						pu = edgeMap.get("u" + (i - 1), "v" + i);
-						pv = edgeMap.get("v" + (i - 1), "v" + i);
-
-						if (pu == null) {
-							pu = new PriorityQueue<>(nOfStates,
-									smallestRunComparator);
-							edgeMap.put("u" + (i - 1), "v" + i, pu);
-						}
-
-						if (pv == null) {
-							pv = new PriorityQueue<>(nOfStates,
-									smallestRunComparator);
-							edgeMap.put("v" + (i - 1), "v" + i, pv);
-						}
-
-						pu.add(new Run(n, w));
-						pv.add(new Run(n, w));
-
-					}
-				}
-			}
-
-			// Adds only the N smallest edges to the Eppstein graph.
-			for (String vertex1 : edgeMap.keySet()) {
-
-				for (String vertex2 : edgeMap.get(vertex1).keySet()) {
-
-					PriorityQueue<Run> p = edgeMap.get(vertex1, vertex2);
-
-					int counter = 0;
-
-					while (!p.isEmpty() && counter < k) {
-						Run run = p.poll();
-						graph.createEdge(vertex1, vertex2, run.getTree(),
-								Double.parseDouble(run.getWeight().toString()));
-						counter++;
-					}
-				}
-			}
-
-			int counter = 0;
-
-			Path<Node<Symbol>> path =
-					graph.findShortestPath("u0", "v" + nOfStates);
-
-			while (path.isValid() && counter < k) {
-				Node<Symbol> pathTree = extractTreeFromPath(path, r);
-				Weight pathWeight = new Weight(path.getWeight());
-
-				if (path.getWeight() == Double.MAX_VALUE) {
-					pathWeight = new Weight(Weight.INF);
-				}
-
-				pathWeight = pathWeight.add(r.getWeight());
-
-				Weight oldWeight = treeStateValTable.get(pathTree, q);
-
-				if (oldWeight == null
-						|| oldWeight.compareTo(pathWeight) == 1) {
-					treeStateValTable.put(pathTree, q, pathWeight);
-				}
-
-				treeList.add(pathTree);
-				counter++;
-
-				path = graph.findNextShortestPath();
-			}
-
-			kBestTreesForEachQRule.add(treeList);
-		}
-
-		return kBestTreesForEachQRule;
-	}
-
-	private static Node<Symbol> extractTreeFromPath(Path<Node<Symbol>> path,
-			Rule r) {
-
-		Node<Symbol> root = new Node<>(r.getSymbol());
-
-		for (Edge<Node<Symbol>> e : path) {
-			root.addChild(e.getLabel());
-		}
-
-		return root;
-	}
-
-	// Does not add same tree twice
-	private static LinkedList<Node<Symbol>> mergeTreeLists(State q,
-			int listSizeLimit, LinkedList<Node<Symbol>> list1,
-			LinkedList<Node<Symbol>> list2) {
+	private static LinkedList<Node<Symbol>> mergeTreeListsForState(
+			LinkedList<Node<Symbol>> list1, LinkedList<Node<Symbol>> list2,
+			int listSizeLimit, State q) {
 
 		LinkedList<Node<Symbol>> result = new LinkedList<>();
 
@@ -560,10 +353,9 @@ public class BestTrees {
 		return result;
 	}
 
-	// Does not add same tree twice
 	private static LinkedList<Node<Symbol>> mergeTreeListsByDeltaWeights(
-			int listSizeLimit, LinkedList<Node<Symbol>> list1,
-			LinkedList<Node<Symbol>> list2) {
+			LinkedList<Node<Symbol>> list1, LinkedList<Node<Symbol>> list2, 
+			int listSizeLimit) {
 
 		LinkedList<Node<Symbol>> result = new LinkedList<>();
 
@@ -632,5 +424,4 @@ public class BestTrees {
 
 		return result;
 	}
-
 }

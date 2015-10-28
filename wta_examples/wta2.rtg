@@ -1,0 +1,9 @@
+A[qe, qo] -> qe # 0.1
+A[qo, qe] -> qe # 0.8
+B[qo]     -> qe # 0.1
+A[qo, qo] -> qo # 0.6
+A[qe, qe] -> qo # 0.2
+B[qe]     -> qo # 0.1
+C         -> qo # 0.1
+
+final qe
