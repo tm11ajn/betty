@@ -170,8 +170,9 @@ public class NBest {
 	
 	private static boolean useTimer(String[] args) {
 		
-		if ((args.length >= 3 && args[2].equals(TIMER_FLAG)) ||
-				(args.length == 4 && args[3].equals(TIMER_FLAG))) {
+		if ((args.length == 3 && args[2].equals(TIMER_FLAG)) ||
+				(args.length == 4 && 
+				(args[2].equals(TIMER_FLAG) || args[3].equals(TIMER_FLAG)))) {
 			return true;
 		}
 		
