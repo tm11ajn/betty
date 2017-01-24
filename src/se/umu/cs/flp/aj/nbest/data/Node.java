@@ -23,17 +23,23 @@ package se.umu.cs.flp.aj.nbest.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Node<LabelType> implements Comparable<Node<LabelType>> {
+public class Node<LabelType extends Comparable<LabelType>> implements Comparable<Node<LabelType>> {
 
 	private LabelType label;
 	private Node<LabelType> parent;
 	private List<Node<LabelType>> children = new ArrayList<Node<LabelType>>();
 	private int nOfChildren;
+	
+	private String treeString;
+	private boolean validString;
 
 	public Node(LabelType label) {
 		this.label = label;
 		nOfChildren = 0;
 		parent = null;
+		
+		treeString = "";
+		validString = false;
 	}
 
 	public Node(LabelType label, List<Node<LabelType>> children) {
@@ -44,6 +50,9 @@ public class Node<LabelType> implements Comparable<Node<LabelType>> {
 		for (Node<LabelType> n : children) {
 			n.setParent(this);
 		}
+		
+		treeString = "";
+		validString = false;
 	}
 
 	public LabelType getLabel() {
@@ -54,6 +63,7 @@ public class Node<LabelType> implements Comparable<Node<LabelType>> {
 		children.add(child);
 		child.setParent(this);
 		nOfChildren++;
+		validString = false;
 	}
 
 	public Node<LabelType> getChildAt(int childIndex) {
@@ -66,6 +76,7 @@ public class Node<LabelType> implements Comparable<Node<LabelType>> {
 
 	public void setParent(Node<LabelType> parent) {
 		this.parent = parent;
+		validString = false;
 	}
 
 	public Node<LabelType> getParent() {
@@ -87,7 +98,57 @@ public class Node<LabelType> implements Comparable<Node<LabelType>> {
 	}
 
 	@Override
+	public int hashCode() {
+
+		int hash = 19 * this.label.hashCode();
+
+		for (Node<LabelType> n : children) {
+			hash += 11 *  n.hashCode();
+		}
+
+		return hash;
+	}
+
+	@Override
+	public String toString() {
+		
+		if (validString) {
+			return treeString;
+		}
+
+		treeString = "" + label;
+
+		if (!this.isLeaf()) {
+			treeString += "[";
+
+			for (int i = 0; i < nOfChildren; i++) {
+				treeString += children.get(i);
+
+				if (i != nOfChildren - 1) {
+					treeString += ", ";
+				}
+			}
+
+			treeString += "]";
+		}
+		
+		validString = true;
+		
+		return treeString;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
+		
+//		if (obj instanceof Node<?>) { // MUCH SLOWER
+//			Node<?> n = (Node<?>) obj;
+//
+//			if (this.compareTo((Node<LabelType>) n) == 0) {
+//				return true;
+//			}
+//		}
+//
+//		return false;
 
 		if (obj instanceof Node<?>) {
 			Node<?> n = (Node<?>) obj;
@@ -116,60 +177,54 @@ public class Node<LabelType> implements Comparable<Node<LabelType>> {
 	}
 
 	@Override
-	public int hashCode() {
-
-		int hash = 19 * this.label.hashCode();
-
-		for (Node<LabelType> n : children) {
-			hash += 11 *  n.hashCode();
-		}
-
-		return hash;
-	}
-
-	@Override
-	public String toString() {
-
-		String treeString = "" + label;
-
-		if (!this.isLeaf()) {
-			treeString += "[";
-
-			for (int i = 0; i < nOfChildren; i++) {
-				treeString += children.get(i);
-
-				if (i != nOfChildren - 1) {
-					treeString += ", ";
-				}
-			}
-
-			treeString += "]";
-		}
-
-		return treeString;
-	}
-
-	@Override
 	public int compareTo(Node<LabelType> o) {
 		
-		int thisSize = this.getSize();
-		int oSize = o.getSize();
-		
-		if (thisSize < oSize) {
+		if (o.nOfChildren > this.nOfChildren) {
 			return -1;
-		} else if (thisSize > oSize) {
+		} else if (o.nOfChildren < this.nOfChildren) {
 			return 1;
 		}
-		
-		String thisString = this.toString();
-		String oString = o.toString();
-		
-		if (thisString.compareTo(oString) < 0) {
-			return -1;
-		} else if (thisString.compareTo(oString) > 0) {
-			return 1;
+
+		if (o.isLeaf()) {
+			if (o.label.equals(this.label)) {
+				return 0;
+			} 
 		}
-		
-		return 0;
+
+		for (int i = 0; i < nOfChildren; i++) {
+			if (!o.children.get(i).equals(this.children.get(i))) {
+				return o.children.get(i).compareTo(this.children.get(i));
+			}
+		}
+
+		if (o.label.equals(this.label)) {
+			return 0;
+		}
+
+		return this.label.compareTo(o.label);
 	}
+	
+//	@Override
+//	public int compareTo(Node<LabelType> o) { // Old version
+//		
+//		int thisSize = this.getSize();
+//		int oSize = o.getSize();
+//		
+//		if (thisSize < oSize) {
+//			return -1;
+//		} else if (thisSize > oSize) {
+//			return 1;
+//		}
+//		
+//		String thisString = this.toString();
+//		String oString = o.toString();
+//		
+//		if (thisString.compareTo(oString) < 0) {
+//			return -1;
+//		} else if (thisString.compareTo(oString) > 0) {
+//			return 1;
+//		}
+//		
+//		return 0;
+//	}
 }

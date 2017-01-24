@@ -177,7 +177,7 @@ public class BestTrees {
 		int insertIndex = getInsertIndex(tree);
 
 		treeQueue.add(insertIndex, tree);
-		inserted = true;
+		inserted = true; //TODO what?
 
 		prune(tree, N);
 

@@ -20,7 +20,7 @@
 
 package se.umu.cs.flp.aj.wta;
 
-public class Symbol {
+public class Symbol implements Comparable<Symbol> {
 	
 	public static final String RESERVED_SYMBOL_STRING = 
 			"context_symbol_with_rank_zero";
@@ -61,5 +61,10 @@ public class Symbol {
 	@Override
 	public String toString() {
 		return label;
+	}
+
+	@Override
+	public int compareTo(Symbol o) {
+		return o.label.compareTo(this.label);
 	}
 }
