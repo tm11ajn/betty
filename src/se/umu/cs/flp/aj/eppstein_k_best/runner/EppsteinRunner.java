@@ -1,19 +1,19 @@
 /*
- * Copyright 2015 Anna Jonsson for the research group Foundations of Language 
- * Processing, Department of Computing Science, Umeå university
- * 
+ * Copyright 2015 Anna Jonsson for the research group Foundations of Language
+ * Processing, Department of Computing Science, Umeï¿½ university
+ *
  * This file is part of BestTrees.
- * 
+ *
  * BestTrees is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * BestTrees is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -37,16 +37,18 @@ import se.umu.cs.flp.aj.wta.WTA;
 import se.umu.cs.flp.aj.wta.Weight;
 
 public class EppsteinRunner {
-	
+
 	private NestedMap<Node<Symbol>, State, Weight> treeStateValTable;
 	private ArrayList<Node<Symbol>> exploredTrees;
-	
-	public EppsteinRunner(ArrayList<Node<Symbol>> exploredTrees, 
+
+	public EppsteinRunner(ArrayList<Node<Symbol>> exploredTrees,
 			NestedMap<Node<Symbol>, State, Weight> treeStateValTable) {
 		this.exploredTrees = exploredTrees;
 		this.treeStateValTable = treeStateValTable;
 	}
-	
+
+	// memoisation here?
+
 	public ArrayList<LinkedList<Node<Symbol>>> runEppstein(WTA wta,
 			int k, Node<Symbol> tree, State q) {
 
@@ -59,21 +61,21 @@ public class EppsteinRunner {
 				getRulesByResultingState(q);
 
 		for (Rule r : rules) {
-			
+
 			ArrayList<State> states = r.getStates();
 			int nOfStates = states.size();
-			
+
 			String vertices = buildVertexString(nOfStates);
 			graph.createVertices(vertices);
 
-			NestedMap<String, String, PriorityQueue<Run>> edgeMap = 
+			NestedMap<String, String, PriorityQueue<Run>> edgeMap =
 					buildEdgeMap(states, tree);
 			addKSmallestEdgesToGraph(graph, k, edgeMap);
 
 			Path<Node<Symbol>> path =
 					graph.findShortestPath("u0", "v" + nOfStates);
 
-			LinkedList<Node<Symbol>> treeList = 
+			LinkedList<Node<Symbol>> treeList =
 					getKBestTreesForRule(graph, path, k, q, r);
 
 			kBestTreesForEachQRule.add(treeList);
@@ -112,7 +114,7 @@ public class EppsteinRunner {
 				if (w == null) {
 					continue;
 				}
-				
+
 				PriorityQueue<Run> pu = null;
 				PriorityQueue<Run> pv = edgeMap.get("v" + (i - 1), "v" + i);
 				String resultingNodeType = "";
@@ -122,30 +124,30 @@ public class EppsteinRunner {
 				} else {
 					resultingNodeType = "v";
 				}
-				
+
 				pu = edgeMap.get("u" + (i - 1), resultingNodeType + i);
 
 				if (pu == null) {
 					pu = new PriorityQueue<>(nOfStates);
 					edgeMap.put("u" + (i - 1), resultingNodeType + i, pu);
 				}
-				
+
 				if (pv == null) {
 					pv = new PriorityQueue<>(nOfStates);
 					edgeMap.put("v" + (i - 1), "v" + i, pv);
 				}
-				
+
 				pu.add(new Run(n, w));
 				pv.add(new Run(n, w));
 			}
 		}
-		
+
 		return edgeMap;
 	}
-	
-	private void addKSmallestEdgesToGraph(Graph<Node<Symbol>> graph, 
+
+	private void addKSmallestEdgesToGraph(Graph<Node<Symbol>> graph,
 			int k, NestedMap<String, String, PriorityQueue<Run>> edgeMap) {
-		
+
 		for (String vertex1 : edgeMap.keySet()) {
 
 			for (String vertex2 : edgeMap.get(vertex1).keySet()) {
@@ -162,14 +164,14 @@ public class EppsteinRunner {
 			}
 		}
 	}
-	
+
 	private LinkedList<Node<Symbol>> getKBestTreesForRule(
-			Graph<Node<Symbol>> graph, Path<Node<Symbol>> path, 
+			Graph<Node<Symbol>> graph, Path<Node<Symbol>> path,
 			int k, State q, Rule r) {
-		
+
 		LinkedList<Node<Symbol>> treeList = new LinkedList<>();
 		int counter = 0;
-		
+
 		while (path.isValid() && counter < k) {
 			Node<Symbol> pathTree = extractTreeFromPath(path, r);
 			Weight pathWeight = new Weight(path.getWeight());
@@ -191,7 +193,7 @@ public class EppsteinRunner {
 
 			path = graph.findNextShortestPath();
 		}
-		
+
 		return treeList;
 	}
 
