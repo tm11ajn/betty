@@ -226,7 +226,7 @@ public class BestTrees {
 			if (qUsage + 1 > N) {
 				int removeIndex = getRemoveIndex(tree, q);
 				
-				if (removeIndex < treeQueue.size()) {
+				if (removeIndex < treeQueue.size()) { // Remove check?
 					Node<Symbol> removeTree = treeQueue.get(removeIndex);
 					ArrayList<State> optStatesRemove = 
 							optimalStates.get(removeTree);
@@ -295,7 +295,7 @@ public class BestTrees {
 
 		for (LinkedList<Node<Symbol>> currentList : nRuns.values()) {
 			mergedList = mergeTreeListsByDeltaWeights(currentList, mergedList, 
-					N*nOfStatesInWTA);
+					N*nOfStatesInWTA); // Unnecessary? Just insert them all into K and prune after each insertion?
 		}
 
 		for (Node<Symbol> n : mergedList) {
