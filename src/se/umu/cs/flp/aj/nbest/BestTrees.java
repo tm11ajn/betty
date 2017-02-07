@@ -1,19 +1,19 @@
 /*
- * Copyright 2015 Anna Jonsson for the research group Foundations of Language 
- * Processing, Department of Computing Science, Umeå university
- * 
+ * Copyright 2015 Anna Jonsson for the research group Foundations of Language
+ * Processing, Department of Computing Science, Umeï¿½ university
+ *
  * This file is part of BestTrees.
- * 
+ *
  * BestTrees is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * BestTrees is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -48,7 +48,7 @@ public class BestTrees {
 	private static HashMap<Node<Symbol>, ArrayList<State>> optimalStates =
 			new HashMap<>();
 	private static HashMap<State, Integer> optimalStatesUsage = new HashMap<>();
-	
+
 	public static void setSmallestCompletions(
 			HashMap<State, Weight> smallestCompletions) {
 		smallestCompletionWeights = smallestCompletions;
@@ -94,7 +94,7 @@ public class BestTrees {
 
 			// prune(T, enqueue(K, expand(T, t)))
 			enqueueWithExpansionAndPruning(wta, N, currentTree);
-			
+
 		}
 
 		return nBest;
@@ -170,9 +170,9 @@ public class BestTrees {
 		return delta;
 	}
 
-	private static boolean insertIntoQueueUsingPruning(Node<Symbol> tree, 
+	private static boolean insertIntoQueueUsingPruning(Node<Symbol> tree,
 			int N) {
-		
+
 		boolean inserted = false;
 		int insertIndex = getInsertIndex(tree);
 
@@ -183,10 +183,10 @@ public class BestTrees {
 
 		return inserted;
 	}
-	
+
 	private static int getInsertIndex(Node<Symbol> tree) {
 		Weight deltaWeight = getDeltaWeight(tree);
-		
+
 		int queueSize = treeQueue.size();
 		int insertIndex = 0;
 		int currentIndex = queueSize - 1;
@@ -207,13 +207,13 @@ public class BestTrees {
 
 			currentIndex--;
 		}
-		
+
 		return insertIndex;
 	}
-	
+
 	private static void prune(Node<Symbol> tree, int N) {
 		ArrayList<State> optStates = optimalStates.get(tree);
-		
+
 		for (State q : optStates) {
 			int qUsage = 0;
 
@@ -228,12 +228,12 @@ public class BestTrees {
 				
 				if (removeIndex < treeQueue.size()) { // Remove check?
 					Node<Symbol> removeTree = treeQueue.get(removeIndex);
-					ArrayList<State> optStatesRemove = 
+					ArrayList<State> optStatesRemove =
 							optimalStates.get(removeTree);
 					treeQueue.remove(removeIndex);
 
 					for (State optRemove : optStatesRemove) {
-						optimalStatesUsage.put(optRemove, 
+						optimalStatesUsage.put(optRemove,
 								optimalStatesUsage.get(optRemove) - 1);
 					}
 				}
@@ -241,35 +241,35 @@ public class BestTrees {
 			}
 		}
 	}
-	
+
 	private static int getRemoveIndex(Node<Symbol> tree, State q) {
 		int queueSize = treeQueue.size();
 		int currentIndex = queueSize - 1;
 		int removeIndex = queueSize;
-		
+
 		while (removeIndex == queueSize && currentIndex > -1) {
 			Node<Symbol> currentTree = treeQueue.get(currentIndex);
-			ArrayList<State> optStatesCurrent = 
+			ArrayList<State> optStatesCurrent =
 					optimalStates.get(currentTree);
 
 			if (optStatesCurrent.contains(q)) {
 				removeIndex = currentIndex;
 			}
-			
+
 			currentIndex--;
 		}
-		
+
 		return removeIndex;
 	}
 
 	public static void enqueueWithExpansionAndPruning(WTA wta, int N,
 			Node<Symbol> tree) {
 
-		HashMap<State, ArrayList<LinkedList<Node<Symbol>>>> allRuns = 
+		HashMap<State, ArrayList<LinkedList<Node<Symbol>>>> allRuns =
 				new HashMap<>();
 		HashMap<State, LinkedList<Node<Symbol>>> nRuns = new HashMap<>();
-		
-		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees, 
+
+		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees,
 				treeStateValTable);
 
 		for (State q : wta.getStates()) {
@@ -283,7 +283,7 @@ public class BestTrees {
 			State q = e.getKey();
 
 			for (LinkedList<Node<Symbol>> treeList : e.getValue()) {
-				mergedTreeList = mergeTreeListsForState(treeList, 
+				mergedTreeList = mergeTreeListsForState(treeList,
 						mergedTreeList, N, q);
 			}
 
@@ -310,6 +310,7 @@ public class BestTrees {
 		LinkedList<Node<Symbol>> result = new LinkedList<>();
 
 		int added = 0;
+		int compResult;
 
 		while (added < listSizeLimit && !(list1.isEmpty() && list2.isEmpty())) {
 
@@ -325,16 +326,20 @@ public class BestTrees {
 				Weight weight1 = treeStateValTable.get(tree1, q);
 				Weight weight2 = treeStateValTable.get(tree2, q);
 
-				if (weight1.compareTo(weight2) == -1) {
+				compResult = weight1.compareTo(weight2);
+
+				if (compResult == -1) {
 					result.addLast(list1.poll());
-				} else if (weight1.compareTo(weight2) == 1) {
+				} else if (compResult == 1) {
 					result.addLast(list2.poll());
 				} else {
 
-					if (tree1.compareTo(tree2) == 0) {
+					compResult = tree1.compareTo(tree2);
+
+					if (compResult == 0) {
 						result.addLast(list1.poll());
 						list2.poll();
-					} else if (tree1.compareTo(tree2) == -1) {
+					} else if (compResult == -1) {
 						result.addLast(list1.poll());
 					} else {
 						result.addLast(list2.poll());
@@ -354,7 +359,7 @@ public class BestTrees {
 	}
 
 	private static LinkedList<Node<Symbol>> mergeTreeListsByDeltaWeights(
-			LinkedList<Node<Symbol>> list1, LinkedList<Node<Symbol>> list2, 
+			LinkedList<Node<Symbol>> list1, LinkedList<Node<Symbol>> list2,
 			int listSizeLimit) {
 
 		LinkedList<Node<Symbol>> result = new LinkedList<>();
@@ -363,11 +368,13 @@ public class BestTrees {
 
 		while (added < listSizeLimit && !(list1.isEmpty() && list2.isEmpty())) {
 
+			int compResult;
+
 			Node<Symbol> tree1 = list1.peek();
 			Node<Symbol> tree2 = list2.peek();
-			
+
 			ArrayList<State> optStates1 = optimalStates.get(tree1);
-			
+
 			if (optStates1 == null && tree1 != null) {
 				optStates1 = getOptimalStates(tree1);
 				optimalStates.put(tree1, optStates1);
@@ -389,24 +396,28 @@ public class BestTrees {
 				State opt1 = optStates1.get(0);
 				State opt2 = optStates2.get(0);
 
-				Weight compl1 = smallestCompletionWeights.get( 
+				Weight compl1 = smallestCompletionWeights.get(
 						optStates1.get(0));
-				Weight compl2 = smallestCompletionWeights.get( 
+				Weight compl2 = smallestCompletionWeights.get(
 						optStates2.get(0));
-				
+
 				Weight weight1 = treeStateValTable.get(tree1, opt1).add(compl1);
 				Weight weight2 = treeStateValTable.get(tree2, opt2).add(compl2);
 
-				if (weight1.compareTo(weight2) == -1) {
+				compResult = weight1.compareTo(weight2);
+
+				if (compResult == -1) {
 					result.addLast(list1.poll());
-				} else if (weight1.compareTo(weight2) == 1) {
+				} else if (compResult == 1) {
 					result.addLast(list2.poll());
 				} else {
 
-					if (tree1.equals(tree2)) {
+					compResult = tree1.compareTo(tree2);
+
+					if (compResult == 0) {
 						result.addLast(list1.poll());
 						list2.poll();
-					} else if (tree1.compareTo(tree2) == -1) {
+					} else if (compResult == -1) {
 						result.addLast(list1.poll());
 					} else {
 						result.addLast(list2.poll());

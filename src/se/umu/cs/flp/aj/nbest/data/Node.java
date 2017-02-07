@@ -1,19 +1,19 @@
 /*
- * Copyright 2015 Anna Jonsson for the research group Foundations of Language 
- * Processing, Department of Computing Science, Umeå university
- * 
+ * Copyright 2015 Anna Jonsson for the research group Foundations of Language
+ * Processing, Department of Computing Science, Umeï¿½ university
+ *
  * This file is part of BestTrees.
- * 
+ *
  * BestTrees is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * BestTrees is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -29,30 +29,37 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 	private Node<LabelType> parent;
 	private List<Node<LabelType>> children = new ArrayList<Node<LabelType>>();
 	private int nOfChildren;
-	
+
 	private String treeString;
 	private boolean validString;
+	private int size;
+	private boolean validSize;
+	private int hash;
+	private boolean validHash;
+
 
 	public Node(LabelType label) {
 		this.label = label;
 		nOfChildren = 0;
 		parent = null;
-		
+
 		treeString = "";
 		validString = false;
+		size = 1;
+		validSize = false;
+		hash = 0;
+		validHash = false;
 	}
 
 	public Node(LabelType label, List<Node<LabelType>> children) {
-		this.label = label;
+		this(label);
+
 		this.children = children;
 		nOfChildren = children.size();
 
 		for (Node<LabelType> n : children) {
 			n.setParent(this);
 		}
-		
-		treeString = "";
-		validString = false;
 	}
 
 	public LabelType getLabel() {
@@ -64,6 +71,8 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 		child.setParent(this);
 		nOfChildren++;
 		validString = false;
+		validSize = false;
+		validHash = false;
 	}
 
 	public Node<LabelType> getChildAt(int childIndex) {
@@ -76,7 +85,7 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 
 	public void setParent(Node<LabelType> parent) {
 		this.parent = parent;
-		validString = false;
+//		validString = false;
 	}
 
 	public Node<LabelType> getParent() {
@@ -86,21 +95,32 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 	public boolean isLeaf() {
 		return nOfChildren == 0;
 	}
-	
-	public int getSize() {
-		int size = 0;
-		
+
+	public int getSize() { // Perhaps remove
+
+		if (validSize) {
+			return size;
+		}
+
+		validSize = true;
+		size = 1;
+
 		for (Node<LabelType> child : children) {
 			size += child.getSize();
 		}
-		
-		return size + 1;
+
+		return size;
 	}
 
 	@Override
 	public int hashCode() {
 
-		int hash = 19 * this.label.hashCode();
+		if (validHash) {
+			return hash;
+		}
+
+		validHash = true;
+		hash = 19 * this.label.hashCode();
 
 		for (Node<LabelType> n : children) {
 			hash += 11 *  n.hashCode();
@@ -111,7 +131,7 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 
 	@Override
 	public String toString() {
-		
+
 		if (validString) {
 			return treeString;
 		}
@@ -131,100 +151,104 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 
 			treeString += "]";
 		}
-		
+
 		validString = true;
-		
+
 		return treeString;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		
-//		if (obj instanceof Node<?>) { // MUCH SLOWER
-//			Node<?> n = (Node<?>) obj;
-//
-//			if (this.compareTo((Node<LabelType>) n) == 0) {
-//				return true;
-//			}
-//		}
-//
-//		return false;
 
 		if (obj instanceof Node<?>) {
 			Node<?> n = (Node<?>) obj;
 
-			if (n.nOfChildren != this.nOfChildren) {
+			if (this.hashCode() != n.hashCode()) {
 				return false;
 			}
 
-			if (n.isLeaf()) {
-				return n.label.equals(this.label);
+			if (this.compareTo((Node<LabelType>) n) == 0) {
+				return true;
 			}
-
-			boolean allEqual = true;
-
-			for (int i = 0; i < nOfChildren; i++) {
-
-				if (!n.children.get(i).equals(this.children.get(i))) {
-					allEqual = false;
-				}
-			}
-
-			return allEqual && n.label.equals(this.label);
 		}
 
 		return false;
+
+//		if (obj instanceof Node<?>) {
+//			Node<?> n = (Node<?>) obj;
+//
+//			if (n.nOfChildren != this.nOfChildren) {
+//				return false;
+//			}
+//
+//			if (n.isLeaf()) {
+//				return n.label.equals(this.label);
+//			}
+//
+//			boolean allEqual = true;
+//
+//			for (int i = 0; i < nOfChildren; i++) {
+//
+//				if (!n.children.get(i).equals(this.children.get(i))) {
+//					allEqual = false;
+//				}
+//			}
+//
+//			return allEqual && n.label.equals(this.label);
+//		}
+//
+//		return false;
 	}
 
+//	@Override
+//	public int compareTo(Node<LabelType> o) {
+//
+//		if (o.nOfChildren > this.nOfChildren) {
+//			return -1;
+//		} else if (o.nOfChildren < this.nOfChildren) {
+//			return 1;
+//		}
+//
+//		if (o.isLeaf()) {
+//			if (o.label.equals(this.label)) {
+//				return 0;
+//			}
+//		}
+//
+//		for (int i = 0; i < nOfChildren; i++) {
+//			if (!o.children.get(i).equals(this.children.get(i))) {
+//				return o.children.get(i).compareTo(this.children.get(i));
+//			}
+//		}
+//
+//		if (o.label.equals(this.label)) {
+//			return 0;
+//		}
+//
+//		return this.label.compareTo(o.label);
+//	}
+
 	@Override
-	public int compareTo(Node<LabelType> o) {
-		
-		if (o.nOfChildren > this.nOfChildren) {
+	public int compareTo(Node<LabelType> o) { // Old version
+
+		int thisSize = this.getSize();
+		int oSize = o.getSize();
+
+		if (thisSize < oSize) {
 			return -1;
-		} else if (o.nOfChildren < this.nOfChildren) {
+		} else if (thisSize > oSize) {
 			return 1;
 		}
 
-		if (o.isLeaf()) {
-			if (o.label.equals(this.label)) {
-				return 0;
-			} 
+		String thisString = this.toString();
+		String oString = o.toString();
+
+		if (thisString.compareTo(oString) < 0) {
+			return -1;
+		} else if (thisString.compareTo(oString) > 0) {
+			return 1;
 		}
 
-		for (int i = 0; i < nOfChildren; i++) {
-			if (!o.children.get(i).equals(this.children.get(i))) {
-				return o.children.get(i).compareTo(this.children.get(i));
-			}
-		}
-
-		if (o.label.equals(this.label)) {
-			return 0;
-		}
-
-		return this.label.compareTo(o.label);
+		return 0;
 	}
-	
-//	@Override
-//	public int compareTo(Node<LabelType> o) { // Old version
-//		
-//		int thisSize = this.getSize();
-//		int oSize = o.getSize();
-//		
-//		if (thisSize < oSize) {
-//			return -1;
-//		} else if (thisSize > oSize) {
-//			return 1;
-//		}
-//		
-//		String thisString = this.toString();
-//		String oString = o.toString();
-//		
-//		if (thisString.compareTo(oString) < 0) {
-//			return -1;
-//		} else if (thisString.compareTo(oString) > 0) {
-//			return 1;
-//		}
-//		
-//		return 0;
-//	}
 }

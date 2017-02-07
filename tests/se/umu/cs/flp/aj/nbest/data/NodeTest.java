@@ -110,7 +110,7 @@ public class NodeTest {
 
 		assertFalse(root2.equals(root));
 	}
-	
+
 	@Test
 	public void shouldHaveCorrectSize() throws Exception {
 		assertEquals(10, root.getSize());
@@ -124,7 +124,7 @@ public class NodeTest {
 		b.addChild(new Node<>("b"));
 		assertEquals(-1, a.compareTo(b));
 	}
-	
+
 	@Test
 	public void shouldBeLargerThanSmallerTree() throws Exception {
 		Node<String> a = new Node<>("c");
@@ -133,10 +133,10 @@ public class NodeTest {
 		b.addChild(new Node<>("b"));
 		assertEquals(1, b.compareTo(a));
 	}
-	
+
 	//ball[ball[b, b], ball[b, b]]
 	//ball[a, ball[b, b]]
-	
+
 	@Test
 	public void shouldBeSmallerThanLargerTree2() throws Exception {
 		Node<String> aroot = new Node<>("ball");
@@ -156,7 +156,7 @@ public class NodeTest {
 		aroot.addChild(b1);
 		assertEquals(-1, aroot.compareTo(broot));
 	}
-	
+
 	@Test
 	public void shouldBeLargerThanSmallerTree2() throws Exception {
 		Node<String> a = new Node<>("ball");
@@ -176,25 +176,25 @@ public class NodeTest {
 		a.addChild(b1);
 		assertEquals(1, broot.compareTo(a));
 	}
-	
+
 	@Test
-	public void shouldBeSmallerThanEqualLengthButLexicallySmallerTree() 
+	public void shouldBeSmallerThanEqualLengthButLexicallySmallerTree()
 			throws Exception {
 		Node<String> a = new Node<>("a");
 		Node<String> b = new Node<>("b");
 		assertEquals(-1, a.compareTo(b));
 	}
-	
+
 	@Test
-	public void shouldBeLargerThanEqualLengthButLexicallyLargerString() 
+	public void shouldBeLargerThanEqualLengthButLexicallyLargerString()
 			throws Exception {
 		Node<String> a = new Node<>("a");
 		Node<String> b = new Node<>("b");
 		assertEquals(1, b.compareTo(a));
 	}
-	
+
 	@Test
-	public void shouldBeEqualToEqualString() 
+	public void shouldBeEqualToEqualString()
 			throws Exception {
 		Node<String> a = new Node<>("ball[b, b]");
 		Node<String> b = new Node<>("ball[b, b]");
