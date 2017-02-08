@@ -12,6 +12,7 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		implements Comparable<TreeKeeper<?>> {
 	
 	// Keep and update optimal states here instead of computing it outside the class?
+	// Can use TreeMap if we use a class containing a state and a weight 
 	
 	private Node<LabelType> tree;
 //	private ArrayList<State> optimalStates;
@@ -56,6 +57,12 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 			}
 		} else {
 			this.optWeights.put(s, w);
+		}
+	}
+	
+	public void addWeights(HashMap<State, Weight> map) { // USE INSTEAD OF MERGE
+		for (Entry<State, Weight> e : map.entrySet()) {
+			addWeight(e.getKey(), e.getValue());
 		}
 	}
 	
