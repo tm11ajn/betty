@@ -2,6 +2,8 @@ package se.umu.cs.flp.aj.nbest.data;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import se.umu.cs.flp.aj.wta.State;
 import se.umu.cs.flp.aj.wta.Weight;
@@ -9,17 +11,21 @@ import se.umu.cs.flp.aj.wta.Weight;
 public class TreeKeeper<LabelType extends Comparable<LabelType>> 
 		implements Comparable<TreeKeeper<?>> {
 	
+	// Keep and update optimal states here instead of computing it outside the class?
+	
 	private Node<LabelType> tree;
 //	private ArrayList<State> optimalStates;
 	private LinkedHashMap<State,State> optimalStates;
 	private HashMap<State, Weight> optWeights;
-	private Weight weight;
+//	private TreeMap<State, Weight> bestWeights; Continue. 
+	private Weight smallestWeight;
 	
 	public TreeKeeper(Node<LabelType> tree) {
 		this.tree = tree;
 		this.optimalStates = null;
 		this.optWeights = new HashMap<>();
-		this.weight = new Weight(Weight.INF); // or just set from outside?
+//		this.bestWeights = new TreeMap<>();
+		this.smallestWeight = new Weight(Weight.INF); // or just set from outside?
 	}
 	
 	public Node<LabelType> getTree() {
@@ -42,12 +48,52 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		return optWeights;
 	}
 	
-	public Weight getWeight() {
-		return weight;
+	public void addWeight(State s, Weight w) {
+		
+		if (this.optWeights.containsKey(s)) {				
+			if (this.optWeights.get(s).compareTo(w) == 1) {
+				this.optWeights.put(s, w);
+			}
+		} else {
+			this.optWeights.put(s, w);
+		}
 	}
 	
-	public void setWeight(Weight weight) {
-		this.weight = weight;
+//	public void getBestWeight() {
+//		return bestWeights.firstEntry();
+//	}
+	
+	public Weight getSmallestWeight() {
+		return smallestWeight;
+	}
+	
+	public void setSmallestWeight(Weight weight) {
+		this.smallestWeight = weight;
+	}
+	
+	public void getDataFrom(TreeKeeper<LabelType> t) {
+		
+		int comparison = this.smallestWeight.compareTo(t.smallestWeight);
+		
+		if (comparison == -1) {
+			
+		} else if (comparison == 1) {
+			this.smallestWeight = t.smallestWeight;
+			this.optimalStates = t.optimalStates;
+		} else {
+			this.optimalStates.putAll(t.optimalStates);
+		}
+		
+		for (Entry<State, Weight> e : t.optWeights.entrySet()) {
+			
+			if (this.optWeights.containsKey(e.getKey())) {				
+				if (this.optWeights.get(e.getKey()).compareTo(e.getValue()) == 1) {
+					this.optWeights.put(e.getKey(), e.getValue());
+				}
+			} else {
+				this.optWeights.put(e.getKey(), e.getValue());
+			}
+		}
 	}
 
 	@Override

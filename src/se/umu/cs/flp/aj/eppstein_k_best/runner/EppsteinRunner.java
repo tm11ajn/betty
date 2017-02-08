@@ -185,7 +185,7 @@ public class EppsteinRunner {
 
 //		LinkedList<TreeKeeper<Symbol>> treeList = new LinkedList<>();
 		
-System.out.println(">>> Getting trees for rule " + r);
+//System.out.println(">>> Getting trees for rule " + r);
 		
 		LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> treeList = new LinkedHashMap<>();
 
@@ -195,7 +195,7 @@ System.out.println(">>> Getting trees for rule " + r);
 			Node<Symbol> pathTree = extractTreeFromPath(path, r);
 			Weight pathWeight = new Weight(path.getWeight());
 
-System.out.println(">>> Tree output: " + pathTree + " with weight " + pathWeight);
+//System.out.println(">>> Tree output: " + pathTree + " with weight " + pathWeight);
 			
 			if (path.getWeight() == Double.MAX_VALUE) {
 				pathWeight = new Weight(Weight.INF);
@@ -212,22 +212,26 @@ System.out.println(">>> Tree output: " + pathTree + " with weight " + pathWeight
 //				pathTree.getOptWeights().put(q, pathWeight);
 //			}
 			
-			TreeKeeper<Symbol> keeper = null;
-//			TreeKeeper<Symbol> keeper = new TreeKeeper<>(pathTree);
-//			keeper.getOptWeights().put(q, pathWeight);
+//			TreeKeeper<Symbol> keeper = null;
+			TreeKeeper<Symbol> keeper = new TreeKeeper<>(pathTree); // Check if tree already in list and merge trees if that is the case?
+			keeper.getOptWeights().put(q, pathWeight);
+			
+//			if (treeList.containsKey(pathTree)) {
+//				System.out.println("HÄR ÄR JAG IGEN");
+//			}
 			
 			/* New part*/
-			if (treeList.containsKey(pathTree)) {
-				keeper = treeList.get(pathTree);
-				
-				if (keeper.getWeight().compareTo(pathWeight) == 1) {
-					keeper.getOptWeights().put(q, pathWeight);
-				}
-				
-			} else {
-				keeper = new TreeKeeper<>(pathTree);
-				keeper.getOptWeights().put(q, pathWeight);
-			}
+//			if (treeList.containsKey(pathTree)) {
+//				keeper = treeList.get(pathTree);
+//				
+//				if (keeper.getWeight().compareTo(pathWeight) == 1) { // We do not use getWeight
+//					keeper.getOptWeights().put(q, pathWeight);
+//				}
+//				
+//			} else {
+//				keeper = new TreeKeeper<>(pathTree);
+//				keeper.getOptWeights().put(q, pathWeight);
+//			}
 
 //			treeList.add(pathTree);
 //			treeList.add(keeper);
@@ -248,8 +252,6 @@ System.out.println(">>> Tree output: " + pathTree + " with weight " + pathWeight
 		for (Edge<Node<Symbol>> e : path) {
 			root.addChild(e.getLabel());
 		}
-		
-//		TreeKeeper<Symbol> tree = new TreeKeeper<>(root);
 
 		return root;
 	}

@@ -38,7 +38,7 @@ public class TreeComparator<LabelType extends Comparable<LabelType>>
 			result = o1.getTree().compareTo(o2.getTree());
 		}
 
-System.out.println("Comparing " + o1 + " with " + o2 + " with result " + result);
+//System.out.println("Comparing " + o1 + " with " + o2 + " with result " + result);
 
 
 		return result;

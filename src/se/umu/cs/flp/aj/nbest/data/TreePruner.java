@@ -39,7 +39,7 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 
 			if (qUsage + 1 > N) {
 				TreeKeeper<LabelType> removeTree = getRemoveKey(insertedKey, q, map);
-System.out.println("Removing " + removeTree + " from treeQueue " + "because of state " + q + " which has usage " + qUsage + 1);
+//System.out.println("Removing " + removeTree + " from treeQueue " + "because of state " + q + " which has usage " + qUsage + 1);
 
 //				if (removeKey < map.size()) { // Remove check?
 //				TreeKeeper<LabelType> removeTree = map.get(removeKey);
@@ -79,13 +79,13 @@ System.out.println("Removing " + removeTree + " from treeQueue " + "because of s
 //
 //		return removeIndex;
 		
-System.out.println("IN GET REMOVE KEY");
+//System.out.println("IN GET REMOVE KEY");
 		
 		TreeKeeper<LabelType> removeKey = null;
 		
 		for (TreeKeeper<LabelType> currentTree : map.descendingKeySet()) {
 			
-System.out.println("CURRENT TREE " + currentTree);
+//System.out.println("CURRENT TREE " + currentTree);
 			
 			if (currentTree.getOptimalStates().containsKey(q)) {
 				removeKey = currentTree;
