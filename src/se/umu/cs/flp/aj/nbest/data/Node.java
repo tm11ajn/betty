@@ -23,7 +23,7 @@ package se.umu.cs.flp.aj.nbest.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Node<LabelType extends Comparable<LabelType>> implements Comparable<Node<LabelType>> {
+public class Node<LabelType extends Comparable<LabelType>> implements Comparable<Node<?>> {
 
 	private LabelType label;
 	private Node<LabelType> parent;
@@ -167,7 +167,7 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 				return false;
 			}
 
-			if (this.compareTo((Node<LabelType>) n) == 0) {
+			if (this.compareTo((Node<?>) n) == 0) {
 				return true;
 			}
 		}
@@ -229,7 +229,7 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 //	}
 
 	@Override
-	public int compareTo(Node<LabelType> o) { // Old version
+	public int compareTo(Node<?> o) { // Old version
 
 		int thisSize = this.getSize();
 		int oSize = o.getSize();

@@ -30,6 +30,7 @@ import se.umu.cs.flp.aj.eppstein_k_best.graph.Path;
 import se.umu.cs.flp.aj.nbest.data.NestedMap;
 import se.umu.cs.flp.aj.nbest.data.Node;
 import se.umu.cs.flp.aj.nbest.data.Run;
+import se.umu.cs.flp.aj.nbest.data.TreeKeeper;
 import se.umu.cs.flp.aj.wta.Rule;
 import se.umu.cs.flp.aj.wta.State;
 import se.umu.cs.flp.aj.wta.Symbol;
@@ -38,21 +39,22 @@ import se.umu.cs.flp.aj.wta.Weight;
 
 public class EppsteinRunner {
 
-	private NestedMap<Node<Symbol>, State, Weight> treeStateValTable;
-	private ArrayList<Node<Symbol>> exploredTrees;
+//	private NestedMap<Node<Symbol>, State, Weight> treeStateValTable;
+	private ArrayList<TreeKeeper<Symbol>> exploredTrees;
 
-	public EppsteinRunner(ArrayList<Node<Symbol>> exploredTrees,
-			NestedMap<Node<Symbol>, State, Weight> treeStateValTable) {
+//	public EppsteinRunner(ArrayList<Node<Symbol>> exploredTrees,
+//			NestedMap<Node<Symbol>, State, Weight> treeStateValTable) {
+	public EppsteinRunner(ArrayList<TreeKeeper<Symbol>> exploredTrees) {		
 		this.exploredTrees = exploredTrees;
-		this.treeStateValTable = treeStateValTable;
+//		this.treeStateValTable = treeStateValTable;
 	}
 
 	// memoisation here?
 
-	public ArrayList<LinkedList<Node<Symbol>>> runEppstein(WTA wta,
-			int k, Node<Symbol> tree, State q) {
+	public ArrayList<LinkedList<TreeKeeper<Symbol>>> runEppstein(WTA wta,
+			int k, TreeKeeper<Symbol> tree, State q) {
 
-		ArrayList<LinkedList<Node<Symbol>>> kBestTreesForEachQRule =
+		ArrayList<LinkedList<TreeKeeper<Symbol>>> kBestTreesForEachQRule =
 				new ArrayList<>();
 
 		Graph<Node<Symbol>> graph = new Graph<>();
@@ -75,7 +77,7 @@ public class EppsteinRunner {
 			Path<Node<Symbol>> path =
 					graph.findShortestPath("u0", "v" + nOfStates);
 
-			LinkedList<Node<Symbol>> treeList =
+			LinkedList<TreeKeeper<Symbol>> treeList =
 					getKBestTreesForRule(graph, path, k, q, r);
 
 			kBestTreesForEachQRule.add(treeList);
@@ -98,7 +100,7 @@ public class EppsteinRunner {
 	}
 
 	private NestedMap<String, String, PriorityQueue<Run>> buildEdgeMap(
-			ArrayList<State> states, Node<Symbol> tree) {
+			ArrayList<State> states, TreeKeeper<Symbol> tree) {
 
 		NestedMap<String, String, PriorityQueue<Run>> edgeMap =
 				new NestedMap<>();
@@ -107,9 +109,10 @@ public class EppsteinRunner {
 		for (int i = 1; i < nOfStates + 1; i++) {
 			State currentState = states.get(i-1);
 
-			for (Node<Symbol> n : exploredTrees) {
+			for (TreeKeeper<Symbol> n : exploredTrees) {
 
-				Weight w = treeStateValTable.get(n, currentState);
+//				Weight w = treeStateValTable.get(n, currentState);
+				Weight w = n.getOptWeights().get(currentState);
 
 				if (w == null) {
 					continue;
@@ -119,7 +122,7 @@ public class EppsteinRunner {
 				PriorityQueue<Run> pv = edgeMap.get("v" + (i - 1), "v" + i);
 				String resultingNodeType = "";
 
-				if (!n.equals(tree)) {
+				if (!n.getTree().equals(tree.getTree())) {
 					resultingNodeType = "u";
 				} else {
 					resultingNodeType = "v";
@@ -157,7 +160,7 @@ public class EppsteinRunner {
 
 				while (!p.isEmpty() && counter < k) {
 					Run run = p.poll();
-					graph.createEdge(vertex1, vertex2, run.getTree(),
+					graph.createEdge(vertex1, vertex2, run.getTree().getTree(),
 							Double.parseDouble(run.getWeight().toString()));
 					counter++;
 				}
@@ -165,15 +168,15 @@ public class EppsteinRunner {
 		}
 	}
 
-	private LinkedList<Node<Symbol>> getKBestTreesForRule(
+	private LinkedList<TreeKeeper<Symbol>> getKBestTreesForRule(
 			Graph<Node<Symbol>> graph, Path<Node<Symbol>> path,
 			int k, State q, Rule r) {
 
-		LinkedList<Node<Symbol>> treeList = new LinkedList<>();
+		LinkedList<TreeKeeper<Symbol>> treeList = new LinkedList<>();
 		int counter = 0;
 
 		while (path.isValid() && counter < k) {
-			Node<Symbol> pathTree = extractTreeFromPath(path, r);
+			TreeKeeper<Symbol> pathTree = extractTreeFromPath(path, r);
 			Weight pathWeight = new Weight(path.getWeight());
 
 			if (path.getWeight() == Double.MAX_VALUE) {
@@ -181,11 +184,13 @@ public class EppsteinRunner {
 			}
 
 			pathWeight = pathWeight.add(r.getWeight());
-			Weight oldWeight = treeStateValTable.get(pathTree, q);
+//			Weight oldWeight = treeStateValTable.get(pathTree, q);
+			Weight oldWeight = pathTree.getOptWeights().get(q);
 
 			if (oldWeight == null
 					|| oldWeight.compareTo(pathWeight) == 1) {
-				treeStateValTable.put(pathTree, q, pathWeight);
+//				treeStateValTable.put(pathTree, q, pathWeight);
+				pathTree.getOptWeights().put(q, pathWeight);
 			}
 
 			treeList.add(pathTree);
@@ -197,7 +202,7 @@ public class EppsteinRunner {
 		return treeList;
 	}
 
-	private Node<Symbol> extractTreeFromPath(Path<Node<Symbol>> path,
+	private TreeKeeper<Symbol> extractTreeFromPath(Path<Node<Symbol>> path,
 			Rule r) {
 
 		Node<Symbol> root = new Node<>(r.getSymbol());
@@ -205,7 +210,9 @@ public class EppsteinRunner {
 		for (Edge<Node<Symbol>> e : path) {
 			root.addChild(e.getLabel());
 		}
+		
+		TreeKeeper<Symbol> tree = new TreeKeeper<>(root);
 
-		return root;
+		return tree;
 	}
 }

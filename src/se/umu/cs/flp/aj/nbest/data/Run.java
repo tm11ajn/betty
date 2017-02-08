@@ -25,15 +25,17 @@ import se.umu.cs.flp.aj.wta.Weight;
 
 public class Run implements Comparable<Run> {
 	
-	private Node<Symbol> tree;
+//	private Node<Symbol> tree;
+	private TreeKeeper<Symbol> tree;
+	
 	private Weight weight;
 	
-	public Run(Node<Symbol> tree, Weight weight) {
+	public Run(TreeKeeper<Symbol> tree, Weight weight) {
 		this.tree = tree;
 		this.weight = weight;
 	}
 	
-	public Node<Symbol> getTree() {
+	public TreeKeeper<Symbol> getTree() {
 		return this.tree;
 	}
 	
