@@ -24,6 +24,8 @@ public class PrunedQueue<K,V> extends TreeMap<K,V> {
 	@Override
 	public V put(K key, V value) {
 		
+System.out.println("Putting " + key + "=" + value );
+		
 		V returnVal = super.put(key, value);
 		pruner.prune(key, this);
 		

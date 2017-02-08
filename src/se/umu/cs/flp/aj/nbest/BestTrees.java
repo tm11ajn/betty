@@ -22,9 +22,12 @@ package se.umu.cs.flp.aj.nbest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import se.umu.cs.flp.aj.eppstein_k_best.runner.EppsteinRunner;
@@ -104,7 +107,7 @@ System.out.println("Explored trees: " + exploredTrees);
 
 			// Get optimal state for current tree
 //			State optimalState = optimalStates.get(currentTree).get(0);
-			State optimalState = currentTree.getOptimalStates().get(0);
+			State optimalState = currentTree.getOptimalStates().keySet().iterator().next();
 
 			// if M(t) = delta(t) then
 			if (optimalState.isFinal()) {
@@ -169,9 +172,12 @@ System.out.println("Queue after expansion and pruning: " + treeQueue);
 				
 			}
 		}
+		
+System.out.println("END enqueue rank zero symbols");
 	}
 
-	private static ArrayList<State> getOptimalStates(TreeKeeper<Symbol> tree) {
+//	private static ArrayList<State> getOptimalStates(TreeKeeper<Symbol> tree) {
+	private static LinkedHashMap<State,State> getOptimalStates(TreeKeeper<Symbol> tree) {
 //		HashMap<State, Weight> stateValTable =
 //				treeStateValTable.getAll(tree);
 		
@@ -179,7 +185,9 @@ System.out.println("Tree to get opt states for: " + tree);
 		
 		HashMap<State, Weight> stateValTable = tree.getOptWeights();
 		
-		ArrayList<State> optStates = new ArrayList<>();
+//		ArrayList<State> optStates = new ArrayList<>();
+		LinkedHashMap<State, State> optStates = new LinkedHashMap<>();
+		
 		Weight minWeight = new Weight(Weight.INF);
 
 		for (Entry<State, Weight> e : stateValTable.entrySet()) {
@@ -192,10 +200,13 @@ System.out.println("Tree to get opt states for: " + tree);
 
 			if (comparison == -1) {
 				minWeight = currentWeight;
-				optStates = new ArrayList<>();
-				optStates.add(e.getKey());
+//				optStates = new ArrayList<>();
+				optStates.clear();
+//				optStates.add(e.getKey());
+				optStates.put(e.getKey(), e.getKey());
 			} else if (comparison == 0) {
-				optStates.add(e.getKey());
+//				optStates.add(e.getKey());
+				optStates.put(e.getKey(), e.getKey());
 			}
 		}
 		
@@ -209,7 +220,7 @@ System.out.println("And its optstates are: " + optStates);
 		Weight delta = new Weight(0);
 
 //		State optimalState = optimalStates.get(tree).get(0);
-		State optimalState = tree.getOptimalStates().get(0);
+		State optimalState = tree.getOptimalStates().keySet().iterator().next();
 
 //		Weight minWeight = treeStateValTable.get(tree, optimalState);
 		Weight minWeight = tree.getOptWeights().get(optimalState);
@@ -315,11 +326,13 @@ System.out.println("In getDeltaWeight: minweight is " + minWeight + " for " + tr
 	public static void enqueueWithExpansionAndPruning(WTA wta, int N,
 			TreeKeeper<Symbol> tree) {
 
-		HashMap<State, ArrayList<LinkedList<TreeKeeper<Symbol>>>> allRuns =
+//		HashMap<State, ArrayList<LinkedList<TreeKeeper<Symbol>>>> allRuns =
+//				new HashMap<>();
+		HashMap<State, ArrayList<LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>>> allRuns =
 				new HashMap<>();
-		HashMap<State, LinkedList<TreeKeeper<Symbol>>> nRuns = new HashMap<>();
 		
-		HashMap<State, TreeMap<TreeKeeper<Symbol>,TreeKeeper<Symbol>>> nRuns2 = new HashMap<>();
+//		HashMap<State, LinkedList<TreeKeeper<Symbol>>> nRuns = new HashMap<>();
+		HashMap<State, LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>> nRuns = new HashMap<>();
 
 //		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees,
 //				treeStateValTable);
@@ -329,161 +342,362 @@ System.out.println("In getDeltaWeight: minweight is " + minWeight + " for " + tr
 			allRuns.put(q, eRunner.runEppstein(wta, N, tree, q));
 		}
 
-		for (Entry<State, ArrayList<LinkedList<TreeKeeper<Symbol>>>> e :
+//		for (Entry<State, ArrayList<LinkedList<TreeKeeper<Symbol>>>> e :
+//			allRuns.entrySet()) {
+		for (Entry<State, ArrayList<LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>>>> e :
 			allRuns.entrySet()) {
 
-			LinkedList<TreeKeeper<Symbol>> mergedTreeList = new LinkedList<>();
+//			LinkedList<TreeKeeper<Symbol>> mergedTreeList = new LinkedList<>();
+			LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> mergedTreeList = new LinkedHashMap<>();
 			
-			TreeMap<TreeKeeper<Symbol>,TreeKeeper<Symbol>> mergedTreeList2 = new TreeMap<>();
+//			TreeMap<TreeKeeper<Symbol>,TreeKeeper<Symbol>> mergedTreeList2 = new TreeMap<>();
 			
 			State q = e.getKey();
 			
 			int counter = 0;
-
-			for (LinkedList<TreeKeeper<Symbol>> treeList : e.getValue()) {
+//			for (LinkedList<TreeKeeper<Symbol>> treeList : e.getValue()) {
+			for (LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> treeList : e.getValue()) {
+				
 				mergedTreeList = mergeTreeListsForState(treeList,
 						mergedTreeList, N, q);
-				
-				for (TreeKeeper<Symbol> t : treeList) {
-					if (mergedTreeList2.containsKey(t)) {
-						TreeKeeper<Symbol> old = mergedTreeList2.get(t);
-						t.getOptimalStates().addAll(old.getOptimalStates());
-						t.getOptWeights().putAll(old.getOptWeights());
-					}
-					
-					mergedTreeList2.put(t, t);
-				}
+
+				/* New code */
+//				for (Entry<Node<Symbol>, TreeKeeper<Symbol>> e1 : treeList.entrySet()) {
+//					TreeKeeper<Symbol> t = e1.getValue();
+//					
+//					if (mergedTreeList2.containsKey(t)) {
+//						TreeKeeper<Symbol> old = mergedTreeList2.get(t);
+//						t.getOptimalStates().addAll(old.getOptimalStates());
+//						t.getOptWeights().putAll(old.getOptWeights());
+//					} else {
+//						mergedTreeList2.put(t, t);
+//					}
+//				}
 				
 			}
 
+//			nRuns.put(q, mergedTreeList);
 			nRuns.put(q, mergedTreeList);
 			
-			nRuns2.put(q, mergedTreeList2); // Continue this line of though
+//			nRuns2.put(q, mergedTreeList2); // Continue this line of thought
 		}
 
-		LinkedList<TreeKeeper<Symbol>> mergedList = new LinkedList<>();
+		/* New  */
+//		for (Entry<State, TreeMap<TreeKeeper<Symbol>, TreeKeeper<Symbol>>> e : nRuns2.entrySet()) {
+//			
+//			for (Entry<TreeKeeper<Symbol>, TreeKeeper<Symbol>> e2 : e.getValue().entrySet()) {
+//				treeQueue.put(e2.getKey(), null);
+//			}
+//		}
+		
+/* Old*/
+//		LinkedList<TreeKeeper<Symbol>> mergedList = new LinkedList<>();
+		LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> mergedList = new LinkedHashMap<>();
 		int nOfStatesInWTA = wta.getStates().size();
 
-		for (LinkedList<TreeKeeper<Symbol>> currentList : nRuns.values()) {
+		for (LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> currentList : nRuns.values()) {
 			mergedList = mergeTreeListsByDeltaWeights(currentList, mergedList, 
 					N*nOfStatesInWTA); // Unnecessary? Just insert them all into K and prune after each insertion?
 		}
 
-		for (TreeKeeper<Symbol> n : mergedList) {
+		for (TreeKeeper<Symbol> n : mergedList.values()) {
 			treeQueue.put(n, null);
 //			insertIntoQueueUsingPruning(n, N);
 		}
 	}
 
-	private static LinkedList<TreeKeeper<Symbol>> mergeTreeListsForState(
-			LinkedList<TreeKeeper<Symbol>> list1, LinkedList<TreeKeeper<Symbol>> list2,
+//	private static LinkedList<TreeKeeper<Symbol>> mergeTreeListsForState(
+//			LinkedList<TreeKeeper<Symbol>> list1, LinkedList<TreeKeeper<Symbol>> list2,
+//			int listSizeLimit, State q) {
+//
+//		LinkedList<TreeKeeper<Symbol>> result = new LinkedList<>();
+//
+//		int added = 0;
+//		int compResult;
+//
+//		while (added < listSizeLimit && !(list1.isEmpty() && list2.isEmpty())) {
+//			
+//			TreeKeeper<Symbol> tree1 = list1.peek();
+//			TreeKeeper<Symbol> tree2 = list2.peek();
+//
+//			if (tree1 != null && result.contains(tree1)) {
+//				list1.poll();
+//			} else if (tree2 != null && result.contains(tree2)) {
+//				list2.poll();
+//			} else if (tree1 != null && tree2 != null) {
+//
+////				Weight weight1 = treeStateValTable.get(tree1, q);
+//				Weight weight1 = tree1.getOptWeights().get(q);
+//				
+////				Weight weight2 = treeStateValTable.get(tree2, q);
+//				Weight weight2 = tree2.getOptWeights().get(q);
+//
+//				compResult = weight1.compareTo(weight2);
+//
+//				if (compResult == -1) {
+//					result.addLast(list1.poll());
+//				} else if (compResult == 1) {
+//					result.addLast(list2.poll());
+//				} else {
+//
+//					compResult = tree1.getTree().compareTo(tree2.getTree());
+//
+//					if (compResult == 0) {
+////						tree1.getOptimalStates().addAll(tree2.getOptimalStates());
+////						tree1.getOptWeights().putAll(tree2.getOptWeights());
+//						result.addLast(list1.poll());
+//						list2.poll();
+//					} else if (compResult == -1) {
+//						result.addLast(list1.poll());
+//					} else {
+//						result.addLast(list2.poll());
+//					}
+//				}
+//
+//			} else if (tree1 != null) {
+//				result.addLast(list1.poll());
+//			} else {
+//				result.addLast(list2.poll());
+//			}
+//
+//			added++;
+//		}
+//
+//		return result;
+//	}
+	
+//	private static LinkedList<TreeKeeper<Symbol>> mergeTreeListsForState(
+//			LinkedList<TreeKeeper<Symbol>> list1, LinkedList<TreeKeeper<Symbol>> list2,
+//			int listSizeLimit, State q) {
+	private static LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> mergeTreeListsForState(
+			LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> list1, 
+			LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> list2,
 			int listSizeLimit, State q) {
 
-		LinkedList<TreeKeeper<Symbol>> result = new LinkedList<>();
+System.out.println("MERGE FOR STATE " + q);
+		
+		if (list1.isEmpty()) {
+System.out.println("Merge for state: returning: " + list2);
+			return list2;
+		}
+		
+		if (list2.isEmpty()) {
+System.out.println("Merge for state: returning: " + list1);
+			return list1;
+		}
+		
+
+
+//		LinkedList<TreeKeeper<Symbol>> result = new LinkedList<>();
+		LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> result = new LinkedHashMap<>();
+
+		int added = 0;
+		int compResult;
+		
+		Iterator<Entry<Node<Symbol>, TreeKeeper<Symbol>>> iterator1 = list1.entrySet().iterator();
+		Iterator<Entry<Node<Symbol>, TreeKeeper<Symbol>>> iterator2 = list2.entrySet().iterator();
+		
+		Entry<Node<Symbol>, TreeKeeper<Symbol>> currentEntry1 = null;
+		Entry<Node<Symbol>, TreeKeeper<Symbol>> currentEntry2 = null;
+		
+		if (iterator1.hasNext()) {
+			currentEntry1 = iterator1.next();
+		} 
+		
+		if (iterator2.hasNext()) {
+			currentEntry2 = iterator2.next();
+		}
+
+//		while (added < listSizeLimit && !(list1.isEmpty() && list2.isEmpty())) {
+		while (added < listSizeLimit && !(currentEntry1 == null && currentEntry2 == null)) {
+			
+System.out.println("CurrentEntry1 = " + currentEntry1 + " currentEntry2 = " + currentEntry2);
+			
+//			TreeKeeper<Symbol> tree1 = list1.peek();
+//			TreeKeeper<Symbol> tree2 = list2.peek();
+			
+//			TreeKeeper<Symbol> tree1 = currentEntry1.getValue();
+//			TreeKeeper<Symbol> tree2 = list2.peek();
+			
+			if (currentEntry1 != null && result.containsKey(currentEntry1.getKey())) {
+//				result.get(currentEntry1.getKey()).getOptimalStates().putAll(currentEntry1.getValue().getOptimalStates());
+				result.get(currentEntry1.getKey()).getOptWeights().putAll(currentEntry1.getValue().getOptWeights());
+				iterator1.remove();
+				currentEntry1 = null; // Do not know if necessary
+			} else if (currentEntry2 != null && result.containsKey(currentEntry2.getKey())) {
+//				result.get(currentEntry2.getKey()).getOptimalStates().putAll(currentEntry2.getValue().getOptimalStates());
+				result.get(currentEntry2.getKey()).getOptWeights().putAll(currentEntry2.getValue().getOptWeights());
+				iterator2.remove();
+				currentEntry2 = null; // Do not know if necessary
+			} else if (currentEntry1 != null && currentEntry2 != null) {
+				Weight weight1 = currentEntry1.getValue().getOptWeights().get(q);
+				Weight weight2 = currentEntry2.getValue().getOptWeights().get(q);
+				
+				compResult = weight1.compareTo(weight2);
+				
+				if (compResult == -1) {
+					result.put(currentEntry1.getKey(), currentEntry1.getValue());
+					iterator1.remove();
+					currentEntry1 = null; // Do not know if necessary
+				} else if (compResult == 1) {
+					result.put(currentEntry2.getKey(), currentEntry2.getValue());
+					iterator2.remove();
+					currentEntry2 = null; // Do not know if necessary
+				} else {
+					compResult = currentEntry1.getKey().compareTo(currentEntry2.getKey());
+					
+					if (compResult == 0) {
+						currentEntry1.getValue().getOptimalStates().putAll(currentEntry2.getValue().getOptimalStates());
+						currentEntry1.getValue().getOptWeights().putAll(currentEntry2.getValue().getOptWeights());
+						result.put(currentEntry1.getKey(), currentEntry1.getValue());
+						iterator1.remove();
+						iterator2.remove();
+						currentEntry1 = null; // Do not know if necessary
+						currentEntry2 = null; // Do not know if necessary
+					} else if (compResult == -1) {
+						result.put(currentEntry1.getKey(), currentEntry1.getValue());
+						iterator1.remove();
+						currentEntry1 = null; // Do not know if necessary
+					} else {
+						result.put(currentEntry2.getKey(), currentEntry2.getValue());
+						iterator2.remove();
+						currentEntry2 = null; // Do not know if necessary
+					}
+				}
+				
+			} else if (currentEntry1 != null) {
+				result.put(currentEntry1.getKey(), currentEntry1.getValue());
+				iterator1.remove();
+				currentEntry1 = null; // Do not know if necessary
+			} else {
+				result.put(currentEntry2.getKey(), currentEntry2.getValue());
+				iterator2.remove();
+				currentEntry2 = null; // Do not know if necessary
+			}
+
+//			if (tree1 != null && result.contains(tree1)) {				
+//				list1.poll();
+//			} else if (tree2 != null && result.contains(tree2)) {
+//				list2.poll();
+//			} else if (tree1 != null && tree2 != null) {
+//
+////				Weight weight1 = treeStateValTable.get(tree1, q);
+//				Weight weight1 = tree1.getOptWeights().get(q);
+//				
+////				Weight weight2 = treeStateValTable.get(tree2, q);
+//				Weight weight2 = tree2.getOptWeights().get(q);
+//
+//				compResult = weight1.compareTo(weight2);
+//
+//				if (compResult == -1) {
+//					result.addLast(list1.poll());
+//				} else if (compResult == 1) {
+//					result.addLast(list2.poll());
+//				} else {
+//
+//					compResult = tree1.getTree().compareTo(tree2.getTree());
+//
+//					if (compResult == 0) {
+////						tree1.getOptimalStates().addAll(tree2.getOptimalStates());
+////						tree1.getOptWeights().putAll(tree2.getOptWeights());
+//						result.addLast(list1.poll());
+//						list2.poll();
+//					} else if (compResult == -1) {
+//						result.addLast(list1.poll());
+//					} else {
+//						result.addLast(list2.poll());
+//					}
+//				}
+//
+//			} else if (tree1 != null) {
+//				result.addLast(list1.poll());
+//			} else {
+//				result.addLast(list2.poll());
+//			}
+
+			added++;
+			
+			if (currentEntry1 == null && iterator1.hasNext()) {
+				currentEntry1 = iterator1.next();
+			}
+			
+			if (currentEntry2 == null && iterator2.hasNext()) {
+				currentEntry2 = iterator2.next();
+			}
+			
+System.out.println("Merge for state: current result: " + result);			
+		}
+System.out.println("Merge for state: returning: " + result);
+		return result;
+	}
+
+//	private static LinkedList<TreeKeeper<Symbol>> mergeTreeListsByDeltaWeights(
+//			LinkedList<TreeKeeper<Symbol>> list1, LinkedList<TreeKeeper<Symbol>> list2,
+//			int listSizeLimit) {
+	private static LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> mergeTreeListsByDeltaWeights(
+			LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> currentList, 
+			LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> mergedList,
+			int listSizeLimit) {
+
+System.out.println("MERGE list by delta weights");		
+		if (currentList.isEmpty()) {
+System.out.println("Merge: returning: " + mergedList);
+			return mergedList;
+		}
+		
+		if (mergedList.isEmpty()) {
+System.out.println("Merge: returning: " + currentList);
+			return currentList;
+		}
+
+//		LinkedList<TreeKeeper<Symbol>> result = new LinkedList<>();
+		LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> result = new LinkedHashMap<>();
 
 		int added = 0;
 		int compResult;
 
-		while (added < listSizeLimit && !(list1.isEmpty() && list2.isEmpty())) {
-			
-			TreeKeeper<Symbol> tree1 = list1.peek();
-			TreeKeeper<Symbol> tree2 = list2.peek();
-
-			if (tree1 != null && result.contains(tree1)) {
-				list1.poll();
-			} else if (tree2 != null && result.contains(tree2)) {
-				list2.poll();
-			} else if (tree1 != null && tree2 != null) {
-
-//				Weight weight1 = treeStateValTable.get(tree1, q);
-				Weight weight1 = tree1.getOptWeights().get(q);
-				
-//				Weight weight2 = treeStateValTable.get(tree2, q);
-				Weight weight2 = tree2.getOptWeights().get(q);
-
-				compResult = weight1.compareTo(weight2);
-
-				if (compResult == -1) {
-					result.addLast(list1.poll());
-				} else if (compResult == 1) {
-					result.addLast(list2.poll());
-				} else {
-
-					compResult = tree1.getTree().compareTo(tree2.getTree());
-
-					if (compResult == 0) {
-						tree1.getOptimalStates().addAll(tree2.getOptimalStates());
-						tree1.getOptWeights().putAll(tree2.getOptWeights());
-						result.addLast(list1.poll());
-						list2.poll();
-					} else if (compResult == -1) {
-						result.addLast(list1.poll());
-					} else {
-						result.addLast(list2.poll());
-					}
-				}
-
-			} else if (tree1 != null) {
-				result.addLast(list1.poll());
-			} else {
-				result.addLast(list2.poll());
-			}
-
-			added++;
+		Iterator<Entry<Node<Symbol>, TreeKeeper<Symbol>>> iterator1 = currentList.entrySet().iterator();
+		Iterator<Entry<Node<Symbol>, TreeKeeper<Symbol>>> iterator2 = mergedList.entrySet().iterator();
+		
+		Entry<Node<Symbol>, TreeKeeper<Symbol>> currentEntry1 = null;
+		Entry<Node<Symbol>, TreeKeeper<Symbol>> currentEntry2 = null;
+		
+		if (iterator1.hasNext()) {
+			currentEntry1 = iterator1.next();
+		} 
+		
+		if (iterator2.hasNext()) {
+			currentEntry2 = iterator2.next();
 		}
 
-		return result;
-	}
+		while (added < listSizeLimit && !(currentEntry1 == null && currentEntry2 == null)) {
+System.out.println("CurrentEntry1 = " + currentEntry1 + " currentEntry2 = " + currentEntry2);
 
-	private static LinkedList<TreeKeeper<Symbol>> mergeTreeListsByDeltaWeights(
-			LinkedList<TreeKeeper<Symbol>> list1, LinkedList<TreeKeeper<Symbol>> list2,
-			int listSizeLimit) {
-
-		LinkedList<TreeKeeper<Symbol>> result = new LinkedList<>();
-
-		int added = 0;
-
-		while (added < listSizeLimit && !(list1.isEmpty() && list2.isEmpty())) {
-
-			int compResult;
-			
-			TreeKeeper<Symbol> tree1 = list1.peek();
-			TreeKeeper<Symbol> tree2 = list2.peek();
-			
-//			System.out.println("tree1: " + tree1);
-//			System.out.println("tree2: " + tree2);
-
-//			ArrayList<State> optStates1 = optimalStates.get(tree1);
-
-			if (tree1 != null && tree1.getOptimalStates() == null) {
-//				optStates1 = getOptimalStates(tree1);
-//				optimalStates.put(tree1, optStates1);
-				tree1.setOptimalStates(getOptimalStates(tree1));
+			if (currentEntry1 != null && currentEntry1.getValue().getOptimalStates() == null) {
+				currentEntry1.getValue().setOptimalStates(getOptimalStates(currentEntry1.getValue()));
 			}
 
-//			ArrayList<State> optStates2 = optimalStates.get(tree2);
-
-			if (tree2 != null && tree2.getOptimalStates() == null) {
-//				optStates2 = getOptimalStates(tree2);
-//				optimalStates.put(tree2, optStates2);
-				tree2.setOptimalStates(getOptimalStates(tree2));
+			if (currentEntry2 != null && currentEntry2.getValue().getOptimalStates() == null) {
+				currentEntry2.getValue().setOptimalStates(getOptimalStates(currentEntry2.getValue()));
 			}
-			
-//			System.out.println("After null check");
-//			System.out.println("tree1: " + tree1);
-//			System.out.println("tree2: " + tree2);
 
-			if (tree1 != null && result.contains(tree1)) {
-				list1.poll();
-			} else if (tree2 != null && result.contains(tree2)) {
-				list2.poll();
-			} else if (tree1 != null && tree2 != null) {
-
-//				State opt1 = optStates1.get(0);
-				State opt1 = tree1.getOptimalStates().get(0);
+			if (currentEntry1 != null && result.containsKey(currentEntry1.getKey())) {
+//				result.get(currentEntry1.getKey()).getOptimalStates().putAll(currentEntry1.getValue().getOptimalStates());
+				result.get(currentEntry1.getKey()).getOptWeights().putAll(currentEntry1.getValue().getOptWeights());
+				iterator1.remove();
+				currentEntry1 = null; // Do not know if necessary
+			} else if (currentEntry2 != null && result.containsKey(currentEntry2.getKey())) {
+//				result.get(currentEntry2.getKey()).getOptimalStates().putAll(currentEntry2.getValue().getOptimalStates());
+				result.get(currentEntry2.getKey()).getOptWeights().putAll(currentEntry2.getValue().getOptWeights());
+				iterator2.remove();
+				currentEntry2 = null; // Do not know if necessary
+			} else if (currentEntry1 != null && currentEntry2 != null) {				
 				
+//				State opt1 = optStates1.get(0);
+				State opt1 = currentEntry1.getValue().getOptimalStates().keySet().iterator().next();
+			
 //				State opt2 = optStates2.get(0);
-				State opt2 = tree2.getOptimalStates().get(0);
+				State opt2 = currentEntry2.getValue().getOptimalStates().keySet().iterator().next();
 
 //				Weight compl1 = smallestCompletionWeights.get(
 //						optStates1.get(0));
@@ -494,42 +708,153 @@ System.out.println("In getDeltaWeight: minweight is " + minWeight + " for " + tr
 				Weight compl2 = smallestCompletionWeights.get(opt2);
 
 //				Weight weight1 = treeStateValTable.get(tree1, opt1).add(compl1);
-				Weight weight1 = tree1.getOptWeights().get(opt1).add(compl1);
+				Weight weight1 = currentEntry1.getValue().getOptWeights().get(opt1).add(compl1);
 				
 //				Weight weight2 = treeStateValTable.get(tree2, opt2).add(compl2);
-				Weight weight2 = tree2.getOptWeights().get(opt2).add(compl2);
+				Weight weight2 = currentEntry2.getValue().getOptWeights().get(opt2).add(compl2);
 
 				compResult = weight1.compareTo(weight2);
-
+				
+				compResult = weight1.compareTo(weight2);
+				
 				if (compResult == -1) {
-					result.addLast(list1.poll());
+					result.put(currentEntry1.getKey(), currentEntry1.getValue());
+					iterator1.remove();
+					currentEntry1 = null; // Do not know if necessary
 				} else if (compResult == 1) {
-					result.addLast(list2.poll());
+					result.put(currentEntry2.getKey(), currentEntry2.getValue());
+					iterator2.remove();
+					currentEntry2 = null; // Do not know if necessary
 				} else {
-
-					compResult = tree1.getTree().compareTo(tree2.getTree());
-
+					compResult = currentEntry1.getKey().compareTo(currentEntry2.getKey());
+					
 					if (compResult == 0) {
-						tree1.getOptimalStates().addAll(tree2.getOptimalStates());
-						tree1.getOptWeights().putAll(tree2.getOptWeights());
-						result.addLast(list1.poll());
-						list2.poll();
+						currentEntry1.getValue().getOptimalStates().putAll(currentEntry2.getValue().getOptimalStates());
+						currentEntry1.getValue().getOptWeights().putAll(currentEntry2.getValue().getOptWeights());
+						result.put(currentEntry1.getKey(), currentEntry1.getValue());
+						iterator1.remove();
+						iterator2.remove();
+						currentEntry1 = null; // Do not know if necessary
+						currentEntry2 = null; // Do not know if necessary
 					} else if (compResult == -1) {
-						result.addLast(list1.poll());
+						result.put(currentEntry1.getKey(), currentEntry1.getValue());
+						iterator1.remove();
+						currentEntry1 = null; // Do not know if necessary
 					} else {
-						result.addLast(list2.poll());
+						result.put(currentEntry2.getKey(), currentEntry2.getValue());
+						iterator2.remove();
+						currentEntry2 = null; // Do not know if necessary
 					}
 				}
-
-			} else if (tree1 != null) {
-				result.addLast(list1.poll());
+				
+			} else if (currentEntry1 != null) {
+				result.put(currentEntry1.getKey(), currentEntry1.getValue());
+				iterator1.remove();
+				currentEntry1 = null; // Do not know if necessary
 			} else {
-				result.addLast(list2.poll());
+				result.put(currentEntry2.getKey(), currentEntry2.getValue());
+				iterator2.remove();
+				currentEntry2 = null; // Do not know if necessary
 			}
-
+			
 			added++;
+			
+			if (currentEntry1 == null && iterator1.hasNext()) {
+				currentEntry1 = iterator1.next();
+			}
+			
+			if (currentEntry2 == null && iterator2.hasNext()) {
+				currentEntry2 = iterator2.next();
+			}
+			
+System.out.println("Merge: current result: " + result);
 		}
+		
 
+//		while (added < listSizeLimit && !(currentList.isEmpty() && mergedList.isEmpty())) {
+//			
+//			TreeKeeper<Symbol> tree1 = currentList.peek();
+//			TreeKeeper<Symbol> tree2 = mergedList.peek();
+//			
+////			System.out.println("tree1: " + tree1);
+////			System.out.println("tree2: " + tree2);
+//
+////			ArrayList<State> optStates1 = optimalStates.get(tree1);
+//
+//			if (tree1 != null && tree1.getOptimalStates() == null) {
+////				optStates1 = getOptimalStates(tree1);
+////				optimalStates.put(tree1, optStates1);
+//				tree1.setOptimalStates(getOptimalStates(tree1));
+//			}
+//
+////			ArrayList<State> optStates2 = optimalStates.get(tree2);
+//
+//			if (tree2 != null && tree2.getOptimalStates() == null) {
+////				optStates2 = getOptimalStates(tree2);
+////				optimalStates.put(tree2, optStates2);
+//				tree2.setOptimalStates(getOptimalStates(tree2));
+//			}
+//			
+////			System.out.println("After null check");
+////			System.out.println("tree1: " + tree1);
+////			System.out.println("tree2: " + tree2);
+//
+//			if (tree1 != null && result.contains(tree1)) {
+//				currentList.poll();
+//			} else if (tree2 != null && result.contains(tree2)) {
+//				mergedList.poll();
+//			} else if (tree1 != null && tree2 != null) {
+//
+////				State opt1 = optStates1.get(0);
+//				State opt1 = tree1.getOptimalStates().get(0);
+//				
+////				State opt2 = optStates2.get(0);
+//				State opt2 = tree2.getOptimalStates().get(0);
+//
+////				Weight compl1 = smallestCompletionWeights.get(
+////						optStates1.get(0));
+//				Weight compl1 = smallestCompletionWeights.get(opt1);
+//				
+////				Weight compl2 = smallestCompletionWeights.get(
+////						optStates2.get(0));
+//				Weight compl2 = smallestCompletionWeights.get(opt2);
+//
+////				Weight weight1 = treeStateValTable.get(tree1, opt1).add(compl1);
+//				Weight weight1 = tree1.getOptWeights().get(opt1).add(compl1);
+//				
+////				Weight weight2 = treeStateValTable.get(tree2, opt2).add(compl2);
+//				Weight weight2 = tree2.getOptWeights().get(opt2).add(compl2);
+//
+//				compResult = weight1.compareTo(weight2);
+//
+//				if (compResult == -1) {
+//					result.addLast(currentList.poll());
+//				} else if (compResult == 1) {
+//					result.addLast(mergedList.poll());
+//				} else {
+//
+//					compResult = tree1.getTree().compareTo(tree2.getTree());
+//
+//					if (compResult == 0) {
+////						tree1.getOptimalStates().addAll(tree2.getOptimalStates());
+////						tree1.getOptWeights().putAll(tree2.getOptWeights());
+//						result.addLast(currentList.poll());
+//						mergedList.poll();
+//					} else if (compResult == -1) {
+//						result.addLast(currentList.poll());
+//					} else {
+//						result.addLast(mergedList.poll());
+//					}
+//				}
+//
+//			} else if (tree1 != null) {
+//				result.addLast(currentList.poll());
+//			} else {
+//				result.addLast(mergedList.poll());
+//			}
+//			added++;
+//		}
+System.out.println("Merge: returning: " + result);
 		return result;
 	}
 }

@@ -21,7 +21,7 @@
 package se.umu.cs.flp.aj.eppstein_k_best.runner;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.PriorityQueue;
 
 import se.umu.cs.flp.aj.eppstein_k_best.graph.Edge;
@@ -51,10 +51,16 @@ public class EppsteinRunner {
 
 	// memoisation here?
 
-	public ArrayList<LinkedList<TreeKeeper<Symbol>>> runEppstein(WTA wta,
+	
+//	public ArrayList<LinkedList<TreeKeeper<Symbol>>> runEppstein(WTA wta,
+//			int k, TreeKeeper<Symbol> tree, State q) {
+	public ArrayList<LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>>> runEppstein(WTA wta,
 			int k, TreeKeeper<Symbol> tree, State q) {
+		
 
-		ArrayList<LinkedList<TreeKeeper<Symbol>>> kBestTreesForEachQRule =
+//		ArrayList<LinkedList<TreeKeeper<Symbol>>> kBestTreesForEachQRule =
+//				new ArrayList<>();
+		ArrayList<LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>> kBestTreesForEachQRule =
 				new ArrayList<>();
 
 		Graph<Node<Symbol>> graph = new Graph<>();
@@ -77,7 +83,9 @@ public class EppsteinRunner {
 			Path<Node<Symbol>> path =
 					graph.findShortestPath("u0", "v" + nOfStates);
 
-			LinkedList<TreeKeeper<Symbol>> treeList =
+//			LinkedList<TreeKeeper<Symbol>> treeList =
+//					getKBestTreesForRule(graph, path, k, q, r);			
+			LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> treeList =
 					getKBestTreesForRule(graph, path, k, q, r);
 
 			kBestTreesForEachQRule.add(treeList);
@@ -168,32 +176,62 @@ public class EppsteinRunner {
 		}
 	}
 
-	private LinkedList<TreeKeeper<Symbol>> getKBestTreesForRule(
+	private LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> getKBestTreesForRule(
 			Graph<Node<Symbol>> graph, Path<Node<Symbol>> path,
 			int k, State q, Rule r) {
+//	private LinkedList<TreeKeeper<Symbol>> getKBestTreesForRule(
+//			Graph<Node<Symbol>> graph, Path<Node<Symbol>> path,
+//			int k, State q, Rule r) {
 
-		LinkedList<TreeKeeper<Symbol>> treeList = new LinkedList<>();
+//		LinkedList<TreeKeeper<Symbol>> treeList = new LinkedList<>();
+		
+System.out.println(">>> Getting trees for rule " + r);
+		
+		LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> treeList = new LinkedHashMap<>();
+
 		int counter = 0;
 
 		while (path.isValid() && counter < k) {
-			TreeKeeper<Symbol> pathTree = extractTreeFromPath(path, r);
+			Node<Symbol> pathTree = extractTreeFromPath(path, r);
 			Weight pathWeight = new Weight(path.getWeight());
 
+System.out.println(">>> Tree output: " + pathTree + " with weight " + pathWeight);
+			
 			if (path.getWeight() == Double.MAX_VALUE) {
 				pathWeight = new Weight(Weight.INF);
 			}
 
 			pathWeight = pathWeight.add(r.getWeight());
-//			Weight oldWeight = treeStateValTable.get(pathTree, q);
-			Weight oldWeight = pathTree.getOptWeights().get(q);
-
-			if (oldWeight == null
-					|| oldWeight.compareTo(pathWeight) == 1) {
-//				treeStateValTable.put(pathTree, q, pathWeight);
-				pathTree.getOptWeights().put(q, pathWeight);
+			
+////			Weight oldWeight = treeStateValTable.get(pathTree, q);
+//			Weight oldWeight = pathTree.getOptWeights().get(q);
+//
+//			if (oldWeight == null
+//					|| oldWeight.compareTo(pathWeight) == 1) {
+////				treeStateValTable.put(pathTree, q, pathWeight);
+//				pathTree.getOptWeights().put(q, pathWeight);
+//			}
+			
+			TreeKeeper<Symbol> keeper = null;
+//			TreeKeeper<Symbol> keeper = new TreeKeeper<>(pathTree);
+//			keeper.getOptWeights().put(q, pathWeight);
+			
+			/* New part*/
+			if (treeList.containsKey(pathTree)) {
+				keeper = treeList.get(pathTree);
+				
+				if (keeper.getWeight().compareTo(pathWeight) == 1) {
+					keeper.getOptWeights().put(q, pathWeight);
+				}
+				
+			} else {
+				keeper = new TreeKeeper<>(pathTree);
+				keeper.getOptWeights().put(q, pathWeight);
 			}
 
-			treeList.add(pathTree);
+//			treeList.add(pathTree);
+//			treeList.add(keeper);
+			treeList.put(pathTree, keeper);
 			counter++;
 
 			path = graph.findNextShortestPath();
@@ -202,7 +240,7 @@ public class EppsteinRunner {
 		return treeList;
 	}
 
-	private TreeKeeper<Symbol> extractTreeFromPath(Path<Node<Symbol>> path,
+	private Node<Symbol> extractTreeFromPath(Path<Node<Symbol>> path,
 			Rule r) {
 
 		Node<Symbol> root = new Node<>(r.getSymbol());
@@ -211,8 +249,8 @@ public class EppsteinRunner {
 			root.addChild(e.getLabel());
 		}
 		
-		TreeKeeper<Symbol> tree = new TreeKeeper<>(root);
+//		TreeKeeper<Symbol> tree = new TreeKeeper<>(root);
 
-		return tree;
+		return root;
 	}
 }

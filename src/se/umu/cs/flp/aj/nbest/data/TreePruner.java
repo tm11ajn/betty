@@ -1,7 +1,7 @@
 package se.umu.cs.flp.aj.nbest.data;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.TreeMap;
 
 import se.umu.cs.flp.aj.wta.State;
@@ -25,10 +25,10 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 		boolean pruned = false;
 		
 //		ArrayList<State> optStates = optimalStates.get(tree);
-		ArrayList<State> optStates = insertedKey.getOptimalStates();
+		LinkedHashMap<State, State> optStates = insertedKey.getOptimalStates();
 		
 
-		for (State q : optStates) {
+		for (State q : optStates.keySet()) {
 			int qUsage = 0;
 
 			if (optimalStatesUsage.get(q) != null) {
@@ -39,15 +39,16 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 
 			if (qUsage + 1 > N) {
 				TreeKeeper<LabelType> removeTree = getRemoveKey(insertedKey, q, map);
+System.out.println("Removing " + removeTree + " from treeQueue " + "because of state " + q + " which has usage " + qUsage + 1);
 
 //				if (removeKey < map.size()) { // Remove check?
 //				TreeKeeper<LabelType> removeTree = map.get(removeKey);
 
 //					ArrayList<State> optStatesRemove =
 //							optimalStates.get(removeTree);
-				ArrayList<State> optStatesRemove = removeTree.getOptimalStates();
+				LinkedHashMap<State, State> optStatesRemove = removeTree.getOptimalStates();
 
-				for (State optRemove : optStatesRemove) {
+				for (State optRemove : optStatesRemove.keySet()) {
 					optimalStatesUsage.put(optRemove,
 							optimalStatesUsage.get(optRemove) - 1);
 				}
@@ -78,12 +79,17 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 //
 //		return removeIndex;
 		
+System.out.println("IN GET REMOVE KEY");
+		
 		TreeKeeper<LabelType> removeKey = null;
 		
 		for (TreeKeeper<LabelType> currentTree : map.descendingKeySet()) {
 			
-			if (currentTree.getOptimalStates().contains(q)) {
+System.out.println("CURRENT TREE " + currentTree);
+			
+			if (currentTree.getOptimalStates().containsKey(q)) {
 				removeKey = currentTree;
+				break;
 			}
 		}
 		

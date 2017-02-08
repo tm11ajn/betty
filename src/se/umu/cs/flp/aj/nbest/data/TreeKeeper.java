@@ -1,7 +1,7 @@
 package se.umu.cs.flp.aj.nbest.data;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import se.umu.cs.flp.aj.wta.State;
 import se.umu.cs.flp.aj.wta.Weight;
@@ -10,7 +10,8 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		implements Comparable<TreeKeeper<?>> {
 	
 	private Node<LabelType> tree;
-	private ArrayList<State> optimalStates;
+//	private ArrayList<State> optimalStates;
+	private LinkedHashMap<State,State> optimalStates;
 	private HashMap<State, Weight> optWeights;
 	private Weight weight;
 	
@@ -25,7 +26,7 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		return tree;
 	}
 	
-	public ArrayList<State> getOptimalStates() {
+	public LinkedHashMap<State, State> getOptimalStates() {
 		return optimalStates;
 	}
 	
@@ -33,7 +34,7 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 //		return optimalStates.add(s);
 //	}
 	
-	public void setOptimalStates(ArrayList<State> optimalStates) {
+	public void setOptimalStates(LinkedHashMap<State, State> optimalStates) {
 		this.optimalStates = optimalStates;
 	}
 	
@@ -52,18 +53,21 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 	@Override
 	public int compareTo(TreeKeeper<?> o) { // TODO compare to uses W^q also (means a reinstantiation of the weight field)
 		
-		int weightComparison = this.weight.compareTo(o.weight);
+//		int weightComparison = this.weight.compareTo(o.weight);
+//		
+//		if (weightComparison == 0) {
+//			return this.tree.compareTo(o.tree);
+//		}
+//		
+//		return weightComparison;
 		
-		if (weightComparison == 0) {
-			return this.tree.compareTo(o.tree);
-		}
-		
-		return weightComparison;
+		return this.tree.compareTo(o.tree);
 	}
 	
 	@Override
 	public int hashCode() {
-		return this.tree.hashCode() + 3 * this.weight.hashCode();
+//		return this.tree.hashCode() + 3 * this.weight.hashCode();
+		return this.tree.hashCode();
 	}
 	
 	@Override

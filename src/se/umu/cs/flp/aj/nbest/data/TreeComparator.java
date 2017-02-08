@@ -18,8 +18,10 @@ public class TreeComparator<LabelType extends Comparable<LabelType>>
 	@Override
 	public int compare(TreeKeeper<LabelType> o1, TreeKeeper<LabelType> o2) {
 		
-		State optState1 = o1.getOptimalStates().get(0);
-		State optState2 = o2.getOptimalStates().get(0);
+		int result;
+		
+		State optState1 = o1.getOptimalStates().keySet().iterator().next();
+		State optState2 = o2.getOptimalStates().keySet().iterator().next();
 		
 		Weight weight1 = o1.getOptWeights().get(optState1).
 				add(smallestCompletions.get(optState1));
@@ -30,10 +32,17 @@ public class TreeComparator<LabelType extends Comparable<LabelType>>
 		int weightComparison = weight1.compareTo(weight2);
 		
 		if (weightComparison != 0 ) {
-			return weightComparison;
+//			return weightComparison;
+			result = weightComparison;
+		} else {
+			result = o1.getTree().compareTo(o2.getTree());
 		}
-		
-		return o1.getTree().compareTo(o2.getTree());
+
+System.out.println("Comparing " + o1 + " with " + o2 + " with result " + result);
+
+
+		return result;
+//		return o1.getTree().compareTo(o2.getTree())
 	}
 
 }
