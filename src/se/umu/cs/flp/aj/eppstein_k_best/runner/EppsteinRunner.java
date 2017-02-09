@@ -27,7 +27,7 @@ import java.util.PriorityQueue;
 import se.umu.cs.flp.aj.eppstein_k_best.graph.Edge;
 import se.umu.cs.flp.aj.eppstein_k_best.graph.Graph;
 import se.umu.cs.flp.aj.eppstein_k_best.graph.Path;
-import se.umu.cs.flp.aj.nbest.data.NestedMap;
+import se.umu.cs.flp.aj.nbest.data.NestedMap; // get rid of this
 import se.umu.cs.flp.aj.nbest.data.Node;
 import se.umu.cs.flp.aj.nbest.data.Run;
 import se.umu.cs.flp.aj.nbest.data.TreeKeeper;
