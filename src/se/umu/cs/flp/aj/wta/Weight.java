@@ -59,21 +59,30 @@ public class Weight implements Comparable<Weight> {
 		return new Weight(value + w.value);
 	}
 	
-	public Weight subtract(Weight w) {
-		
-		if ((value == INF && w.value == INF) || 
-				(value == NINF && w.value == NINF)) {
-			return null;
-		}
-		
-		if (value == INF || w.value == NINF) {
-			return new Weight(INF);
-		} else if (value == NINF || w.value == INF) {
-			return new Weight(NINF);
-		}
-		
-		return new Weight(value - w.value);
-	}
+//	public Weight add(Weight w) {
+//		
+//		if (this.compareTo(w) == 1) {
+//			return w;
+//		}
+//		
+//		return this;
+//	}
+	
+//	public Weight subtract(Weight w) {
+//		
+//		if ((value == INF && w.value == INF) || 
+//				(value == NINF && w.value == NINF)) {
+//			return null;
+//		}
+//		
+//		if (value == INF || w.value == NINF) {
+//			return new Weight(INF);
+//		} else if (value == NINF || w.value == INF) {
+//			return new Weight(NINF);
+//		}
+//		
+//		return new Weight(value - w.value);
+//	}
 
 	@Override
 	public boolean equals(Object obj) {
