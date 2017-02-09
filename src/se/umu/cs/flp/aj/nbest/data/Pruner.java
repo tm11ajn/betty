@@ -20,10 +20,10 @@
 
 package se.umu.cs.flp.aj.nbest.data;
 
-import java.util.TreeMap;
+import java.util.Iterator;
 
 public interface Pruner<K,V> {
 	
-	public boolean prune(K insertedKey, TreeMap<K,V> map);
+	public boolean prune(K insertedKey, Iterator<K> descendingIterator);
 	
 }

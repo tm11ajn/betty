@@ -22,13 +22,13 @@ package se.umu.cs.flp.aj.nbest.data;
 
 import java.util.TreeMap;
 
-public class PrunedQueue<K,V> extends TreeMap<K,V> {
+public class PruneableQueue<K,V> extends TreeMap<K,V> {
 	
 	private static final long serialVersionUID = 1L;
 	
 	private Pruner<K,V> pruner;
 	
-	public PrunedQueue(Pruner<K,V> p) {
+	public PruneableQueue(Pruner<K,V> p) {
 		super();
 		this.pruner = p;
 	}
@@ -39,7 +39,7 @@ public class PrunedQueue<K,V> extends TreeMap<K,V> {
 //System.out.println("Putting " + key + "=" + value );
 		
 		V returnVal = super.put(key, value);
-		pruner.prune(key, this);
+		pruner.prune(key, this.descendingKeySet().iterator());
 		
 		return returnVal;
 	}
