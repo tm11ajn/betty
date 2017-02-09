@@ -44,9 +44,6 @@ public class EppsteinRunner {
 	public EppsteinRunner(ArrayList<TreeKeeper<Symbol>> exploredTrees) {		
 		this.exploredTrees = exploredTrees;
 	}
-
-	// memoisation here?
-
 	
 	public ArrayList<LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>>> runEppstein(WTA wta,
 			int k, TreeKeeper<Symbol> tree, State q) {
@@ -73,9 +70,7 @@ public class EppsteinRunner {
 
 			Path<Node<Symbol>> path =
 					graph.findShortestPath("u0", "v" + nOfStates);
-
-//			LinkedList<TreeKeeper<Symbol>> treeList =
-//					getKBestTreesForRule(graph, path, k, q, r);			
+		
 			LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> treeList =
 					getKBestTreesForRule(graph, path, k, q, r);
 
@@ -168,11 +163,6 @@ public class EppsteinRunner {
 	private LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> getKBestTreesForRule(
 			Graph<Node<Symbol>> graph, Path<Node<Symbol>> path,
 			int k, State q, Rule r) {
-//	private LinkedList<TreeKeeper<Symbol>> getKBestTreesForRule(
-//			Graph<Node<Symbol>> graph, Path<Node<Symbol>> path,
-//			int k, State q, Rule r) {
-
-//		LinkedList<TreeKeeper<Symbol>> treeList = new LinkedList<>();
 		
 //System.out.println(">>> Getting trees for rule " + r);
 		
@@ -192,39 +182,13 @@ public class EppsteinRunner {
 
 			pathWeight = pathWeight.add(r.getWeight());
 			
-////			Weight oldWeight = treeStateValTable.get(pathTree, q);
-//			Weight oldWeight = pathTree.getOptWeights().get(q);
-//
-//			if (oldWeight == null
-//					|| oldWeight.compareTo(pathWeight) == 1) {
-////				treeStateValTable.put(pathTree, q, pathWeight);
-//				pathTree.getOptWeights().put(q, pathWeight);
-//			}
-			
-//			TreeKeeper<Symbol> keeper = null;
 			TreeKeeper<Symbol> keeper = new TreeKeeper<>(pathTree); // Check if tree already in list and merge trees if that is the case?
-//			keeper.getOptWeights().put(q, pathWeight);
 			keeper.addWeight(q, pathWeight);
 			
 //			if (treeList.containsKey(pathTree)) {
 //				System.out.println("HÄR ÄR JAG IGEN");
 //			}
-			
-			/* New part*/
-//			if (treeList.containsKey(pathTree)) {
-//				keeper = treeList.get(pathTree);
-//				
-//				if (keeper.getWeight().compareTo(pathWeight) == 1) { // We do not use getWeight
-//					keeper.getOptWeights().put(q, pathWeight);
-//				}
-//				
-//			} else {
-//				keeper = new TreeKeeper<>(pathTree);
-//				keeper.getOptWeights().put(q, pathWeight);
-//			}
 
-//			treeList.add(pathTree);
-//			treeList.add(keeper);
 			treeList.put(pathTree, keeper);
 			counter++;
 
