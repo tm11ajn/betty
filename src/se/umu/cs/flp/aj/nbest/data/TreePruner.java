@@ -23,6 +23,8 @@ package se.umu.cs.flp.aj.nbest.data;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.TreeMap;
+
 import se.umu.cs.flp.aj.wta.State;
 
 public class TreePruner<LabelType extends Comparable<LabelType>,V> 
@@ -39,7 +41,7 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 
 	@Override
 	public boolean prune(TreeKeeper<LabelType> insertedKey,
-			Iterator<TreeKeeper<LabelType>> descendingIterator) {
+			TreeMap<TreeKeeper<LabelType>, V> map) {
 		
 		boolean pruned = false;
 		
@@ -55,16 +57,17 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 			optimalStatesUsage.put(q, qUsage + 1);
 
 			if (qUsage + 1 > N) {
-				TreeKeeper<LabelType> removeTree = removeKey(insertedKey, q, descendingIterator);
+				TreeKeeper<LabelType> removeTree = getRemoveKey(insertedKey, q, map);
 //System.out.println("Removing " + removeTree + " from treeQueue " + "because of state " + q + " which has usage " + qUsage + 1);
 				
-				LinkedHashMap<State, State> optStatesRemove = removeTree.getOptimalStates(); // no null check needed since condition checked above
+				LinkedHashMap<State, State> optStatesRemove = removeTree.getOptimalStates();
 
 				for (State optRemove : optStatesRemove.keySet()) {
 					optimalStatesUsage.put(optRemove,
 							optimalStatesUsage.get(optRemove) - 1);
 				}
 
+				map.remove(removeTree);
 				pruned = true;
 			}
 		}
@@ -72,22 +75,20 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 		return pruned;
 	}
 	
-	private TreeKeeper<LabelType> removeKey(TreeKeeper<LabelType> tree, State q, 
-			Iterator<TreeKeeper<LabelType>> descendingIterator) {
+	private TreeKeeper<LabelType> getRemoveKey(TreeKeeper<LabelType> tree, State q, 
+			TreeMap<TreeKeeper<LabelType>, V> map) {
 		
 //System.out.println("IN GET REMOVE KEY");
 		
 		TreeKeeper<LabelType> removeKey = null;
+		Iterator<TreeKeeper<LabelType>> iterator = map.descendingKeySet().iterator();
 		
-		while (removeKey == null && descendingIterator.hasNext()) {
-			
-			TreeKeeper<LabelType> currentTree = descendingIterator.next();
-			
+		while (removeKey == null && iterator.hasNext()) {
+			TreeKeeper<LabelType> currentTree = iterator.next();
 //System.out.println("CURRENT TREE " + currentTree);
 			
 			if (currentTree.getOptimalStates().containsKey(q)) {
 				removeKey = currentTree;
-				descendingIterator.remove();
 			}
 		}
 		

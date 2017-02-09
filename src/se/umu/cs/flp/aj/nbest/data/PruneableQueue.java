@@ -38,8 +38,10 @@ public class PruneableQueue<K,V> extends TreeMap<K,V> {
 		
 //System.out.println("Putting " + key + "=" + value );
 		
+System.out.println("Queue size before pruning: " + this.size());
 		V returnVal = super.put(key, value);
-		pruner.prune(key, this.descendingKeySet().iterator());
+		pruner.prune(key, this);
+System.out.println("Queue size after pruning: " + this.size());
 		
 		return returnVal;
 	}
