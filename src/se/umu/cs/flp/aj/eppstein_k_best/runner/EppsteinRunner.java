@@ -120,7 +120,8 @@ public class EppsteinRunner {
 			for (TreeKeeper<Symbol> n : exploredTrees) {
 
 //				Weight w = treeStateValTable.get(n, currentState);
-				Weight w = n.getOptWeights().get(currentState);
+//				Weight w = n.getOptWeights().get(currentState);
+				Weight w = n.getWeight(currentState);
 
 				if (w == null) {
 					continue;
@@ -214,7 +215,8 @@ public class EppsteinRunner {
 			
 //			TreeKeeper<Symbol> keeper = null;
 			TreeKeeper<Symbol> keeper = new TreeKeeper<>(pathTree); // Check if tree already in list and merge trees if that is the case?
-			keeper.getOptWeights().put(q, pathWeight);
+//			keeper.getOptWeights().put(q, pathWeight);
+			keeper.addWeight(q, pathWeight);
 			
 //			if (treeList.containsKey(pathTree)) {
 //				System.out.println("HÄR ÄR JAG IGEN");

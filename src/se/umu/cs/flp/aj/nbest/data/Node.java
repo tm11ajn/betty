@@ -85,7 +85,6 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 
 	public void setParent(Node<LabelType> parent) {
 		this.parent = parent;
-//		validString = false;
 	}
 
 	public Node<LabelType> getParent() {

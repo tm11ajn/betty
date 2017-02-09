@@ -1,32 +1,32 @@
 package se.umu.cs.flp.aj.nbest.data;
 
 import java.util.Comparator;
-import java.util.HashMap;
 
-import se.umu.cs.flp.aj.wta.State;
 import se.umu.cs.flp.aj.wta.Weight;
 
 public class TreeComparator<LabelType extends Comparable<LabelType>> 
 		implements Comparator<TreeKeeper<LabelType>> {
 	
-	private static HashMap<State, Weight> smallestCompletions;
+	//private static HashMap<State, Weight> smallestCompletions;
 	
-	public TreeComparator(HashMap<State, Weight> smallestCompletionWeights) {
-		smallestCompletions = smallestCompletionWeights;
-	}
+//	public TreeComparator(HashMap<State, Weight> smallestCompletionWeights) {
+//		smallestCompletions = smallestCompletionWeights;
+//	}
 
 	@Override
 	public int compare(TreeKeeper<LabelType> o1, TreeKeeper<LabelType> o2) {
 		
 		int result;
 		
-		State optState1 = o1.getOptimalStates().keySet().iterator().next();
-		State optState2 = o2.getOptimalStates().keySet().iterator().next();
+//		State optState1 = o1.getOptimalStates().keySet().iterator().next();
+//		State optState2 = o2.getOptimalStates().keySet().iterator().next();
 		
-		Weight weight1 = o1.getOptWeights().get(optState1).
-				add(smallestCompletions.get(optState1));
-		Weight weight2 = o2.getOptWeights().get(optState2).
-				add(smallestCompletions.get(optState2));
+//		Weight weight1 = o1.getOptWeights().get(optState1).
+//				add(TreeKeeper.smallestCompletions.get(optState1));
+//		Weight weight2 = o2.getOptWeights().get(optState2).
+//				add(TreeKeeper.smallestCompletions.get(optState2));
+		Weight weight1 = o1.getSmallestWeight();
+		Weight weight2 = o2.getSmallestWeight();
 		
 //		int weightComparison = o1.getWeight().compareTo(o2.getWeight());
 		int weightComparison = weight1.compareTo(weight2);
