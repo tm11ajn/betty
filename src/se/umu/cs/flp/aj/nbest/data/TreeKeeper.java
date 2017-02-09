@@ -1,3 +1,23 @@
+/*
+ * Copyright 2015 Anna Jonsson for the research group Foundations of Language
+ * Processing, Department of Computing Science, Umeå university
+ *
+ * This file is part of BestTrees.
+ *
+ * BestTrees is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BestTrees is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.umu.cs.flp.aj.nbest.data;
 
 import java.util.HashMap;
@@ -10,28 +30,18 @@ import se.umu.cs.flp.aj.wta.Weight;
 public class TreeKeeper<LabelType extends Comparable<LabelType>> 
 		implements Comparable<TreeKeeper<?>> {
 	
-	// Keep and update optimal states here instead of computing it outside the class?
-	// Can use TreeMap if we use a class containing a state and a weight 
-	
 	private static HashMap<State, Weight> smallestCompletions;
 	
 	private Node<LabelType> tree;
-//	private ArrayList<State> optimalStates;
-	
 	private LinkedHashMap<State,State> optimalStates;
 	private State optimalState;
-	
-	private HashMap<State, Weight> optWeights;
-//	private TreeMap<State, Weight> bestWeights; Continue. 
+	private HashMap<State, Weight> optWeights; 
 	private Weight smallestWeight;
 	
 	public TreeKeeper(Node<LabelType> tree) {
 		this.tree = tree;
-		this.optimalStates = null;
-		this.optimalState = null;
 		this.optWeights = new HashMap<>();
-//		this.bestWeights = new TreeMap<>();
-		this.smallestWeight = new Weight(Weight.INF); // or just set from outside?
+		this.smallestWeight = new Weight(Weight.INF);
 	}
 	
 	public static void init(HashMap<State, Weight> smallestCompletionWeights) {
@@ -45,18 +55,6 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 	public LinkedHashMap<State, State> getOptimalStates() {
 		return optimalStates;
 	}
-	
-//	public boolean addState(State s) {
-//		return optimalStates.add(s);
-//	}
-	
-//	public void setOptimalStates(LinkedHashMap<State, State> optimalStates) {
-//		this.optimalStates = optimalStates;
-//	}
-	
-//	public HashMap<State, Weight> getOptWeights() {
-//		return optWeights;
-//	}
 	
 	public Weight getWeight(State s) {
 		return optWeights.get(s);
@@ -82,7 +80,7 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		}
 	}
 	
-	public void addWeightsFrom(TreeKeeper<LabelType> t) { // USE INSTEAD OF MERGE
+	public void addWeightsFrom(TreeKeeper<LabelType> t) {
 		HashMap<State, Weight> map = t.optWeights;
 				
 		for (Entry<State, Weight> e : map.entrySet()) {
@@ -90,67 +88,33 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		}
 	}
 	
-//	public void getBestWeight() {
-//		return bestWeights.firstEntry();
-//	}
-	
 	public Weight getSmallestWeight() {
 		return smallestWeight;
 	}
 	
-//	private void setSmallestWeight(Weight weight) {
-//		this.smallestWeight = weight;
-//	}
-	
 	public Weight getDeltaWeight() {
 		return smallestWeight.add(smallestCompletions.get(optimalState)); 
 	}
-	
-//	public void getDataFrom(TreeKeeper<LabelType> t) {
-//		
-//		int comparison = this.smallestWeight.compareTo(t.smallestWeight);
-//		
-//		if (comparison == 1) {
-//			this.smallestWeight = t.smallestWeight;
-//			this.optimalStates = t.optimalStates;
-//		} else if (comparison == 0) {
-//			this.optimalStates.putAll(t.optimalStates);
-//		}
-//		
-//		for (Entry<State, Weight> e : t.optWeights.entrySet()) {
-//			
-//			if (this.optWeights.containsKey(e.getKey())) {				
-//				if (this.optWeights.get(e.getKey()).compareTo(e.getValue()) == 1) {
-//					this.optWeights.put(e.getKey(), e.getValue());
-//				}
-//			} else {
-//				this.optWeights.put(e.getKey(), e.getValue());
-//			}
-//		}
-//	}
 
 	@Override
-	public int compareTo(TreeKeeper<?> o) { // TODO compare to uses W^q also (means a reinstantiation of the weight field)
+	public int compareTo(TreeKeeper<?> o) { 		
+		int weightComparison = this.smallestWeight.compareTo(o.smallestWeight);
 		
-//		int weightComparison = this.smallestWeight.compareTo(o.smallestWeight);
-//		
-//		if (weightComparison == 0) {
-//			return this.tree.compareTo(o.tree);
-//		}
-//		
-//		return weightComparison;
+		if (weightComparison == 0) {
+			return this.tree.compareTo(o.tree);
+		}
 		
-		return this.tree.compareTo(o.tree);
+		return weightComparison;
 	}
 	
 	@Override
 	public int hashCode() {
-//		return this.tree.hashCode() + 3 * this.weight.hashCode();
+//		return this.tree.hashCode() + 3 * this.smallestWeight.hashCode();
 		return this.tree.hashCode();
 	}
 	
 	@Override
-	public String toString() { // TODO Make a tostring including the 
+	public String toString() { 
 		
 		String optStatesString = "";
 		
@@ -159,22 +123,15 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		}
 		
 		return tree.toString() + optStatesString + optWeights.toString();
-//		throw new RuntimeException("Don't use this toString");
-		// TODO Auto-generated method stub
-		//return super.toString();
 	}
 	
 	@Override
-	public boolean equals(Object obj) { // TODO fix according to compareTo
+	public boolean equals(Object obj) {
 		
 		if (!(obj instanceof TreeKeeper<?>)) {
 			return false;
 		}
 		
 		return this.compareTo((TreeKeeper<?>) obj) == 0;
-		
-		//throw new RuntimeException("Don't use this equals");
-		// TODO Auto-generated method stub
-		//return super.equals(obj);
 	}
 }

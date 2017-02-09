@@ -1,3 +1,23 @@
+/*
+ * Copyright 2015 Anna Jonsson for the research group Foundations of Language
+ * Processing, Department of Computing Science, Umeå university
+ *
+ * This file is part of BestTrees.
+ *
+ * BestTrees is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BestTrees is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.umu.cs.flp.aj.nbest.data;
 
 import java.util.HashMap;
@@ -24,9 +44,7 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 		
 		boolean pruned = false;
 		
-//		ArrayList<State> optStates = optimalStates.get(tree);
 		LinkedHashMap<State, State> optStates = insertedKey.getOptimalStates();
-		
 
 		for (State q : optStates.keySet()) {
 			int qUsage = 0;
@@ -40,12 +58,7 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 			if (qUsage + 1 > N) {
 				TreeKeeper<LabelType> removeTree = getRemoveKey(insertedKey, q, map);
 //System.out.println("Removing " + removeTree + " from treeQueue " + "because of state " + q + " which has usage " + qUsage + 1);
-
-//				if (removeKey < map.size()) { // Remove check?
-//				TreeKeeper<LabelType> removeTree = map.get(removeKey);
-
-//					ArrayList<State> optStatesRemove =
-//							optimalStates.get(removeTree);
+				
 				LinkedHashMap<State, State> optStatesRemove = removeTree.getOptimalStates();
 
 				for (State optRemove : optStatesRemove.keySet()) {
@@ -63,21 +76,6 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 	
 	private TreeKeeper<LabelType> getRemoveKey(TreeKeeper<LabelType> tree, State q, 
 			TreeMap<TreeKeeper<LabelType>, V> map) {
-
-//		int queueSize = map.size();
-//		while (removeIndex == queueSize && currentIndex > -1) {
-//			TreeKeeper<LabelType> currentTree = map.get(currentIndex);
-//			ArrayList<State> optStatesCurrent =
-//					optimalStates.get(currentTree);
-//
-//			if (optStatesCurrent.contains(q)) {
-//				removeIndex = currentIndex;
-//			}
-//
-//			currentIndex--;
-//		}
-//
-//		return removeIndex;
 		
 //System.out.println("IN GET REMOVE KEY");
 		

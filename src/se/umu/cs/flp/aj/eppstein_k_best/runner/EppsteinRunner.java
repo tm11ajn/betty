@@ -39,27 +39,18 @@ import se.umu.cs.flp.aj.wta.Weight;
 
 public class EppsteinRunner {
 
-//	private NestedMap<Node<Symbol>, State, Weight> treeStateValTable;
 	private ArrayList<TreeKeeper<Symbol>> exploredTrees;
 
-//	public EppsteinRunner(ArrayList<Node<Symbol>> exploredTrees,
-//			NestedMap<Node<Symbol>, State, Weight> treeStateValTable) {
 	public EppsteinRunner(ArrayList<TreeKeeper<Symbol>> exploredTrees) {		
 		this.exploredTrees = exploredTrees;
-//		this.treeStateValTable = treeStateValTable;
 	}
 
 	// memoisation here?
 
 	
-//	public ArrayList<LinkedList<TreeKeeper<Symbol>>> runEppstein(WTA wta,
-//			int k, TreeKeeper<Symbol> tree, State q) {
 	public ArrayList<LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>>> runEppstein(WTA wta,
 			int k, TreeKeeper<Symbol> tree, State q) {
 		
-
-//		ArrayList<LinkedList<TreeKeeper<Symbol>>> kBestTreesForEachQRule =
-//				new ArrayList<>();
 		ArrayList<LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>> kBestTreesForEachQRule =
 				new ArrayList<>();
 
@@ -118,9 +109,6 @@ public class EppsteinRunner {
 			State currentState = states.get(i-1);
 
 			for (TreeKeeper<Symbol> n : exploredTrees) {
-
-//				Weight w = treeStateValTable.get(n, currentState);
-//				Weight w = n.getOptWeights().get(currentState);
 				Weight w = n.getWeight(currentState);
 
 				if (w == null) {
