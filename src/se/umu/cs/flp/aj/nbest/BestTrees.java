@@ -1,6 +1,6 @@
 /*
  * Copyright 2017 Anna Jonsson for the research group Foundations of Language
- * Processing, Department of Computing Science, Umeå university
+ * Processing, Department of Computing Science, Umeï¿½ university
  *
  * This file is part of BestTrees.
  *
@@ -59,7 +59,7 @@ public class BestTrees {
 
 		// enqueue(K, Sigma_0)
 		enqueueRankZeroSymbols(wta, N);
-		
+
 //System.out.println("Queue after enqueing rank zero symbols: " + treeQueue);
 
 		// i <- 0
@@ -70,19 +70,16 @@ public class BestTrees {
 
 			// t <- dequeue(K)
 			TreeKeeper<Symbol> currentTree = treeQueue.pollFirstEntry().getKey();
-			
+
 //System.out.println("Current tree: " + currentTree);
 
 			// T <- T u {t}
 			exploredTrees.add(currentTree);
-			
+
 //System.out.println("Explored trees: " + exploredTrees);
 
-			// Get optimal state for current tree
-			State optimalState = currentTree.getOptimalStates().keySet().iterator().next();
-
 			// if M(t) = delta(t) then
-			if (optimalState.isFinal()) {
+			if (currentTree.getSmallestWeight().equals(currentTree.getDeltaWeight())) {
 
 				// output(t)
 				nBest.add(currentTree.getTree().toString() + " " +
@@ -95,7 +92,7 @@ public class BestTrees {
 
 			// prune(T, enqueue(K, expand(T, t)))
 			enqueueWithExpansionAndPruning(wta, N, currentTree);
-			
+
 //System.out.println("Queue after expansion and pruning: " + treeQueue);
 		}
 
@@ -118,14 +115,14 @@ public class BestTrees {
 				for (Rule r : rules) {
 					tree.addWeight(r.getResultingState(), r.getWeight());
 				}
-								
+
 				treeQueue.put(tree, null);
-				
+
 //System.out.println(treeQueue);
-				
+
 			}
 		}
-		
+
 //System.out.println("END enqueue rank zero symbols");
 	}
 
@@ -147,7 +144,7 @@ public class BestTrees {
 
 			LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> mergedTreeList = new LinkedHashMap<>();
 			State q = e.getKey();
-			
+
 			for (LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> treeList : e.getValue()) {
 				mergedTreeList = SortedListMerger.mergeTreeListsForState(treeList,
 						mergedTreeList, N, q);
@@ -160,7 +157,7 @@ public class BestTrees {
 		int nOfStatesInWTA = wta.getStates().size();
 
 		for (LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> currentList : nRuns.values()) {
-			mergedList = SortedListMerger.mergeTreeListsByDeltaWeights(currentList, mergedList, 
+			mergedList = SortedListMerger.mergeTreeListsByDeltaWeights(currentList, mergedList,
 					N*nOfStatesInWTA); // Unnecessary? Just insert them all into K and prune after each insertion?
 		}
 
@@ -168,6 +165,6 @@ public class BestTrees {
 			treeQueue.put(n, null);
 		}
 	}
-	
+
 
 }

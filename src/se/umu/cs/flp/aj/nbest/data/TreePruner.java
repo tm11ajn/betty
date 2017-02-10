@@ -1,6 +1,6 @@
 /*
  * Copyright 2015 Anna Jonsson for the research group Foundations of Language
- * Processing, Department of Computing Science, Umeå university
+ * Processing, Department of Computing Science, Umeï¿½ university
  *
  * This file is part of BestTrees.
  *
@@ -27,12 +27,12 @@ import java.util.TreeMap;
 
 import se.umu.cs.flp.aj.wta.State;
 
-public class TreePruner<LabelType extends Comparable<LabelType>,V> 
+public class TreePruner<LabelType extends Comparable<LabelType>,V>
 		implements Pruner<TreeKeeper<LabelType>,V> {
-	
+
 	private static HashMap<State, Integer> optimalStatesUsage;
 	private static int N;
-	
+
 	public TreePruner(int maxStateUsage) {
 		super();
 		optimalStatesUsage = new HashMap<>();
@@ -42,12 +42,18 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 	@Override
 	public boolean prune(TreeKeeper<LabelType> insertedKey,
 			TreeMap<TreeKeeper<LabelType>, V> map) {
-		
+
+//System.out.println("IN PRUNING");
+//System.out.println("Previously inserted tree: " + insertedKey);
+//System.out.println("Tree queue: " + map);
+//System.out.println("optimalStatesUsage=" + optimalStatesUsage);
+
 		boolean pruned = false;
-		
+
 		LinkedHashMap<State, State> optStates = insertedKey.getOptimalStates();
 
 		for (State q : optStates.keySet()) {
+
 			int qUsage = 0;
 
 			if (optimalStatesUsage.get(q) != null) {
@@ -55,11 +61,14 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 			}
 
 			optimalStatesUsage.put(q, qUsage + 1);
+		}
 
-			if (qUsage + 1 > N) {
+		for (State q : optStates.keySet()) {
+
+			if (optimalStatesUsage.get(q) > N) {
 				TreeKeeper<LabelType> removeTree = getRemoveKey(insertedKey, q, map);
 //System.out.println("Removing " + removeTree + " from treeQueue " + "because of state " + q + " which has usage " + qUsage + 1);
-				
+
 				LinkedHashMap<State, State> optStatesRemove = removeTree.getOptimalStates();
 
 				for (State optRemove : optStatesRemove.keySet()) {
@@ -71,28 +80,28 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 				pruned = true;
 			}
 		}
-		
+
 		return pruned;
 	}
-	
-	private TreeKeeper<LabelType> getRemoveKey(TreeKeeper<LabelType> tree, State q, 
+
+	private TreeKeeper<LabelType> getRemoveKey(TreeKeeper<LabelType> tree, State q,
 			TreeMap<TreeKeeper<LabelType>, V> map) {
-		
+
 //System.out.println("IN GET REMOVE KEY");
-		
+
 		TreeKeeper<LabelType> removeKey = null;
 		Iterator<TreeKeeper<LabelType>> iterator = map.descendingKeySet().iterator();
-		
+
 		while (removeKey == null && iterator.hasNext()) {
 			TreeKeeper<LabelType> currentTree = iterator.next();
 //System.out.println("CURRENT TREE " + currentTree);
-			
+
 			if (currentTree.getOptimalStates().containsKey(q)) {
 				removeKey = currentTree;
 			}
 		}
-		
+
 		return removeKey;
 	}
-	
+
 }
