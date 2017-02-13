@@ -1,0 +1,11 @@
+t[ql, qr] -> qf
+d[qf, qf] -> qf
+d[qn, qn] -> qf
+d[qf, qn] -> qf
+d[qn, qf] -> qf
+n[ql, qf, qr] -> qn
+n[ql, qn, qr] -> qn
+l -> ql # 0.5
+r -> qr # 0.5
+
+final qn, qf

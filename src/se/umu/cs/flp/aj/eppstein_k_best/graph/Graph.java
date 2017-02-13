@@ -29,12 +29,15 @@ package se.umu.cs.flp.aj.eppstein_k_best.graph;
 
 
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.PriorityQueue;
+import java.util.TreeMap;
 
 public class Graph<T> {
 	
 	private ArrayList<Vertex<T>> vertices;
-	private PriorityQueue<ST_Node<T>> pathsHeap;
+//	private PriorityQueue<ST_Node<T>> pathsHeap;
+	private TreeMap<ST_Node<T>, ST_Node<T>> pathsHeap;
 	private boolean ready;
 	private Vertex<T> sourceVertex;
 	private Vertex<T> endVertex;
@@ -178,7 +181,15 @@ public class Graph<T> {
 			return new Path<T>(); // Invalid path
 		}
 		
-		ST_Node<T> node = this.pathsHeap.poll();
+//		ST_Node<T> node = this.pathsHeap.poll();
+		
+		
+		ST_Node<T> node = null;
+		Entry<ST_Node<T>, ST_Node<T>> e = this.pathsHeap.pollFirstEntry();
+		
+		if (e != null) {
+			node = e.getKey();
+		}
 		
 		if (node == null) {
 			return new Path<T>(); // Invalid path
@@ -276,9 +287,12 @@ public class Graph<T> {
 	}
 	
 	private void buildSidetracksHeap() {
-		this.pathsHeap = new PriorityQueue<>(this.vertices.size());
+//		this.pathsHeap = new PriorityQueue<>(this.vertices.size());
+		this.pathsHeap = new TreeMap<>();
 		Path<T> empty = new Path<>();
-		this.pathsHeap.add(new ST_Node<T>(empty));
+//		this.pathsHeap.add(new ST_Node<T>(empty));
+		ST_Node<T> n = new ST_Node<>(empty);
+		this.pathsHeap.put(n, n);
 		addSidetracks(empty, this.sourceVertex);
 	}
 	
@@ -292,7 +306,9 @@ public class Graph<T> {
 				Path<T> p = new Path<>();
 				p.addAll(path);
 				p.add(e);
-				this.pathsHeap.add(new ST_Node<T>(p));
+//				this.pathsHeap.add(new ST_Node<T>(p));
+				ST_Node<T> n = new ST_Node<>(p);
+				this.pathsHeap.put(n, n);
 				
 				if (!e.getHead().equals(vertex)) {
 					addSidetracks(p, e.getHead());
