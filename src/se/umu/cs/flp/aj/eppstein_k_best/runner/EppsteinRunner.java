@@ -171,6 +171,7 @@ public class EppsteinRunner {
 		int counter = 0;
 
 		while (path.isValid() && counter < k) {
+			
 			Node<Symbol> pathTree = extractTreeFromPath(path, r);
 			Weight pathWeight = new Weight(path.getWeight());
 
@@ -191,7 +192,7 @@ public class EppsteinRunner {
 
 			treeList.put(pathTree, keeper);
 			counter++;
-
+			
 			path = graph.findNextShortestPath();
 		}
 

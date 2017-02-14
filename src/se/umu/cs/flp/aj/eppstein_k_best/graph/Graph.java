@@ -38,6 +38,7 @@ public class Graph<T> {
 	private ArrayList<Vertex<T>> vertices;
 //	private PriorityQueue<ST_Node<T>> pathsHeap;
 	private TreeMap<ST_Node<T>, ST_Node<T>> pathsHeap;
+//	private Heap<ST_Node<T>> pathsHeap;
 	private boolean ready;
 	private Vertex<T> sourceVertex;
 	private Vertex<T> endVertex;

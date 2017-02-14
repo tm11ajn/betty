@@ -135,9 +135,24 @@ public class BestTrees {
 
 		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees);
 
+
+//		long startTime;
+//		long endTime;
+//		long duration;
+//		
+//		startTime = System.nanoTime();
+		
+		
+		
 		for (State q : wta.getStates()) {
-			allRuns.put(q, eRunner.runEppstein(wta, N, tree, q));
+			allRuns.put(q, eRunner.runEppstein(wta, N, tree, q));		
 		}
+		
+		
+//		endTime = System.nanoTime();
+//		duration = (endTime - startTime)/1000000;
+//		System.out.println("Eppstein took " + duration + 
+//			" milliseconds for k=" + N);
 
 		for (Entry<State, ArrayList<LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>>>> e :
 			allRuns.entrySet()) {

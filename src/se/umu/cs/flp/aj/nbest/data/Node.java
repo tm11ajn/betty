@@ -37,7 +37,7 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 	private boolean validSize;
 	private boolean validHash;
 
-	private static int hashCollisionCounter = 0;
+//	private static int hashCollisionCounter = 0;
 
 
 	public Node(LabelType label) {
@@ -212,11 +212,11 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 				return true;
 			}
 		}
-		hashCollisionCounter++;
-System.out.println("Hashcode equal but not tree, hash collisions this far: " + hashCollisionCounter);
-System.out.println("... for trees: ");
-System.out.println(this.toString() + " hashcode=" + this.hashCode());
-System.out.println(n.toString() + " hashcode=" + this.hashCode());
+//		hashCollisionCounter++;
+//System.out.println("Hashcode equal but not tree, hash collisions this far: " + hashCollisionCounter);
+//System.out.println("... for trees: ");
+//System.out.println(this.toString() + " hashcode=" + this.hashCode());
+//System.out.println(n.toString() + " hashcode=" + this.hashCode());
 		return false;
 
 //		if (obj instanceof Node<?>) {
