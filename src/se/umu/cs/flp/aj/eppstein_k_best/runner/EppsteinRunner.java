@@ -55,8 +55,11 @@ public class EppsteinRunner {
 
 		ArrayList<Rule> rules = wta.getTransitionFunction().
 				getRulesByResultingState(q);
+		
+		int c = 0;
 
 		for (Rule r : rules) {
+System.out.println("bf rule " + c);
 
 			ArrayList<State> states = r.getStates();
 			int nOfStates = states.size();
@@ -75,6 +78,8 @@ public class EppsteinRunner {
 					getKBestTreesForRule(graph, path, k, q, r);
 
 			kBestTreesForEachQRule.add(treeList);
+			
+			c++;
 		}
 
 		return kBestTreesForEachQRule;
@@ -125,11 +130,13 @@ public class EppsteinRunner {
 				if (pu == null) {
 					pu = new PriorityQueue<>(nOfStates);
 					edgeMap.put("u" + (i - 1), resultingNodeType + i, pu);
+					System.out.println("Adding u to x edge");
 				}
 
 				if (pv == null) {
 					pv = new PriorityQueue<>(nOfStates);
 					edgeMap.put("v" + (i - 1), "v" + i, pv);
+					System.out.println("Adding v to v edge");
 				}
 
 				pu.add(new Run(n, w));

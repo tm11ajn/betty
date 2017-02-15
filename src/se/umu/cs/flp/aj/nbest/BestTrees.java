@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import se.umu.cs.flp.aj.eppstein_k_best.runner.EppsteinRunner;
+import se.umu.cs.flp.aj.eppstein_k_best.runner.EppsteinRunner2;
 import se.umu.cs.flp.aj.nbest.data.Node;
 import se.umu.cs.flp.aj.nbest.data.PruneableQueue;
 import se.umu.cs.flp.aj.nbest.data.TreeKeeper;
@@ -42,6 +43,8 @@ public class BestTrees {
 
 	private static ArrayList<TreeKeeper<Symbol>> exploredTrees; // T
 	private static PruneableQueue<TreeKeeper<Symbol>,Weight> treeQueue; // K
+	
+	private static int eppCounter = 0;
 
 	public static void setSmallestCompletions(
 			HashMap<State, Weight> smallestCompletions) {
@@ -134,6 +137,8 @@ public class BestTrees {
 		HashMap<State, LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>> nRuns = new HashMap<>();
 
 		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees);
+		
+		EppsteinRunner2 eRunner2 = new EppsteinRunner2(exploredTrees);
 
 
 //		long startTime;
@@ -148,6 +153,19 @@ public class BestTrees {
 			allRuns.put(q, eRunner.runEppstein(wta, N, tree, q));		
 		}
 		
+		
+		if (eppCounter > 100) {
+
+System.out.println("epCounter=" + eppCounter);
+
+		for (State q : wta.getStates()) {
+q = wta.getStates().get(1); // TODO REMOVE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			allRuns.put(q, eRunner2.runEppstein(wta, N, tree, q));		
+		}
+		
+		}
+		
+		eppCounter++;
 		
 //		endTime = System.nanoTime();
 //		duration = (endTime - startTime)/1000000;
