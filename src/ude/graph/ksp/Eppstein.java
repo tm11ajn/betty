@@ -1,10 +1,18 @@
-package edu.ufl.cise.bsmock.graph.ksp;
+package ude.graph.ksp;
 
-import edu.ufl.cise.bsmock.graph.*;
-import edu.ufl.cise.bsmock.graph.util.*;
-import se.umu.cs.flp.aj.wta.Weight;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
 
-import java.util.*;
+import ude.graph.Edge;
+import ude.graph.Graph;
+import ude.graph.Node;
+import ude.graph.util.Dijkstra;
+import ude.graph.util.DijkstraNode;
+import ude.graph.util.Path;
+import ude.graph.util.ShortestPathTree;
 
 /**
  * Eppstein's algorithm for computing the K shortest paths between two nodes in a graph.
@@ -27,8 +35,12 @@ import java.util.*;
  * Created by Brandon Smock on October 5, 2015.
  * Last updated by Brandon Smock on December 24, 2015.
  */
-public final class Eppstein<T> {
-	
+public class Eppstein {
+
+    public boolean isLoopless() {
+        return false;
+    }
+
     public Eppstein() {};
 
     /**
@@ -78,31 +90,31 @@ public final class Eppstein<T> {
      * @param K             the number of shortest paths to compute
      * @return              a list of the K shortest paths from s to t, ordered from shortest to longest
      */
-    public List<Path<T>> ksp(Graph<T> graph, String sourceLabel, String targetLabel, int K) {
+    public List<Path> ksp(Graph graph, String sourceLabel, String targetLabel, int K) {
         /* Compute the shortest path tree, T, for the target node (the shortest path from every node in the graph to the
             target) */
-        ShortestPathTree<T> tree;
+    	
+    	if (graph.getEdgeList().isEmpty()) {
+    		return new LinkedList<Path>();
+    	}
+    	
+        ShortestPathTree tree;
         try {
-        	Dijkstra<T> dijkstra = new Dijkstra<>();
-            tree = dijkstra.shortestPathTree(graph.transpose(), targetLabel);
-System.out.println("dijkstra's tree=" + tree);
+            tree = Dijkstra.shortestPathTree(graph.transpose(), targetLabel);
         } catch (Exception e) {
-System.err.println("CAUGHT EXCEPTION");
-            tree = new ShortestPathTree<>(targetLabel);
+            tree = new ShortestPathTree(targetLabel);
+            return new LinkedList<Path>();
         }
-        
-System.out.println("Graph: " + graph);
 
         // Compute the set of sidetrack edge costs
-//        HashMap<String,Double> sidetrackEdgeCostMap = computeSidetrackEdgeCosts(graph, tree);
-        HashMap<String,Weight> sidetrackEdgeCostMap = computeSidetrackEdgeCosts(graph, tree);
+        HashMap<String,Double> sidetrackEdgeCostMap = computeSidetrackEdgeCosts(graph, tree);
 
         /* Make indexes to give fast access to these heaps later */
         // Heap H_out(v) for every node v
-        HashMap<String,EppsteinHeap<T>> nodeHeaps = new HashMap<>(graph.numNodes());
-        HashMap<String,EppsteinHeap<T>> edgeHeaps = new HashMap<>(graph.numEdges());
+        HashMap<String,EppsteinHeap> nodeHeaps = new HashMap<String, EppsteinHeap>(graph.numNodes());
+        HashMap<String,EppsteinHeap> edgeHeaps = new HashMap<String, EppsteinHeap>(graph.numEdges());
         // Heap H_T(v) for every node v
-        HashMap<String,EppsteinHeap<T>> outrootHeaps = new HashMap<>();
+        HashMap<String,EppsteinHeap> outrootHeaps = new HashMap<String, EppsteinHeap>();
 
         /* COMPUTE EPPSTEIN HEAP, Part 1: Compute sub-heap H_out(v) for each node v.
             -- H_out(v) is a heap of all of the outgoing sidetrack edges of v. */
@@ -118,29 +130,28 @@ System.out.println("Graph: " + graph);
             H_T(v) bottom-up, starting with the root node of the tree, T.
             -- To facilitate bottom-up computation, reverse the edges of the shortest path tree so each node points to
             its children instead of its parent. */
-        Graph<T> reversedSPT = new Graph<>();
-        for (DijkstraNode<T> node: tree.getNodes().values()) {
-//            reversedSPT.addEdge(node.getParent(),node.getLabel(),graph.getNode(node.getLabel()).getNeighbors().get(node.getParent()));
-        	reversedSPT.addEdge(node.getParent(),node.getLabel(),graph.getNode(node.getLabel()).getNeighbors().get(node.getLabel()));
+        Graph reversedSPT = new Graph();
+        for (DijkstraNode node: tree.getNodes().values()) {
+            reversedSPT.addEdge(node.getParent(),node.getLabel(),graph.getNode(node.getLabel()).getNeighbors().get(node.getParent()));
         }
 
         /* Use a depth-first search from node T to perform the bottom-up computation, computing each H_T(v) given
             H_T(nextT(v)). */
         // Create the initial (empty) heap for the root node T to build from.
-        EppsteinArrayHeap<T> rootArrayHeap = new EppsteinArrayHeap<>();
+        EppsteinArrayHeap rootArrayHeap = new EppsteinArrayHeap();
         // Perform the DFS (recursively initiating additional depth-first searches for each child)
         recursiveOutrootHeaps(targetLabel, rootArrayHeap, nodeHeaps, outrootHeaps, reversedSPT);
 
         // Create a virtual/dummy heap that is the root of the overall Eppstein heap. It represents the best path from
         // the source node to the target node, which does not involve any sidetrack edges.
-        EppsteinHeap<T> hg = new EppsteinHeap<>(new Edge<T>(sourceLabel,sourceLabel,new Weight(0),null)); // TODO CHECK LABEL
+        EppsteinHeap hg = new EppsteinHeap(new Edge(sourceLabel,sourceLabel,0));
 
         // Initialize the containers for the candidate k shortest paths and the actual found k shortest paths
-        ArrayList<Path<T>> ksp = new ArrayList<>();
-        PriorityQueue<EppsteinPath<T>> pathPQ = new PriorityQueue<>();
+        ArrayList<Path> ksp = new ArrayList<Path>();
+        PriorityQueue<EppsteinPath> pathPQ = new PriorityQueue<EppsteinPath>();
 
         // Place root heap in priority queue
-        pathPQ.add(new EppsteinPath<T>(hg, -1, tree.getNodes().get(sourceLabel).getDist()));
+        pathPQ.add(new EppsteinPath(hg, -1, tree.getNodes().get(sourceLabel).getDist()));
 
         /* Pop k times from the priority queue to determine the k shortest paths */
         for (int i = 0; i < K && pathPQ.size() > 0; i++) {
@@ -148,10 +159,10 @@ System.out.println("Graph: " + graph);
                 1) Some shorter path, p, from s (source) to t (target)
                 2) A sidetrack edge which branches off of path p at node u, and points to node v
                 3) The shortest path in the shortest path tree from node v to t */
-            EppsteinPath<T> kpathImplicit = pathPQ.poll();
+            EppsteinPath kpathImplicit = pathPQ.poll();
 
             // Convert from the implicit path representation to the explicit path representation
-            Path<T> kpath = kpathImplicit.explicitPath(ksp, tree);
+            Path kpath = kpathImplicit.explicitPath(ksp, tree);
 
             // Add explicit path to the list of K shortest paths
             ksp.add(kpath);
@@ -180,15 +191,15 @@ System.out.println("Graph: " + graph);
      * @param tree      the shortest path tree, T, rooted at the target node, t
      * @return
      */
-    protected HashMap<String,Weight> computeSidetrackEdgeCosts(Graph<T> graph, ShortestPathTree<T> tree) {
-        HashMap<String, Weight> sidetrackEdgeCostMap = new HashMap<>();
-        List<Edge<T>> edgeList = graph.getEdgeList();
-        for (Edge<T> edge : edgeList) {
+    protected static HashMap<String,Double> computeSidetrackEdgeCosts(Graph graph, ShortestPathTree tree) {
+        HashMap<String, Double> sidetrackEdgeCostMap = new HashMap<String, Double>();
+        List<Edge> edgeList = graph.getEdgeList();
+        for (Edge edge : edgeList) {
             // Check to see if the target node is reachable from the outgoing vertex of the current edge,
             // and check to see if the current edge is a sidetrack edge. If so, calculate its sidetrack cost.
             String tp = tree.getParentOf(edge.getFromNode());
             if (tp == null || !tp.equals(edge.getToNode())) {
-                Weight sidetrackEdgeCost = edge.getWeight().add(tree.getNodes().get(edge.getToNode()).getDist()).subtract(tree.getNodes().get(edge.getFromNode()).getDist());
+                double sidetrackEdgeCost = edge.getWeight() + tree.getNodes().get(edge.getToNode()).getDist() - tree.getNodes().get(edge.getFromNode()).getDist();
                 sidetrackEdgeCostMap.put(edge.getFromNode() + "," + edge.getToNode(), sidetrackEdgeCost);
             }
         }
@@ -205,36 +216,33 @@ System.out.println("Graph: " + graph);
      * @param nodeHeaps             an index/hash table of heap H_out(v), for each node v in the graph
      * @param edgeHeaps             an index/hash table of heaps H_out(v), but indexed by sidetrack edge
      */
-    protected void computeOutHeap(String nodeLabel, Graph<T> graph, HashMap<String,Weight> sidetrackEdgeCostMap, HashMap<String,EppsteinHeap<T>> nodeHeaps, HashMap<String,EppsteinHeap<T>> edgeHeaps) {
-        Node<T> node = graph.getNode(nodeLabel);
+    protected static void computeOutHeap(String nodeLabel, Graph graph, HashMap<String,Double> sidetrackEdgeCostMap, HashMap<String,EppsteinHeap> nodeHeaps, HashMap<String,EppsteinHeap> edgeHeaps) {
+        Node node = graph.getNode(nodeLabel);
         // This list holds the 2nd through last sidetrack edges, ordered by sidetrack cost
-        ArrayList<Edge<T>> sidetrackEdges = new ArrayList<>();
-        Edge<T> bestSidetrack = null;
-        Weight minSidetrackCost = new Weight(Weight.INF);
+        ArrayList<Edge> sidetrackEdges = new ArrayList<Edge>();
+        Edge bestSidetrack = null;
+        double minSidetrackCost = Double.MAX_VALUE;
         // Iterate over the outgoing edges of v
         for (String neighbor : node.getAdjacencyList()) {
             String edgeLabel = nodeLabel+","+neighbor;
             // Check to see if the current edge is a sidetrack edge
             if (sidetrackEdgeCostMap.containsKey(edgeLabel)) {
-                Weight sidetrackEdgeCost = sidetrackEdgeCostMap.get(edgeLabel);
+                double sidetrackEdgeCost = sidetrackEdgeCostMap.get(edgeLabel);
                 // Check to see if the current sidetrack edge has the lowest cost discovered so far for node v
-                if (sidetrackEdgeCost.compareTo(minSidetrackCost) == -1) {
+                if (sidetrackEdgeCost < minSidetrackCost) {
                     // If there was a previously-known best sidetrack edge, add it to the list of non-best
                     // sidetrack edges
                     if (bestSidetrack != null) {
                         sidetrackEdges.add(bestSidetrack);
-System.out.println("HEEEAAJJJ");
                     }
                     // Set the new best (lowest cost) sidetrack edge to be the current one
-                    Edge<T> currentEdge = node.getNeighbors().get(neighbor);
-                    bestSidetrack = new Edge<T>(nodeLabel, neighbor, currentEdge.getWeight(), currentEdge.getLabel());
+                    bestSidetrack = new Edge(nodeLabel, neighbor, node.getNeighbors().get(neighbor));
                     minSidetrackCost = sidetrackEdgeCost;
                 }
                 // If current sidetrack edge is not the one with the lowest cost, add it to the list of non-best
                 // sidetrack edges
                 else {
-                	Edge<T> currentEdge = node.getNeighbors().get(neighbor);
-                    sidetrackEdges.add(new Edge<T>(nodeLabel, neighbor, currentEdge.getWeight(), currentEdge.getLabel()));
+                    sidetrackEdges.add(new Edge(nodeLabel, neighbor, node.getNeighbors().get(neighbor)));
                 }
             }
         }
@@ -242,14 +250,14 @@ System.out.println("HEEEAAJJJ");
         if (bestSidetrack != null) {
             // ...make a heap of the outgoing sidetrack edges of v, with the lowest-cost sidetrack edge put as the
             // root
-            EppsteinHeap<T> bestSidetrackHeap = new EppsteinHeap<>(bestSidetrack,sidetrackEdgeCostMap.get(bestSidetrack.getFromNode()+","+bestSidetrack.getToNode()));
+            EppsteinHeap bestSidetrackHeap = new EppsteinHeap(bestSidetrack,sidetrackEdgeCostMap.get(bestSidetrack.getFromNode()+","+bestSidetrack.getToNode()));
 
             // Make another heap (a binary heap) out of the rest of the sidetrack edges of v
-            EppsteinArrayHeap<T> arrayHeap = new EppsteinArrayHeap<>();
+            EppsteinArrayHeap arrayHeap = new EppsteinArrayHeap();
             if (sidetrackEdges.size() > 0) {
                 bestSidetrackHeap.setNumOtherSidetracks(bestSidetrackHeap.getNumOtherSidetracks()+1);
-                for (Edge<T> edge : sidetrackEdges) {
-                    EppsteinHeap<T> sidetrackHeap = new EppsteinHeap<>(edge,sidetrackEdgeCostMap.get(edge.getFromNode()+","+edge.getToNode()));
+                for (Edge edge : sidetrackEdges) {
+                    EppsteinHeap sidetrackHeap = new EppsteinHeap(edge,sidetrackEdgeCostMap.get(edge.getFromNode()+","+edge.getToNode()));
                     edgeHeaps.put(edge.getFromNode()+","+edge.getToNode(), sidetrackHeap);
                     arrayHeap.add(sidetrackHeap);
                 }
@@ -273,17 +281,17 @@ System.out.println("HEEEAAJJJ");
      * @param ksp               list of shortest paths found so far
      * @param pathPQ            priority queue of candidate paths
      */
-    protected void addExplicitChildrenToQueue(EppsteinPath<T> kpathImplicit, ArrayList<Path<T>> ksp, PriorityQueue<EppsteinPath<T>> pathPQ) {
-//        Weight kpathCost = kpathImplicit.getCost(); Not used?
-        for(EppsteinHeap<T> childHeap : kpathImplicit.getHeap().getChildren()) {
+    protected static void addExplicitChildrenToQueue(EppsteinPath kpathImplicit, ArrayList<Path> ksp, PriorityQueue<EppsteinPath> pathPQ) {
+        double kpathCost = kpathImplicit.getCost();
+        for(EppsteinHeap childHeap : kpathImplicit.getHeap().getChildren()) {
             // Get the index of the previous shorter path off of which this candidate sidetracks/branches
             int prefPath = kpathImplicit.getPrefPath();
 
             // Calculate the path cost of the new child/candidate
-            Weight candidateCost = ksp.get(prefPath).getTotalCost().add(childHeap.getSidetrackCost());
+            Double candidateCost = ksp.get(prefPath).getTotalCost() + childHeap.getSidetrackCost();
 
             // Add the child/candidate to the priority queue
-            EppsteinPath<T> candidate = new EppsteinPath<>(childHeap, prefPath, candidateCost);
+            EppsteinPath candidate = new EppsteinPath(childHeap, prefPath, candidateCost);
             pathPQ.add(candidate);
         }
     }
@@ -296,15 +304,15 @@ System.out.println("HEEEAAJJJ");
      * @param ksp               list of shortest paths found so far
      * @param pathPQ            priority queue of candidate paths
      */
-    protected void addCrossEdgeChildToQueue(HashMap<String,EppsteinHeap<T>> outrootHeaps, EppsteinPath<T> kpathImplicit, int prefPath, ArrayList<Path<T>> ksp, PriorityQueue<EppsteinPath<T>> pathPQ) {
+    protected static void addCrossEdgeChildToQueue(HashMap<String,EppsteinHeap> outrootHeaps, EppsteinPath kpathImplicit, int prefPath, ArrayList<Path> ksp, PriorityQueue<EppsteinPath> pathPQ) {
         if (outrootHeaps.containsKey(kpathImplicit.getHeap().getSidetrack().getToNode())) {
-            EppsteinHeap<T> childHeap = outrootHeaps.get(kpathImplicit.getHeap().getSidetrack().getToNode());
+            EppsteinHeap childHeap = outrootHeaps.get(kpathImplicit.getHeap().getSidetrack().getToNode());
 
             // Calculate the path cost of the new child/candidate
-            Weight candidateCost = ksp.get(prefPath).getTotalCost().add(childHeap.getSidetrackCost());
+            Double candidateCost = ksp.get(prefPath).getTotalCost() + childHeap.getSidetrackCost();
 
             // Add the child/candidate to the priority queue
-            EppsteinPath<T> candidate = new EppsteinPath<>(childHeap, prefPath, candidateCost);
+            EppsteinPath candidate = new EppsteinPath(childHeap, prefPath, candidateCost);
             pathPQ.add(candidate);
         }
     }
@@ -322,9 +330,9 @@ System.out.println("HEEEAAJJJ");
      * @param outrootHeaps      an index/hash table of heap H_T(v), for each node v in the graph
      * @param reversedSPT       the transpose graph, T', of the shortest path tree, T
      */
-    protected void recursiveOutrootHeaps(String nodeLabel, EppsteinArrayHeap<T> currentArrayHeap, HashMap<String,EppsteinHeap<T>> nodeHeaps, HashMap<String,EppsteinHeap<T>> outrootHeaps, Graph<T> reversedSPT) {
+    protected static void recursiveOutrootHeaps(String nodeLabel, EppsteinArrayHeap currentArrayHeap, HashMap<String,EppsteinHeap> nodeHeaps, HashMap<String,EppsteinHeap> outrootHeaps, Graph reversedSPT) {
         // Get H_out(v)
-        EppsteinHeap<T> sidetrackHeap = nodeHeaps.get(nodeLabel);
+        EppsteinHeap sidetrackHeap = nodeHeaps.get(nodeLabel);
 
         // Check to see if node v (nodeLabel) has a sidetrack edge
         if (sidetrackHeap != null) {
@@ -350,7 +358,7 @@ System.out.println("HEEEAAJJJ");
         // Convert from an array representation of the heap (EppsteinArrayHeap), which is convenient for accessing and
         // manipulating a binary heap, to a pointer representation (EppsteinHeap), which is consistent with the overall
         // heap, which is not strictly a binary heap since some nodes can have up to 4 children.
-        EppsteinHeap<T> currentHeap = currentArrayHeap.toEppsteinHeap2();
+        EppsteinHeap currentHeap = currentArrayHeap.toEppsteinHeap2();
 
         // If v has any children (so H_T(v) exists), index heap H_T(v) in a list of heaps for fast access later
         if (currentHeap != null) {
@@ -371,55 +379,55 @@ System.out.println("HEEEAAJJJ");
  * The children added to the root are sub-heaps whose elements are guaranteed to have a greater cost than the root
  * element of the heap.
  */
-class EppsteinHeap<T> {
-    private Edge<T> sidetrack; // the sidetrack edge (u,v) associated with the root of this heap or sub-heap
-    private Weight sidetrackCost = new Weight(0);
-    private ArrayList<EppsteinHeap<T>> children; // supports N children but Eppstein is limited to 4
+class EppsteinHeap {
+    private Edge sidetrack; // the sidetrack edge (u,v) associated with the root of this heap or sub-heap
+    private double sidetrackCost = 0.0;
+    private ArrayList<EppsteinHeap> children; // supports N children but Eppstein is limited to 4
     private int numOtherSidetracks = 0; // number of elements of H_out(u) - 1
 
-    public EppsteinHeap(Edge<T> sidetrack) {
+    public EppsteinHeap(Edge sidetrack) {
         this.sidetrack = sidetrack;
-        this.children = new ArrayList<>();
+        this.children = new ArrayList<EppsteinHeap>();
     }
 
-    public EppsteinHeap(Edge<T> sidetrack, Weight sidetrackCost) {
+    public EppsteinHeap(Edge sidetrack, Double sidetrackCost) {
         this.sidetrack = sidetrack;
         this.sidetrackCost = sidetrackCost;
-        this.children = new ArrayList<>();
+        this.children = new ArrayList<EppsteinHeap>();
     }
 
-    public EppsteinHeap(Edge<T> sidetrack, Weight sidetrackCost, ArrayList<EppsteinHeap<T>> children, int numOtherSidetracks) { //, boolean bestChild, int copy) {
+    public EppsteinHeap(Edge sidetrack, double sidetrackCost, ArrayList<EppsteinHeap> children, int numOtherSidetracks) { //, boolean bestChild, int copy) {
         this.sidetrack = sidetrack;
         this.sidetrackCost = sidetrackCost;
         this.children = children;
         this.numOtherSidetracks = numOtherSidetracks;
     }
 
-    public Edge<T> getSidetrack() {
+    public Edge getSidetrack() {
         return sidetrack;
     }
 
-    public void setSidetrack(Edge<T> sidetrack) {
+    public void setSidetrack(Edge sidetrack) {
         this.sidetrack = sidetrack;
     }
 
-    public Weight getSidetrackCost() {
+    public double getSidetrackCost() {
         return sidetrackCost;
     }
 
-    public void setSidetrackCost(Weight sidetrackCost) {
+    public void setSidetrackCost(double sidetrackCost) {
         this.sidetrackCost = sidetrackCost;
     }
 
-    public ArrayList<EppsteinHeap<T>> getChildren() {
+    public ArrayList<EppsteinHeap> getChildren() {
         return children;
     }
 
-    public void setChildren(ArrayList<EppsteinHeap<T>> children) {
+    public void setChildren(ArrayList<EppsteinHeap> children) {
         this.children = children;
     }
 
-    public void addChild(EppsteinHeap<T> child) {
+    public void addChild(EppsteinHeap child) {
         this.children.add(child);
     }
 
@@ -431,31 +439,31 @@ class EppsteinHeap<T> {
         this.numOtherSidetracks = numOtherSidetracks;
     }
 
-    public EppsteinHeap<T> clone() {
-        ArrayList<EppsteinHeap<T>> children_clone = new ArrayList<>(children.size());
-        for (EppsteinHeap<T> eh: children) {
+    public EppsteinHeap clone() {
+        ArrayList<EppsteinHeap> children_clone = new ArrayList<EppsteinHeap>(children.size());
+        for (EppsteinHeap eh: children) {
             children_clone.add(eh);
         }
 
-        return new EppsteinHeap<T>(sidetrack, sidetrackCost, children_clone, numOtherSidetracks);
+        return new EppsteinHeap(sidetrack, sidetrackCost, children_clone, numOtherSidetracks);
     }
 }
 
 /**
  * An array representation of a binary heap with additional functions specialized for implementing Eppstein's algorithm.
  */
-class EppsteinArrayHeap<T> {
-    private ArrayList<EppsteinHeap<T>> arrayHeap;
+class EppsteinArrayHeap {
+    private ArrayList<EppsteinHeap> arrayHeap;
 
     public EppsteinArrayHeap() {
-        arrayHeap = new ArrayList<>(0);
+        arrayHeap = new ArrayList<EppsteinHeap>(0);
     }
 
-    public ArrayList<EppsteinHeap<T>> getArrayHeap() {
+    public ArrayList<EppsteinHeap> getArrayHeap() {
         return arrayHeap;
     }
 
-    public void setArrayHeap(ArrayList<EppsteinHeap<T>> arrayHeap) {
+    public void setArrayHeap(ArrayList<EppsteinHeap> arrayHeap) {
         this.arrayHeap = arrayHeap;
     }
 
@@ -463,17 +471,17 @@ class EppsteinArrayHeap<T> {
         return (i-1)/2;
     }
 
-    public void add(EppsteinHeap<T> h) {
+    public void add(EppsteinHeap h) {
         arrayHeap.add(h);
         bubbleUp(arrayHeap.size()-1);
     }
 
-    public void addOutroot(EppsteinHeap<T> h) {
+    public void addOutroot(EppsteinHeap h) {
         int current = arrayHeap.size();
 
         while (current > 0) {
             int parent = getParentIndex(current);
-            EppsteinHeap<T> newHeap = arrayHeap.get(parent).clone();
+            EppsteinHeap newHeap = arrayHeap.get(parent).clone();
             arrayHeap.set(parent,newHeap);
             current = parent;
         }
@@ -486,10 +494,10 @@ class EppsteinArrayHeap<T> {
             return;
 
         int parent = getParentIndex(current);
-        if (arrayHeap.get(current).getSidetrackCost().compareTo(arrayHeap.get(parent).getSidetrackCost()) > -1)
+        if (arrayHeap.get(current).getSidetrackCost() >= arrayHeap.get(parent).getSidetrackCost())
             return;
 
-        EppsteinHeap<T> temp = arrayHeap.get(current);
+        EppsteinHeap temp = arrayHeap.get(current);
         arrayHeap.set(current, arrayHeap.get(parent));
         arrayHeap.set(parent, temp);
         bubbleUp(parent);
@@ -497,14 +505,14 @@ class EppsteinArrayHeap<T> {
 
     // Convert from an array representation of a binary heap to a pointer representation of a binary heap, which can fit
     // consistently within an overall N-ary heap
-    public EppsteinHeap<T> toEppsteinHeap() {
-//        int heapsize = arrayHeap.size();
+    public EppsteinHeap toEppsteinHeap() {
+        int heapsize = arrayHeap.size();
         if (arrayHeap.size() == 0)
             return null;
 
-        EppsteinHeap<T> eh = arrayHeap.get(0);
+        EppsteinHeap eh = arrayHeap.get(0);
         for (int i = 1; i < arrayHeap.size(); i++) {
-            EppsteinHeap<T> h = arrayHeap.get(i);
+            EppsteinHeap h = arrayHeap.get(i);
             arrayHeap.get(getParentIndex(i)).addChild(h);
         }
 
@@ -513,13 +521,13 @@ class EppsteinArrayHeap<T> {
 
     // Convert from an array representation of a binary heap to a pointer representation of a binary heap, which can fit
     // consistently within an overall non-binary heap.
-    public EppsteinHeap<T> toEppsteinHeap2() {
+    public EppsteinHeap toEppsteinHeap2() {
         int current = arrayHeap.size()-1;
         if (current == -1)
             return null;
 
         while (current >= 0) {
-            EppsteinHeap<T> childHeap = arrayHeap.get(current);
+            EppsteinHeap childHeap = arrayHeap.get(current);
             while (childHeap.getChildren().size() > childHeap.getNumOtherSidetracks()) {
                 childHeap.getChildren().remove(childHeap.getChildren().size()-1);
             }
@@ -544,9 +552,9 @@ class EppsteinArrayHeap<T> {
         return arrayHeap.get(0);
     }
 
-    public EppsteinArrayHeap<T> clone() {
-        EppsteinArrayHeap<T> clonedArrayHeap = new EppsteinArrayHeap<>();
-        for (EppsteinHeap<T> heap: arrayHeap) {
+    public EppsteinArrayHeap clone() {
+        EppsteinArrayHeap clonedArrayHeap = new EppsteinArrayHeap();
+        for (EppsteinHeap heap: arrayHeap) {
             clonedArrayHeap.add(heap);
         }
 
@@ -558,12 +566,12 @@ class EppsteinArrayHeap<T> {
  * Data structure for representing a source-target path implicitly inside the priority queue of candidate k shortest
  * paths during the execution of Eppstein's algorithm.
  */
-class EppsteinPath<T> implements Comparable<EppsteinPath<T>> {
-    EppsteinHeap<T> heap; // pointer to the heap node and last sidetrack edge in this candidate path
+class EppsteinPath implements Comparable<EppsteinPath> {
+    EppsteinHeap heap; // pointer to the heap node and last sidetrack edge in this candidate path
     int prefPath; // index of the shorter path that this path sidetracks from
-    Weight cost; // the total cost of the path
+    Double cost; // the total cost of the path
 
-    public EppsteinPath(EppsteinHeap<T> heap, int prefPath, Weight cost) {
+    public EppsteinPath(EppsteinHeap heap, int prefPath, Double cost) {
         this.heap = heap;
         this.prefPath = prefPath;
         this.cost = cost;
@@ -577,19 +585,19 @@ class EppsteinPath<T> implements Comparable<EppsteinPath<T>> {
         this.prefPath = prefPath;
     }
 
-    public EppsteinHeap<T> getHeap() {
+    public EppsteinHeap getHeap() {
         return heap;
     }
 
-    public void setHeap(EppsteinHeap<T> heap) {
+    public void setHeap(EppsteinHeap heap) {
         this.heap = heap;
     }
 
-    public Weight getCost() {
+    public Double getCost() {
         return cost;
     }
 
-    public void setCost(Weight cost) {
+    public void setCost(Double cost) {
         this.cost = cost;
     }
 
@@ -598,24 +606,24 @@ class EppsteinPath<T> implements Comparable<EppsteinPath<T>> {
     // 1) the path from node s (source) to node u in the parent path
     // 2) the sidetrack edge (u,v)
     // 3) the shortest path (in the shortest path tree) from node v to node t (target)
-    public Path<T> explicitPath(List<Path<T>> ksp, ShortestPathTree<T> tree) {
-        Path<T> explicitPath = new Path<>();
+    public Path explicitPath(List<Path> ksp, ShortestPathTree tree) {
+        Path explicitPath = new Path();
 
         // If path is not the shortest path in the graph...
         if (prefPath >= 0) {
             // Get the explicit representation of the shorter parent path that this path sidetracks from
-            Path<T> explicitPrefPath = ksp.get(prefPath);
+            Path explicitPrefPath = ksp.get(prefPath);
 
             // 1a) Identify the s-u portion of the path
             // Identify and add the segment of the parent path up until the point where the current path sidetracks off
             // of it.
             // In other words, if (u,v) is the sidetrack edge of the current path off of the parent path, look for the
             // last instance of node u in the parent path.
-            LinkedList<Edge<T>> edges = explicitPrefPath.getEdges();
+            LinkedList<Edge> edges = explicitPrefPath.getEdges();
             int lastEdgeNum = -1;
-            Edge<T> heapSidetrack = heap.getSidetrack();
+            Edge heapSidetrack = heap.getSidetrack();
             for (int i = edges.size()-1; i >= 0; i--) {
-                Edge<T> currentEdge = edges.get(i);
+                Edge currentEdge = edges.get(i);
                 if (currentEdge.getToNode().equals(heapSidetrack.getFromNode())) {
                     lastEdgeNum = i;
                     break;
@@ -624,7 +632,7 @@ class EppsteinPath<T> implements Comparable<EppsteinPath<T>> {
 
             // 1b) Add the s-u portion of the path
             // Copy the explicit parent path up to the identified point where the current/child path sidetracks
-            explicitPath = new Path<>();
+            explicitPath = new Path();
             for (int i = 0; i <= lastEdgeNum; i++) {
                 explicitPath.add(edges.get(i));
             }
@@ -640,20 +648,22 @@ class EppsteinPath<T> implements Comparable<EppsteinPath<T>> {
         String current = heap.getSidetrack().getToNode();
         while (!current.equals(tree.getRoot())) {
             String next = tree.getParentOf(current);
-            Weight w1 = tree.getNodes().get(current).getDist();
-            Weight w2 = tree.getNodes().get(next).getDist();
-            Weight edgeWeight = w1.subtract(w2);
-            explicitPath.add(new Edge<T>(current, next, edgeWeight, heap.getSidetrack().getLabel())); // CHECK if label corrext
+            Double edgeWeight = tree.getNodes().get(current).getDist() - tree.getNodes().get(next).getDist();
+            explicitPath.add(new Edge(current, next, edgeWeight));
             current = next;
         }
 
         return explicitPath;
     }
 
-    public int compareTo(EppsteinPath<T> comparedNode) {
-        Weight cost1 = this.cost;
-        Weight cost2 = comparedNode.getCost();
-        return cost1.compareTo(cost2);
+    public int compareTo(EppsteinPath comparedNode) {
+        double cost1 = this.cost;
+        double cost2 = comparedNode.getCost();
+        if (cost1 == cost2)
+            return 0;
+        if (cost1 > cost2)
+            return 1;
+        return -1;
     }
 
 }
