@@ -214,12 +214,22 @@ System.out.println("mergedlist: " + mergedList);
 
 		for (TreeKeeper<Symbol> n : mergedList.values()) {
 System.out.println("här: " + n);
-			Weight i = treeQueue.put(n, n.getSmallestWeight());
-System.out.println(i);
-System.out.println("treeQueue: " + treeQueue);
+			Weight i = treeQueue.put(n, new Weight(1));
+			i = treeQueue.put(n, null);
+System.out.println(i + ", hashcode for tree: " + n.hashCode() + " tree: " + n);
+System.out.println("treeQueue: " + treeQueue + "isEmpty=" + treeQueue.isEmpty());
 
 		}
-System.out.println("treeQueue: " + treeQueue);
+System.out.println("treeQueue: " + treeQueue + "isEmpty=" + treeQueue.isEmpty());
+
+
+
+if (!treeQueue.isEmpty()) {
+TreeKeeper<Symbol> k = treeQueue.firstKey();
+System.out.println("hashcode for already in: " + k.hashCode());
+}
+
+
 	}
 
 

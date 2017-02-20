@@ -219,9 +219,11 @@ System.out.println("path " + i + " = " + kpath + ", edges = " + kpath.getEdges()
             	Weight edgeWeight = edge.getWeight();
             	Weight targetWeight = tree.getNodes().get(edge.getToNode()).getDist();
             	Weight sourceWeight = tree.getNodes().get(edge.getFromNode()).getDist();
-                Weight sidetrackEdgeCost = edgeWeight.add(targetWeight).subtract(sourceWeight);
-                sidetrackEdgeCostMap.put(edge.getFromNode() + "," + edge.getToNode(), sidetrackEdgeCost);
-System.out.println("Putting " + edge.getFromNode() + "," + edge.getToNode() + " and " + sidetrackEdgeCost + "in sidetrackedgecostmap");
+				Weight diff = targetWeight.subtract(sourceWeight);
+System.out.println("edgeweight=" + edgeWeight + ", targetweight=" + targetWeight + ", sourceweight=" + sourceWeight + ", diff=" + diff);
+                Weight sidetrackEdgeCost = edgeWeight.add(diff);
+                sidetrackEdgeCostMap.put(edge.getFromNode() + "," + edge.getToNode() + "," + edge.getLabel(), sidetrackEdgeCost);
+System.out.println("Putting " + edge.getFromNode() + "," + edge.getToNode() + "," + edge.getLabel() + " and " + sidetrackEdgeCost + "in sidetrackedgecostmap");
             }
         }
 
@@ -245,7 +247,7 @@ System.out.println("Putting " + edge.getFromNode() + "," + edge.getToNode() + " 
         Weight minSidetrackCost = new Weight(Weight.INF);
         // Iterate over the outgoing edges of v
         for (String neighbor : node.getAdjacencyList()) {
-            String edgeLabel = nodeLabel+","+neighbor;
+            String edgeLabel = nodeLabel+","+neighbor+","+node.getNeighbors().get(neighbor).getLabel();
             // Check to see if the current edge is a sidetrack edge
             if (sidetrackEdgeCostMap.containsKey(edgeLabel)) {
                 Weight sidetrackEdgeCost = sidetrackEdgeCostMap.get(edgeLabel);
@@ -261,12 +263,14 @@ System.out.println("HEEEAAJJJ");
                     Edge<T> currentEdge = node.getNeighbors().get(neighbor);
                     bestSidetrack = new Edge<T>(nodeLabel, neighbor, currentEdge.getWeight(), currentEdge.getLabel());
                     minSidetrackCost = sidetrackEdgeCost;
+                    System.out.println("The edge " +  currentEdge + " IS the sidetrack with lowest cost=" + sidetrackEdgeCost + ", (previously, it was " + bestSidetrack + " with cost " + minSidetrackCost + ")");
                 }
                 // If current sidetrack edge is not the one with the lowest cost, add it to the list of non-best
                 // sidetrack edges
                 else {
                 	Edge<T> currentEdge = node.getNeighbors().get(neighbor);
                     sidetrackEdges.add(new Edge<T>(nodeLabel, neighbor, currentEdge.getWeight(), currentEdge.getLabel()));
+System.out.println("The edge " +  currentEdge + " is not the sidetrack with lowest cost=" + sidetrackEdgeCost + ", ( it is " + bestSidetrack + " with cost " + minSidetrackCost + ")");
                 }
             }
         }
@@ -274,15 +278,15 @@ System.out.println("HEEEAAJJJ");
         if (bestSidetrack != null) {
             // ...make a heap of the outgoing sidetrack edges of v, with the lowest-cost sidetrack edge put as the
             // root
-            EppsteinHeap<T> bestSidetrackHeap = new EppsteinHeap<>(bestSidetrack,sidetrackEdgeCostMap.get(bestSidetrack.getFromNode()+","+bestSidetrack.getToNode()));
+            EppsteinHeap<T> bestSidetrackHeap = new EppsteinHeap<>(bestSidetrack,sidetrackEdgeCostMap.get(bestSidetrack.getFromNode()+","+bestSidetrack.getToNode()+","+bestSidetrack.getLabel()));
 
             // Make another heap (a binary heap) out of the rest of the sidetrack edges of v
             EppsteinArrayHeap<T> arrayHeap = new EppsteinArrayHeap<>();
             if (sidetrackEdges.size() > 0) {
                 bestSidetrackHeap.setNumOtherSidetracks(bestSidetrackHeap.getNumOtherSidetracks()+1);
                 for (Edge<T> edge : sidetrackEdges) {
-                    EppsteinHeap<T> sidetrackHeap = new EppsteinHeap<>(edge,sidetrackEdgeCostMap.get(edge.getFromNode()+","+edge.getToNode()));
-                    edgeHeaps.put(edge.getFromNode()+","+edge.getToNode(), sidetrackHeap);
+                    EppsteinHeap<T> sidetrackHeap = new EppsteinHeap<>(edge,sidetrackEdgeCostMap.get(edge.getFromNode()+","+edge.getToNode() + "," + edge.getLabel()));
+                    edgeHeaps.put(edge.getFromNode()+","+edge.getToNode()+","+edge.getLabel(), sidetrackHeap);
                     arrayHeap.add(sidetrackHeap);
                 }
 
@@ -294,7 +298,7 @@ System.out.println("HEEEAAJJJ");
             // Index H_out(v) by node v, for easy access later
             nodeHeaps.put(nodeLabel, bestSidetrackHeap);
             // Index H_out(v) by its lowest cost sidetrack edge, for easy access later
-            edgeHeaps.put(bestSidetrack.getFromNode()+","+bestSidetrack.getToNode(), bestSidetrackHeap);
+            edgeHeaps.put(bestSidetrack.getFromNode()+","+bestSidetrack.getToNode()+","+bestSidetrack.getLabel(), bestSidetrackHeap);
         }
     }
 

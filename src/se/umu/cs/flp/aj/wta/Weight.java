@@ -72,7 +72,7 @@ public class Weight implements Comparable<Weight> {
 		
 		if ((value == INF && w.value == INF) || 
 				(value == NINF && w.value == NINF)) {
-			return null;
+			return new Weight(0);
 		}
 		
 		if (value == INF || w.value == NINF) {

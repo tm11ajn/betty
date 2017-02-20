@@ -33,8 +33,7 @@ public class EppsteinRunner2 {
 		ArrayList<LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>> kBestTreesForEachQRule =
 				new ArrayList<>();
 
-		Graph<Node<Symbol>> graph = new Graph<>();
-		Eppstein<Node<Symbol>> epp = new Eppstein<>();
+		
 
 		ArrayList<Rule> rules = wta.getTransitionFunction().
 				getRulesByResultingState(q);
@@ -43,11 +42,14 @@ public class EppsteinRunner2 {
 
 		for (Rule r : rules) {
 			
+			Graph<Node<Symbol>> graph = new Graph<>();
+			Eppstein<Node<Symbol>> epp = new Eppstein<>();
+			
 //System.out.println("bf rule " + c);
 			
 			ArrayList<State> states = r.getStates();
 			int nOfStates = states.size();
-
+System.out.println("Current rule: " + r + "(state: " + q + ")");
 			addVertices(graph, nOfStates);
 
 //			NestedMap<String, String, PriorityQueue<Run>> edgeMap =
@@ -72,7 +74,7 @@ public class EppsteinRunner2 {
 				Weight w = path.getTotalCost();
 				w = w.add(r.getWeight());
 				keeper.addWeight(q, w);
-				treeList.put(node, keeper);
+				treeList.put(keeper.getTree(), keeper);
 System.out.println("putting to treelist: " + keeper);
 			}
 			
@@ -111,6 +113,7 @@ System.out.println("putting to treelist: " + keeper);
 		for (int i = 1; i < nOfStates + 1; i++) {
 			State currentState = states.get(i-1);
 
+System.out.println("Explored trees before graph making: " + exploredTrees);
 			for (TreeKeeper<Symbol> n : exploredTrees) {
 				Weight w = n.getWeight(currentState);
 
@@ -146,7 +149,7 @@ System.out.println("putting to treelist: " + keeper);
 				pv.add(new Run(n, w));
 			}
 		}
-
+System.out.println("edgeMap=" + edgeMap);
 		return edgeMap;
 	}
 
@@ -166,7 +169,8 @@ System.out.println("putting to treelist: " + keeper);
 					Run run = p.poll();
 //					graph.createEdge(vertex1, vertex2, run.getTree().getTree(),
 //							Double.parseDouble(run.getWeight().toString()));
-					graph.addEdge(vertex1, vertex2, run.getWeight(), tree.getTree());
+					graph.addEdge(vertex1, vertex2, run.getWeight(), run.getTree().getTree());
+System.out.println("Adding to Eppstein graph: " + vertex1 + ":" + vertex2 + ":" + run.getWeight() + ":" + run.getTree().getTree() );
 					counter++;
 				}
 			}

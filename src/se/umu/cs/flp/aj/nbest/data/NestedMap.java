@@ -21,6 +21,7 @@
 package se.umu.cs.flp.aj.nbest.data;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class NestedMap<KeyType0, KeyType1, ValueType> {
@@ -71,6 +72,23 @@ public class NestedMap<KeyType0, KeyType1, ValueType> {
 	
 	public Set<KeyType0> keySet() {
 		return map.keySet();
+	}
+	
+	@Override
+	public String toString() {
+		
+		String s = "";
+		
+		for (Entry<KeyType0, HashMap<KeyType1, ValueType>> i : map.entrySet()) {
+			
+			for (Entry<KeyType1, ValueType> j : i.getValue().entrySet()) {
+				s.concat(j.toString());
+			}
+			
+			s.concat("\n");
+		}
+		
+		return s;
 	}
 
 }
