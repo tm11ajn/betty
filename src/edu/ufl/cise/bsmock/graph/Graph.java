@@ -174,7 +174,8 @@ public class Graph<T> {
         Iterator<String> it = nodes.keySet().iterator();
         while (it.hasNext()) {
             String nodeLabel = it.next();
-            graphStringB.append(nodeLabel.toString());
+//            graphStringB.append(nodeLabel.toString());
+            graphStringB.append(nodeLabel);
             graphStringB.append(": {");
             Node<T> node = nodes.get(nodeLabel);
             Set<String> adjacencyList = node.getAdjacencyList();

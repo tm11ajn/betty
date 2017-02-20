@@ -22,10 +22,11 @@ import ude.graph.util.Path;
 
 public class EppsteinRunner3 {
 	private ArrayList<TreeKeeper<Symbol>> exploredTrees;
-	private HashMap<String,Node<Symbol>> treeMapping = new HashMap<>();
+	private HashMap<String,Node<Symbol>> treeMapping;
 
 	public EppsteinRunner3(ArrayList<TreeKeeper<Symbol>> exploredTrees) {		
 		this.exploredTrees = exploredTrees;
+		this.treeMapping = new HashMap<>();
 	}
 	
 	public ArrayList<LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>>> runEppstein(WTA wta,
@@ -44,7 +45,7 @@ public class EppsteinRunner3 {
 
 		for (Rule r : rules) {
 			
-System.out.println("bf rule " + c);
+//System.out.println("bf rule " + c);
 			
 			ArrayList<State> states = r.getStates();
 			int nOfStates = states.size();
@@ -58,7 +59,7 @@ System.out.println("bf rule " + c);
 			
 			addKSmallestEdgesToGraph(graph, k, edgeMap, tree);
 			
-System.out.println("Graph before ksping: " + graph);
+//System.out.println("Graph before ksping: " + graph);
 
 //			Path<Node<Symbol>> path =
 //					graph.findShortestPath("u0", "v" + nOfStates);
@@ -131,13 +132,13 @@ System.out.println("Graph before ksping: " + graph);
 				if (pu == null) {
 					pu = new PriorityQueue<>(nOfStates);
 					edgeMap.put("u" + (i - 1), resultingNodeType + i, pu);
-System.out.println("Adding u to x edge");
+//System.out.println("Adding u to x edge");
 				}
 
 				if (pv == null) {
 					pv = new PriorityQueue<>(nOfStates);
 					edgeMap.put("v" + (i - 1), "v" + i, pv);
-System.out.println("Adding v to v edge");
+//System.out.println("Adding v to v edge");
 				}
 
 				pu.add(new Run(n, w));
@@ -160,12 +161,15 @@ System.out.println("Adding v to v edge");
 				int counter = 0;
 
 				while (!p.isEmpty() && counter < k) {
-System.out.println("Adding");
+//System.out.println("Adding");
 					Run run = p.poll();
 //					graph.createEdge(vertex1, vertex2, run.getTree().getTree(),
 //							Double.parseDouble(run.getWeight().toString()));
 					graph.addEdge(vertex1, vertex2, Double.valueOf(run.getWeight().toString()));
-					treeMapping.put(vertex1 + "," + vertex2, tree.getTree());
+//					treeMapping.put(vertex1 + "," + vertex2, tree.getTree());
+					treeMapping.put(vertex1 + "," + vertex2, run.getTree().getTree());
+					
+System.out.println("PUTTING " + vertex1 + "," + vertex2 + " in treeMapping");
 					counter++;
 				}
 			}

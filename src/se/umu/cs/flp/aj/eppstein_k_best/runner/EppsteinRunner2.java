@@ -43,7 +43,7 @@ public class EppsteinRunner2 {
 
 		for (Rule r : rules) {
 			
-System.out.println("bf rule " + c);
+//System.out.println("bf rule " + c);
 			
 			ArrayList<State> states = r.getStates();
 			int nOfStates = states.size();
@@ -57,7 +57,7 @@ System.out.println("bf rule " + c);
 			
 			addKSmallestEdgesToGraph(graph, k, edgeMap, tree);
 			
-System.out.println("Graph before ksping: " + graph);
+//System.out.println("Graph before ksping: " + graph);
 
 //			Path<Node<Symbol>> path =
 //					graph.findShortestPath("u0", "v" + nOfStates);
@@ -72,7 +72,11 @@ System.out.println("Graph before ksping: " + graph);
 				Weight w = path.getTotalCost();
 				w = w.add(r.getWeight());
 				keeper.addWeight(q, w);
+				treeList.put(node, keeper);
+System.out.println("putting to treelist: " + keeper);
 			}
+			
+			
 		
 //			LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> treeList =
 //					getKBestTreesForRule(graph, path, k, q, r);
@@ -129,13 +133,13 @@ System.out.println("Graph before ksping: " + graph);
 				if (pu == null) {
 					pu = new PriorityQueue<>(nOfStates);
 					edgeMap.put("u" + (i - 1), resultingNodeType + i, pu);
-System.out.println("Adding u to x edge");
+//System.out.println("Adding u to x edge");
 				}
 
 				if (pv == null) {
 					pv = new PriorityQueue<>(nOfStates);
 					edgeMap.put("v" + (i - 1), "v" + i, pv);
-System.out.println("Adding v to v edge");
+//System.out.println("Adding v to v edge");
 				}
 
 				pu.add(new Run(n, w));
@@ -158,7 +162,7 @@ System.out.println("Adding v to v edge");
 				int counter = 0;
 
 				while (!p.isEmpty() && counter < k) {
-System.out.println("Adding");
+//System.out.println("Adding");
 					Run run = p.poll();
 //					graph.createEdge(vertex1, vertex2, run.getTree().getTree(),
 //							Double.parseDouble(run.getWeight().toString()));
@@ -220,8 +224,11 @@ System.out.println("Adding");
 //		return root;
 		
 		Node<Symbol> root = new Node<>(r.getSymbol());
+		
+System.out.println("Path to extract: " + path);
 
 		for (Edge<Node<Symbol>> e : path.getEdges()) {
+System.out.println("Current edge: " + e);
 			root.addChild(e.getLabel());
 		}
 

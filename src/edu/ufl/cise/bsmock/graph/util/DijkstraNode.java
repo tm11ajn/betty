@@ -34,11 +34,11 @@ public class DijkstraNode<T> extends Node<T> implements Comparable<DijkstraNode<
 //        super.addEdge(parent,0.0);
 //    }
     
-    public DijkstraNode(String label, Edge<T> edge, int depth, String parent) {
+    public DijkstraNode(String label, Weight dist, int depth, String parent) {
         super(label);
-        this.dist = edge.getWeight();
+        this.dist = dist;
         this.depth = depth;
-        super.addEdge(parent, edge);
+        super.addEdge(parent, new Edge<T>(label, parent, new Weight(0), null));
     }
 
     public Weight getDist() {
@@ -59,7 +59,7 @@ public class DijkstraNode<T> extends Node<T> implements Comparable<DijkstraNode<
 
     public void setParent(String parent) {
         super.neighbors = new HashMap<>();
-        super.neighbors.put(parent,null);
+        super.neighbors.put(parent, new Edge<T>(this.label, parent, new Weight(0), null));
     }
 
     public String getParent() {

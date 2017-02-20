@@ -80,10 +80,12 @@ public class BestTrees {
 			// T <- T u {t}
 			exploredTrees.add(currentTree);
 
-//System.out.println("Explored trees: " + exploredTrees);
+System.out.println("Explored trees: " + exploredTrees);
 
 			// if M(t) = delta(t) then
 			if (currentTree.getSmallestWeight().equals(currentTree.getDeltaWeight())) {
+				
+System.out.println("OUTPUT");
 
 				// output(t)
 				nBest.add(currentTree.getTree().toString() + " " +
@@ -99,7 +101,7 @@ public class BestTrees {
 
 //System.out.println("Queue after expansion and pruning: " + treeQueue);
 		}
-
+System.out.println("RETURN " + treeQueue);
 		return nBest;
 	}
 
@@ -138,10 +140,10 @@ public class BestTrees {
 		HashMap<State, LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>> nRuns = new HashMap<>();
 
 //		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees);
-//		
-//		EppsteinRunner2 eRunner2 = new EppsteinRunner2(exploredTrees);
 		
-		EppsteinRunner3 eRunner3 = new EppsteinRunner3(exploredTrees);
+		EppsteinRunner2 eRunner2 = new EppsteinRunner2(exploredTrees);
+		
+//		EppsteinRunner3 eRunner3 = new EppsteinRunner3(exploredTrees);
 
 
 //		long startTime;
@@ -151,29 +153,33 @@ public class BestTrees {
 //		startTime = System.nanoTime();
 		
 		
-		
+		/* Eppstein 1 */
 //		for (State q : wta.getStates()) {
 //			allRuns.put(q, eRunner.runEppstein(wta, N, tree, q));		
 //		}
-//		
-//		
+
+		
+		
 //		if (eppCounter > 9) {
 //
 //System.out.println("epCounter=" + eppCounter);
 //
-//		for (State q : wta.getStates()) {
-//q = wta.getStates().get(1); // TODO REMOVE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//			allRuns.put(q, eRunner2.runEppstein(wta, N, tree, q));		
-//		}
-//		
+		/* Eppstein 2 */
+		for (State q : wta.getStates()) {
+System.out.println("state=" + q);
+			allRuns.put(q, eRunner2.runEppstein(wta, N, tree, q));		
+		}
+		
+System.out.println("allruns: " + allRuns);
+		
 //		}
 //		
 //		eppCounter++;
 		
-		
-		for (State q : wta.getStates()) {
-			allRuns.put(q, eRunner3.runEppstein(wta, N, tree, q));		
-		}
+		/* Eppstein 3 */
+//		for (State q : wta.getStates()) {
+//			allRuns.put(q, eRunner3.runEppstein(wta, N, tree, q));		
+//		}
 		
 //		endTime = System.nanoTime();
 //		duration = (endTime - startTime)/1000000;
@@ -190,6 +196,8 @@ public class BestTrees {
 				mergedTreeList = SortedListMerger.mergeTreeListsForState(treeList,
 						mergedTreeList, N, q);
 			}
+			
+System.out.println("mergedtreelist: " + mergedTreeList);
 
 			nRuns.put(q, mergedTreeList);
 		}
@@ -201,10 +209,17 @@ public class BestTrees {
 			mergedList = SortedListMerger.mergeTreeListsByDeltaWeights(currentList, mergedList,
 					N*nOfStatesInWTA); // Unnecessary? Just insert them all into K and prune after each insertion?
 		}
+		
+System.out.println("mergedlist: " + mergedList);
 
 		for (TreeKeeper<Symbol> n : mergedList.values()) {
-			treeQueue.put(n, null);
+System.out.println("här: " + n);
+			Weight i = treeQueue.put(n, n.getSmallestWeight());
+System.out.println(i);
+System.out.println("treeQueue: " + treeQueue);
+
 		}
+System.out.println("treeQueue: " + treeQueue);
 	}
 
 

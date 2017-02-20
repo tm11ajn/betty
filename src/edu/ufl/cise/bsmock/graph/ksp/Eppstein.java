@@ -81,21 +81,37 @@ public final class Eppstein<T> {
     public List<Path<T>> ksp(Graph<T> graph, String sourceLabel, String targetLabel, int K) {
         /* Compute the shortest path tree, T, for the target node (the shortest path from every node in the graph to the
             target) */
+System.out.println("Graph: " + graph);
+System.out.println("Same graph transposed: " + graph.transpose());
+    	
         ShortestPathTree<T> tree;
+        Dijkstra<T> dijkstra = null;
+        
         try {
-        	Dijkstra<T> dijkstra = new Dijkstra<>();
+        	dijkstra = new Dijkstra<>();
             tree = dijkstra.shortestPathTree(graph.transpose(), targetLabel);
-System.out.println("dijkstra's tree=" + tree);
         } catch (Exception e) {
 System.err.println("CAUGHT EXCEPTION");
             tree = new ShortestPathTree<>(targetLabel);
         }
         
-System.out.println("Graph: " + graph);
+		try {
+			if (dijkstra.shortestPath(graph.transpose(), targetLabel, sourceLabel) == null) {
+System.out.println("Dijkstra FAILED");
+				return new LinkedList<Path<T>>();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
 
         // Compute the set of sidetrack edge costs
 //        HashMap<String,Double> sidetrackEdgeCostMap = computeSidetrackEdgeCosts(graph, tree);
         HashMap<String,Weight> sidetrackEdgeCostMap = computeSidetrackEdgeCosts(graph, tree);
+        
+System.out.println("sidetrackedgecostmap=" + sidetrackEdgeCostMap);
 
         /* Make indexes to give fast access to these heaps later */
         // Heap H_out(v) for every node v
@@ -109,6 +125,9 @@ System.out.println("Graph: " + graph);
         for (String nodeLabel : graph.getNodes().keySet()) {
             computeOutHeap(nodeLabel, graph, sidetrackEdgeCostMap, nodeHeaps, edgeHeaps);
         }
+        
+System.out.println("edgeHeaps=" + edgeHeaps);
+System.out.println("nodeHeaps=" + nodeHeaps);
 
         /* COMPUTE EPPSTEIN HEAP, Part 2: Compute sub-heap H_T(v) for each node v.
             -- H_T(v) is a heap of all of the "best" sidetrack edges for each node on the shortest path from v to T.
@@ -121,7 +140,10 @@ System.out.println("Graph: " + graph);
         Graph<T> reversedSPT = new Graph<>();
         for (DijkstraNode<T> node: tree.getNodes().values()) {
 //            reversedSPT.addEdge(node.getParent(),node.getLabel(),graph.getNode(node.getLabel()).getNeighbors().get(node.getParent()));
-        	reversedSPT.addEdge(node.getParent(),node.getLabel(),graph.getNode(node.getLabel()).getNeighbors().get(node.getLabel()));
+//        	reversedSPT.addEdge(node.getParent(),node.getLabel(),graph.getNode(node.getLabel()).getNeighbors().get(node.getLabel()));
+        	reversedSPT.addEdge(node.getParent(),node.getLabel(),graph.getNode(node.getLabel()).getNeighbors().get(node.getParent()));
+        	graph.getNode(node.getLabel());
+System.out.println("reversedSPT=" + reversedSPT + " after adding " + node + " which is " + graph.getNode(node.getLabel()).getNeighbors().get(node.getParent()));
         }
 
         /* Use a depth-first search from node T to perform the bottom-up computation, computing each H_T(v) given
@@ -141,6 +163,8 @@ System.out.println("Graph: " + graph);
 
         // Place root heap in priority queue
         pathPQ.add(new EppsteinPath<T>(hg, -1, tree.getNodes().get(sourceLabel).getDist()));
+        
+System.out.println("pathPQ size=" + pathPQ.size());
 
         /* Pop k times from the priority queue to determine the k shortest paths */
         for (int i = 0; i < K && pathPQ.size() > 0; i++) {
@@ -149,9 +173,13 @@ System.out.println("Graph: " + graph);
                 2) A sidetrack edge which branches off of path p at node u, and points to node v
                 3) The shortest path in the shortest path tree from node v to t */
             EppsteinPath<T> kpathImplicit = pathPQ.poll();
+            
+System.out.println("kPathImplicit=" + kpathImplicit.getHeap().getChildren());
 
             // Convert from the implicit path representation to the explicit path representation
-            Path<T> kpath = kpathImplicit.explicitPath(ksp, tree);
+            Path<T> kpath = kpathImplicit.explicitPath(ksp, tree, graph);
+            
+System.out.println("path " + i + " = " + kpath + ", edges = " + kpath.getEdges());
 
             // Add explicit path to the list of K shortest paths
             ksp.add(kpath);
@@ -188,8 +216,12 @@ System.out.println("Graph: " + graph);
             // and check to see if the current edge is a sidetrack edge. If so, calculate its sidetrack cost.
             String tp = tree.getParentOf(edge.getFromNode());
             if (tp == null || !tp.equals(edge.getToNode())) {
-                Weight sidetrackEdgeCost = edge.getWeight().add(tree.getNodes().get(edge.getToNode()).getDist()).subtract(tree.getNodes().get(edge.getFromNode()).getDist());
+            	Weight edgeWeight = edge.getWeight();
+            	Weight targetWeight = tree.getNodes().get(edge.getToNode()).getDist();
+            	Weight sourceWeight = tree.getNodes().get(edge.getFromNode()).getDist();
+                Weight sidetrackEdgeCost = edgeWeight.add(targetWeight).subtract(sourceWeight);
                 sidetrackEdgeCostMap.put(edge.getFromNode() + "," + edge.getToNode(), sidetrackEdgeCost);
+System.out.println("Putting " + edge.getFromNode() + "," + edge.getToNode() + " and " + sidetrackEdgeCost + "in sidetrackedgecostmap");
             }
         }
 
@@ -598,7 +630,7 @@ class EppsteinPath<T> implements Comparable<EppsteinPath<T>> {
     // 1) the path from node s (source) to node u in the parent path
     // 2) the sidetrack edge (u,v)
     // 3) the shortest path (in the shortest path tree) from node v to node t (target)
-    public Path<T> explicitPath(List<Path<T>> ksp, ShortestPathTree<T> tree) {
+    public Path<T> explicitPath(List<Path<T>> ksp, ShortestPathTree<T> tree, Graph<T> graph) {
         Path<T> explicitPath = new Path<>();
 
         // If path is not the shortest path in the graph...
@@ -643,7 +675,9 @@ class EppsteinPath<T> implements Comparable<EppsteinPath<T>> {
             Weight w1 = tree.getNodes().get(current).getDist();
             Weight w2 = tree.getNodes().get(next).getDist();
             Weight edgeWeight = w1.subtract(w2);
-            explicitPath.add(new Edge<T>(current, next, edgeWeight, heap.getSidetrack().getLabel())); // CHECK if label corrext
+//            explicitPath.add(new Edge<T>(current, next, edgeWeight, heap.getSidetrack().getLabel())); // CHECK if label correct
+            explicitPath.add(new Edge<T>(current, next, edgeWeight, graph.getNodes().get(current).getNeighbors().get(next).getLabel()));
+System.out.println("Label in explicit psth = " + heap.getSidetrack().getLabel());
             current = next;
         }
 

@@ -94,9 +94,11 @@ public class Eppstein {
         /* Compute the shortest path tree, T, for the target node (the shortest path from every node in the graph to the
             target) */
     	
-    	if (graph.getEdgeList().isEmpty()) {
-    		return new LinkedList<Path>();
-    	}
+ System.out.println("Graph: " + graph);
+    	
+//    	if (graph.getEdgeList().isEmpty()) {
+//    		return new LinkedList<Path>();
+//    	}
     	
         ShortestPathTree tree;
         try {
@@ -105,6 +107,15 @@ public class Eppstein {
             tree = new ShortestPathTree(targetLabel);
             return new LinkedList<Path>();
         }
+        
+        try {
+			if (Dijkstra.shortestPath(graph.transpose(), targetLabel, sourceLabel) == null) {
+				return new LinkedList<Path>();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         // Compute the set of sidetrack edge costs
         HashMap<String,Double> sidetrackEdgeCostMap = computeSidetrackEdgeCosts(graph, tree);
@@ -163,6 +174,10 @@ public class Eppstein {
 
             // Convert from the implicit path representation to the explicit path representation
             Path kpath = kpathImplicit.explicitPath(ksp, tree);
+            
+System.out.println("path " + i + " = " + kpath);
+            
+//            if (kpath != null) {
 
             // Add explicit path to the list of K shortest paths
             ksp.add(kpath);
@@ -174,6 +189,8 @@ public class Eppstein {
                 This heap edge/child does not need to be explicitly represented in the Eppstein heap because it is easy
                 to check for its existence. */
             addCrossEdgeChildToQueue(outrootHeaps, kpathImplicit, i, ksp, pathPQ);
+            
+//            }
         }
 
         // Return the set of k shortest paths
@@ -648,6 +665,11 @@ class EppsteinPath implements Comparable<EppsteinPath> {
         String current = heap.getSidetrack().getToNode();
         while (!current.equals(tree.getRoot())) {
             String next = tree.getParentOf(current);
+            
+//            if (next == null) {
+//        		return null;
+//        	}
+            
             Double edgeWeight = tree.getNodes().get(current).getDist() - tree.getNodes().get(next).getDist();
             explicitPath.add(new Edge(current, next, edgeWeight));
             current = next;
