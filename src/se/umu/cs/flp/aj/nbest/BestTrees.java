@@ -74,18 +74,20 @@ public class BestTrees {
 
 			// t <- dequeue(K)
 			TreeKeeper<Symbol> currentTree = treeQueue.pollFirstEntry().getKey();
+			
+//System.out.println("Tree queue: " + treeQueue + " after polling " + currentTree);
 
 //System.out.println("Current tree: " + currentTree);
 
 			// T <- T u {t}
 			exploredTrees.add(currentTree);
 
-System.out.println("Explored trees: " + exploredTrees);
+//System.out.println("Explored trees: " + exploredTrees);
 
 			// if M(t) = delta(t) then
 			if (currentTree.getSmallestWeight().equals(currentTree.getDeltaWeight())) {
 				
-System.out.println("OUTPUT");
+//System.out.println("OUTPUT");
 
 				// output(t)
 				nBest.add(currentTree.getTree().toString() + " " +
@@ -101,7 +103,7 @@ System.out.println("OUTPUT");
 
 //System.out.println("Queue after expansion and pruning: " + treeQueue);
 		}
-System.out.println("RETURN " + treeQueue);
+//System.out.println("RETURN " + treeQueue);
 		return nBest;
 	}
 
@@ -122,6 +124,7 @@ System.out.println("RETURN " + treeQueue);
 					tree.addWeight(r.getResultingState(), r.getWeight());
 				}
 
+//System.out.println("Put " + tree + " in queue");
 				treeQueue.put(tree, null);
 
 //System.out.println(treeQueue);
@@ -166,11 +169,11 @@ System.out.println("RETURN " + treeQueue);
 //
 		/* Eppstein 2 */
 		for (State q : wta.getStates()) {
-System.out.println("state=" + q);
+//System.out.println("state=" + q + ", tree=" + tree);
 			allRuns.put(q, eRunner2.runEppstein(wta, N, tree, q));		
 		}
 		
-System.out.println("allruns: " + allRuns);
+//System.out.println("allruns: " + allRuns);
 		
 //		}
 //		
@@ -197,7 +200,7 @@ System.out.println("allruns: " + allRuns);
 						mergedTreeList, N, q);
 			}
 			
-System.out.println("mergedtreelist: " + mergedTreeList);
+//System.out.println("mergedtreelist: " + mergedTreeList);
 
 			nRuns.put(q, mergedTreeList);
 		}
@@ -210,23 +213,21 @@ System.out.println("mergedtreelist: " + mergedTreeList);
 					N*nOfStatesInWTA); // Unnecessary? Just insert them all into K and prune after each insertion?
 		}
 		
-System.out.println("mergedlist: " + mergedList);
+//System.out.println("mergedlist: " + mergedList);
 
 		for (TreeKeeper<Symbol> n : mergedList.values()) {
-System.out.println("här: " + n);
-			Weight i = treeQueue.put(n, new Weight(1));
-			i = treeQueue.put(n, null);
-System.out.println(i + ", hashcode for tree: " + n.hashCode() + " tree: " + n);
-System.out.println("treeQueue: " + treeQueue + "isEmpty=" + treeQueue.isEmpty());
+//System.out.println("här: " + n);
+			treeQueue.put(n, null);
+//System.out.println("treeQueue: " + treeQueue + "isEmpty=" + treeQueue.isEmpty());
 
 		}
-System.out.println("treeQueue: " + treeQueue + "isEmpty=" + treeQueue.isEmpty());
+//System.out.println("treeQueue: " + treeQueue + "isEmpty=" + treeQueue.isEmpty());
 
 
 
 if (!treeQueue.isEmpty()) {
 TreeKeeper<Symbol> k = treeQueue.firstKey();
-System.out.println("hashcode for already in: " + k.hashCode());
+//System.out.println("hashcode for already in: " + k.hashCode());
 }
 
 

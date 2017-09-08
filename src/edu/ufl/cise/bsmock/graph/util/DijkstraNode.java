@@ -58,8 +58,13 @@ public class DijkstraNode<T> extends Node<T> implements Comparable<DijkstraNode<
     }
 
     public void setParent(String parent) {
-        super.neighbors = new HashMap<>();
-        super.neighbors.put(parent, new Edge<T>(this.label, parent, new Weight(0), null));
+//    public void setParent(String parent, T edgeLabel) {
+    	
+    	super.neighbors.put(parent, new Edge<T>(this.label, parent, new Weight(0), null));
+    	
+//        super.neighbors = new HashMap<>();
+//        super.neighbors.put(parent, new HashMap<>());
+//        super.neighbors.get(parent).put(edgeLabel, new Edge<T>(this.label, parent, new Weight(0), null));
     }
 
     public String getParent() {

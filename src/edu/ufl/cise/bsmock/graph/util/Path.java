@@ -79,7 +79,7 @@ public class Path<T> implements Comparable<Path<T>> {
     	Weight old = totalCost;
         edges.addFirst(edge);
         totalCost = totalCost.add(edge.getWeight());
-System.out.println("Adds edge " + edge + "with weight " + edge.getWeight() + " to total cost " + old + " yielding a new total cost of " + totalCost);
+//System.out.println("Adds edge " + edge + "with weight " + edge.getWeight() + " to total cost " + old + " yielding a new total cost of " + totalCost);
     }
 
     public void add(Edge<T> edge) {

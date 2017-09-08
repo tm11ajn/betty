@@ -7,7 +7,8 @@ import se.umu.cs.flp.aj.wta.Weight;
  *
  * Created by Brandon Smock on 6/19/15.
  */
-public class Edge<T> implements Cloneable {
+//public class Edge<T> implements Cloneable {
+public class Edge<T> implements Cloneable, Comparable<Edge<?>> {
     private String fromNode;
     private String toNode;
     private Weight weight;
@@ -76,10 +77,16 @@ public class Edge<T> implements Cloneable {
     }
 
     public boolean equals(Edge<?> edge2) {
-        if (hasSameEndpoints(edge2) && weight == edge2.getWeight())
-            return true;
-
-        return false;
+//        if (hasSameEndpoints(edge2) && weight == edge2.getWeight())
+//            return true;
+//
+//        return false;
+    	
+    	if (!(edge2 instanceof Edge<?>)) {
+    		return false;
+    	}
+    	
+    	return this.compareTo((Edge<?>) edge2) == 0;
     }
 
     public boolean hasSameEndpoints(Edge<?> edge2) {
@@ -88,4 +95,35 @@ public class Edge<T> implements Cloneable {
 
         return false;
     }
+
+	@Override
+	public int compareTo(Edge<?> o) {
+		
+		int comp = this.weight.compareTo(o.getWeight());
+		
+		if (comp != 0) {
+			return comp;
+		}
+		
+		comp = this.label.toString().compareTo(o.getLabel().toString());
+		
+		if (comp != 0) {
+			return comp;
+		}
+		
+		comp = fromNode.compareTo(o.getFromNode());
+		
+		if (comp != 0) {
+			return comp;
+			
+		} else {
+			comp = toNode.compareTo(o.toNode);
+					
+			if (comp != 0) {
+				return comp;
+			}
+		}
+		
+		return 0;
+	}
 }

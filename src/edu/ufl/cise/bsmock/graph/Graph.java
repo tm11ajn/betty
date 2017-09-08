@@ -83,11 +83,13 @@ public class Graph<T> {
 //    }
 
     public Weight getEdgeWeight(String label1, String label2) {
+//    public Weight getEdgeWeight(String label1, String label2, Node<T> edgeLabel) {
         if (nodes.containsKey(label1)) {
             Node<T> node1 = nodes.get(label1);
             if (node1.getNeighbors().containsKey(label2)) {
 //                return node1.getNeighbors().get(label2);
                 return node1.getNeighbors().get(label2).getWeight();
+//                return node1.getNeighbors().get(label2).get(edgeLabel).getWeight();
             }
         }
 
@@ -156,9 +158,13 @@ public class Graph<T> {
             Set<String> adjacencyList = node.getAdjacencyList();
             Iterator<String> alIt = adjacencyList.iterator();
             HashMap<String, Edge<T>> neighbors = node.getNeighbors();
+//            Collection<Edge<T>> edges = node.getEdges();
             while (alIt.hasNext()) {
                 String neighborLabel = alIt.next();
                 newNodes.get(neighborLabel).addEdge(nodeLabel,neighbors.get(neighborLabel));
+//                for (Edge<T> edge : edges) {
+//                	newNodes.get(neighborLabel).addEdge(nodeLabel, edge);
+//                }
             }
         }
 
@@ -181,11 +187,16 @@ public class Graph<T> {
             Set<String> adjacencyList = node.getAdjacencyList();
             Iterator<String> alIt = adjacencyList.iterator();
             HashMap<String, Edge<T>> neighbors = node.getNeighbors();
+//            HashMap<String, HashMap<T, Edge<T>>> neighbors = node.getNeighbors();
             while (alIt.hasNext()) {
                 String neighborLabel = alIt.next();
                 graphStringB.append(neighborLabel.toString());
                 graphStringB.append(": ");
                 graphStringB.append(neighbors.get(neighborLabel));
+//                for (Edge<T> e : neighbors.get(neighborLabel).values()) {
+//                	graphStringB.append(e);
+//                	graphStringB.append(",");
+//                }
                 if (alIt.hasNext())
                     graphStringB.append(", ");
             }

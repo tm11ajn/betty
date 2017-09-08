@@ -36,14 +36,16 @@ public class ShortestPathTree<T> {
     }
 
     public void setParentOf(String node, String parent) {
+    //public void setParentOf(String node, String parent, T edgeLabel) {
 //        if (parent != null && !nodes.containsKey(parent)) {
 //            System.out.println("Warning: parent node not present in tree.");
 //        }
         if (!nodes.containsKey(node))
             nodes.put(node,new DijkstraNode<T>(node));
 
+//        nodes.get(node).setParent(parent, edgeLabel);
+        
         nodes.get(node).setParent(parent);
-
     }
 
     public String getParentOf(String node) {

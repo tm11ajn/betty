@@ -39,21 +39,29 @@ public final class Dijkstra<T> {
 //            count++;
 //            HashMap<String, Double> neighbors = nodes.get(currLabel).getNeighbors();
             HashMap<String, Edge<T>> neighbors = nodes.get(currLabel).getNeighbors();
+//            HashMap<String, HashMap<T, Edge<T>>> neighbors = nodes.get(currLabel).getNeighbors();
             for (String currNeighborLabel:neighbors.keySet()) {
                 DijkstraNode<T> neighborNode = predecessorTree.getNodes().get(currNeighborLabel);
-                Weight currDistance = neighborNode.getDist();
+                
+                //for (Edge<T> e : neighbors.get(currNeighborLabel).values()) {
+                	Weight currDistance = neighborNode.getDist();
 //System.out.println("currDistance=" + currDistance);
-                Weight newDistance = current.getDist().add(nodes.get(currLabel).getNeighbors().get(currNeighborLabel).getWeight());
+                	Weight newDistance = current.getDist().add(nodes.get(currLabel).getNeighbors().get(currNeighborLabel).getWeight());
+                	//Weight newDistance = current.getDist().add(e.getWeight());
 //System.out.println("newDistance=" + newDistance);
-                if (newDistance.compareTo(currDistance) == -1) {
-                    DijkstraNode<T> neighbor = predecessorTree.getNodes().get(currNeighborLabel);
+                	if (newDistance.compareTo(currDistance) == -1) {
+                		DijkstraNode<T> neighbor = predecessorTree.getNodes().get(currNeighborLabel);
 //System.out.println("Update " + currNeighborLabel + " with " + newDistance);
-                    pq.remove(neighbor);
-                    neighbor.setDist(newDistance);
-                    neighbor.setDepth(current.getDepth() + 1);
-                    neighbor.setParent(currLabel);
-                    pq.add(neighbor);
-                }
+                		pq.remove(neighbor);
+                		neighbor.setDist(newDistance);
+                		neighbor.setDepth(current.getDepth() + 1);
+                		neighbor.setParent(currLabel);
+                		//neighbor.setParent(currLabel, e.getLabel());
+                		pq.add(neighbor);
+                	}
+                //}
+                
+                
             }
         }
 
@@ -105,7 +113,7 @@ public final class Dijkstra<T> {
                     parentN = predecessorTree.getParentOf(currentN);
                 }
                 
-System.out.println("shortestPath=" + shortestPath);
+//System.out.println("shortestPath=" + shortestPath);
                 return shortestPath;
             }
 //            count++;

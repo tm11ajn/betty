@@ -1,6 +1,7 @@
 package edu.ufl.cise.bsmock.graph;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The Node class implements a node in a directed graph keyed on a label of type String, with adjacency lists for
@@ -18,6 +19,7 @@ import se.umu.cs.flp.aj.wta.Weight;
 public class Node<T> {
     protected String label;
     protected HashMap<String,Edge<T>> neighbors; // adjacency list, with HashMap for each edge weight
+//    protected HashMap<String,HashMap<T,Edge<T>>> neighbors; // adjacency list, with HashMap for each edge weight
 
     public Node() {
         neighbors = new HashMap<>();
@@ -37,19 +39,35 @@ public class Node<T> {
     }
 
     public HashMap<String, Edge<T>> getNeighbors() {
+//    public HashMap<String, HashMap<T, Edge<T>>> getNeighbors() {
         return neighbors;
     }
 
     public void setNeighbors(HashMap<String, Edge<T>> neighbors) {
+//    public void setNeighbors(HashMap<String, HashMap<T, Edge<T>>> neighbors) {
         this.neighbors = neighbors;
     }
     
     public void addEdge(String toNodeLabel, Edge<T> edge) {
-        neighbors.put(toNodeLabel, edge);
+    	neighbors.put(toNodeLabel, edge);
+    	
+//    	if (neighbors.get(toNodeLabel) == null) {
+//    		neighbors.put(toNodeLabel, new HashMap<>());
+//    	}
+//    	
+//        neighbors.get(toNodeLabel).put(edge.getLabel(), edge);
     }
 
     public void addEdge(String toNodeLabel, Weight weight, T label) {
-        neighbors.put(toNodeLabel, new Edge<T>(this.label, toNodeLabel, weight, label));
+//    public void addEdge(String toNodeLabel, Weight weight, T edgeLabel) {
+    	
+    	neighbors.put(toNodeLabel, new Edge<T>(this.label, toNodeLabel, weight, label));
+    	
+//    	if (neighbors.get(toNodeLabel) == null) {
+//    		neighbors.put(toNodeLabel, new HashMap<>());
+//    	} 
+//    	
+//        neighbors.get(toNodeLabel).put(edgeLabel, new Edge<T>(this.label, toNodeLabel, weight, edgeLabel));
     }
 
 //    public double removeEdge(String toNodeLabel) {
@@ -76,7 +94,16 @@ public class Node<T> {
 //    }
     
     public Collection<Edge<T>> getEdges() {
+    	
     	return neighbors.values();
+    	
+//    	Collection<Edge<T>> c = Collections.emptyList();
+//    	
+//    	for (HashMap<T, Edge<T>> val : neighbors.values()) {
+//    		c.addAll(val.values());
+//    	}
+//    	
+//    	return c;
     }
     
     public String toString() {
@@ -98,5 +125,24 @@ public class Node<T> {
         nodeStringB.append("\n");
 
         return nodeStringB.toString();
+        
+//        StringBuilder nodeStringB = new StringBuilder();
+//        nodeStringB.append(label);
+//        nodeStringB.append(": {");
+//        Set<String> adjacencyList = this.getAdjacencyList();
+//        Iterator<String> alIt = adjacencyList.iterator();
+//        HashMap<String, HashMap<T, Edge<T>>> neighbors = this.getNeighbors();
+//        while (alIt.hasNext()) {
+//            String neighborLabel = alIt.next();
+//            nodeStringB.append(neighborLabel.toString());
+//            nodeStringB.append(": ");
+//            nodeStringB.append(neighbors.get(neighborLabel));
+//            if (alIt.hasNext())
+//                nodeStringB.append(", ");
+//        }
+//        nodeStringB.append("}");
+//        nodeStringB.append("\n");
+//
+//        return nodeStringB.toString();
     }
 }

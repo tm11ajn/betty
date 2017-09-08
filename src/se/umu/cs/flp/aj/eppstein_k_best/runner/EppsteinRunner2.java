@@ -38,6 +38,8 @@ public class EppsteinRunner2 {
 		ArrayList<Rule> rules = wta.getTransitionFunction().
 				getRulesByResultingState(q);
 		
+//System.out.println("Rule count for state " + q + " is " + rules.size());
+		
 		int c = 0;
 
 		for (Rule r : rules) {
@@ -49,17 +51,17 @@ public class EppsteinRunner2 {
 			
 			ArrayList<State> states = r.getStates();
 			int nOfStates = states.size();
-System.out.println("Current rule: " + r + "(state: " + q + ")");
-			addVertices(graph, nOfStates);
+//System.out.println("Current rule: " + r + "(state: " + q + ")");
+//			addVertices(graph, nOfStates);
 
 //			NestedMap<String, String, PriorityQueue<Run>> edgeMap =
 //					buildEdgeMap(states, tree);
 			
 			NestedMap<String, String, PriorityQueue<Run>> edgeMap = buildEdges(states, tree);
 			
-			addKSmallestEdgesToGraph(graph, k, edgeMap, tree);
+			if (edgeMap.keySet().size() > nOfStates + 1) {
 			
-//System.out.println("Graph before ksping: " + graph);
+			addKSmallestEdgesToGraph(graph, k, edgeMap, tree);
 
 //			Path<Node<Symbol>> path =
 //					graph.findShortestPath("u0", "v" + nOfStates);
@@ -75,7 +77,7 @@ System.out.println("Current rule: " + r + "(state: " + q + ")");
 				w = w.add(r.getWeight());
 				keeper.addWeight(q, w);
 				treeList.put(keeper.getTree(), keeper);
-System.out.println("putting to treelist: " + keeper);
+//System.out.println("putting to treelist: " + keeper);
 			}
 			
 			
@@ -86,6 +88,8 @@ System.out.println("putting to treelist: " + keeper);
 			kBestTreesForEachQRule.add(treeList);
 			
 			c++;
+			
+			}
 		}
 
 		return kBestTreesForEachQRule;
@@ -113,11 +117,13 @@ System.out.println("putting to treelist: " + keeper);
 		for (int i = 1; i < nOfStates + 1; i++) {
 			State currentState = states.get(i-1);
 
-System.out.println("Explored trees before graph making: " + exploredTrees);
+//System.out.println("Explored trees before graph making: " + exploredTrees);
+//System.out.println("currentState=" + currentState);
 			for (TreeKeeper<Symbol> n : exploredTrees) {
 				Weight w = n.getWeight(currentState);
 
 				if (w == null) {
+//System.out.println("Continue when handling explored tree " + n);
 					continue;
 				}
 
@@ -149,13 +155,15 @@ System.out.println("Explored trees before graph making: " + exploredTrees);
 				pv.add(new Run(n, w));
 			}
 		}
-System.out.println("edgeMap=" + edgeMap);
+//System.out.println("edgeMap=" + edgeMap);
 		return edgeMap;
 	}
 
 	private void addKSmallestEdgesToGraph(Graph<Node<Symbol>> graph,
 			int k, NestedMap<String, String, PriorityQueue<Run>> edgeMap, 
 			TreeKeeper<Symbol> tree) {
+		
+		int dummyCounter = 0;
 
 		for (String vertex1 : edgeMap.keySet()) {
 
@@ -169,8 +177,13 @@ System.out.println("edgeMap=" + edgeMap);
 					Run run = p.poll();
 //					graph.createEdge(vertex1, vertex2, run.getTree().getTree(),
 //							Double.parseDouble(run.getWeight().toString()));
-					graph.addEdge(vertex1, vertex2, run.getWeight(), run.getTree().getTree());
-System.out.println("Adding to Eppstein graph: " + vertex1 + ":" + vertex2 + ":" + run.getWeight() + ":" + run.getTree().getTree() );
+					String dummyNode = "d" + dummyCounter;
+					graph.addEdge(vertex1, dummyNode, new Weight(0), null);
+					graph.addEdge(dummyNode, vertex2, run.getWeight(), run.getTree().getTree());
+//					graph.addEdge(vertex1, vertex2, run.getWeight(), run.getTree().getTree());
+//System.out.println("Adding to Eppstein graph: " + vertex1 + ":" + vertex2 + ":" + run.getWeight() + ":" + run.getTree().getTree() );
+					
+					dummyCounter++;
 					counter++;
 				}
 			}
@@ -229,11 +242,18 @@ System.out.println("Adding to Eppstein graph: " + vertex1 + ":" + vertex2 + ":" 
 		
 		Node<Symbol> root = new Node<>(r.getSymbol());
 		
-System.out.println("Path to extract: " + path);
+//System.out.println("Path to extract: " + path);
+
+		int counter = 0;
 
 		for (Edge<Node<Symbol>> e : path.getEdges()) {
-System.out.println("Current edge: " + e);
-			root.addChild(e.getLabel());
+			
+			if (counter%2 == 1) {
+//System.out.println("Current edge: " + e);
+				root.addChild(e.getLabel());
+			}
+			
+			counter++;
 		}
 
 		return root;
