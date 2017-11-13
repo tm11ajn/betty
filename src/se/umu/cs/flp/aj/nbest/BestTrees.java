@@ -51,7 +51,7 @@ public class BestTrees {
 	public static List<String> run(WTA wta, int N) {
 
 		/* For result. */
-		List<String> nBest = new ArrayList<String>(); // Perhaps just output instead
+		List<String> nBest = new ArrayList<String>();
 
 		// T <- empty. K <- empty
 		exploredTrees = new ArrayList<TreeKeeper<Symbol>>();
@@ -59,8 +59,6 @@ public class BestTrees {
 
 		// enqueue(K, Sigma_0)
 		enqueueRankZeroSymbols(wta, N);
-
-//System.out.println("Queue after enqueing rank zero symbols: " + treeQueue);
 
 		// i <- 0
 		int counter = 0;
@@ -71,24 +69,15 @@ public class BestTrees {
 			// t <- dequeue(K)
 			TreeKeeper<Symbol> currentTree = treeQueue.pollFirstEntry().getKey();
 
-//System.out.println("Tree queue: " + treeQueue + " after polling " + currentTree);
-
-//System.out.println("Current tree: " + currentTree);
-
 			// T <- T u {t}
 			exploredTrees.add(currentTree);
-
-//System.out.println("Explored trees: " + exploredTrees);
 
 			// if M(t) = delta(t) then
 			if (currentTree.getSmallestWeight().equals(currentTree.getDeltaWeight())) {
 
-//System.out.println("OUTPUT");
-
 				// output(t)
 				nBest.add(currentTree.getTree().toString() + " " +
 						currentTree.getDeltaWeight().toString());
-//System.out.println("Outputting " + currentTree + "with weight " + getDeltaWeight(currentTree).toString());
 
 				// i <- i + 1
 				counter++;
@@ -96,10 +85,8 @@ public class BestTrees {
 
 			// prune(T, enqueue(K, expand(T, t)))
 			enqueueWithExpansionAndPruning(wta, N, currentTree);
-
-//System.out.println("Queue after expansion and pruning: " + treeQueue);
 		}
-//System.out.println("RETURN " + treeQueue);
+
 		return nBest;
 	}
 
@@ -120,15 +107,9 @@ public class BestTrees {
 					tree.addWeight(r.getResultingState(), r.getWeight());
 				}
 
-//System.out.println("Put " + tree + " in queue");
 				treeQueue.put(tree, null);
-
-//System.out.println(treeQueue);
-
 			}
 		}
-
-//System.out.println("END enqueue rank zero symbols");
 	}
 
 	public static void enqueueWithExpansionAndPruning(WTA wta, int N,
@@ -138,55 +119,14 @@ public class BestTrees {
 				new HashMap<>();
 		HashMap<State, LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>> nRuns = new HashMap<>();
 
-//		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees);
+		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees);
 
-		EppsteinRunner eRunner2 = new EppsteinRunner(exploredTrees);
-
-//		EppsteinRunner3 eRunner3 = new EppsteinRunner3(exploredTrees);
-
-
-//		long startTime;
-//		long endTime;
-//		long duration;
-//
-//		startTime = System.nanoTime();
-
-
-		/* Eppstein 1 */
-//		for (State q : wta.getStates()) {
-//			allRuns.put(q, eRunner.runEppstein(wta, N, tree, q));
-//		}
-
-
-
-//		if (eppCounter > 9) {
-//
-//System.out.println("epCounter=" + eppCounter);
-//
-		/* Eppstein 2 */
 		for (State q : wta.getStates()) {
-//System.out.println("state=" + q + ", tree=" + tree);
-			allRuns.put(q, eRunner2.runEppstein(wta, N, tree, q));
+			allRuns.put(q, eRunner.runEppstein(wta, N, tree, q));
 		}
 
-//System.out.println("allruns: " + allRuns);
-
-//		}
-//
-//		eppCounter++;
-
-		/* Eppstein 3 */
-//		for (State q : wta.getStates()) {
-//			allRuns.put(q, eRunner3.runEppstein(wta, N, tree, q));
-//		}
-
-//		endTime = System.nanoTime();
-//		duration = (endTime - startTime)/1000000;
-//		System.out.println("Eppstein took " + duration +
-//			" milliseconds for k=" + N);
-
-		for (Entry<State, ArrayList<LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>>>> e :
-			allRuns.entrySet()) {
+		for (Entry<State, ArrayList<LinkedHashMap<Node<Symbol>,
+				TreeKeeper<Symbol>>>> e : allRuns.entrySet()) {
 
 			LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> mergedTreeList = new LinkedHashMap<>();
 			State q = e.getKey();
@@ -196,8 +136,6 @@ public class BestTrees {
 						mergedTreeList, N, q);
 			}
 
-//System.out.println("mergedtreelist: " + mergedTreeList);
-
 			nRuns.put(q, mergedTreeList);
 		}
 
@@ -206,21 +144,11 @@ public class BestTrees {
 
 		for (LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> currentList : nRuns.values()) {
 			mergedList = SortedListMerger.mergeTreeListsByDeltaWeights(currentList, mergedList,
-					N*nOfStatesInWTA); // Unnecessary? Just insert them all into K and prune after each insertion?
+					N*nOfStatesInWTA);
 		}
-
-//System.out.println("mergedlist: " + mergedList);
 
 		for (TreeKeeper<Symbol> n : mergedList.values()) {
-//System.out.println("h�r: " + n);
 			treeQueue.put(n, null);
-//System.out.println("treeQueue: " + treeQueue + "isEmpty=" + treeQueue.isEmpty());
-
 		}
-//System.out.println("treeQueue: " + treeQueue + "isEmpty=" + treeQueue.isEmpty());
-
-
 	}
-
-
 }
