@@ -1,6 +1,6 @@
 /*
  * Copyright 2015 Anna Jonsson for the research group Foundations of Language
- * Processing, Department of Computing Science, Umeå university
+ * Processing, Department of Computing Science, Umeï¿½ university
  *
  * This file is part of BestTrees.
  *
@@ -16,6 +16,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Created in 2015 by aj.
+ * Modified in 2017 by aj.
  */
 
 package se.umu.cs.flp.aj.nbest.data;
@@ -23,11 +26,11 @@ package se.umu.cs.flp.aj.nbest.data;
 import java.util.TreeMap;
 
 public class PruneableQueue<K,V> extends TreeMap<K,V> {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private Pruner<K,V> pruner;
-	
+
 	public PruneableQueue(Pruner<K,V> p) {
 		super();
 		this.pruner = p;
@@ -35,14 +38,9 @@ public class PruneableQueue<K,V> extends TreeMap<K,V> {
 
 	@Override
 	public V put(K key, V value) {
-		
-//System.out.println("Putting " + key + "=" + value );
-		
-//System.out.println("Queue size before pruning: " + this.size());
 		V returnVal = super.put(key, value);
 		pruner.prune(key, this);
-//System.out.println("Queue size after pruning: " + this.size());
-		
+
 		return returnVal;
 	}
 

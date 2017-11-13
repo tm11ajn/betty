@@ -16,6 +16,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Created in 2015 by aj.
+ * Modified in 2017 by aj.
  */
 
 package se.umu.cs.flp.aj.nbest.data;
@@ -43,13 +46,7 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 	public boolean prune(TreeKeeper<LabelType> insertedKey,
 			TreeMap<TreeKeeper<LabelType>, V> map) {
 
-//System.out.println("IN PRUNING");
-//System.out.println("Previously inserted tree: " + insertedKey);
-//System.out.println("Tree queue: " + map);
-//System.out.println("optimalStatesUsage=" + optimalStatesUsage);
-
 		boolean pruned = false;
-
 		LinkedHashMap<State, State> optStates = insertedKey.getOptimalStates();
 
 		for (State q : optStates.keySet()) {
@@ -66,10 +63,10 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 		for (State q : optStates.keySet()) {
 
 			if (optimalStatesUsage.get(q) > N) {
-				TreeKeeper<LabelType> removeTree = getRemoveKey(insertedKey, q, map);
-//System.out.println("Removing " + removeTree + " from treeQueue " + "because of state " + q + " which has usage " + qUsage + 1);
-
-				LinkedHashMap<State, State> optStatesRemove = removeTree.getOptimalStates();
+				TreeKeeper<LabelType> removeTree = getRemoveKey(insertedKey,
+						q, map);
+				LinkedHashMap<State, State> optStatesRemove =
+						removeTree.getOptimalStates();
 
 				for (State optRemove : optStatesRemove.keySet()) {
 					optimalStatesUsage.put(optRemove,
@@ -84,17 +81,15 @@ public class TreePruner<LabelType extends Comparable<LabelType>,V>
 		return pruned;
 	}
 
-	private TreeKeeper<LabelType> getRemoveKey(TreeKeeper<LabelType> tree, State q,
-			TreeMap<TreeKeeper<LabelType>, V> map) {
-
-//System.out.println("IN GET REMOVE KEY");
+	private TreeKeeper<LabelType> getRemoveKey(TreeKeeper<LabelType> tree,
+			State q, TreeMap<TreeKeeper<LabelType>, V> map) {
 
 		TreeKeeper<LabelType> removeKey = null;
-		Iterator<TreeKeeper<LabelType>> iterator = map.descendingKeySet().iterator();
+		Iterator<TreeKeeper<LabelType>> iterator =
+				map.descendingKeySet().iterator();
 
 		while (removeKey == null && iterator.hasNext()) {
 			TreeKeeper<LabelType> currentTree = iterator.next();
-//System.out.println("CURRENT TREE " + currentTree);
 
 			if (currentTree.getOptimalStates().containsKey(q)) {
 				removeKey = currentTree;
