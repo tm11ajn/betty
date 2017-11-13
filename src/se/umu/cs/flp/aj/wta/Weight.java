@@ -1,19 +1,19 @@
 /*
- * Copyright 2015 Anna Jonsson for the research group Foundations of Language 
- * Processing, Department of Computing Science, Umeå university
- * 
+ * Copyright 2015 Anna Jonsson for the research group Foundations of Language
+ * Processing, Department of Computing Science, Umeï¿½ university
+ *
  * This file is part of BestTrees.
- * 
+ *
  * BestTrees is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * BestTrees is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -23,7 +23,7 @@ package se.umu.cs.flp.aj.wta;
 public class Weight implements Comparable<Weight> {
 
 	public static final double INF = Double.MAX_VALUE;
-	public static final double NINF = Double.MIN_VALUE; // TODO remove
+	public static final double NINF = Double.MIN_VALUE;
 
 	private double value;
 
@@ -42,45 +42,36 @@ public class Weight implements Comparable<Weight> {
 	public boolean isNegativeInfinity() {
 		return value == NINF;
 	}
-	
+
 	public Weight add(Weight w) {
-		
-		if ((value == INF && w.value == NINF) || 
+
+		if ((value == INF && w.value == NINF) ||
 				(value == NINF && w.value == INF)) {
 			return null;
 		}
-		
+
 		if (value == INF || w.value == INF) {
 			return new Weight(INF);
 		} else if (value == NINF || w.value == NINF) {
 			return new Weight(NINF);
 		}
-		
+
 		return new Weight(value + w.value);
 	}
-	
-//	public Weight add(Weight w) {
-//		
-//		if (this.compareTo(w) == 1) {
-//			return w;
-//		}
-//		
-//		return this;
-//	}
-	
+
 	public Weight subtract(Weight w) {
-		
-		if ((value == INF && w.value == INF) || 
+
+		if ((value == INF && w.value == INF) ||
 				(value == NINF && w.value == NINF)) {
 			return new Weight(0);
 		}
-		
+
 		if (value == INF || w.value == NINF) {
 			return new Weight(INF);
 		} else if (value == NINF || w.value == INF) {
 			return new Weight(NINF);
 		}
-		
+
 		return new Weight(value - w.value);
 	}
 
