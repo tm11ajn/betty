@@ -6,8 +6,9 @@ import se.umu.cs.flp.aj.wta.Weight;
  * The Edge class implements standard properties and methods for a weighted edge in a directed graph.
  *
  * Created by Brandon Smock on 6/19/15.
+ * Modified for BestTrees by aj in 2017.
  */
-//public class Edge<T> implements Cloneable {
+
 public class Edge<T> implements Cloneable, Comparable<Edge<?>> {
     private String fromNode;
     private String toNode;
@@ -51,7 +52,7 @@ public class Edge<T> implements Cloneable, Comparable<Edge<?>> {
     public void setWeight(Weight weight) {
         this.weight = weight;
     }
-    
+
     public T getLabel() {
 		return label;
 	}
@@ -77,15 +78,11 @@ public class Edge<T> implements Cloneable, Comparable<Edge<?>> {
     }
 
     public boolean equals(Edge<?> edge2) {
-//        if (hasSameEndpoints(edge2) && weight == edge2.getWeight())
-//            return true;
-//
-//        return false;
-    	
+
     	if (!(edge2 instanceof Edge<?>)) {
     		return false;
     	}
-    	
+
     	return this.compareTo((Edge<?>) edge2) == 0;
     }
 
@@ -98,32 +95,32 @@ public class Edge<T> implements Cloneable, Comparable<Edge<?>> {
 
 	@Override
 	public int compareTo(Edge<?> o) {
-		
+
 		int comp = this.weight.compareTo(o.getWeight());
-		
+
 		if (comp != 0) {
 			return comp;
 		}
-		
+
 		comp = this.label.toString().compareTo(o.getLabel().toString());
-		
+
 		if (comp != 0) {
 			return comp;
 		}
-		
+
 		comp = fromNode.compareTo(o.getFromNode());
-		
+
 		if (comp != 0) {
 			return comp;
-			
+
 		} else {
 			comp = toNode.compareTo(o.toNode);
-					
+
 			if (comp != 0) {
 				return comp;
 			}
 		}
-		
+
 		return 0;
 	}
 }

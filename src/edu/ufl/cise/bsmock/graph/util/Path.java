@@ -8,6 +8,7 @@ import se.umu.cs.flp.aj.wta.Weight;
  * The Path class implements a path in a weighted, directed graph as a sequence of Edges.
  *
  * Created by Brandon Smock on 6/18/15.
+ * Modified for BestTrees by aj in 2017.
  */
 public class Path<T> implements Comparable<Path<T>> {
     private LinkedList<Edge<T>> edges;
@@ -68,18 +69,15 @@ public class Path<T> implements Comparable<Path<T>> {
     }
 
     public void addFirstNode(String nodeLabel) {
-//        String firstNode = edges.getFirst().getFromNode();
-//        edges.addFirst(new Edge(nodeLabel, firstNode,0));
     	Edge<T> firstEdge = edges.getFirst();
         String firstNode = firstEdge.getFromNode();
-        edges.addFirst(new Edge<T>(nodeLabel, firstNode, new Weight(0), firstEdge.getLabel())); // TODO check
+        edges.addFirst(new Edge<T>(nodeLabel, firstNode, new Weight(0),
+        		firstEdge.getLabel()));
     }
 
     public void addFirst(Edge<T> edge) {
-    	Weight old = totalCost;
         edges.addFirst(edge);
         totalCost = totalCost.add(edge.getWeight());
-//System.out.println("Adds edge " + edge + "with weight " + edge.getWeight() + " to total cost " + old + " yielding a new total cost of " + totalCost);
     }
 
     public void add(Edge<T> edge) {
@@ -88,8 +86,6 @@ public class Path<T> implements Comparable<Path<T>> {
     }
 
     public void addLastNode(String nodeLabel) {
-//        String lastNode = edges.getLast().getToNode();
-//        edges.addLast(new Edge(lastNode, nodeLabel,0));
     	Edge<T> lastEdge = edges.getLast();
         String lastNode = lastEdge.getToNode();
         edges.addLast(new Edge<T>(lastNode, nodeLabel, new Weight(0), lastEdge.getLabel()));
@@ -115,29 +111,6 @@ public class Path<T> implements Comparable<Path<T>> {
         sb.append("]");
         return sb.toString();
     }
-
-/*    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Path path = (Path) o;
-
-        if (Double.compare(path.totalCost, totalCost) != 0) return false;
-        if (!edges.equals(path.edges)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result;
-        long temp;
-        result = edges.hashCode();
-        temp = Double.doubleToLongBits(totalCost);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
-    }*/
 
     public boolean equals(Path<?> path2) {
         if (path2 == null)
@@ -166,65 +139,6 @@ public class Path<T> implements Comparable<Path<T>> {
 
     public int compareTo(Path<T> path2) {
         Weight path2Cost = path2.getTotalCost();
-        
         return totalCost.compareTo(path2Cost);
-        
-//        if (totalCost.equals(path2Cost)) {
-//            return 0;
-//        }
-//        if (totalCost > path2Cost)
-//            return 1;
-//        return -1;
     }
-
-//    public Path clone() {
-//        LinkedList<Edge> edges = new LinkedList<Edge>();
-//
-//        for (Edge edge : this.edges) {
-//            edges.add(edge.clone());
-//        }
-//
-//        return new Path(edges);
-//    }
-
-//    public Path shallowClone() {
-//        LinkedList<Edge> edges = new LinkedList<Edge>();
-//
-//        for (Edge edge : this.edges) {
-//            edges.add(edge);
-//        }
-//
-//        return new Path(edges,this.totalCost);
-//    }
-
-//    public Path cloneTo(int i) {
-//        LinkedList<Edge> edges = new LinkedList<Edge>();
-//        int l = this.edges.size();
-//        if (i > l)
-//            i = l;
-//
-//        //for (Edge edge : this.edges.subList(0,i)) {
-//        for (int j = 0; j < i; j++) {
-//            edges.add(this.edges.get(j).clone());
-//        }
-//
-//        return new Path(edges);
-//    }
-
-//    public Path cloneFrom(int i) {
-//        LinkedList<Edge> edges = new LinkedList<Edge>();
-//
-//        for (Edge edge : this.edges.subList(i,this.edges.size())) {
-//            edges.add(edge.clone());
-//        }
-//
-//        return new Path(edges);
-//    }
-
-//    public void addPath(Path p2) {
-//        // ADD CHECK TO SEE THAT PATH P2'S FIRST NODE IS SAME AS THIS PATH'S LAST NODE
-//
-//        this.edges.addAll(p2.getEdges());
-//        this.totalCost += p2.getTotalCost();
-//    }
 }

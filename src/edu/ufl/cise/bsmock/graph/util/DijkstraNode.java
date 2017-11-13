@@ -1,6 +1,5 @@
 package edu.ufl.cise.bsmock.graph.util;
 
-import java.util.HashMap;
 import java.util.Set;
 import edu.ufl.cise.bsmock.graph.*;
 import se.umu.cs.flp.aj.wta.Weight;
@@ -33,7 +32,7 @@ public class DijkstraNode<T> extends Node<T> implements Comparable<DijkstraNode<
 //        this.depth = depth;
 //        super.addEdge(parent,0.0);
 //    }
-    
+
     public DijkstraNode(String label, Weight dist, int depth, String parent) {
         super(label);
         this.dist = dist;
@@ -59,9 +58,9 @@ public class DijkstraNode<T> extends Node<T> implements Comparable<DijkstraNode<
 
     public void setParent(String parent) {
 //    public void setParent(String parent, T edgeLabel) {
-    	
+
     	super.neighbors.put(parent, new Edge<T>(this.label, parent, new Weight(0), null));
-    	
+
 //        super.neighbors = new HashMap<>();
 //        super.neighbors.put(parent, new HashMap<>());
 //        super.neighbors.get(parent).put(edgeLabel, new Edge<T>(this.label, parent, new Weight(0), null));

@@ -4,6 +4,7 @@ package edu.ufl.cise.bsmock.graph;
  * The Graph class implements a weighted, directed graph using an adjacency list representation.
  *
  * Created by brandonsmock on 6/1/15.
+ * Modified for BestTrees by aj in 2017.
  */
 
 import java.util.*;
@@ -51,7 +52,7 @@ public class Graph<T> {
             addNode(label2);
         nodes.get(label1).addEdge(label2, edge);
     }
-    
+
     public void addEdge(String label1, String label2, Weight weight, T label) {
         if (!nodes.containsKey(label1))
             addNode(label1);
@@ -61,7 +62,6 @@ public class Graph<T> {
     }
 
     public void addEdge(Edge<T> edge) {
-//        addEdge(edge.getFromNode(),edge.getToNode(),edge.getWeight());
     	nodes.get(edge.getFromNode()).addEdge(edge.getToNode(), edge);
     }
 
@@ -71,25 +71,11 @@ public class Graph<T> {
         }
     }
 
-//    public Edge removeEdge(String label1, String label2) {
-//        if (nodes.containsKey(label1)) {
-//            double weight = nodes.get(label1).removeEdge(label2);
-//            if (weight != Double.MAX_VALUE) {
-//                return new Edge(label1, label2, weight);
-//            }
-//        }
-//
-//        return null;
-//    }
-
     public Weight getEdgeWeight(String label1, String label2) {
-//    public Weight getEdgeWeight(String label1, String label2, Node<T> edgeLabel) {
         if (nodes.containsKey(label1)) {
             Node<T> node1 = nodes.get(label1);
             if (node1.getNeighbors().containsKey(label2)) {
-//                return node1.getNeighbors().get(label2);
                 return node1.getNeighbors().get(label2).getWeight();
-//                return node1.getNeighbors().get(label2).get(edgeLabel).getWeight();
             }
         }
 
@@ -118,30 +104,6 @@ public class Graph<T> {
         return nodes.get(label);
     }
 
-//    public List<Edge> removeNode(String label) {
-//        LinkedList<Edge> edges = new LinkedList<Edge>();
-//        if (nodes.containsKey(label)) {
-//            Node node = nodes.remove(label);
-//            edges.addAll(node.getEdges());
-//            edges.addAll(removeEdgesToNode(label));
-//        }
-//
-//        return edges;
-//    }
-
-//    public List<Edge> removeEdgesToNode(String label) {
-//        List<Edge> edges = new LinkedList<Edge>();
-//        for (Node node : nodes.values()) {
-//            if (node.getAdjacencyList().contains(label)) {
-//                double weight = node.removeEdge(label);
-//                edges.add(new Edge(node.getLabel(),label,weight));
-//            }
-//        }
-//        return edges;
-//    }
-
-
-
     public Graph<T> transpose() {
         HashMap<String,Node<T>> newNodes = new HashMap<>();
 
@@ -158,13 +120,9 @@ public class Graph<T> {
             Set<String> adjacencyList = node.getAdjacencyList();
             Iterator<String> alIt = adjacencyList.iterator();
             HashMap<String, Edge<T>> neighbors = node.getNeighbors();
-//            Collection<Edge<T>> edges = node.getEdges();
             while (alIt.hasNext()) {
                 String neighborLabel = alIt.next();
                 newNodes.get(neighborLabel).addEdge(nodeLabel,neighbors.get(neighborLabel));
-//                for (Edge<T> edge : edges) {
-//                	newNodes.get(neighborLabel).addEdge(nodeLabel, edge);
-//                }
             }
         }
 
@@ -180,23 +138,17 @@ public class Graph<T> {
         Iterator<String> it = nodes.keySet().iterator();
         while (it.hasNext()) {
             String nodeLabel = it.next();
-//            graphStringB.append(nodeLabel.toString());
             graphStringB.append(nodeLabel);
             graphStringB.append(": {");
             Node<T> node = nodes.get(nodeLabel);
             Set<String> adjacencyList = node.getAdjacencyList();
             Iterator<String> alIt = adjacencyList.iterator();
             HashMap<String, Edge<T>> neighbors = node.getNeighbors();
-//            HashMap<String, HashMap<T, Edge<T>>> neighbors = node.getNeighbors();
             while (alIt.hasNext()) {
                 String neighborLabel = alIt.next();
                 graphStringB.append(neighborLabel.toString());
                 graphStringB.append(": ");
                 graphStringB.append(neighbors.get(neighborLabel));
-//                for (Edge<T> e : neighbors.get(neighborLabel).values()) {
-//                	graphStringB.append(e);
-//                	graphStringB.append(",");
-//                }
                 if (alIt.hasNext())
                     graphStringB.append(", ");
             }
