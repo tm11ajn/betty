@@ -84,7 +84,10 @@ public class BestTrees {
 			}
 
 			// prune(T, enqueue(K, expand(T, t)))
-			enqueueWithExpansionAndPruning(wta, N, currentTree);
+			// problem reduced to N - i best trees
+			if (counter < N) {
+				enqueueWithExpansionAndPruning(wta, N - counter, currentTree);
+			}
 		}
 
 		return nBest;
