@@ -65,8 +65,7 @@ public class EppsteinRunner {
 			NestedMap<String, String, PriorityQueue<Run>> edgeMap =
 					buildEdges(states, tree);
 
-			if (edgeMap.keySet().size() > nOfStates + 1) {
-
+			if (edgeMap.keySet().size() > nOfStates) {
 				addKSmallestEdgesToGraph(graph, k, edgeMap, tree);
 
 				List<Path<Node<Symbol>>> pathList = epp.ksp(graph, "u0",
