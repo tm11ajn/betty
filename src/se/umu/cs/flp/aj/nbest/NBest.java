@@ -182,11 +182,11 @@ public class NBest {
 	private static void printUsageError() {
 		System.err.println("\n"
 				+ "Usage: BestTrees <RTG file> N "
-				+ "[ --no-pruning | -both ] [-timer] \n\n"
+				+ "[-timer] [ --no-pruning | -both ] \n\n"
 				+ "    N is an nonnegative integer \n"
+				+ "    -timer measures the run-time for the algorithm(s)\n"
 				+ "    --no-pruning runs the BestTreesBasic algorithm\n"
-				+ "    -both runs both BestTrees and BestTreesBasic\n"
-				+ "    -timer measures the run-time for the algorithm(s)\n");
+				+ "    -both runs both BestTrees and BestTreesBasic\n");
 		System.exit(-1);
 	}
 
