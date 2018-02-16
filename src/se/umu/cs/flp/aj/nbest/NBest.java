@@ -45,14 +45,18 @@ public class NBest {
 		WTAParser wtaParser = new WTAParser();
 		WTA wta = wtaParser.parse(fileName);
 
-		System.out.println("Pre-computing smallest completions...");
-		HashMap<State, Weight> smallestCompletions =
-				getSmallestCompletions(wta);
-		System.out.println("Smallest completions done.");
-
 		long startTime;
 		long endTime;
 		long duration;
+
+		System.out.println("Pre-computing smallest completions...");
+		startTime = System.nanoTime();
+		HashMap<State, Weight> smallestCompletions =
+				getSmallestCompletions(wta);
+		endTime = System.nanoTime();
+		duration = (endTime - startTime)/1000000;
+		System.out.println("Smallest completions done (took "
+				+ duration + " milliseconds).");
 
 		if (usePruning(args) || runBoth(args)) {
 			System.out.println("Running BestTrees...");
