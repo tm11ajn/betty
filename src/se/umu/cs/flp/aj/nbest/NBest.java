@@ -23,10 +23,11 @@ package se.umu.cs.flp.aj.nbest;
 import java.util.HashMap;
 import java.util.List;
 
+import se.umu.cs.flp.aj.knuth.SmallestCompletionsFinder;
 import se.umu.cs.flp.aj.wta.State;
 import se.umu.cs.flp.aj.wta.WTA;
 import se.umu.cs.flp.aj.wta.Weight;
-import se.umu.cs.flp.aj.wta_handlers.WTABuilder;
+//import se.umu.cs.flp.aj.wta_handlers.WTABuilder;
 import se.umu.cs.flp.aj.wta_handlers.WTAParser;
 
 public class NBest {
@@ -95,8 +96,9 @@ public class NBest {
 	}
 
 	public static HashMap<State, Weight> getSmallestCompletions(WTA wta) {
-		WTABuilder b = new WTABuilder();
-		return b.findSmallestCompletionWeights(wta);
+//		WTABuilder b = new WTABuilder();
+//		return b.findSmallestCompletionWeights(wta);
+		return SmallestCompletionsFinder.findSmallestCompletionWeights(wta);
 	}
 
 	private static void checkArgs(String[] args) {

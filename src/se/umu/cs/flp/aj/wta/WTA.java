@@ -1,19 +1,19 @@
 /*
- * Copyright 2015 Anna Jonsson for the research group Foundations of Language 
- * Processing, Department of Computing Science, Umeå university
- * 
+ * Copyright 2015 Anna Jonsson for the research group Foundations of Language
+ * Processing, Department of Computing Science, Umeï¿½ university
+ *
  * This file is part of BestTrees.
- * 
+ *
  * BestTrees is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * BestTrees is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -40,7 +40,7 @@ public class WTA {
 	public WTA() {
 
 	}
-	
+
 	public TransitionFunction getTransitionFunction() {
 		return transitionFunction;
 	}
@@ -70,14 +70,18 @@ public class WTA {
 			state = new State(label);
 			states.put(label, state);
 		}
-		
+
 		state.setFinal();
-		
+
 		return finalStates.add(state);
 	}
-	
-	public ArrayList<State> getStates() {
-		return new ArrayList<State>(states.values());
+
+//	public ArrayList<State> getStates() {
+//		return new ArrayList<State>(states.values());
+//	}
+
+	public HashMap<String, State> getStates() {
+		return states;
 	}
 
 	public ArrayList<State> getFinalStates() {
@@ -91,36 +95,32 @@ public class WTA {
 			throw new SymbolUsageException("The symbol " + symbol +
 					" is used for both state and symbol.");
 		}
-		
+
 		return rankedAlphabet.addSymbol(symbol, rank);
 	}
-	
+
 	public ArrayList<Symbol> getSymbols() {
 		return rankedAlphabet.getSymbols();
 	}
-	
-	public WTA getModifiedWTAWithLeafOnState() {
-		return null;
-	}
-	
+
 	@Override
 	public String toString() {
-		
+
 		String string = "States: ";
-		
+
 		for (State s : states.values()) {
 			string += s + " ";
 		}
-		
+
 		string += "\n";
 		string += "Ranked alphabet: " + rankedAlphabet + "\n";
 		string += "Transition function: \n" + transitionFunction;
 		string += "Final states: ";
-		
+
 		for (State s : finalStates) {
 			string += s + " ";
 		}
-		
+
 		return string;
 	}
 

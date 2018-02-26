@@ -124,7 +124,7 @@ public class BestTrees {
 
 		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees);
 
-		for (State q : wta.getStates()) {
+		for (State q : wta.getStates().values()) {
 			allRuns.put(q, eRunner.runEppstein(wta, N, tree, q));
 		}
 
