@@ -1,19 +1,19 @@
 /*
- * Copyright 2015 Anna Jonsson for the research group Foundations of Language 
- * Processing, Department of Computing Science, Umeå university
- * 
+ * Copyright 2015 Anna Jonsson for the research group Foundations of Language
+ * Processing, Department of Computing Science, Umeï¿½ university
+ *
  * This file is part of BestTrees.
- * 
+ *
  * BestTrees is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * BestTrees is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,6 +21,7 @@
 package se.umu.cs.flp.aj.wta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Rule {
 
@@ -28,6 +29,7 @@ public class Rule {
 	private Weight weight;
 
 	private ArrayList<State> states = new ArrayList<>();
+	private HashMap<State, State> stateMap = new HashMap<>();
 
 	private State resultingState;
 
@@ -40,8 +42,8 @@ public class Rule {
 
 		for (State state : states) {
 			this.states.add(state);
+			this.stateMap.put(state, state);
 		}
-
 	}
 
 	public Rule(Symbol symbol, State resultingState, State ... states) {
@@ -52,12 +54,13 @@ public class Rule {
 
 		for (State state : states) {
 			this.states.add(state);
+			this.stateMap.put(state, state);
 		}
 
 	}
 
 	public void addState(State state) {
-		states.add(state);
+		this.states.add(state);
 	}
 
 	public Symbol getSymbol() {
@@ -66,6 +69,10 @@ public class Rule {
 
 	public Weight getWeight() {
 		return weight;
+	}
+
+	public boolean hasState(State state) {
+		return stateMap.containsKey(state);
 	}
 
 	public State getResultingState() {
@@ -104,15 +111,16 @@ public class Rule {
 
 	@Override
 	public int hashCode() {
-		
+
 		int hash = 7*symbol.hashCode() + 11*resultingState.hashCode();
-		
+
 		for (State s : states) {
 			hash += s.hashCode();
 		}
-		
+
 		return hash;
 	}
+
 
 	@Override
 	public String toString() {

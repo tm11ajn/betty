@@ -1,6 +1,5 @@
 package se.umu.cs.flp.aj.knuth;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import se.umu.cs.flp.aj.wta.State;
@@ -45,33 +44,32 @@ public class SmallestCompletionsFinder {
 				System.exit(-1);
 			}
 
-			ArrayList<State> modifiedFinalStates = modifiedWTA.getFinalStates();
+//			ArrayList<State> modifiedFinalStates = modifiedWTA.getFinalStates();
 			KnuthSmallestDerivations ksd =
 					new KnuthSmallestDerivations(modifiedWTA);
-			HashMap<State, StateHolder> smallestDerivations =
-					ksd.getSmallestDerivation();
+//			HashMap<State, Weight> smallestDerivations =
+//					ksd.getSmallestDerivation();
+			Weight smallestWeight = ksd.getSmallestDerivation2();
 
-			Weight smallestCompletionWeight = new Weight(Weight.INF);
+//			Weight smallestCompletionWeight = new Weight(Weight.INF);
+//
+//			for (State s : modifiedFinalStates) {
+//				Weight tempWeight = smallestDerivations.get(s);
+//
+//				if (tempWeight == null) {
+//					System.err.println("In getting the smallest completion, "
+//							+ "the final state " + s + "did not have any weight"
+//							+ "assigned to it");
+//					System.exit(-1);
+//				}
+//
+//				if (tempWeight.compareTo(smallestCompletionWeight) == -1) {
+//					smallestCompletionWeight = tempWeight;
+//				}
+//			}
 
-			for (State s : modifiedFinalStates) {
-
-				if (smallestDerivations.containsKey(s)) {
-				Weight tempWeight = smallestDerivations.get(s).getWeight();
-
-				if (tempWeight == null) {
-					System.err.println("In getting the smallest completion, "
-							+ "the final state " + s + "did not have any weight"
-							+ "assigned to it");
-					System.exit(-1);
-				}
-
-				if (tempWeight.compareTo(smallestCompletionWeight) == -1) {
-					smallestCompletionWeight = tempWeight;
-				}
-				}
-			}
-
-			smallestCompletionWeights.put(state, smallestCompletionWeight);
+//			smallestCompletionWeights.put(state, smallestCompletionWeight);
+			smallestCompletionWeights.put(state, smallestWeight);
 
 		}
 

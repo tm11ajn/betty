@@ -1,19 +1,19 @@
 /*
- * Copyright 2015 Anna Jonsson for the research group Foundations of Language 
- * Processing, Department of Computing Science, Umeå university
- * 
+ * Copyright 2015 Anna Jonsson for the research group Foundations of Language
+ * Processing, Department of Computing Science, Umeï¿½ university
+ *
  * This file is part of BestTrees.
- * 
+ *
  * BestTrees is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * BestTrees is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -38,7 +38,7 @@ public class WTAParser {
 
 	public static final String EMPTY_LINE_REGEX = "^\\s*$";
 	public static final String COMMENT_LINE_REGEX = "^//.*";
-	public static final String FINAL_REGEX = 
+	public static final String FINAL_REGEX =
 			"^\\s*final\\s*([a-zA-Z0-9]+\\s*,\\s*)*([a-zA-Z0-9]+\\s*)+$";
 	public static final String LEAF_RULE_REGEX =
 			"^\\s*[a-zA-Z0-9]+\\s*->\\s*[a-zA-Z0-9]+" +
@@ -88,10 +88,10 @@ public class WTAParser {
 	}
 
 	public void parseLine(String line, WTA wta)
-			throws IllegalArgumentException, SymbolUsageException, 
+			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 
-		if (line.matches(EMPTY_LINE_REGEX) || 
+		if (line.matches(EMPTY_LINE_REGEX) ||
 				line.matches(COMMENT_LINE_REGEX)) {
 			// Ignore empty lines and comments.
 		}else if (line.matches(FINAL_REGEX)) {
@@ -120,7 +120,7 @@ public class WTAParser {
 			throws SymbolUsageException, DuplicateRuleException {
 
 		String[] labels = line.trim().split(LEAF_RULE_SPLIT_REGEX);
-		
+
 		checkSymbol(labels[0]);
 
 		Symbol symbol = wta.addSymbol(labels[0], 0);
@@ -154,7 +154,7 @@ public class WTAParser {
 			weight = new Weight(value);
 			numberOfLeftHandStates -= 1;
 		}
-		
+
 		checkSymbol(labels[0]);
 
 		Symbol symbol = wta.addSymbol(labels[0], numberOfLeftHandStates);
@@ -168,12 +168,12 @@ public class WTAParser {
 
 		wta.getTransitionFunction().addRule(newRule);
 	}
-	
+
 	// Unnecessary if the reserved symbol uses unallowed characters
 	private void checkSymbol(String label) throws SymbolUsageException {
-		
+
 		if (label.equals(Symbol.RESERVED_SYMBOL_STRING)) {
-			throw new SymbolUsageException("The symbol " + label + 
+			throw new SymbolUsageException("The symbol " + label +
 					" is reserved and cannot be used in the input WTA.");
 		}
 	}
