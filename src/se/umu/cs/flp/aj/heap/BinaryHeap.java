@@ -5,8 +5,9 @@ import java.util.HashMap;
 
 public class BinaryHeap<O, W extends Comparable<W>> {
 
-	private ArrayList<Node<O, W>> nodes = new ArrayList<>();
-	private HashMap<O, Integer> positions = new HashMap<>();
+	private ArrayList<Node<O, W>> nodes;
+	private HashMap<O, Integer> positions;
+	private boolean minHeap;
 
 
 	public class Node<K, V> {
@@ -19,6 +20,21 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 		}
 	}
 
+
+	public BinaryHeap(boolean isMinHeap) {
+		this.nodes = new ArrayList<>();
+		this.positions = new HashMap<>();
+		this.minHeap = isMinHeap;
+	}
+
+	public BinaryHeap() {
+		this(true);
+	}
+
+	public int size () {
+		return nodes.size();
+	}
+
 	public boolean empty() {
 		return nodes.size() == 0;
 	}
@@ -27,7 +43,7 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 		return positions.containsKey(object);
 	}
 
-	public O min() {
+	public O peek() {
 		Node<O, W> min = nodes.get(0);
 		return min.object;
 	}
@@ -88,7 +104,7 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 			Node<O, W> parentNode = nodes.get(parentIndex);
 			Node<O, W> currentNode = nodes.get(currentIndex);
 
-			if (currentNode.weight.compareTo(parentNode.weight) < 0) {
+			if (compare(currentNode.weight, parentNode.weight) < 0) {
 				swap(parentNode, currentNode);
 				updatePosition(nodes.get(parentIndex), parentIndex);
 				updatePosition(nodes.get(currentIndex), currentIndex);
@@ -124,7 +140,7 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 				int smallerIndex;
 				Node<O, W> smaller;
 
-				if (left.weight.compareTo(right.weight) <= 0) {
+				if (compare(left.weight, right.weight) <= 0) {
 					smallerIndex = leftIndex;
 					smaller = left;
 				} else {
@@ -132,7 +148,7 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 					smaller = right;
 				}
 
-				if (smaller.weight.compareTo(current.weight) < 0) {
+				if (compare(smaller.weight, current.weight) < 0) {
 					swap(current, smaller);
 					updatePosition(nodes.get(currentIndex), currentIndex);
 					updatePosition(nodes.get(smallerIndex), smallerIndex);
@@ -156,6 +172,15 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 
 		node2.object = object;
 		node2.weight = weight;
+	}
+
+	private int compare(W weight1, W weight2) {
+
+		if (minHeap) {
+			return weight1.compareTo(weight2);
+		}
+
+		return weight2.compareTo(weight1);
 	}
 
 }

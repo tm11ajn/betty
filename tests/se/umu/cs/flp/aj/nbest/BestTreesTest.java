@@ -8,7 +8,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.umu.cs.flp.aj.wta.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
 
 public class BestTreesTest {
 

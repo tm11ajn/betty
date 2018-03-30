@@ -14,12 +14,16 @@ Quick start:
 
 Download and run the .jar file by 
 
-java -jar BestTrees<version>.jar <RTG file> N [-timer] [ --no-pruning | -both ] 
+java -jar BestTrees<current_version>.jar <RTG file> N [-v VERSION] [-timer] 
 
-    N is an nonnegative integer
+    N is an nonnegative integer 
+    -v allows the user to select which version to run
     -timer measures the run-time for the algorithm(s)
-    --no-pruning runs the BestTreesBasic algorithm
-    -both runs both BestTrees and BestTreesBasic
+    VERSION can be: 
+    2 - runs BestTrees version 2 (pruned rule queue)
+    1 - runs BestTrees version 1 (pruned tree queue)
+    basic - runs the BestTreesBasic algorithm
+    all - runs all versions
 
 Enjoy the forest.
     

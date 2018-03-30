@@ -2,7 +2,8 @@ package edu.ufl.cise.bsmock.graph.ksp;
 
 import edu.ufl.cise.bsmock.graph.*;
 import edu.ufl.cise.bsmock.graph.util.*;
-import se.umu.cs.flp.aj.wta.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
 
 import java.util.*;
 
@@ -98,7 +99,7 @@ public final class Eppstein<T> {
         }
 
         // Compute the set of sidetrack edge costs
-        HashMap<String,Weight> sidetrackEdgeCostMap = computeSidetrackEdgeCosts(graph, tree);
+        HashMap<String,Semiring> sidetrackEdgeCostMap = computeSidetrackEdgeCosts(graph, tree);
 
         /* Make indexes to give fast access to these heaps later */
         // Heap H_out(v) for every node v
@@ -136,7 +137,7 @@ public final class Eppstein<T> {
 
         // Create a virtual/dummy heap that is the root of the overall Eppstein heap. It represents the best path from
         // the source node to the target node, which does not involve any sidetrack edges.
-        EppsteinHeap<T> hg = new EppsteinHeap<>(new Edge<T>(sourceLabel,sourceLabel,new Weight(0),null)); // TODO CHECK LABEL
+        EppsteinHeap<T> hg = new EppsteinHeap<>(new Edge<T>(sourceLabel,sourceLabel,(new Weight()).one(),null)); // TODO CHECK LABEL
 
         // Initialize the containers for the candidate k shortest paths and the actual found k shortest paths
         ArrayList<Path<T>> ksp = new ArrayList<>();
@@ -183,19 +184,19 @@ public final class Eppstein<T> {
      * @param tree      the shortest path tree, T, rooted at the target node, t
      * @return
      */
-    protected HashMap<String,Weight> computeSidetrackEdgeCosts(Graph<T> graph, ShortestPathTree<T> tree) {
-        HashMap<String, Weight> sidetrackEdgeCostMap = new HashMap<>();
+    protected HashMap<String,Semiring> computeSidetrackEdgeCosts(Graph<T> graph, ShortestPathTree<T> tree) {
+        HashMap<String, Semiring> sidetrackEdgeCostMap = new HashMap<>();
         List<Edge<T>> edgeList = graph.getEdgeList();
         for (Edge<T> edge : edgeList) {
             // Check to see if the target node is reachable from the outgoing vertex of the current edge,
             // and check to see if the current edge is a sidetrack edge. If so, calculate its sidetrack cost.
             String tp = tree.getParentOf(edge.getFromNode());
             if (tp == null || !tp.equals(edge.getToNode())) {
-            	Weight edgeWeight = edge.getWeight();
-            	Weight targetWeight = tree.getNodes().get(edge.getToNode()).getDist();
-            	Weight sourceWeight = tree.getNodes().get(edge.getFromNode()).getDist();
-				Weight diff = targetWeight.subtract(sourceWeight);
-                Weight sidetrackEdgeCost = edgeWeight.add(diff);
+            	Semiring edgeWeight = edge.getWeight();
+            	Semiring targetWeight = tree.getNodes().get(edge.getToNode()).getDist();
+            	Semiring sourceWeight = tree.getNodes().get(edge.getFromNode()).getDist();
+				Semiring diff = targetWeight.div(sourceWeight);
+                Semiring sidetrackEdgeCost = edgeWeight.mult(diff);
                 sidetrackEdgeCostMap.put(edge.getFromNode() + "," + edge.getToNode() + "," + edge.getLabel(), sidetrackEdgeCost);
             }
         }
@@ -212,18 +213,18 @@ public final class Eppstein<T> {
      * @param nodeHeaps             an index/hash table of heap H_out(v), for each node v in the graph
      * @param edgeHeaps             an index/hash table of heaps H_out(v), but indexed by sidetrack edge
      */
-    protected void computeOutHeap(String nodeLabel, Graph<T> graph, HashMap<String,Weight> sidetrackEdgeCostMap, HashMap<String,EppsteinHeap<T>> nodeHeaps, HashMap<String,EppsteinHeap<T>> edgeHeaps) {
+    protected void computeOutHeap(String nodeLabel, Graph<T> graph, HashMap<String,Semiring> sidetrackEdgeCostMap, HashMap<String,EppsteinHeap<T>> nodeHeaps, HashMap<String,EppsteinHeap<T>> edgeHeaps) {
         Node<T> node = graph.getNode(nodeLabel);
         // This list holds the 2nd through last sidetrack edges, ordered by sidetrack cost
         ArrayList<Edge<T>> sidetrackEdges = new ArrayList<>();
         Edge<T> bestSidetrack = null;
-        Weight minSidetrackCost = new Weight(Weight.INF);
+        Semiring minSidetrackCost = (new Weight()).zero();
         // Iterate over the outgoing edges of v
         for (String neighbor : node.getAdjacencyList()) {
             String edgeLabel = nodeLabel+","+neighbor+","+node.getNeighbors().get(neighbor).getLabel();
             // Check to see if the current edge is a sidetrack edge
             if (sidetrackEdgeCostMap.containsKey(edgeLabel)) {
-                Weight sidetrackEdgeCost = sidetrackEdgeCostMap.get(edgeLabel);
+                Semiring sidetrackEdgeCost = sidetrackEdgeCostMap.get(edgeLabel);
                 // Check to see if the current sidetrack edge has the lowest cost discovered so far for node v
                 if (sidetrackEdgeCost.compareTo(minSidetrackCost) == -1) {
                     // If there was a previously-known best sidetrack edge, add it to the list of non-best
@@ -285,7 +286,7 @@ public final class Eppstein<T> {
             int prefPath = kpathImplicit.getPrefPath();
 
             // Calculate the path cost of the new child/candidate
-            Weight candidateCost = ksp.get(prefPath).getTotalCost().add(childHeap.getSidetrackCost());
+            Semiring candidateCost = ksp.get(prefPath).getTotalCost().mult(childHeap.getSidetrackCost());
 
             // Add the child/candidate to the priority queue
             EppsteinPath<T> candidate = new EppsteinPath<>(childHeap, prefPath, candidateCost);
@@ -306,7 +307,7 @@ public final class Eppstein<T> {
             EppsteinHeap<T> childHeap = outrootHeaps.get(kpathImplicit.getHeap().getSidetrack().getToNode());
 
             // Calculate the path cost of the new child/candidate
-            Weight candidateCost = ksp.get(prefPath).getTotalCost().add(childHeap.getSidetrackCost());
+            Semiring candidateCost = ksp.get(prefPath).getTotalCost().mult(childHeap.getSidetrackCost());
 
             // Add the child/candidate to the priority queue
             EppsteinPath<T> candidate = new EppsteinPath<>(childHeap, prefPath, candidateCost);
@@ -378,7 +379,7 @@ public final class Eppstein<T> {
  */
 class EppsteinHeap<T> {
     private Edge<T> sidetrack; // the sidetrack edge (u,v) associated with the root of this heap or sub-heap
-    private Weight sidetrackCost = new Weight(0);
+    private Semiring sidetrackCost = (new Weight()).one();
     private ArrayList<EppsteinHeap<T>> children; // supports N children but Eppstein is limited to 4
     private int numOtherSidetracks = 0; // number of elements of H_out(u) - 1
 
@@ -387,13 +388,13 @@ class EppsteinHeap<T> {
         this.children = new ArrayList<>();
     }
 
-    public EppsteinHeap(Edge<T> sidetrack, Weight sidetrackCost) {
+    public EppsteinHeap(Edge<T> sidetrack, Semiring sidetrackCost) {
         this.sidetrack = sidetrack;
         this.sidetrackCost = sidetrackCost;
         this.children = new ArrayList<>();
     }
 
-    public EppsteinHeap(Edge<T> sidetrack, Weight sidetrackCost, ArrayList<EppsteinHeap<T>> children, int numOtherSidetracks) { //, boolean bestChild, int copy) {
+    public EppsteinHeap(Edge<T> sidetrack, Semiring sidetrackCost, ArrayList<EppsteinHeap<T>> children, int numOtherSidetracks) { //, boolean bestChild, int copy) {
         this.sidetrack = sidetrack;
         this.sidetrackCost = sidetrackCost;
         this.children = children;
@@ -408,11 +409,11 @@ class EppsteinHeap<T> {
         this.sidetrack = sidetrack;
     }
 
-    public Weight getSidetrackCost() {
+    public Semiring getSidetrackCost() {
         return sidetrackCost;
     }
 
-    public void setSidetrackCost(Weight sidetrackCost) {
+    public void setSidetrackCost(Semiring sidetrackCost) {
         this.sidetrackCost = sidetrackCost;
     }
 
@@ -565,9 +566,9 @@ class EppsteinArrayHeap<T> {
 class EppsteinPath<T> implements Comparable<EppsteinPath<T>> {
     EppsteinHeap<T> heap; // pointer to the heap node and last sidetrack edge in this candidate path
     int prefPath; // index of the shorter path that this path sidetracks from
-    Weight cost; // the total cost of the path
+    Semiring cost; // the total cost of the path
 
-    public EppsteinPath(EppsteinHeap<T> heap, int prefPath, Weight cost) {
+    public EppsteinPath(EppsteinHeap<T> heap, int prefPath, Semiring cost) {
         this.heap = heap;
         this.prefPath = prefPath;
         this.cost = cost;
@@ -589,11 +590,11 @@ class EppsteinPath<T> implements Comparable<EppsteinPath<T>> {
         this.heap = heap;
     }
 
-    public Weight getCost() {
+    public Semiring getCost() {
         return cost;
     }
 
-    public void setCost(Weight cost) {
+    public void setCost(Semiring cost) {
         this.cost = cost;
     }
 
@@ -644,9 +645,9 @@ class EppsteinPath<T> implements Comparable<EppsteinPath<T>> {
         String current = heap.getSidetrack().getToNode();
         while (!current.equals(tree.getRoot())) {
             String next = tree.getParentOf(current);
-            Weight w1 = tree.getNodes().get(current).getDist();
-            Weight w2 = tree.getNodes().get(next).getDist();
-            Weight edgeWeight = w1.subtract(w2);
+            Semiring w1 = tree.getNodes().get(current).getDist();
+            Semiring w2 = tree.getNodes().get(next).getDist();
+            Semiring edgeWeight = w1.div(w2);
             explicitPath.add(new Edge<T>(current, next, edgeWeight, graph.getNodes().get(current).getNeighbors().get(next).getLabel()));
             current = next;
         }
@@ -655,8 +656,8 @@ class EppsteinPath<T> implements Comparable<EppsteinPath<T>> {
     }
 
     public int compareTo(EppsteinPath<T> comparedNode) {
-        Weight cost1 = this.cost;
-        Weight cost2 = comparedNode.getCost();
+        Semiring cost1 = this.cost;
+        Semiring cost2 = comparedNode.getCost();
         return cost1.compareTo(cost2);
     }
 

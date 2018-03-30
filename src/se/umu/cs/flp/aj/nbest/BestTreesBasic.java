@@ -26,28 +26,29 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import se.umu.cs.flp.aj.nbest.data.NestedMap;
-import se.umu.cs.flp.aj.nbest.data.Node;
-import se.umu.cs.flp.aj.wta.Rule;
-import se.umu.cs.flp.aj.wta.State;
-import se.umu.cs.flp.aj.wta.Symbol;
-import se.umu.cs.flp.aj.wta.WTA;
-import se.umu.cs.flp.aj.wta.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.treedata.Node;
+import se.umu.cs.flp.aj.nbest.util.NestedMap;
+import se.umu.cs.flp.aj.nbest.wta.Rule;
+import se.umu.cs.flp.aj.nbest.wta.State;
+import se.umu.cs.flp.aj.nbest.wta.Symbol;
+import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class BestTreesBasic {
 
-	private static NestedMap<Node<Symbol>, State, Weight> treeStateValTable =
+	private static NestedMap<Node<Symbol>, State, Semiring> treeStateValTable =
 			new NestedMap<>(); // C
 	private static ArrayList<Node<Symbol>> exploredTrees =
 			new ArrayList<Node<Symbol>>(); // T
 	private static LinkedList<Node<Symbol>> treeQueue = new LinkedList<>(); // K
 
-	private static HashMap<State, Weight> smallestCompletionWeights;
+	private static HashMap<State, Semiring> smallestCompletionWeights;
 	private static HashMap<Node<Symbol>, ArrayList<State>> optimalStates =
 			new HashMap<>();
 
 	public static void setSmallestCompletions(
-			HashMap<State, Weight> smallestCompletions) {
+			HashMap<State, Semiring> smallestCompletions) {
 		smallestCompletionWeights = smallestCompletions;
 	}
 
@@ -114,13 +115,13 @@ public class BestTreesBasic {
 			if (s.getRank() == 0) {
 				Node<Symbol> tree = new Node<Symbol>(s);
 
-				ArrayList<Rule> rules = wta.getTransitionFunction().
+				ArrayList<Rule<Symbol>> rules = wta.getTransitionFunction().
 						getRulesBySymbol(s);
 
-				for (Rule r : rules) {
+				for (Rule<Symbol> r : rules) {
 					State resState = r.getResultingState();
-					Weight weight = r.getWeight();
-					Weight oldWeight = treeStateValTable.get(tree, resState);
+					Semiring weight = r.getWeight();
+					Semiring oldWeight = treeStateValTable.get(tree, resState);
 
 					if (oldWeight == null ||
 							weight.compareTo(oldWeight) == -1) {
@@ -136,33 +137,33 @@ public class BestTreesBasic {
 
 	public static void computeCurrentWeight(WTA wta, Node<Symbol> tree) {
 
-		ArrayList<Rule> rules = wta.getTransitionFunction().
+		ArrayList<Rule<Symbol>> rules = wta.getTransitionFunction().
 				getRulesBySymbol(tree.getLabel());
 
 		int nOfSubtrees = tree.getChildCount();
 
-		for (Rule r : rules) {
+		for (Rule<Symbol> r : rules) {
 			ArrayList<State> states = r.getStates();
 
 			boolean canUseRule = true;
-			Weight weightSum = new Weight(0);
+			Semiring weightSum = (new Weight()).one();
 
 			for (int i = 0; i < nOfSubtrees; i++) {
 				Node<Symbol> subTree = tree.getChildAt(i);
 				State s = states.get(i);
-				Weight wTemp = treeStateValTable.get(subTree, s);
+				Semiring wTemp = treeStateValTable.get(subTree, s);
 
 				if (wTemp == null) {
 					canUseRule = false;
 				} else {
-					weightSum = weightSum.add(wTemp);
+					weightSum = weightSum.mult(wTemp);
 				}
 			}
 
-			weightSum = weightSum.add(r.getWeight());
+			weightSum = weightSum.mult(r.getWeight());
 
 			if (canUseRule) {
-				Weight currentWeight = treeStateValTable.get(tree,
+				Semiring currentWeight = treeStateValTable.get(tree,
 						r.getResultingState());
 
 				if (currentWeight == null ||
@@ -175,17 +176,17 @@ public class BestTreesBasic {
 	}
 
 	public static ArrayList<State> getOptimalStates(Node<Symbol> tree) {
-		HashMap<State, Weight> stateValTable =
+		HashMap<State, Semiring> stateValTable =
 				treeStateValTable.getAll(tree);
 		ArrayList<State> optStates = new ArrayList<>();
-		Weight minWeight = new Weight(Weight.INF);
+		Semiring minWeight = (new Weight()).zero();
 
-		for (Entry<State, Weight> e : stateValTable.entrySet()) {
+		for (Entry<State, Semiring> e : stateValTable.entrySet()) {
 
 			State currentState = e.getKey();
-			Weight smallestCompletionWeight = smallestCompletionWeights.get(
+			Semiring smallestCompletionWeight = smallestCompletionWeights.get(
 					currentState);
-			Weight currentWeight = e.getValue().add(smallestCompletionWeight);
+			Semiring currentWeight = e.getValue().mult(smallestCompletionWeight);
 			int comparison = currentWeight.compareTo(minWeight);
 
 			if (comparison == -1) {
@@ -203,7 +204,7 @@ public class BestTreesBasic {
 	public static void insertTreeIntoQueueByTotalMinimumWeight(
 			Node<Symbol> tree) {
 
-		Weight wMinCurrent = getDeltaWeight(tree);
+		Semiring wMinCurrent = getDeltaWeight(tree);
 
 		int queueSize = treeQueue.size();
 		int queueIndex = 0;
@@ -211,7 +212,7 @@ public class BestTreesBasic {
 		for (int i = 0; i < queueSize; i++) {
 			Node<Symbol> t = treeQueue.get(i);
 
-			Weight wMinTemp = getDeltaWeight(t);
+			Semiring wMinTemp = getDeltaWeight(t);
 
 			if (wMinTemp.compareTo(wMinCurrent) == -1) {
 				queueIndex = i + 1;
@@ -226,17 +227,17 @@ public class BestTreesBasic {
 		treeQueue.add(queueIndex, tree);
 	}
 
-	public static Weight getDeltaWeight(Node<Symbol> tree) {
+	public static Semiring getDeltaWeight(Node<Symbol> tree) {
 
-		Weight delta = new Weight(0);
+		Semiring delta = (new Weight()).one();
 
 		State optimalState = optimalStates.get(tree).get(0);
 
-		Weight minWeight = treeStateValTable.get(tree, optimalState);
-		Weight smallestCompletionWeight = smallestCompletionWeights.
+		Semiring minWeight = treeStateValTable.get(tree, optimalState);
+		Semiring smallestCompletionWeight = smallestCompletionWeights.
 				get(optimalState);
 
-		delta = minWeight.add(smallestCompletionWeight);
+		delta = minWeight.mult(smallestCompletionWeight);
 
 		return delta;
 	}
@@ -245,9 +246,9 @@ public class BestTreesBasic {
 			Node<Symbol> tree) {
 
 		ArrayList<Node<Symbol>> expansion = new ArrayList<Node<Symbol>>();
-		ArrayList<Rule> rules = wta.getTransitionFunction().getRules();
+		ArrayList<Rule<Symbol>> rules = wta.getTransitionFunction().getRules();
 
-		for (Rule r : rules) {
+		for (Rule<Symbol> r : rules) {
 			ArrayList<State> states = r.getStates();
 			HashMap<State, ArrayList<Node<Symbol>>> producibleTrees =
 					new HashMap<>();

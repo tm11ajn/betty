@@ -1,7 +1,7 @@
 package se.umu.cs.flp.aj.knuth;
 
-import se.umu.cs.flp.aj.wta.State;
-import se.umu.cs.flp.aj.wta.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class StateHolder implements Comparable<StateHolder> {
 

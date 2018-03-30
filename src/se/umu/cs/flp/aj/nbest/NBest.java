@@ -24,16 +24,19 @@ import java.util.HashMap;
 import java.util.List;
 
 import se.umu.cs.flp.aj.knuth.SmallestCompletionsFinder;
-import se.umu.cs.flp.aj.wta.State;
-import se.umu.cs.flp.aj.wta.WTA;
-import se.umu.cs.flp.aj.wta.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.wta.State;
+import se.umu.cs.flp.aj.nbest.wta.WTA;
 //import se.umu.cs.flp.aj.wta_handlers.WTABuilder;
-import se.umu.cs.flp.aj.wta_handlers.WTAParser;
+import se.umu.cs.flp.aj.nbest.wta.handlers.WTAParser;
 
 public class NBest {
 
-	private static final String NO_PRUNING_FLAG = "--no-pruning";
-	private static final String BOTH_FLAG = "-both";
+	private static final String VERSION_FLAG = "-v";
+	private static final String RULE_QUEUE_ARG = "2";
+	private static final String TREE_QUEUE_ARG = "1";
+	private static final String BASIC_ARG = "basic";
+	private static final String ALL_ARG = "all";
 	private static final String TIMER_FLAG = "-timer";
 
 	public static void main(String[] args) {
@@ -50,17 +53,37 @@ public class NBest {
 		long endTime;
 		long duration;
 
+		boolean all = runAll(args);
+		boolean timer = useTimer(args);
+
 		System.out.println("Pre-computing smallest completions...");
 		startTime = System.nanoTime();
-		HashMap<State, Weight> smallestCompletions =
+		HashMap<State, Semiring> smallestCompletions =
 				getSmallestCompletions(wta);
 		endTime = System.nanoTime();
 		duration = (endTime - startTime)/1000000;
 		System.out.println("Smallest completions done (took "
 				+ duration + " milliseconds).");
 
-		if (usePruning(args) || runBoth(args)) {
-			System.out.println("Running BestTrees...");
+		if (runVersion2(args) || all) {
+			System.out.println("Running BestTrees version 2...");
+			BestTrees2.setSmallestCompletions(smallestCompletions);
+
+			startTime = System.nanoTime();
+//			List<String> result = BestTrees2.run(wta, N);
+			endTime = System.nanoTime();
+
+//			printResult(result);
+
+			if (timer) {
+				duration = (endTime - startTime)/1000000;
+				System.out.println("BestTrees version 2 took " + duration +
+						" milliseconds");
+			}
+		}
+
+		if (runVersion1(args) || all) {
+			System.out.println("Running BestTrees version 1...");
 			BestTrees.setSmallestCompletions(smallestCompletions);
 
 			startTime = System.nanoTime();
@@ -69,14 +92,14 @@ public class NBest {
 
 			printResult(result);
 
-			if (useTimer(args)) {
+			if (timer) {
 				duration = (endTime - startTime)/1000000;
-				System.out.println("BestTrees took " + duration +
+				System.out.println("BestTrees version 1 took " + duration +
 						" milliseconds");
 			}
 		}
 
-		if (!usePruning(args) || runBoth(args)) {
+		if (runBasic(args) || all) {
 			System.out.println("Running BestTreesBasic...");
 			BestTreesBasic.setSmallestCompletions(smallestCompletions);
 
@@ -86,7 +109,7 @@ public class NBest {
 
 			printResult(resultBasic);
 
-			if (useTimer(args)) {
+			if (timer) {
 				duration = (endTime - startTime)/1000000;
 				System.out.println("BestTreesBasic took " + duration +
 					" milliseconds");
@@ -95,7 +118,7 @@ public class NBest {
 
 	}
 
-	public static HashMap<State, Weight> getSmallestCompletions(WTA wta) {
+	public static HashMap<State, Semiring> getSmallestCompletions(WTA wta) {
 //		WTABuilder b = new WTABuilder();
 //		return b.findSmallestCompletionWeights(wta);
 		return SmallestCompletionsFinder.findSmallestCompletionWeights(wta);
@@ -105,14 +128,12 @@ public class NBest {
 
 		int nOfArgs = args.length;
 
-		if (nOfArgs < 2 || nOfArgs > 4) {
+		if (nOfArgs < 2 || nOfArgs > 5) {
 			printUsageError();
 		} else if (nOfArgs == 3) {
 			String arg2 = args[2];
 
-			if (!arg2.equals(NO_PRUNING_FLAG) &&
-					!arg2.equals(BOTH_FLAG) &&
-					!arg2.equals(TIMER_FLAG)) {
+			if (!arg2.equals(TIMER_FLAG)) {
 				printUsageError();
 			}
 
@@ -120,18 +141,37 @@ public class NBest {
 			String arg2 = args[2];
 			String arg3 = args[3];
 
-			if (!arg2.equals(NO_PRUNING_FLAG) &&
-					!arg2.equals(BOTH_FLAG) &&
-					!arg2.equals(TIMER_FLAG)) {
+			if (!arg2.equals(VERSION_FLAG)) {
 				printUsageError();
-			} else if (!arg3.equals(NO_PRUNING_FLAG) &&
-					!arg3.equals(BOTH_FLAG) &&
-					!arg3.equals(TIMER_FLAG)) {
+			} else if (!arg3.equals(ALL_ARG) &&
+					!arg3.equals(BASIC_ARG) &&
+					!arg3.equals(TREE_QUEUE_ARG) &&
+					!arg3.equals(RULE_QUEUE_ARG)) {
 				printUsageError();
-			} else if ((arg2.equals(NO_PRUNING_FLAG) &&
-					arg3.equals(BOTH_FLAG))||
-					(arg3.equals(NO_PRUNING_FLAG) &&
-							arg2.equals(BOTH_FLAG))) {
+			}
+
+		} else if (nOfArgs == 5) {
+			String arg2 = args[2];
+			String arg3 = args[3];
+			String arg4 = args[4];
+
+			if (!arg2.equals(TIMER_FLAG) &&
+					!arg2.equals(VERSION_FLAG)) {
+				printUsageError();
+			} else if (!arg4.equals(TIMER_FLAG) &&
+					!arg3.equals(VERSION_FLAG)) {
+				printUsageError();
+			} else if (arg2.equals(VERSION_FLAG) &&
+					(!arg3.equals(ALL_ARG) &&
+							!arg3.equals(BASIC_ARG) &&
+							!arg3.equals(TREE_QUEUE_ARG) &&
+							!arg3.equals(RULE_QUEUE_ARG))) {
+				printUsageError();
+			} else if (arg3.equals(VERSION_FLAG) &&
+					(!arg4.equals(ALL_ARG) &&
+							!arg4.equals(BASIC_ARG) &&
+							!arg4.equals(TREE_QUEUE_ARG) &&
+							!arg4.equals(RULE_QUEUE_ARG))) {
 				printUsageError();
 			}
 		}
@@ -154,20 +194,49 @@ public class NBest {
 		return N;
 	}
 
-	private static boolean usePruning(String[] args) {
+	private static boolean runVersion2(String[] args) {
 
-		if ((args.length == 3 && args[2].equals(NO_PRUNING_FLAG)) ||
-				(args.length == 4 && args[3].equals(NO_PRUNING_FLAG))) {
-			return false;
+		if (args.length < 4) {
+			return true;
 		}
 
-		return true;
+		if ((args.length == 4 && args[3].equals(RULE_QUEUE_ARG)) ||
+				(args.length == 5 && (args[3].equals(RULE_QUEUE_ARG) ||
+						args[4].equals(RULE_QUEUE_ARG)))) {
+			return true;
+		}
+
+		return false;
 	}
 
-	private static boolean runBoth(String[] args) {
 
-		if ((args.length == 3 && args[2].equals(BOTH_FLAG)) ||
-				(args.length == 4 && args[3].equals(BOTH_FLAG))) {
+	private static boolean runVersion1(String[] args) {
+
+		if ((args.length == 4 && args[3].equals(TREE_QUEUE_ARG)) ||
+				(args.length == 5 && (args[3].equals(TREE_QUEUE_ARG) ||
+						args[4].equals(TREE_QUEUE_ARG)))) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private static boolean runBasic(String[] args) {
+
+		if ((args.length == 4 && args[3].equals(BASIC_ARG)) ||
+				(args.length == 5 && (args[3].equals(BASIC_ARG) ||
+						args[4].equals(BASIC_ARG)))) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private static boolean runAll(String[] args) {
+
+		if ((args.length == 4 && args[3].equals(ALL_ARG)) ||
+				(args.length == 5 && (args[3].equals(ALL_ARG) ||
+						args[4].equals(ALL_ARG)))) {
 			return true;
 		}
 
@@ -177,8 +246,8 @@ public class NBest {
 	private static boolean useTimer(String[] args) {
 
 		if ((args.length == 3 && args[2].equals(TIMER_FLAG)) ||
-				(args.length == 4 &&
-				(args[2].equals(TIMER_FLAG) || args[3].equals(TIMER_FLAG)))) {
+				(args.length == 5 &&
+				(args[2].equals(TIMER_FLAG) || args[4].equals(TIMER_FLAG)))) {
 			return true;
 		}
 
@@ -188,11 +257,17 @@ public class NBest {
 	private static void printUsageError() {
 		System.err.println("\n"
 				+ "Usage: BestTrees <RTG file> N "
-				+ "[-timer] [ --no-pruning | -both ] \n\n"
+				+ "["+ VERSION_FLAG + " VERSION] [" + TIMER_FLAG + "] \n\n"
 				+ "    N is an nonnegative integer \n"
+				+ "    -v allows the user to select which version to run\n"
 				+ "    -timer measures the run-time for the algorithm(s)\n"
-				+ "    --no-pruning runs the BestTreesBasic algorithm\n"
-				+ "    -both runs both BestTrees and BestTreesBasic\n");
+				+ "    VERSION can be: \n"
+				+ "    " + RULE_QUEUE_ARG + " - "
+				+ "runs BestTrees version 2 (pruned rule queue)\n"
+				+ "    " + TREE_QUEUE_ARG + " - "
+				+ "runs BestTrees version 1 (pruned tree queue)\n"
+				+ "    " + BASIC_ARG + " - runs the BestTreesBasic algorithm\n"
+				+ "    " + ALL_ARG + " - runs all versions\n");
 		System.exit(-1);
 	}
 

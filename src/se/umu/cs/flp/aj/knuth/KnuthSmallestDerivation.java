@@ -3,17 +3,18 @@ package se.umu.cs.flp.aj.knuth;
 import java.util.HashMap;
 
 import se.umu.cs.flp.aj.heap.BinaryHeap;
-import se.umu.cs.flp.aj.wta.Rule;
-import se.umu.cs.flp.aj.wta.State;
-import se.umu.cs.flp.aj.wta.Symbol;
-import se.umu.cs.flp.aj.wta.WTA;
-import se.umu.cs.flp.aj.wta.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.wta.Rule;
+import se.umu.cs.flp.aj.nbest.wta.State;
+import se.umu.cs.flp.aj.nbest.wta.Symbol;
+import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class KnuthSmallestDerivation {
 
 	private WTA wta;
-	private BinaryHeap<State, Weight> queue;
-	private HashMap<State, Weight> defined;
+	private BinaryHeap<State, Semiring> queue;
+	private HashMap<State, Semiring> defined;
 	private State smallest;
 
 	public KnuthSmallestDerivation(WTA wta) {
@@ -23,7 +24,7 @@ public class KnuthSmallestDerivation {
 		this.smallest = null;
 	}
 
-	public Weight getSmallestDerivation2() {
+	public Semiring getSmallestDerivation2() {
 		HashMap<String, State> states = wta.getStates();
 		boolean isFound = false;
 
@@ -45,7 +46,7 @@ public class KnuthSmallestDerivation {
 
 			if (s.getRank() == 0) {
 
-				for (Rule r : wta.getTransitionFunction().getRulesBySymbol(s)) {
+				for (Rule<Symbol> r : wta.getTransitionFunction().getRulesBySymbol(s)) {
 					updateQueue(r);
 				}
 			}
@@ -54,19 +55,19 @@ public class KnuthSmallestDerivation {
 
 	private void enqueueNextLayer() {
 
-		for (Rule r : wta.getTransitionFunction().getRulesByState(
+		for (Rule<Symbol> r : wta.getTransitionFunction().getRulesByState(
 				smallest)) {
 			updateQueue(r);
 		}
 	}
 
-	private void updateQueue(Rule r) {
+	private void updateQueue(Rule<Symbol> r) {
 		State resultingState = r.getResultingState();
-		Weight currentWeight = queue.getWeight(resultingState);
-		Weight newWeight = getNewWeight(r);
+		Semiring currentWeight = queue.getWeight(resultingState);
+		Semiring newWeight = getNewWeight(r);
 
 		if (currentWeight == null &&
-				newWeight.compareTo(new Weight(Weight.INF)) < 0) {
+				newWeight.compareTo((new Weight()).zero()) < 0) {
 			queue.add(resultingState, newWeight);
 		} else if (currentWeight != null &&
 				newWeight.compareTo(currentWeight) < 0) {
@@ -74,26 +75,26 @@ public class KnuthSmallestDerivation {
 		}
 	}
 
-	private Weight getNewWeight(Rule r) {
-		Weight newWeight = new Weight(0);
+	private Semiring getNewWeight(Rule<Symbol> r) {
+		Semiring newWeight = (new Weight()).one();
 
 		for (State stateInRule : r.getStates()) {
 
 			if (defined.containsKey(stateInRule)) {
-				newWeight = newWeight.add(defined.
+				newWeight = newWeight.mult(defined.
 						get(stateInRule));
 			} else {
-				newWeight = newWeight.add(
-						new Weight(Weight.INF));
+				newWeight = newWeight.mult(
+						(new Weight()).zero());
 			}
 		}
 
-		newWeight = newWeight.add(r.getWeight());
+		newWeight = newWeight.mult(r.getWeight());
 		return newWeight;
 	}
 
 	private boolean update(HashMap<String, State> states) {
-		smallest = queue.min();
+		smallest = queue.peek();
 
 		if (smallest.isFinal()) {
 			return true;

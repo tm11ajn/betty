@@ -29,15 +29,16 @@ import edu.ufl.cise.bsmock.graph.Edge;
 import edu.ufl.cise.bsmock.graph.Graph;
 import edu.ufl.cise.bsmock.graph.ksp.Eppstein;
 import edu.ufl.cise.bsmock.graph.util.Path;
-import se.umu.cs.flp.aj.nbest.data.NestedMap;
-import se.umu.cs.flp.aj.nbest.data.Node;
-import se.umu.cs.flp.aj.nbest.data.Run;
-import se.umu.cs.flp.aj.nbest.data.TreeKeeper;
-import se.umu.cs.flp.aj.wta.Rule;
-import se.umu.cs.flp.aj.wta.State;
-import se.umu.cs.flp.aj.wta.Symbol;
-import se.umu.cs.flp.aj.wta.WTA;
-import se.umu.cs.flp.aj.wta.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.treedata.Node;
+import se.umu.cs.flp.aj.nbest.treedata.Run;
+import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
+import se.umu.cs.flp.aj.nbest.util.NestedMap;
+import se.umu.cs.flp.aj.nbest.wta.Rule;
+import se.umu.cs.flp.aj.nbest.wta.State;
+import se.umu.cs.flp.aj.nbest.wta.Symbol;
+import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class EppsteinRunner {
 
@@ -52,10 +53,10 @@ public class EppsteinRunner {
 
 		ArrayList<LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>>
 				kBestTreesForEachQRule = new ArrayList<>();
-		ArrayList<Rule> rules = wta.getTransitionFunction().
+		ArrayList<Rule<Symbol>> rules = wta.getTransitionFunction().
 				getRulesByResultingState(q);
 
-		for (Rule r : rules) {
+		for (Rule<Symbol> r : rules) {
 			Graph<Node<Symbol>> graph = new Graph<>();
 			Eppstein<Node<Symbol>> epp = new Eppstein<>();
 
@@ -76,8 +77,8 @@ public class EppsteinRunner {
 				for (Path<Node<Symbol>> path : pathList) {
 					Node<Symbol> node = extractTreeFromPath(path, r);
 					TreeKeeper<Symbol> keeper = new TreeKeeper<>(node);
-					Weight w = path.getTotalCost();
-					w = w.add(r.getWeight());
+					Semiring w = path.getTotalCost();
+					w = w.mult(r.getWeight());
 					keeper.addWeight(q, w);
 					treeList.put(keeper.getTree(), keeper);
 				}
@@ -101,7 +102,7 @@ public class EppsteinRunner {
 			State currentState = states.get(i-1);
 
 			for (TreeKeeper<Symbol> n : exploredTrees) {
-				Weight w = n.getWeight(currentState);
+				Semiring w = n.getWeight(currentState);
 
 				if (w != null) {
 					PriorityQueue<Run> pu = null;
@@ -150,7 +151,7 @@ public class EppsteinRunner {
 				while (!p.isEmpty() && counter < k) {
 					Run run = p.poll();
 					String dummyNode = "d" + dummyCounter;
-					graph.addEdge(vertex1, dummyNode, new Weight(0), null);
+					graph.addEdge(vertex1, dummyNode, (new Weight()).one(), null);
 					graph.addEdge(dummyNode, vertex2, run.getWeight(), run.getTree().getTree());
 					dummyCounter++;
 					counter++;
@@ -160,7 +161,7 @@ public class EppsteinRunner {
 	}
 
 	private Node<Symbol> extractTreeFromPath(Path<Node<Symbol>> path,
-			Rule r) {
+			Rule<Symbol> r) {
 
 		Node<Symbol> root = new Node<>(r.getSymbol());
 		int counter = 0;

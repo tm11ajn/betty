@@ -9,7 +9,8 @@ package edu.ufl.cise.bsmock.graph;
 
 import java.util.*;
 
-import se.umu.cs.flp.aj.wta.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
 
 public class Graph<T> {
     private HashMap<String,Node<T>> nodes;
@@ -53,7 +54,7 @@ public class Graph<T> {
         nodes.get(label1).addEdge(label2, edge);
     }
 
-    public void addEdge(String label1, String label2, Weight weight, T label) {
+    public void addEdge(String label1, String label2, Semiring weight, T label) {
         if (!nodes.containsKey(label1))
             addNode(label1);
         if (!nodes.containsKey(label2))
@@ -71,7 +72,7 @@ public class Graph<T> {
         }
     }
 
-    public Weight getEdgeWeight(String label1, String label2) {
+    public Semiring getEdgeWeight(String label1, String label2) {
         if (nodes.containsKey(label1)) {
             Node<T> node1 = nodes.get(label1);
             if (node1.getNeighbors().containsKey(label2)) {
@@ -79,7 +80,7 @@ public class Graph<T> {
             }
         }
 
-        return new Weight(Weight.INF);
+        return (new Weight()).zero();
     }
 
     public HashMap<String,Node<T>> getNodes() {

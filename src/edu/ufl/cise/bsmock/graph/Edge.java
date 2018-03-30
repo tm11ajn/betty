@@ -1,6 +1,7 @@
 package edu.ufl.cise.bsmock.graph;
 
-import se.umu.cs.flp.aj.wta.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
 
 /**
  * The Edge class implements standard properties and methods for a weighted edge in a directed graph.
@@ -12,17 +13,17 @@ import se.umu.cs.flp.aj.wta.Weight;
 public class Edge<T> implements Cloneable, Comparable<Edge<?>> {
     private String fromNode;
     private String toNode;
-    private Weight weight;
+    private Semiring weight;
     private T label;
 
     public Edge() {
         this.fromNode = null;
         this.toNode = null;
-        this.weight = new Weight(Double.MAX_VALUE);
+        this.weight = (new Weight()).zero();
         this.label = null;
     }
 
-    public Edge(String fromNode, String toNode, Weight weight, T label) {
+    public Edge(String fromNode, String toNode, Semiring weight, T label) {
         this.fromNode = fromNode;
         this.toNode = toNode;
         this.weight = weight;
@@ -45,11 +46,11 @@ public class Edge<T> implements Cloneable, Comparable<Edge<?>> {
         this.toNode = toNode;
     }
 
-    public Weight getWeight() {
+    public Semiring getWeight() {
         return weight;
     }
 
-    public void setWeight(Weight weight) {
+    public void setWeight(Semiring weight) {
         this.weight = weight;
     }
 

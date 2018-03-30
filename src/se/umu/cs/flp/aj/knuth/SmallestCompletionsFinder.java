@@ -2,12 +2,12 @@ package se.umu.cs.flp.aj.knuth;
 
 import java.util.HashMap;
 
-import se.umu.cs.flp.aj.wta.State;
-import se.umu.cs.flp.aj.wta.WTA;
-import se.umu.cs.flp.aj.wta.Weight;
-import se.umu.cs.flp.aj.wta.exceptions.DuplicateRuleException;
-import se.umu.cs.flp.aj.wta.exceptions.SymbolUsageException;
-import se.umu.cs.flp.aj.wta_handlers.WTABuilder;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.wta.State;
+import se.umu.cs.flp.aj.nbest.wta.WTA;
+import se.umu.cs.flp.aj.nbest.wta.exceptions.DuplicateRuleException;
+import se.umu.cs.flp.aj.nbest.wta.exceptions.SymbolUsageException;
+import se.umu.cs.flp.aj.nbest.wta.handlers.WTABuilder;
 
 public class SmallestCompletionsFinder {
 
@@ -17,9 +17,9 @@ public class SmallestCompletionsFinder {
 	 * @param wta
 	 * @return
 	 */
-	public static HashMap<State, Weight> findSmallestCompletionWeights(WTA wta) {
-		HashMap<State, Weight> smallestCompletionWeights =
-				new HashMap<State, Weight>();
+	public static HashMap<State, Semiring> findSmallestCompletionWeights(WTA wta) {
+		HashMap<State, Semiring> smallestCompletionWeights =
+				new HashMap<State, Semiring>();
 
 		HashMap<String, State> states = wta.getStates();
 
@@ -49,7 +49,7 @@ public class SmallestCompletionsFinder {
 					new KnuthSmallestDerivation(modifiedWTA);
 //			HashMap<State, Weight> smallestDerivations =
 //					ksd.getSmallestDerivation();
-			Weight smallestWeight = ksd.getSmallestDerivation2();
+			Semiring smallestWeight = ksd.getSmallestDerivation2();
 
 //			Weight smallestCompletionWeight = new Weight(Weight.INF);
 //
