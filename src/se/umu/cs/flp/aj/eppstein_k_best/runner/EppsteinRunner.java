@@ -29,8 +29,8 @@ import edu.ufl.cise.bsmock.graph.Edge;
 import edu.ufl.cise.bsmock.graph.Graph;
 import edu.ufl.cise.bsmock.graph.ksp.Eppstein;
 import edu.ufl.cise.bsmock.graph.util.Path;
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.Run;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
@@ -77,7 +77,7 @@ public class EppsteinRunner {
 				for (Path<Node<Symbol>> path : pathList) {
 					Node<Symbol> node = extractTreeFromPath(path, r);
 					TreeKeeper<Symbol> keeper = new TreeKeeper<>(node);
-					Semiring w = path.getTotalCost();
+					Weight w = path.getTotalCost();
 					w = w.mult(r.getWeight());
 					keeper.addWeight(q, w);
 					treeList.put(keeper.getTree(), keeper);
@@ -102,7 +102,7 @@ public class EppsteinRunner {
 			State currentState = states.get(i-1);
 
 			for (TreeKeeper<Symbol> n : exploredTrees) {
-				Semiring w = n.getWeight(currentState);
+				Weight w = n.getWeight(currentState);
 
 				if (w != null) {
 					PriorityQueue<Run> pu = null;
@@ -151,7 +151,7 @@ public class EppsteinRunner {
 				while (!p.isEmpty() && counter < k) {
 					Run run = p.poll();
 					String dummyNode = "d" + dummyCounter;
-					graph.addEdge(vertex1, dummyNode, (new Weight()).one(), null);
+					graph.addEdge(vertex1, dummyNode, (new TropicalWeight()).one(), null);
 					graph.addEdge(dummyNode, vertex2, run.getWeight(), run.getTree().getTree());
 					dummyCounter++;
 					counter++;

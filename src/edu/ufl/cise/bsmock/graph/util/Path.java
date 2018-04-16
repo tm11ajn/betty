@@ -3,8 +3,8 @@ package edu.ufl.cise.bsmock.graph.util;
 import java.util.*;
 
 import edu.ufl.cise.bsmock.graph.*;
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 
 /**
  * The Path class implements a path in a weighted, directed graph as a sequence of Edges.
@@ -14,27 +14,27 @@ import se.umu.cs.flp.aj.nbest.semiring.Weight;
  */
 public class Path<T> implements Comparable<Path<T>> {
     private LinkedList<Edge<T>> edges;
-    private Semiring totalCost;
+    private Weight totalCost;
 
     public Path() {
         edges = new LinkedList<>();
-        totalCost = (new Weight()).one();
+        totalCost = (new TropicalWeight()).one();
     }
 
-    public Path(Semiring totalCost) {
+    public Path(Weight totalCost) {
         edges = new LinkedList<>();
         this.totalCost = totalCost;
     }
 
     public Path(LinkedList<Edge<T>> edges) {
         this.edges = edges;
-        totalCost = (new Weight()).one();
+        totalCost = (new TropicalWeight()).one();
         for (Edge<T> edge : edges) {
         	totalCost.mult(edge.getWeight());
         }
     }
 
-    public Path(LinkedList<Edge<T>> edges, Semiring totalCost) {
+    public Path(LinkedList<Edge<T>> edges, Weight totalCost) {
         this.edges = edges;
         this.totalCost = totalCost;
     }
@@ -62,18 +62,18 @@ public class Path<T> implements Comparable<Path<T>> {
         return nodes;
     }
 
-    public Semiring getTotalCost() {
+    public Weight getTotalCost() {
         return totalCost;
     }
 
-    public void setTotalCost(Semiring totalCost) {
+    public void setTotalCost(Weight totalCost) {
         this.totalCost = totalCost;
     }
 
     public void addFirstNode(String nodeLabel) {
     	Edge<T> firstEdge = edges.getFirst();
         String firstNode = firstEdge.getFromNode();
-        edges.addFirst(new Edge<T>(nodeLabel, firstNode, (new Weight()).one(),
+        edges.addFirst(new Edge<T>(nodeLabel, firstNode, (new TropicalWeight()).one(),
         		firstEdge.getLabel()));
     }
 
@@ -90,7 +90,7 @@ public class Path<T> implements Comparable<Path<T>> {
     public void addLastNode(String nodeLabel) {
     	Edge<T> lastEdge = edges.getLast();
         String lastNode = lastEdge.getToNode();
-        edges.addLast(new Edge<T>(lastNode, nodeLabel, (new Weight()).one(),
+        edges.addLast(new Edge<T>(lastNode, nodeLabel, (new TropicalWeight()).one(),
         		lastEdge.getLabel()));
     }
 
@@ -141,7 +141,7 @@ public class Path<T> implements Comparable<Path<T>> {
     }
 
     public int compareTo(Path<T> path2) {
-        Semiring path2Cost = path2.getTotalCost();
+        Weight path2Cost = path2.getTotalCost();
         return totalCost.compareTo(path2Cost);
     }
 }

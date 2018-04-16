@@ -8,8 +8,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.handlers.WTABuilder;
@@ -75,15 +75,15 @@ public class WTABuilderTest {
 
 	@Test
 	public void shouldFindSmallestCompletionWeights() throws Exception {
-		HashMap<State, Semiring> smallestCompletionWeights =
+		HashMap<State, Weight> smallestCompletionWeights =
 				wtaBuilder.findSmallestCompletionWeights(wta);
 
-		HashMap<State, Weight> expected = new HashMap<>();
+		HashMap<State, TropicalWeight> expected = new HashMap<>();
 
-		expected.put(new State("pa"), new Weight(1));
-		expected.put(new State("pb"), new Weight(1));
-		expected.put(new State("qa"), new Weight(0));
-		expected.put(new State("qb"), new Weight(0));
+		expected.put(new State("pa"), new TropicalWeight(1));
+		expected.put(new State("pb"), new TropicalWeight(1));
+		expected.put(new State("qa"), new TropicalWeight(0));
+		expected.put(new State("qb"), new TropicalWeight(0));
 
 		assertEquals(expected, smallestCompletionWeights);
 	}

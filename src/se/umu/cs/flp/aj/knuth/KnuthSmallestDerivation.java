@@ -3,8 +3,8 @@ package se.umu.cs.flp.aj.knuth;
 import java.util.HashMap;
 
 import se.umu.cs.flp.aj.heap.BinaryHeap;
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
@@ -13,8 +13,8 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 public class KnuthSmallestDerivation {
 
 	private WTA wta;
-	private BinaryHeap<State, Semiring> queue;
-	private HashMap<State, Semiring> defined;
+	private BinaryHeap<State, Weight> queue;
+	private HashMap<State, Weight> defined;
 	private State smallest;
 
 	public KnuthSmallestDerivation(WTA wta) {
@@ -24,7 +24,7 @@ public class KnuthSmallestDerivation {
 		this.smallest = null;
 	}
 
-	public Semiring getSmallestDerivation2() {
+	public Weight getSmallestDerivation() {
 		HashMap<String, State> states = wta.getStates();
 		boolean isFound = false;
 
@@ -63,11 +63,11 @@ public class KnuthSmallestDerivation {
 
 	private void updateQueue(Rule<Symbol> r) {
 		State resultingState = r.getResultingState();
-		Semiring currentWeight = queue.getWeight(resultingState);
-		Semiring newWeight = getNewWeight(r);
+		Weight currentWeight = queue.getWeight(resultingState);
+		Weight newWeight = getNewWeight(r);
 
 		if (currentWeight == null &&
-				newWeight.compareTo((new Weight()).zero()) < 0) {
+				newWeight.compareTo((new TropicalWeight()).zero()) < 0) {
 			queue.add(resultingState, newWeight);
 		} else if (currentWeight != null &&
 				newWeight.compareTo(currentWeight) < 0) {
@@ -75,8 +75,8 @@ public class KnuthSmallestDerivation {
 		}
 	}
 
-	private Semiring getNewWeight(Rule<Symbol> r) {
-		Semiring newWeight = (new Weight()).one();
+	private Weight getNewWeight(Rule<Symbol> r) {
+		Weight newWeight = (new TropicalWeight()).one();
 
 		for (State stateInRule : r.getStates()) {
 
@@ -85,7 +85,7 @@ public class KnuthSmallestDerivation {
 						get(stateInRule));
 			} else {
 				newWeight = newWeight.mult(
-						(new Weight()).zero());
+						(new TropicalWeight()).zero());
 			}
 		}
 

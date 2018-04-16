@@ -2,7 +2,7 @@ package se.umu.cs.flp.aj.knuth;
 
 import java.util.HashMap;
 
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.exceptions.DuplicateRuleException;
@@ -17,9 +17,9 @@ public class SmallestCompletionsFinder {
 	 * @param wta
 	 * @return
 	 */
-	public static HashMap<State, Semiring> findSmallestCompletionWeights(WTA wta) {
-		HashMap<State, Semiring> smallestCompletionWeights =
-				new HashMap<State, Semiring>();
+	public static HashMap<State, Weight> findSmallestCompletionWeights(WTA wta) {
+		HashMap<State, Weight> smallestCompletionWeights =
+				new HashMap<State, Weight>();
 
 		HashMap<String, State> states = wta.getStates();
 
@@ -49,7 +49,7 @@ public class SmallestCompletionsFinder {
 					new KnuthSmallestDerivation(modifiedWTA);
 //			HashMap<State, Weight> smallestDerivations =
 //					ksd.getSmallestDerivation();
-			Semiring smallestWeight = ksd.getSmallestDerivation2();
+			Weight smallestWeight = ksd.getSmallestDerivation();
 
 //			Weight smallestCompletionWeight = new Weight(Weight.INF);
 //

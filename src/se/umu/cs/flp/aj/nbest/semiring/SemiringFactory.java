@@ -20,16 +20,10 @@
 
 package se.umu.cs.flp.aj.nbest.semiring;
 
-public abstract class Weight implements Comparable<Weight> {
+public class SemiringFactory {
 
-	double value;
-
-	public abstract Weight add(Weight s);
-	public abstract Weight mult(Weight s);
-	public abstract Weight zero();
-	public abstract Weight one();
-	public abstract boolean isOne();
-	public abstract boolean isZero();
-	public abstract Weight div(Weight s);
+//	public static Semiring getSemiring() {
+//
+//	}
 
 }

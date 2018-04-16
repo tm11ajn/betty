@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import se.umu.cs.flp.aj.knuth.SmallestCompletionsFinder;
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 //import se.umu.cs.flp.aj.wta_handlers.WTABuilder;
@@ -58,7 +58,7 @@ public class NBest {
 
 		System.out.println("Pre-computing smallest completions...");
 		startTime = System.nanoTime();
-		HashMap<State, Semiring> smallestCompletions =
+		HashMap<State, Weight> smallestCompletions =
 				getSmallestCompletions(wta);
 		endTime = System.nanoTime();
 		duration = (endTime - startTime)/1000000;
@@ -118,7 +118,7 @@ public class NBest {
 
 	}
 
-	public static HashMap<State, Semiring> getSmallestCompletions(WTA wta) {
+	public static HashMap<State, Weight> getSmallestCompletions(WTA wta) {
 //		WTABuilder b = new WTABuilder();
 //		return b.findSmallestCompletionWeights(wta);
 		return SmallestCompletionsFinder.findSmallestCompletionWeights(wta);

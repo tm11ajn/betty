@@ -7,8 +7,8 @@ package edu.ufl.cise.bsmock.graph.util;
 import java.util.*;
 
 import edu.ufl.cise.bsmock.graph.*;
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 
 public final class Dijkstra<T> {
 
@@ -24,12 +24,12 @@ public final class Dijkstra<T> {
         PriorityQueue<DijkstraNode<T>> pq = new PriorityQueue<DijkstraNode<T>>();
         for (String nodeLabel:nodes.keySet()) {
             DijkstraNode<T> newNode = new DijkstraNode<>(nodeLabel);
-            newNode.setDist((new Weight()).zero());
+            newNode.setDist((new TropicalWeight()).zero());
             newNode.setDepth(Integer.MAX_VALUE);
             predecessorTree.add(newNode);
         }
         DijkstraNode<T> sourceNode = predecessorTree.getNodes().get(predecessorTree.getRoot());
-        sourceNode.setDist((new Weight()).one());
+        sourceNode.setDist((new TropicalWeight()).one());
         sourceNode.setDepth(0);
         pq.add(sourceNode);
         while (!pq.isEmpty()) {
@@ -39,8 +39,8 @@ public final class Dijkstra<T> {
         	HashMap<String, Edge<T>> neighbors = nodes.get(currLabel).getNeighbors();
         	for (String currNeighborLabel:neighbors.keySet()) {
         		DijkstraNode<T> neighborNode = predecessorTree.getNodes().get(currNeighborLabel);
-        		Semiring currDistance = neighborNode.getDist();
-        		Semiring newDistance = current.getDist().mult(nodes.get(currLabel).getNeighbors().get(currNeighborLabel).getWeight());
+        		Weight currDistance = neighborNode.getDist();
+        		Weight newDistance = current.getDist().mult(nodes.get(currLabel).getNeighbors().get(currNeighborLabel).getWeight());
         		if (newDistance.compareTo(currDistance) == -1) {
         			DijkstraNode<T> neighbor = predecessorTree.getNodes().get(currNeighborLabel);
         			pq.remove(neighbor);
@@ -60,12 +60,12 @@ public final class Dijkstra<T> {
         PriorityQueue<DijkstraNode<T>> pq = new PriorityQueue<>();
         for (String nodeLabel:nodes.keySet()) {
             DijkstraNode<T> newNode = new DijkstraNode<>(nodeLabel);
-            newNode.setDist((new Weight()).zero());
+            newNode.setDist((new TropicalWeight()).zero());
             newNode.setDepth(Integer.MAX_VALUE);
             predecessorTree.add(newNode);
         }
         DijkstraNode<T> sourceNode = predecessorTree.getNodes().get(predecessorTree.getRoot());
-        sourceNode.setDist((new Weight()).one());
+        sourceNode.setDist((new TropicalWeight()).one());
         sourceNode.setDepth(0);
         pq.add(sourceNode);
         while (!pq.isEmpty()) {
@@ -88,8 +88,8 @@ public final class Dijkstra<T> {
             HashMap<String, Edge<T>> neighbors = nodes.get(currLabel).getNeighbors();
             for (String currNeighborLabel:neighbors.keySet()) {
                 DijkstraNode<T> neighborNode = predecessorTree.getNodes().get(currNeighborLabel);
-                Semiring currDistance = neighborNode.getDist();
-                Semiring newDistance = current.getDist().mult(nodes.get(currLabel).getNeighbors().get(currNeighborLabel).getWeight());
+                Weight currDistance = neighborNode.getDist();
+                Weight newDistance = current.getDist().mult(nodes.get(currLabel).getNeighbors().get(currNeighborLabel).getWeight());
                 if (newDistance.compareTo(currDistance) == -1) {
                     DijkstraNode<T> neighbor = predecessorTree.getNodes().get(currNeighborLabel);
                     pq.remove(neighbor);

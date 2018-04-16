@@ -1,18 +1,18 @@
 package se.umu.cs.flp.aj.knuth;
 
-import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class StateHolder implements Comparable<StateHolder> {
 
 	private State state;
-	private Weight weight;
+	private TropicalWeight weight;
 
 	public StateHolder() {
 
 	}
 
-	public StateHolder(State state, Weight weight) {
+	public StateHolder(State state, TropicalWeight weight) {
 		this.state = state;
 		this.weight = weight;
 	}
@@ -25,11 +25,11 @@ public class StateHolder implements Comparable<StateHolder> {
 		return state;
 	}
 
-	public void setWeight(Weight weight) {
+	public void setWeight(TropicalWeight weight) {
 		this.weight = weight;
 	}
 
-	public Weight getWeight() {
+	public TropicalWeight getWeight() {
 		return weight;
 	}
 

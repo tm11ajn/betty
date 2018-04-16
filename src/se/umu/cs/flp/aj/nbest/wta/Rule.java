@@ -23,12 +23,12 @@ package se.umu.cs.flp.aj.nbest.wta;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 
 public class Rule<LabelType> {
 
 	private LabelType symbol;
-	private Weight weight;
+	private TropicalWeight weight;
 	private int rank = 0;
 
 	private ArrayList<State> states = new ArrayList<>();
@@ -36,7 +36,7 @@ public class Rule<LabelType> {
 
 	private State resultingState;
 
-	public Rule(LabelType symbol, Weight weight, State resultingState,
+	public Rule(LabelType symbol, TropicalWeight weight, State resultingState,
 			State ... states) {
 
 		this.symbol = symbol;
@@ -53,7 +53,7 @@ public class Rule<LabelType> {
 	public Rule(LabelType symbol, State resultingState, State ... states) {
 
 		this.symbol = symbol;
-		weight = new Weight(0);
+		weight = new TropicalWeight(0);
 		this.resultingState = resultingState;
 
 		for (State state : states) {
@@ -73,7 +73,7 @@ public class Rule<LabelType> {
 		return symbol;
 	}
 
-	public Weight getWeight() {
+	public TropicalWeight getWeight() {
 		return weight;
 	}
 

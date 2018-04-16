@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
 
 public class Node<T> {
     protected String label;
@@ -49,7 +49,7 @@ public class Node<T> {
     	neighbors.put(toNodeLabel, edge);
     }
 
-    public void addEdge(String toNodeLabel, Semiring weight, T label) {
+    public void addEdge(String toNodeLabel, Weight weight, T label) {
     	neighbors.put(toNodeLabel, new Edge<T>(this.label, toNodeLabel, weight, label));
     }
 

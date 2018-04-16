@@ -9,7 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
@@ -26,7 +26,7 @@ public class BestTreesBasicTest {
 		WTAParser parser = new WTAParser();
 		wta = parser.parse(fileName);
 
-		HashMap<State, Semiring> smallestCompletions =
+		HashMap<State, Weight> smallestCompletions =
 				NBest.getSmallestCompletions(wta);
 		BestTreesBasic.setSmallestCompletions(smallestCompletions);
 	}

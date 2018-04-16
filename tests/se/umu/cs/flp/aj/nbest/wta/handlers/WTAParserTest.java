@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.exceptions.DuplicateRuleException;
@@ -107,7 +107,7 @@ public class WTAParserTest {
 			DuplicateRuleException {
 		wtaParser.parseLine(leafRuleLineWithWeight, wta);
 		assertEquals(0, wta.getTransitionFunction().getRulesBySymbol(aSymb).
-				get(0).getWeight().compareTo(new Weight(2)));
+				get(0).getWeight().compareTo(new TropicalWeight(2)));
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class WTAParserTest {
 			DuplicateRuleException {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
 		assertEquals(0, wta.getTransitionFunction().getRulesBySymbol(fSymb).
-				get(0).getWeight().compareTo(new Weight(0.2)));
+				get(0).getWeight().compareTo(new TropicalWeight(0.2)));
 	}
 
 

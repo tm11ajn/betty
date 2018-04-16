@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 
 import se.umu.cs.flp.aj.eppstein_k_best.runner.EppsteinRunner;
 import se.umu.cs.flp.aj.nbest.helpers.SortedListMerger;
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
 import se.umu.cs.flp.aj.nbest.treedata.TreePruner;
@@ -42,11 +42,11 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 public class BestTrees {
 
 	private static ArrayList<TreeKeeper<Symbol>> exploredTrees; // T
-	private static PruneableQueue<TreeKeeper<Symbol>,Semiring> treeQueue; // K
+	private static PruneableQueue<TreeKeeper<Symbol>,Weight> treeQueue; // K
 
 
 	public static void setSmallestCompletions(
-			HashMap<State, Semiring> smallestCompletions) {
+			HashMap<State, Weight> smallestCompletions) {
 		TreeKeeper.init(smallestCompletions);
 	}
 
@@ -57,7 +57,7 @@ public class BestTrees {
 
 		// T <- empty. K <- empty
 		exploredTrees = new ArrayList<TreeKeeper<Symbol>>();
-		treeQueue = new PruneableQueue<TreeKeeper<Symbol>,Semiring>(new TreePruner<Symbol,Semiring>(N));
+		treeQueue = new PruneableQueue<TreeKeeper<Symbol>,Weight>(new TreePruner<Symbol,Weight>(N));
 
 		// enqueue(K, Sigma_0)
 		enqueueRankZeroSymbols(wta, N);

@@ -28,28 +28,28 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		implements Comparable<TreeKeeper<LabelType>> {
 
-	private static HashMap<State, Semiring> smallestCompletions;
+	private static HashMap<State, Weight> smallestCompletions;
 
 	private Node<LabelType> tree;
 	private LinkedHashMap<State,State> optimalStates;
 	private State optimalState;
-	private HashMap<State, Semiring> optWeights;
-	private Semiring smallestWeight;
+	private HashMap<State, Weight> optWeights;
+	private Weight smallestWeight;
 
 	public TreeKeeper(Node<LabelType> tree) {
 		this.tree = tree;
 		this.optWeights = new HashMap<>();
-		this.smallestWeight = (new Weight()).zero();
+		this.smallestWeight = (new TropicalWeight()).zero();
 	}
 
-	public TreeKeeper(LabelType ruleLabel, Semiring ruleWeight,
+	public TreeKeeper(LabelType ruleLabel, Weight ruleWeight,
 			ArrayList<TreeKeeper<LabelType>> trees) {
 
 		tree = new Node<LabelType>(ruleLabel);
@@ -62,7 +62,7 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		smallestWeight = smallestWeight.mult(ruleWeight);
 	}
 
-	public static void init(HashMap<State, Semiring> smallestCompletionWeights) {
+	public static void init(HashMap<State, Weight> smallestCompletionWeights) {
 		smallestCompletions = smallestCompletionWeights;
 	}
 
@@ -74,11 +74,11 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		return optimalStates;
 	}
 
-	public Semiring getWeight(State s) {
+	public Weight getWeight(State s) {
 		return optWeights.get(s);
 	}
 
-	public void addWeight(State s, Semiring w) {
+	public void addWeight(State s, Weight w) {
 
 		if (this.optWeights.containsKey(s)) {
 			if (this.optWeights.get(s).compareTo(w) == 1) {
@@ -99,18 +99,18 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 	}
 
 	public void addWeightsFrom(TreeKeeper<LabelType> t) {
-		HashMap<State, Semiring> map = t.optWeights;
+		HashMap<State, Weight> map = t.optWeights;
 
-		for (Entry<State, Semiring> e : map.entrySet()) {
+		for (Entry<State, Weight> e : map.entrySet()) {
 			addWeight(e.getKey(), e.getValue());
 		}
 	}
 
-	public Semiring getSmallestWeight() {
+	public Weight getSmallestWeight() {
 		return smallestWeight;
 	}
 
-	public Semiring getDeltaWeight() {
+	public Weight getDeltaWeight() {
 		return smallestWeight.mult(smallestCompletions.get(optimalState));
 	}
 

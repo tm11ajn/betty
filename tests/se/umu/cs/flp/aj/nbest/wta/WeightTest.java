@@ -4,22 +4,22 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 
 public class WeightTest {
 
-	Weight w = new Weight(2.1);
+	TropicalWeight w = new TropicalWeight(2.1);
 
-	Weight wLarger = new Weight(2.2);
-	Weight wSmaller = new Weight(2.0);
+	TropicalWeight wLarger = new TropicalWeight(2.2);
+	TropicalWeight wSmaller = new TropicalWeight(2.0);
 
-	Weight inf = (Weight) (new Weight()).zero();
+	TropicalWeight inf = (TropicalWeight) (new TropicalWeight()).zero();
 //	Weight ninf = new Weight(Weight.NINF);
-	Weight zero = new Weight(0);
+	TropicalWeight zero = new TropicalWeight(0);
 
 	@Test
 	public void shouldBeEqual() throws Exception {
-		assertTrue(w.equals(new Weight(2.1)));
+		assertTrue(w.equals(new TropicalWeight(2.1)));
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class WeightTest {
 
 	@Test
 	public void shouldAddTwoNumbers() throws Exception {
-		assertEquals(new Weight(2+2.1), w.mult(wSmaller));
+		assertEquals(new TropicalWeight(2+2.1), w.mult(wSmaller));
 	}
 
 	@Test

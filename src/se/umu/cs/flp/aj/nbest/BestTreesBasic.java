@@ -26,8 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.util.NestedMap;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
@@ -37,18 +37,18 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class BestTreesBasic {
 
-	private static NestedMap<Node<Symbol>, State, Semiring> treeStateValTable =
+	private static NestedMap<Node<Symbol>, State, Weight> treeStateValTable =
 			new NestedMap<>(); // C
 	private static ArrayList<Node<Symbol>> exploredTrees =
 			new ArrayList<Node<Symbol>>(); // T
 	private static LinkedList<Node<Symbol>> treeQueue = new LinkedList<>(); // K
 
-	private static HashMap<State, Semiring> smallestCompletionWeights;
+	private static HashMap<State, Weight> smallestCompletionWeights;
 	private static HashMap<Node<Symbol>, ArrayList<State>> optimalStates =
 			new HashMap<>();
 
 	public static void setSmallestCompletions(
-			HashMap<State, Semiring> smallestCompletions) {
+			HashMap<State, Weight> smallestCompletions) {
 		smallestCompletionWeights = smallestCompletions;
 	}
 
@@ -120,8 +120,8 @@ public class BestTreesBasic {
 
 				for (Rule<Symbol> r : rules) {
 					State resState = r.getResultingState();
-					Semiring weight = r.getWeight();
-					Semiring oldWeight = treeStateValTable.get(tree, resState);
+					Weight weight = r.getWeight();
+					Weight oldWeight = treeStateValTable.get(tree, resState);
 
 					if (oldWeight == null ||
 							weight.compareTo(oldWeight) == -1) {
@@ -146,12 +146,12 @@ public class BestTreesBasic {
 			ArrayList<State> states = r.getStates();
 
 			boolean canUseRule = true;
-			Semiring weightSum = (new Weight()).one();
+			Weight weightSum = (new TropicalWeight()).one();
 
 			for (int i = 0; i < nOfSubtrees; i++) {
 				Node<Symbol> subTree = tree.getChildAt(i);
 				State s = states.get(i);
-				Semiring wTemp = treeStateValTable.get(subTree, s);
+				Weight wTemp = treeStateValTable.get(subTree, s);
 
 				if (wTemp == null) {
 					canUseRule = false;
@@ -163,7 +163,7 @@ public class BestTreesBasic {
 			weightSum = weightSum.mult(r.getWeight());
 
 			if (canUseRule) {
-				Semiring currentWeight = treeStateValTable.get(tree,
+				Weight currentWeight = treeStateValTable.get(tree,
 						r.getResultingState());
 
 				if (currentWeight == null ||
@@ -176,17 +176,17 @@ public class BestTreesBasic {
 	}
 
 	public static ArrayList<State> getOptimalStates(Node<Symbol> tree) {
-		HashMap<State, Semiring> stateValTable =
+		HashMap<State, Weight> stateValTable =
 				treeStateValTable.getAll(tree);
 		ArrayList<State> optStates = new ArrayList<>();
-		Semiring minWeight = (new Weight()).zero();
+		Weight minWeight = (new TropicalWeight()).zero();
 
-		for (Entry<State, Semiring> e : stateValTable.entrySet()) {
+		for (Entry<State, Weight> e : stateValTable.entrySet()) {
 
 			State currentState = e.getKey();
-			Semiring smallestCompletionWeight = smallestCompletionWeights.get(
+			Weight smallestCompletionWeight = smallestCompletionWeights.get(
 					currentState);
-			Semiring currentWeight = e.getValue().mult(smallestCompletionWeight);
+			Weight currentWeight = e.getValue().mult(smallestCompletionWeight);
 			int comparison = currentWeight.compareTo(minWeight);
 
 			if (comparison == -1) {
@@ -204,7 +204,7 @@ public class BestTreesBasic {
 	public static void insertTreeIntoQueueByTotalMinimumWeight(
 			Node<Symbol> tree) {
 
-		Semiring wMinCurrent = getDeltaWeight(tree);
+		Weight wMinCurrent = getDeltaWeight(tree);
 
 		int queueSize = treeQueue.size();
 		int queueIndex = 0;
@@ -212,7 +212,7 @@ public class BestTreesBasic {
 		for (int i = 0; i < queueSize; i++) {
 			Node<Symbol> t = treeQueue.get(i);
 
-			Semiring wMinTemp = getDeltaWeight(t);
+			Weight wMinTemp = getDeltaWeight(t);
 
 			if (wMinTemp.compareTo(wMinCurrent) == -1) {
 				queueIndex = i + 1;
@@ -227,14 +227,14 @@ public class BestTreesBasic {
 		treeQueue.add(queueIndex, tree);
 	}
 
-	public static Semiring getDeltaWeight(Node<Symbol> tree) {
+	public static Weight getDeltaWeight(Node<Symbol> tree) {
 
-		Semiring delta = (new Weight()).one();
+		Weight delta = (new TropicalWeight()).one();
 
 		State optimalState = optimalStates.get(tree).get(0);
 
-		Semiring minWeight = treeStateValTable.get(tree, optimalState);
-		Semiring smallestCompletionWeight = smallestCompletionWeights.
+		Weight minWeight = treeStateValTable.get(tree, optimalState);
+		Weight smallestCompletionWeight = smallestCompletionWeights.
 				get(optimalState);
 
 		delta = minWeight.mult(smallestCompletionWeight);

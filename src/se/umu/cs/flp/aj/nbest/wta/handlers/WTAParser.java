@@ -25,7 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
@@ -130,7 +130,7 @@ public class WTAParser {
 
 		if (labels.length == 3) {
 			double value = Double.parseDouble(labels[2]);
-			Weight weight = new Weight(value);
+			TropicalWeight weight = new TropicalWeight(value);
 			newRule = new Rule<>(symbol, weight, resultingState);
 		} else {
 			newRule = new Rule<>(symbol, resultingState);
@@ -147,11 +147,11 @@ public class WTAParser {
 		int numberOfLabels = labels.length;
 		int numberOfLeftHandStates = numberOfLabels - 2;
 
-		Weight weight = new Weight(0);
+		TropicalWeight weight = new TropicalWeight(0);
 
 		if (line.contains("#")) {
 			double value = Double.parseDouble(labels[numberOfLabels - 1]);
-			weight = new Weight(value);
+			weight = new TropicalWeight(value);
 			numberOfLeftHandStates -= 1;
 		}
 

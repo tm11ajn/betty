@@ -3,7 +3,7 @@ package se.umu.cs.flp.aj.nbest.helpers;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
 
 public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>> implements Comparator<ArrayList<TreeKeeper<LabelType>>> {
@@ -12,8 +12,8 @@ public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>
 	public int compare(ArrayList<TreeKeeper<LabelType>> list1,
 			ArrayList<TreeKeeper<LabelType>> list2) {
 
-		Semiring weight1 = null;
-		Semiring weight2 = null;
+		Weight weight1 = null;
+		Weight weight2 = null;
 
 		int counter = 0;
 
@@ -22,7 +22,7 @@ public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>
 			if (counter == 0) {
 				weight1 = t.getSmallestWeight();
 			} else {
-				weight1 = (Semiring) weight1.mult(t.getSmallestWeight());
+				weight1 = (Weight) weight1.mult(t.getSmallestWeight());
 			}
 
 			counter++;
@@ -35,7 +35,7 @@ public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>
 			if (counter == 0) {
 				weight2 = t.getSmallestWeight();
 			} else {
-				weight2 = (Semiring) weight2.mult(t.getSmallestWeight());
+				weight2 = (Weight) weight2.mult(t.getSmallestWeight());
 			}
 		}
 

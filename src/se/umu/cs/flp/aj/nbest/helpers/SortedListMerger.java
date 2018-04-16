@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
 import se.umu.cs.flp.aj.nbest.wta.State;
@@ -75,8 +75,8 @@ public class SortedListMerger {
 				iterator2.remove();
 				currentEntry2 = null;
 			} else if (currentEntry1 != null && currentEntry2 != null) {
-				Semiring weight1 = currentEntry1.getValue().getWeight(q);
-				Semiring weight2 = currentEntry2.getValue().getWeight(q);
+				Weight weight1 = currentEntry1.getValue().getWeight(q);
+				Weight weight2 = currentEntry2.getValue().getWeight(q);
 
 				compResult = weight1.compareTo(weight2);
 
@@ -176,8 +176,8 @@ public class SortedListMerger {
 				currentEntry2 = null;
 			} else if (currentEntry1 != null && currentEntry2 != null) {
 
-				Semiring weight1 = currentEntry1.getValue().getDeltaWeight();
-				Semiring weight2 = currentEntry2.getValue().getDeltaWeight();
+				Weight weight1 = currentEntry1.getValue().getDeltaWeight();
+				Weight weight2 = currentEntry2.getValue().getDeltaWeight();
 
 				compResult = weight1.compareTo(weight2);
 

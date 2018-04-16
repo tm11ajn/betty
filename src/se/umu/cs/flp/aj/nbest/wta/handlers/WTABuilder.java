@@ -25,8 +25,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
@@ -46,9 +46,9 @@ public class WTABuilder {
 	 * @param wta
 	 * @return
 	 */
-	public HashMap<State, Semiring> findSmallestCompletionWeights(WTA wta) {
-		HashMap<State, Semiring> smallestCompletionWeights =
-				new HashMap<State, Semiring>();
+	public HashMap<State, Weight> findSmallestCompletionWeights(WTA wta) {
+		HashMap<State, Weight> smallestCompletionWeights =
+				new HashMap<State, Weight>();
 
 		Collection<State> states = wta.getStates().values();
 
@@ -80,10 +80,10 @@ public class WTABuilder {
 			int nOfModifiedStates = modifiedStates.size();
 
 			HashMap<State, State> defined = new HashMap<>();
-			HashMap<State, Semiring> weights = new HashMap<>();
+			HashMap<State, Weight> weights = new HashMap<>();
 
 			for (State s : modifiedStates) {
-				weights.put(s, (new Weight()).zero());
+				weights.put(s, (new TropicalWeight()).zero());
 			}
 
 			while (defined.size() < nOfModifiedStates) {
@@ -91,7 +91,7 @@ public class WTABuilder {
 				for (Rule<Symbol> r : modifiedRules) {
 					ArrayList<State> leftHandStates = r.getStates();
 					State resultingState = r.getResultingState();
-					Semiring newWeight = (new Weight()).one();
+					Weight newWeight = (new TropicalWeight()).one();
 					boolean allDefined = true;
 
 					for (State s : leftHandStates) {
@@ -107,7 +107,7 @@ public class WTABuilder {
 					newWeight = newWeight.mult(r.getWeight());
 
 					if (allDefined) {
-						Semiring oldWeight = weights.get(resultingState);
+						Weight oldWeight = weights.get(resultingState);
 
 						if (newWeight.compareTo(oldWeight) == 1) {
 							newWeight = oldWeight;
@@ -117,11 +117,11 @@ public class WTABuilder {
 					}
 				}
 
-				Semiring smallestWeight = (new Weight()).zero();
+				Weight smallestWeight = (new TropicalWeight()).zero();
 				State smallestState = null;
 
-				for (Entry<State, Semiring> e : weights.entrySet()) {
-					Semiring tempWeight = e.getValue();
+				for (Entry<State, Weight> e : weights.entrySet()) {
+					Weight tempWeight = e.getValue();
 					State tempState = e.getKey();
 
 					if (!defined.containsKey(tempState) &&
@@ -136,10 +136,10 @@ public class WTABuilder {
 
 			}
 
-			Semiring smallestCompletionWeight = (new Weight()).zero();
+			Weight smallestCompletionWeight = (new TropicalWeight()).zero();
 
 			for (State s : modifiedFinalStates) {
-				Semiring tempWeight = weights.get(s);
+				Weight tempWeight = weights.get(s);
 
 				if (tempWeight == null) {
 					System.err.println("In getting the smallest completion, "
@@ -199,7 +199,7 @@ public class WTABuilder {
 					State.RESERVED_LABEL_EXTENSION_STRING));
 		}
 
-		Rule<Symbol> reservedSymbolRule = new Rule<>(reservedSymbol, new Weight(0),
+		Rule<Symbol> reservedSymbolRule = new Rule<>(reservedSymbol, new TropicalWeight(0),
 				reservedSymbolState);
 		modWTA.getTransitionFunction().addRule(reservedSymbolRule);
 
