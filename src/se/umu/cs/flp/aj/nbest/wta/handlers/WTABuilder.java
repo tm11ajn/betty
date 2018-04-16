@@ -22,11 +22,8 @@ package se.umu.cs.flp.aj.nbest.wta.handlers;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map.Entry;
 
-import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
@@ -40,131 +37,11 @@ public class WTABuilder {
 
 	}
 
-	/**
-	 * Using modification of WTA along with Knuth's generalization of Dijkstra's
-	 * algorithm to get the weights of the smallest completions.
-	 * @param wta
-	 * @return
-	 */
-	public HashMap<State, Weight> findSmallestCompletionWeights(WTA wta) {
-		HashMap<State, Weight> smallestCompletionWeights =
-				new HashMap<State, Weight>();
-
-		Collection<State> states = wta.getStates().values();
-
-		/*
-		 * Build a modified WTA for each state in the original WTA
-		 * and get the weight of the smallest tree that is accepted
-		 * by the new WTA, that is, the smallest context with the
-		 * current state as the connector.
-		 */
-		for (State state : states) {
-
-			WTA modifiedWTA = null;
-
-			try {
-				modifiedWTA = buildModifiedWTA(wta, state);
-			} catch (SymbolUsageException e) {
-				System.err.println("Cannot build modified WTA: " + e.getMessage());
-				System.exit(-1);
-			} catch (DuplicateRuleException e) {
-				System.err.println("Cannot build modified WTA: " + e.getMessage());
-				System.exit(-1);
-			}
-
-			Collection<State> modifiedStates = modifiedWTA.getStates().values();
-			ArrayList<State> modifiedFinalStates = modifiedWTA.getFinalStates();
-			ArrayList<Rule<Symbol>> modifiedRules = modifiedWTA.
-					getTransitionFunction().getRules();
-
-			int nOfModifiedStates = modifiedStates.size();
-
-			HashMap<State, State> defined = new HashMap<>();
-			HashMap<State, Weight> weights = new HashMap<>();
-
-			for (State s : modifiedStates) {
-				weights.put(s, (new TropicalWeight()).zero());
-			}
-
-			while (defined.size() < nOfModifiedStates) {
-
-				for (Rule<Symbol> r : modifiedRules) {
-					ArrayList<State> leftHandStates = r.getStates();
-					State resultingState = r.getResultingState();
-					Weight newWeight = (new TropicalWeight()).one();
-					boolean allDefined = true;
-
-					for (State s : leftHandStates) {
-
-						if (!defined.containsKey(s)) {
-							allDefined = false;
-							break;
-						}
-
-						newWeight = newWeight.mult(weights.get(s));
-					}
-
-					newWeight = newWeight.mult(r.getWeight());
-
-					if (allDefined) {
-						Weight oldWeight = weights.get(resultingState);
-
-						if (newWeight.compareTo(oldWeight) == 1) {
-							newWeight = oldWeight;
-						}
-
-						weights.put(resultingState, newWeight);
-					}
-				}
-
-				Weight smallestWeight = (new TropicalWeight()).zero();
-				State smallestState = null;
-
-				for (Entry<State, Weight> e : weights.entrySet()) {
-					Weight tempWeight = e.getValue();
-					State tempState = e.getKey();
-
-					if (!defined.containsKey(tempState) &&
-							smallestWeight.compareTo(tempWeight) > -1) {
-						smallestWeight = tempWeight;
-						smallestState = tempState;
-					}
-				}
-
-				defined.put(smallestState, smallestState);
-				modifiedStates.remove(smallestState);
-
-			}
-
-			Weight smallestCompletionWeight = (new TropicalWeight()).zero();
-
-			for (State s : modifiedFinalStates) {
-				Weight tempWeight = weights.get(s);
-
-				if (tempWeight == null) {
-					System.err.println("In getting the smallest completion, "
-							+ "the final state " + s + "did not have any weight"
-							+ "assigned to it");
-					System.exit(-1);
-				}
-
-				if (tempWeight.compareTo(smallestCompletionWeight) == -1) {
-					smallestCompletionWeight = tempWeight;
-				}
-			}
-
-			smallestCompletionWeights.put(state, smallestCompletionWeight);
-
-		}
-
-		return smallestCompletionWeights;
-	}
-
-
 	public WTA buildModifiedWTA(WTA wta, State state)
 			throws SymbolUsageException, DuplicateRuleException {
 
-		WTA modWTA = new WTA();
+		Semiring semiring = wta.getTransitionFunction().getSemiring();
+		WTA modWTA = new WTA(semiring);
 
 		ArrayList<Symbol> symbols = wta.getSymbols();
 		Collection<State> states = wta.getStates().values();
@@ -199,8 +76,8 @@ public class WTABuilder {
 					State.RESERVED_LABEL_EXTENSION_STRING));
 		}
 
-		Rule<Symbol> reservedSymbolRule = new Rule<>(reservedSymbol, new TropicalWeight(0),
-				reservedSymbolState);
+		Rule<Symbol> reservedSymbolRule = new Rule<>(reservedSymbol,
+				semiring.one(), reservedSymbolState);
 		modWTA.getTransitionFunction().addRule(reservedSymbolRule);
 
 		for (Rule<Symbol> r : rules) {

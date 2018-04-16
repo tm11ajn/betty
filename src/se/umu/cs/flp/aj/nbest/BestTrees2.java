@@ -129,7 +129,8 @@ public class BestTrees2 {
 
 			if (s.getRank() == 0) {
 				Node<Symbol> node = new Node<Symbol>(s);
-				TreeKeeper<Symbol> tree = new TreeKeeper<>(node);
+				TreeKeeper<Symbol> tree = new TreeKeeper<>(node,
+						wta.getTransitionFunction().getSemiring());
 
 				ArrayList<Rule<Symbol>> rules = wta.getTransitionFunction().
 						getRulesBySymbol(s);

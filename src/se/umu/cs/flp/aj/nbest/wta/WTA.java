@@ -23,6 +23,7 @@ package se.umu.cs.flp.aj.nbest.wta;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.wta.exceptions.SymbolUsageException;
 
 public class WTA {
@@ -35,11 +36,10 @@ public class WTA {
 
 	private RankedAlphabet rankedAlphabet = new RankedAlphabet();
 
-	private TransitionFunction<Symbol> transitionFunction =
-			new TransitionFunction<>();
+	private TransitionFunction<Symbol> transitionFunction;
 
-	public WTA() {
-
+	public WTA(Semiring semiring) {
+		this.transitionFunction = new TransitionFunction<>(semiring);
 	}
 
 	public TransitionFunction<Symbol> getTransitionFunction() {

@@ -2,8 +2,8 @@ package edu.ufl.cise.bsmock.graph.ksp;
 
 import edu.ufl.cise.bsmock.graph.*;
 import edu.ufl.cise.bsmock.graph.util.*;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 
 import java.util.*;
 
@@ -31,7 +31,11 @@ import java.util.*;
  */
 public final class Eppstein<T> {
 
-    public Eppstein() {};
+	protected static Semiring semiring;
+
+    public Eppstein(Semiring semiring) {
+    	Eppstein.semiring = semiring;
+    }
 
     /**
      * Computes the K shortest paths (allowing cycles) in a graph from node s to node t in graph G using Eppstein's
@@ -88,10 +92,10 @@ public final class Eppstein<T> {
         Dijkstra<T> dijkstra = null;
 
         try {
-        	dijkstra = new Dijkstra<>();
+        	dijkstra = new Dijkstra<>(semiring);
             tree = dijkstra.shortestPathTree(graph.transpose(), targetLabel);
         } catch (Exception e) {
-            tree = new ShortestPathTree<>(targetLabel);
+            tree = new ShortestPathTree<>(semiring, targetLabel);
         }
 
         if (dijkstra.shortestPath(graph.transpose(), targetLabel, sourceLabel) == null) {
@@ -122,7 +126,7 @@ public final class Eppstein<T> {
             H_T(v) bottom-up, starting with the root node of the tree, T.
             -- To facilitate bottom-up computation, reverse the edges of the shortest path tree so each node points to
             its children instead of its parent. */
-        Graph<T> reversedSPT = new Graph<>();
+        Graph<T> reversedSPT = new Graph<>(semiring);
         for (DijkstraNode<T> node: tree.getNodes().values()) {
         	reversedSPT.addEdge(node.getParent(),node.getLabel(),graph.getNode(node.getLabel()).getNeighbors().get(node.getParent()));
         	graph.getNode(node.getLabel());
@@ -137,7 +141,7 @@ public final class Eppstein<T> {
 
         // Create a virtual/dummy heap that is the root of the overall Eppstein heap. It represents the best path from
         // the source node to the target node, which does not involve any sidetrack edges.
-        EppsteinHeap<T> hg = new EppsteinHeap<>(new Edge<T>(sourceLabel,sourceLabel,(new TropicalWeight()).one(),null)); // TODO CHECK LABEL
+        EppsteinHeap<T> hg = new EppsteinHeap<>(new Edge<T>(sourceLabel,sourceLabel,semiring.one(),null)); // TODO CHECK LABEL
 
         // Initialize the containers for the candidate k shortest paths and the actual found k shortest paths
         ArrayList<Path<T>> ksp = new ArrayList<>();
@@ -218,7 +222,7 @@ public final class Eppstein<T> {
         // This list holds the 2nd through last sidetrack edges, ordered by sidetrack cost
         ArrayList<Edge<T>> sidetrackEdges = new ArrayList<>();
         Edge<T> bestSidetrack = null;
-        Weight minSidetrackCost = (new TropicalWeight()).zero();
+        Weight minSidetrackCost = semiring.zero();
         // Iterate over the outgoing edges of v
         for (String neighbor : node.getAdjacencyList()) {
             String edgeLabel = nodeLabel+","+neighbor+","+node.getNeighbors().get(neighbor).getLabel();
@@ -379,7 +383,7 @@ public final class Eppstein<T> {
  */
 class EppsteinHeap<T> {
     private Edge<T> sidetrack; // the sidetrack edge (u,v) associated with the root of this heap or sub-heap
-    private Weight sidetrackCost = (new TropicalWeight()).one();
+    private Weight sidetrackCost = Eppstein.semiring.one();
     private ArrayList<EppsteinHeap<T>> children; // supports N children but Eppstein is limited to 4
     private int numOtherSidetracks = 0; // number of elements of H_out(u) - 1
 
@@ -604,7 +608,7 @@ class EppsteinPath<T> implements Comparable<EppsteinPath<T>> {
     // 2) the sidetrack edge (u,v)
     // 3) the shortest path (in the shortest path tree) from node v to node t (target)
     public Path<T> explicitPath(List<Path<T>> ksp, ShortestPathTree<T> tree, Graph<T> graph) {
-        Path<T> explicitPath = new Path<>();
+        Path<T> explicitPath = new Path<>(Eppstein.semiring);
 
         // If path is not the shortest path in the graph...
         if (prefPath >= 0) {
@@ -629,7 +633,7 @@ class EppsteinPath<T> implements Comparable<EppsteinPath<T>> {
 
             // 1b) Add the s-u portion of the path
             // Copy the explicit parent path up to the identified point where the current/child path sidetracks
-            explicitPath = new Path<>();
+            explicitPath = new Path<>(Eppstein.semiring);
             for (int i = 0; i <= lastEdgeNum; i++) {
                 explicitPath.add(edges.get(i));
             }

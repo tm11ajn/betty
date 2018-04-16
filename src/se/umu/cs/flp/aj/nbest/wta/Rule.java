@@ -23,12 +23,12 @@ package se.umu.cs.flp.aj.nbest.wta;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
 
 public class Rule<LabelType> {
 
 	private LabelType symbol;
-	private TropicalWeight weight;
+	private Weight weight;
 	private int rank = 0;
 
 	private ArrayList<State> states = new ArrayList<>();
@@ -36,7 +36,7 @@ public class Rule<LabelType> {
 
 	private State resultingState;
 
-	public Rule(LabelType symbol, TropicalWeight weight, State resultingState,
+	public Rule(LabelType symbol, Weight weight, State resultingState,
 			State ... states) {
 
 		this.symbol = symbol;
@@ -50,19 +50,19 @@ public class Rule<LabelType> {
 		}
 	}
 
-	public Rule(LabelType symbol, State resultingState, State ... states) {
-
-		this.symbol = symbol;
-		weight = new TropicalWeight(0);
-		this.resultingState = resultingState;
-
-		for (State state : states) {
-			this.states.add(state);
-			this.stateMap.put(state, state);
-			rank++;
-		}
-
-	}
+//	public Rule(LabelType symbol, State resultingState, State ... states) {
+//
+//		this.symbol = symbol;
+//		weight = new TropicalWeight(0);
+//		this.resultingState = resultingState;
+//
+//		for (State state : states) {
+//			this.states.add(state);
+//			this.stateMap.put(state, state);
+//			rank++;
+//		}
+//
+//	}
 
 	public void addState(State state) {
 		this.states.add(state);
@@ -73,7 +73,7 @@ public class Rule<LabelType> {
 		return symbol;
 	}
 
-	public TropicalWeight getWeight() {
+	public Weight getWeight() {
 		return weight;
 	}
 

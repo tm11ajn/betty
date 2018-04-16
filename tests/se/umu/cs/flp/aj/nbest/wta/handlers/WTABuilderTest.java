@@ -2,14 +2,12 @@ package se.umu.cs.flp.aj.nbest.wta.handlers;
 
 import static org.junit.Assert.*;
 
-import java.util.HashMap;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalSemiring;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.handlers.WTABuilder;
@@ -17,13 +15,14 @@ import se.umu.cs.flp.aj.nbest.wta.handlers.WTAParser;
 
 public class WTABuilderTest {
 
+	private Semiring semiring = new TropicalSemiring();
 	private String fileName = "wta_examples/wta0.rtg";
 	private WTA wta;
 	private WTABuilder wtaBuilder;
 
 	@Before
 	public void setUp() throws Exception {
-		WTAParser parser = new WTAParser();
+		WTAParser parser = new WTAParser(semiring);
 		wta = parser.parse(fileName);
 		wtaBuilder = new WTABuilder();
 	}
@@ -73,19 +72,20 @@ public class WTABuilderTest {
 				modWTA.toString());
 	}
 
-	@Test
-	public void shouldFindSmallestCompletionWeights() throws Exception {
-		HashMap<State, Weight> smallestCompletionWeights =
-				wtaBuilder.findSmallestCompletionWeights(wta);
-
-		HashMap<State, TropicalWeight> expected = new HashMap<>();
-
-		expected.put(new State("pa"), new TropicalWeight(1));
-		expected.put(new State("pb"), new TropicalWeight(1));
-		expected.put(new State("qa"), new TropicalWeight(0));
-		expected.put(new State("qb"), new TropicalWeight(0));
-
-		assertEquals(expected, smallestCompletionWeights);
-	}
+	// TODO make a smallestcompletionsfindertest instead
+//	@Test
+//	public void shouldFindSmallestCompletionWeights() throws Exception {
+//		HashMap<State, Weight> smallestCompletionWeights =
+//				wtaBuilder.findSmallestCompletionWeights(wta);
+//
+//		HashMap<State, Weight> expected = new HashMap<>();
+//
+//		expected.put(new State("pa"), new TropicalWeight(1));
+//		expected.put(new State("pb"), new TropicalWeight(1));
+//		expected.put(new State("qa"), new TropicalWeight(0));
+//		expected.put(new State("qb"), new TropicalWeight(0));
+//
+//		assertEquals(expected, smallestCompletionWeights);
+//	}
 
 }

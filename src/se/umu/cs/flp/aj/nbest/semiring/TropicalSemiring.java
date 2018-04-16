@@ -27,7 +27,6 @@ public class TropicalSemiring extends Semiring {
 
 	public class TropicalWeight extends Weight {
 
-		private static final double INF = Double.MAX_VALUE;
 		private static final double NINF = Double.MIN_VALUE;
 
 		public TropicalWeight() {
@@ -125,9 +124,9 @@ public class TropicalSemiring extends Semiring {
 
 			if (this.value == o.value) {
 				return 0;
-			} else if (this.value == INF || o.value == NINF) {
+			} else if (this.value == zero || o.value == NINF) {
 				return 1;
-			} else if (this.value == NINF || o.value == INF) {
+			} else if (this.value == NINF || o.value == zero) {
 				return -1;
 			}
 
@@ -143,6 +142,11 @@ public class TropicalSemiring extends Semiring {
 			return "" + value;
 		}
 
+	}
+
+	@Override
+	public Weight createWeight(double d) {
+		return new TropicalWeight(d);
 	}
 
 	@Override

@@ -29,8 +29,8 @@ import edu.ufl.cise.bsmock.graph.Edge;
 import edu.ufl.cise.bsmock.graph.Graph;
 import edu.ufl.cise.bsmock.graph.ksp.Eppstein;
 import edu.ufl.cise.bsmock.graph.util.Path;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.Run;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
@@ -43,6 +43,7 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 public class EppsteinRunner {
 
 	private ArrayList<TreeKeeper<Symbol>> exploredTrees;
+
 
 	public EppsteinRunner(ArrayList<TreeKeeper<Symbol>> exploredTrees) {
 		this.exploredTrees = exploredTrees;
@@ -57,8 +58,10 @@ public class EppsteinRunner {
 				getRulesByResultingState(q);
 
 		for (Rule<Symbol> r : rules) {
-			Graph<Node<Symbol>> graph = new Graph<>();
-			Eppstein<Node<Symbol>> epp = new Eppstein<>();
+			Graph<Node<Symbol>> graph = new Graph<>(
+					wta.getTransitionFunction().getSemiring());
+			Eppstein<Node<Symbol>> epp = new Eppstein<>(
+					wta.getTransitionFunction().getSemiring());
 
 			ArrayList<State> states = r.getStates();
 			int nOfStates = states.size();
@@ -67,7 +70,8 @@ public class EppsteinRunner {
 					buildEdges(states, tree);
 
 			if (edgeMap.keySet().size() > nOfStates) {
-				addKSmallestEdgesToGraph(graph, k, edgeMap, tree);
+				addKSmallestEdgesToGraph(graph, k, edgeMap, tree,
+						wta.getTransitionFunction().getSemiring());
 
 				List<Path<Node<Symbol>>> pathList = epp.ksp(graph, "u0",
 						"v" + nOfStates, k);
@@ -76,7 +80,8 @@ public class EppsteinRunner {
 
 				for (Path<Node<Symbol>> path : pathList) {
 					Node<Symbol> node = extractTreeFromPath(path, r);
-					TreeKeeper<Symbol> keeper = new TreeKeeper<>(node);
+					TreeKeeper<Symbol> keeper = new TreeKeeper<>(node,
+							wta.getTransitionFunction().getSemiring());
 					Weight w = path.getTotalCost();
 					w = w.mult(r.getWeight());
 					keeper.addWeight(q, w);
@@ -138,7 +143,7 @@ public class EppsteinRunner {
 
 	private void addKSmallestEdgesToGraph(Graph<Node<Symbol>> graph,
 			int k, NestedMap<String, String, PriorityQueue<Run>> edgeMap,
-			TreeKeeper<Symbol> tree) {
+			TreeKeeper<Symbol> tree, Semiring semiring) {
 
 		int dummyCounter = 0;
 
@@ -151,7 +156,7 @@ public class EppsteinRunner {
 				while (!p.isEmpty() && counter < k) {
 					Run run = p.poll();
 					String dummyNode = "d" + dummyCounter;
-					graph.addEdge(vertex1, dummyNode, (new TropicalWeight()).one(), null);
+					graph.addEdge(vertex1, dummyNode, semiring.one(), null);
 					graph.addEdge(dummyNode, vertex2, run.getWeight(), run.getTree().getTree());
 					dummyCounter++;
 					counter++;

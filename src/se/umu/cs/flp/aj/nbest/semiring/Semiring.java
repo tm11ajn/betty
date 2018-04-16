@@ -22,6 +22,7 @@ package se.umu.cs.flp.aj.nbest.semiring;
 
 public abstract class Semiring {
 
+	public abstract Weight createWeight(double d);
 	public abstract Weight zero();
 	public abstract Weight one();
 	public abstract boolean isOne(Weight w);

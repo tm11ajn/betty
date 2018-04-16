@@ -26,8 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.util.NestedMap;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
@@ -47,12 +47,16 @@ public class BestTreesBasic {
 	private static HashMap<Node<Symbol>, ArrayList<State>> optimalStates =
 			new HashMap<>();
 
+	private static Semiring semiring;
+
 	public static void setSmallestCompletions(
 			HashMap<State, Weight> smallestCompletions) {
 		smallestCompletionWeights = smallestCompletions;
 	}
 
 	public static List<String> run(WTA wta, int N) {
+
+		semiring = wta.getTransitionFunction().getSemiring();
 
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();
@@ -146,7 +150,7 @@ public class BestTreesBasic {
 			ArrayList<State> states = r.getStates();
 
 			boolean canUseRule = true;
-			Weight weightSum = (new TropicalWeight()).one();
+			Weight weightSum = semiring.one();
 
 			for (int i = 0; i < nOfSubtrees; i++) {
 				Node<Symbol> subTree = tree.getChildAt(i);
@@ -179,7 +183,7 @@ public class BestTreesBasic {
 		HashMap<State, Weight> stateValTable =
 				treeStateValTable.getAll(tree);
 		ArrayList<State> optStates = new ArrayList<>();
-		Weight minWeight = (new TropicalWeight()).zero();
+		Weight minWeight = semiring.zero();
 
 		for (Entry<State, Weight> e : stateValTable.entrySet()) {
 
@@ -229,7 +233,7 @@ public class BestTreesBasic {
 
 	public static Weight getDeltaWeight(Node<Symbol> tree) {
 
-		Weight delta = (new TropicalWeight()).one();
+		Weight delta = semiring.one();
 
 		State optimalState = optimalStates.get(tree).get(0);
 

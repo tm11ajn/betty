@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class TreeKeeper<LabelType extends Comparable<LabelType>>
@@ -43,10 +43,10 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 	private HashMap<State, Weight> optWeights;
 	private Weight smallestWeight;
 
-	public TreeKeeper(Node<LabelType> tree) {
+	public TreeKeeper(Node<LabelType> tree, Semiring semiring) {
 		this.tree = tree;
 		this.optWeights = new HashMap<>();
-		this.smallestWeight = (new TropicalWeight()).zero();
+		this.smallestWeight = semiring.zero();
 	}
 
 	public TreeKeeper(LabelType ruleLabel, Weight ruleWeight,
@@ -170,12 +170,6 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 
 		return false;
 	}
-
-//	@Override
-//	public int compareTo(TreeKeeper<LabelType> arg0) {
-//		// TODO Auto-generated method stub
-//		return 0;
-//	}
 
 	@Override
 	public int compareTo(TreeKeeper<LabelType> o) {

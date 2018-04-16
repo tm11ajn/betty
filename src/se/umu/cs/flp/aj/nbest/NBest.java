@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import se.umu.cs.flp.aj.knuth.SmallestCompletionsFinder;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalSemiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
@@ -46,7 +48,10 @@ public class NBest {
 		String fileName = getFileName(args);
 		int N = getN(args);
 
-		WTAParser wtaParser = new WTAParser();
+		// TODO: change so that the user can choose semiring
+		Semiring semiring = new TropicalSemiring();
+
+		WTAParser wtaParser = new WTAParser(semiring);
 		WTA wta = wtaParser.parse(fileName);
 
 		long startTime;

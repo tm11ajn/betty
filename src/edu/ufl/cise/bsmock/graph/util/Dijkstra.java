@@ -7,29 +7,34 @@ package edu.ufl.cise.bsmock.graph.util;
 import java.util.*;
 
 import edu.ufl.cise.bsmock.graph.*;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 
 public final class Dijkstra<T> {
 
-    public Dijkstra() {}
+	private Semiring semiring;
+
+    public Dijkstra(Semiring semiring) {
+    	this.semiring = semiring;
+    }
 
     public ShortestPathTree<T> shortestPathTree(Graph<T> graph, String sourceLabel) throws Exception {
 
         HashMap<String,Node<T>> nodes = graph.getNodes();
         if (!nodes.containsKey(sourceLabel))
             throw new Exception("Source node not found in graph.");
-        ShortestPathTree<T> predecessorTree = new ShortestPathTree<T>(sourceLabel);
+        ShortestPathTree<T> predecessorTree =
+        		new ShortestPathTree<T>(semiring, sourceLabel);
         Set<DijkstraNode<T>> visited = new HashSet<DijkstraNode<T>>();
         PriorityQueue<DijkstraNode<T>> pq = new PriorityQueue<DijkstraNode<T>>();
         for (String nodeLabel:nodes.keySet()) {
-            DijkstraNode<T> newNode = new DijkstraNode<>(nodeLabel);
-            newNode.setDist((new TropicalWeight()).zero());
+            DijkstraNode<T> newNode = new DijkstraNode<>(semiring, nodeLabel);
+            newNode.setDist(semiring.zero());
             newNode.setDepth(Integer.MAX_VALUE);
             predecessorTree.add(newNode);
         }
         DijkstraNode<T> sourceNode = predecessorTree.getNodes().get(predecessorTree.getRoot());
-        sourceNode.setDist((new TropicalWeight()).one());
+        sourceNode.setDist(semiring.one());
         sourceNode.setDepth(0);
         pq.add(sourceNode);
         while (!pq.isEmpty()) {
@@ -56,16 +61,17 @@ public final class Dijkstra<T> {
 
     public Path<T> shortestPath(Graph<T> graph, String sourceLabel, String targetLabel) {
     	HashMap<String, Node<T>> nodes = graph.getNodes();
-        ShortestPathTree<T> predecessorTree = new ShortestPathTree<>(sourceLabel);
+        ShortestPathTree<T> predecessorTree =
+        		new ShortestPathTree<>(semiring, sourceLabel);
         PriorityQueue<DijkstraNode<T>> pq = new PriorityQueue<>();
         for (String nodeLabel:nodes.keySet()) {
-            DijkstraNode<T> newNode = new DijkstraNode<>(nodeLabel);
-            newNode.setDist((new TropicalWeight()).zero());
+            DijkstraNode<T> newNode = new DijkstraNode<>(semiring, nodeLabel);
+            newNode.setDist(semiring.zero());
             newNode.setDepth(Integer.MAX_VALUE);
             predecessorTree.add(newNode);
         }
         DijkstraNode<T> sourceNode = predecessorTree.getNodes().get(predecessorTree.getRoot());
-        sourceNode.setDist((new TropicalWeight()).one());
+        sourceNode.setDist(semiring.one());
         sourceNode.setDepth(0);
         pq.add(sourceNode);
         while (!pq.isEmpty()) {
@@ -73,7 +79,7 @@ public final class Dijkstra<T> {
             String currLabel = current.getLabel();
             if (currLabel.equals(targetLabel)) {
 
-                Path<T> shortestPath = new Path<>();
+                Path<T> shortestPath = new Path<>(semiring);
                 String currentN = targetLabel;
                 String parentN = predecessorTree.getParentOf(currentN);
 

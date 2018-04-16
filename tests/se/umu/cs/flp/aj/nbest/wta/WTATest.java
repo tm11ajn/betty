@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalSemiring;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
@@ -13,7 +15,8 @@ import se.umu.cs.flp.aj.nbest.wta.exceptions.SymbolUsageException;
 
 public class WTATest {
 
-	private WTA wta = new WTA();
+	private Semiring semiring = new TropicalSemiring();
+	private WTA wta = new WTA(semiring);
 	private Symbol aSymb = new Symbol("a", 0);
 	private Symbol fSymb = new Symbol("f", 2);
 	private State state = new State("q0");
@@ -41,51 +44,53 @@ public class WTATest {
 	}
 
 	@Test
-	public void shouldGetRulesByState() 
+	public void shouldGetRulesByState()
 			throws SymbolUsageException, DuplicateRuleException {
-		
+
 		State resState = wta.addState("q0");
 		Symbol symbol = wta.addSymbol("a", 0);
-		wta.getTransitionFunction().addRule(new Rule(symbol, resState));
-		Rule rule = wta.getTransitionFunction().
+		wta.getTransitionFunction().addRule(new Rule<Symbol>(symbol,
+				semiring.one(), resState));
+		Rule<Symbol> rule = wta.getTransitionFunction().
 				getRulesByResultingState(state).get(0);
 		assertEquals(aSymb, rule.getSymbol());
 	}
 
 	@Test
-	public void shouldGetRulesBySymbol() 
+	public void shouldGetRulesBySymbol()
 			throws SymbolUsageException, DuplicateRuleException {
-		
+
 		State resState = wta.addState("qf");
 		Symbol symbol = wta.addSymbol("f", 2);
-		wta.getTransitionFunction().addRule(new Rule(symbol, resState));
-		Rule rule = wta.getTransitionFunction().getRulesBySymbol(fSymb).get(0);
+		wta.getTransitionFunction().addRule(new Rule<Symbol>(symbol,
+				semiring.one(), resState));
+		Rule<Symbol> rule = wta.getTransitionFunction().getRulesBySymbol(fSymb).get(0);
 		assertEquals(finalState, rule.getResultingState());
 	}
 
 	@Test
-	public void shouldHaveTwoRulesByResultingState() 
+	public void shouldHaveTwoRulesByResultingState()
 			throws DuplicateRuleException {
-		
-		wta.getTransitionFunction().addRule(new Rule(new Symbol("f", 2), 
-				new State("q0")));
-		wta.getTransitionFunction().addRule(new Rule(new Symbol("g", 2), 
-				new State("q0")));
-		
+
+		wta.getTransitionFunction().addRule(new Rule<Symbol>(new Symbol("f", 2),
+				semiring.one(), new State("q0")));
+		wta.getTransitionFunction().addRule(new Rule<Symbol>(new Symbol("g", 2),
+				semiring.one(), new State("q0")));
+
 		assertEquals(2, wta.getTransitionFunction().
 				getRulesByResultingState(new State("q0")).size());
 	}
 
 	@Test
-	public void shouldHaveTwoRulesBySymbol() 
+	public void shouldHaveTwoRulesBySymbol()
 			throws SymbolUsageException, DuplicateRuleException {
-		
+
 		wta.addSymbol("f", 2);
-		wta.getTransitionFunction().addRule(new Rule(new Symbol("f", 2), 
-				new State("q0")));
-		wta.getTransitionFunction().addRule(new Rule(new Symbol("f", 2), 
-				new State("q1")));
-		
+		wta.getTransitionFunction().addRule(new Rule<Symbol>(new Symbol("f", 2),
+				semiring.one(), new State("q0")));
+		wta.getTransitionFunction().addRule(new Rule<Symbol>(new Symbol("f", 2),
+				semiring.one(), new State("q1")));
+
 		assertEquals(2, wta.getTransitionFunction().
 				getRulesBySymbol(new Symbol("f", 2)).size());
 	}

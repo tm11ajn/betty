@@ -9,17 +9,20 @@ package edu.ufl.cise.bsmock.graph;
 
 import java.util.*;
 
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 
 public class Graph<T> {
     private HashMap<String,Node<T>> nodes;
+    private Semiring semiring;
 
-    public Graph() {
+    public Graph(Semiring semiring) {
+    	this.semiring = semiring;
         nodes = new HashMap<String,Node<T>>();
     }
 
-    public Graph(HashMap<String,Node<T>> nodes) {
+    public Graph(Semiring semiring, HashMap<String,Node<T>> nodes) {
+    	this.semiring = semiring;
         this.nodes = nodes;
     }
 
@@ -80,7 +83,7 @@ public class Graph<T> {
             }
         }
 
-        return (new TropicalWeight()).zero();
+        return semiring.zero();
     }
 
     public HashMap<String,Node<T>> getNodes() {
@@ -127,7 +130,7 @@ public class Graph<T> {
             }
         }
 
-        return new Graph<T>(newNodes);
+        return new Graph<T>(semiring, newNodes);
     }
 
     public void clear() {

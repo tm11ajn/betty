@@ -23,17 +23,26 @@ package se.umu.cs.flp.aj.nbest.wta;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.wta.exceptions.DuplicateRuleException;
 
 public class TransitionFunction<LabelType> {
 
-	private HashMap<LabelType, ArrayList<Rule<LabelType>>> rulesBySymbol = new HashMap<>();
+	private HashMap<LabelType, ArrayList<Rule<LabelType>>> rulesBySymbol =
+			new HashMap<>();
 	private HashMap<State, ArrayList<Rule<LabelType>>> rulesByResultingState =
 			new HashMap<>();
-	private HashMap<State, ArrayList<Rule<LabelType>>> rulesByState = new HashMap<>();
+	private HashMap<State, ArrayList<Rule<LabelType>>> rulesByState =
+			new HashMap<>();
 
-	public TransitionFunction() {
+	private Semiring semiring;
 
+	public TransitionFunction(Semiring semiring) {
+		this.semiring = semiring;
+	}
+
+	public Semiring getSemiring() {
+		return semiring;
 	}
 
 	public ArrayList<Rule<LabelType>> getRulesBySymbol(Symbol symbol) {

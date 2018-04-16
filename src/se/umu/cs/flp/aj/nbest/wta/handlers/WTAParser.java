@@ -25,7 +25,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
@@ -52,9 +53,15 @@ public class WTAParser {
 	public static final String NON_LEAF_RULE_SPLIT_REGEX =
 			"\\s*((\\]\\s*->)|#|\\[|,)\\s*";
 
+	private Semiring semiring;
+
+	public WTAParser(Semiring semiring) {
+		this.semiring = semiring;
+	}
+
 	public WTA parse(String fileName) {
 
-		WTA wta = new WTA();
+		WTA wta = new WTA(semiring);
 		int rowCounter = 1;
 
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -130,10 +137,11 @@ public class WTAParser {
 
 		if (labels.length == 3) {
 			double value = Double.parseDouble(labels[2]);
-			TropicalWeight weight = new TropicalWeight(value);
+			Weight weight = semiring.createWeight(value);
 			newRule = new Rule<>(symbol, weight, resultingState);
 		} else {
-			newRule = new Rule<>(symbol, resultingState);
+			Weight weight = semiring.one();
+			newRule = new Rule<>(symbol, weight, resultingState);
 		}
 
 		wta.getTransitionFunction().addRule(newRule);
@@ -147,11 +155,11 @@ public class WTAParser {
 		int numberOfLabels = labels.length;
 		int numberOfLeftHandStates = numberOfLabels - 2;
 
-		TropicalWeight weight = new TropicalWeight(0);
+		Weight weight = semiring.one();
 
 		if (line.contains("#")) {
 			double value = Double.parseDouble(labels[numberOfLabels - 1]);
-			weight = new TropicalWeight(value);
+			weight = semiring.createWeight(value);
 			numberOfLeftHandStates -= 1;
 		}
 

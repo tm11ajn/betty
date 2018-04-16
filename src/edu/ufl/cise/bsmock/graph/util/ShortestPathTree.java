@@ -2,6 +2,8 @@ package edu.ufl.cise.bsmock.graph.util;
 
 import java.util.HashMap;
 
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+
 /**
  * Created by brandonsmock on 6/8/15.
  * Modified for BestTrees by aj in 2017.
@@ -9,13 +11,16 @@ import java.util.HashMap;
 public class ShortestPathTree<T> {
     private HashMap<String,DijkstraNode<T>> nodes;
     private final String root;
+    private Semiring semiring;
 
-    public ShortestPathTree() {
+    public ShortestPathTree(Semiring semiring) {
+    	this.semiring = semiring;
         this.nodes = new HashMap<String, DijkstraNode<T>>();
         this.root = "";
     }
 
-    public ShortestPathTree(String root) {
+    public ShortestPathTree(Semiring semiring, String root) {
+    	this.semiring = semiring;
         this.nodes = new HashMap<String, DijkstraNode<T>>();
         this.root = root;
     }
@@ -38,7 +43,7 @@ public class ShortestPathTree<T> {
 
     public void setParentOf(String node, String parent) {
         if (!nodes.containsKey(node))
-            nodes.put(node,new DijkstraNode<T>(node));
+            nodes.put(node,new DijkstraNode<T>(semiring, node));
         nodes.get(node).setParent(parent);
     }
 

@@ -3,8 +3,8 @@ package se.umu.cs.flp.aj.knuth;
 import java.util.HashMap;
 
 import se.umu.cs.flp.aj.heap.BinaryHeap;
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.semiring.TropicalWeight;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
@@ -65,9 +65,10 @@ public class KnuthSmallestDerivation {
 		State resultingState = r.getResultingState();
 		Weight currentWeight = queue.getWeight(resultingState);
 		Weight newWeight = getNewWeight(r);
+		Semiring semiring = wta.getTransitionFunction().getSemiring();
 
 		if (currentWeight == null &&
-				newWeight.compareTo((new TropicalWeight()).zero()) < 0) {
+				newWeight.compareTo(semiring.zero()) < 0) {
 			queue.add(resultingState, newWeight);
 		} else if (currentWeight != null &&
 				newWeight.compareTo(currentWeight) < 0) {
@@ -76,7 +77,8 @@ public class KnuthSmallestDerivation {
 	}
 
 	private Weight getNewWeight(Rule<Symbol> r) {
-		Weight newWeight = (new TropicalWeight()).one();
+		Semiring semiring = wta.getTransitionFunction().getSemiring();
+		Weight newWeight = semiring.one();
 
 		for (State stateInRule : r.getStates()) {
 
@@ -85,7 +87,7 @@ public class KnuthSmallestDerivation {
 						get(stateInRule));
 			} else {
 				newWeight = newWeight.mult(
-						(new TropicalWeight()).zero());
+						semiring.zero());
 			}
 		}
 

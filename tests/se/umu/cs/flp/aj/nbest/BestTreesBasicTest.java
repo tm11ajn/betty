@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.umu.cs.flp.aj.nbest.semiring.TropicalSemiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.wta.State;
@@ -23,7 +24,7 @@ public class BestTreesBasicTest {
 
 	@Before
 	public void setUp() throws Exception {
-		WTAParser parser = new WTAParser();
+		WTAParser parser = new WTAParser(new TropicalSemiring());
 		wta = parser.parse(fileName);
 
 		HashMap<State, Weight> smallestCompletions =
