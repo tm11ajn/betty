@@ -22,21 +22,12 @@ package se.umu.cs.flp.aj.nbest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.PriorityQueue;
 
-import se.umu.cs.flp.aj.eppstein_k_best.runner.EppsteinRunner;
 import se.umu.cs.flp.aj.nbest.helpers.RuleOrganiser;
-import se.umu.cs.flp.aj.nbest.helpers.SortedListMerger;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
-import se.umu.cs.flp.aj.nbest.treedata.TreePruner;
-import se.umu.cs.flp.aj.nbest.util.LadderQueue;
-import se.umu.cs.flp.aj.nbest.util.PruneableQueue;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
@@ -46,14 +37,13 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 public class BestTrees2 {
 
 	private static ArrayList<TreeKeeper<Symbol>> exploredTrees; // T
-	private static PruneableQueue<TreeKeeper<Symbol>,Weight> treeQueue; // K
+//	private static PruneableQueue<TreeKeeper<Symbol>,Weight> treeQueue; // K
 
 //	private static PriorityQueue<Rule> ruleQueue;
 
-//	private static RuleOrganiser ruleOrganiser;
+	private static RuleOrganiser<Symbol> ruleOrganiser;
 
-	private static HashMap<Rule<Symbol>,LadderQueue<TreeKeeper<?>>> ladders;
-	private static LinkedList<TreeKeeper<Symbol>> queue;
+//	private static LinkedList<TreeKeeper<Symbol>> queue;
 
 
 	public static void setSmallestCompletions(
@@ -68,13 +58,7 @@ public class BestTrees2 {
 
 		// T <- empty. K <- empty
 		exploredTrees = new ArrayList<TreeKeeper<Symbol>>();
-		treeQueue = new PruneableQueue<TreeKeeper<Symbol>, Weight>(
-				new TreePruner<Symbol, Weight>(N));
-
-		ladders = new HashMap<>();
-
-//		ruleQueue = new PriorityQueue<>();
-//		ruleOrganiser = new RuleOrganiser(wta.getTransitionFunction().getRules());
+		ruleOrganiser = new RuleOrganiser<>(wta.getTransitionFunction());
 
 		// enqueue(K, Sigma_0)
 		enqueueRankZeroSymbols(wta, N);
@@ -83,23 +67,24 @@ public class BestTrees2 {
 		int counter = 0;
 
 		// while i < N and K nonempty do
-		while (counter < N && !treeQueue.isEmpty()) {
+		while (counter < N && !ruleOrganiser.isEmpty()) {
 
 			// t <- dequeue(K)
-			TreeKeeper<Symbol> currentTree = treeQueue.pollFirstEntry().getKey();
-			TreeKeeper<Symbol> curr = queue.poll();
+			TreeKeeper<Symbol> currentTree = ruleOrganiser.nextTree();
 
-			// Måste veta vilken regel som gav upphov till nyss pollade trädet.
-			// Annars kan vi inte uppdatera den regeln. Eller i och för sig, alla
-			// regler ska ju ändå uppdateras. Vad fan. Fast vi måste veta det ändå.
-			// Det kanske blir en RuleKeeper i alla fall <_<
-
+System.out.println("Current tree = " + currentTree);
 
 			// T <- T u {t}
 			exploredTrees.add(currentTree);
 
+System.out.println("Smallest weight = " + currentTree.getSmallestWeight());
+System.out.println("Delta weight = " + currentTree.getDeltaWeight());
+
+// TODO: make sure that optimal states and optimal weights are updated properly.
+
 			// if M(t) = delta(t) then
-			if (currentTree.getSmallestWeight().equals(currentTree.getDeltaWeight())) {
+			if (currentTree.getSmallestWeight().equals(
+					currentTree.getDeltaWeight())) {
 
 				// output(t)
 				nBest.add(currentTree.getTree().toString() + " " +
@@ -110,9 +95,8 @@ public class BestTrees2 {
 			}
 
 			// prune(T, enqueue(K, expand(T, t)))
-			// problem reduced to N - i best trees
 			if (counter < N) {
-				enqueueWithExpansionAndPruning(wta, N - counter, currentTree);
+				ruleOrganiser.update(currentTree);
 			}
 		}
 
@@ -121,13 +105,13 @@ public class BestTrees2 {
 
 	private static void enqueueRankZeroSymbols(WTA wta, int N) {
 
-
-
 		ArrayList<Symbol> symbols = wta.getSymbols();
 
 		for (Symbol s : symbols) {
 
 			if (s.getRank() == 0) {
+
+System.out.println("Current symbol: " + s);
 				Node<Symbol> node = new Node<Symbol>(s);
 				TreeKeeper<Symbol> tree = new TreeKeeper<>(node,
 						wta.getTransitionFunction().getSemiring());
@@ -136,51 +120,14 @@ public class BestTrees2 {
 						getRulesBySymbol(s);
 
 				for (Rule<Symbol> r : rules) {
-					tree.addWeight(r.getResultingState(), r.getWeight());
+					tree.addStateWeight(r.getResultingState(), r.getWeight());
 				}
 
-				treeQueue.put(tree, null);
+System.out.println("Updating rule organiser with " + tree);
+
+				ruleOrganiser.update(tree);
 			}
 		}
 	}
 
-	public static void enqueueWithExpansionAndPruning(WTA wta, int N,
-			TreeKeeper<Symbol> tree) {
-
-		HashMap<State, ArrayList<LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>>> allRuns =
-				new HashMap<>();
-		HashMap<State, LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>> nRuns = new HashMap<>();
-
-		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees);
-
-		for (State q : wta.getStates().values()) {
-			allRuns.put(q, eRunner.runEppstein(wta, N, tree, q));
-		}
-
-		for (Entry<State, ArrayList<LinkedHashMap<Node<Symbol>,
-				TreeKeeper<Symbol>>>> e : allRuns.entrySet()) {
-
-			LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> mergedTreeList = new LinkedHashMap<>();
-			State q = e.getKey();
-
-			for (LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> treeList : e.getValue()) {
-				mergedTreeList = SortedListMerger.mergeTreeListsForState(treeList,
-						mergedTreeList, N, q);
-			}
-
-			nRuns.put(q, mergedTreeList);
-		}
-
-		LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> mergedList = new LinkedHashMap<>();
-		int nOfStatesInWTA = wta.getStates().size();
-
-		for (LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> currentList : nRuns.values()) {
-			mergedList = SortedListMerger.mergeTreeListsByDeltaWeights(currentList, mergedList,
-					N*nOfStatesInWTA);
-		}
-
-		for (TreeKeeper<Symbol> n : mergedList.values()) {
-			treeQueue.put(n, null);
-		}
-	}
 }

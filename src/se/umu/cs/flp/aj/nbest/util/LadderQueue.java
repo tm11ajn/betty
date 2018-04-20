@@ -25,24 +25,22 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
-import se.umu.cs.flp.aj.nbest.semiring.Weight;
-
 public class LadderQueue<V extends Comparable<V>> {
 
 	private int rank;
 	private ArrayList<LinkedList<V>> elements;
 	private ArrayList<Integer> indices;
 	private ArrayList<V> currentConfig;
-//	private Comparator<ArrayList<V>> comparator;
-//	private PriorityMap<ArrayList<V>, Semiring> queue;
 	private PriorityQueue<ArrayList<V>> configQueue;
+//	private Comparator<ArrayList<V>> comparator;
 
 	public LadderQueue(int rank, Comparator<ArrayList<V>> comparator) {
 		this.rank = rank;
+		this.elements = new ArrayList<>();
 		this.indices = new ArrayList<>();
 		this.currentConfig = new ArrayList<>();
-//		this.comparator = comparator;
 		this.configQueue = new PriorityQueue<>(comparator);
+//		this.comparator = comparator;
 
 		for (int i = 0; i < rank; i++) {
 			elements.add(new LinkedList<>());
@@ -116,7 +114,8 @@ public class LadderQueue<V extends Comparable<V>> {
 		}
 
 		ArrayList<Integer> indexList = null;
-		ArrayList<V> minConfig = null;
+//		PriorityQueue<ArrayList<V>> tempQueue =
+//				new PriorityQueue<>(comparator);
 
 		for (int i = 0; i < rank; i++) {
 			indexList = new ArrayList<>(indices);
@@ -125,18 +124,12 @@ public class LadderQueue<V extends Comparable<V>> {
 				indexList.set(i, indices.get(i) + 1);
 				ArrayList<V> tempConfig = getConfig(indexList);
 
-//				Semiring weight = getConfigWeight();
-
-//				if (comparator.compare(tempConfig, minConfig) < 0) {
-//					minConfig = tempConfig;
-//				}
-
+//				tempQueue.add(tempConfig);
 				configQueue.add(tempConfig);
 			}
 		}
 
-//		currentConfig = minConfig;
-//		currentConfig = configQueue.poll();
+		currentConfig = configQueue.poll();
 
 		return true;
 	}
@@ -157,16 +150,6 @@ public class LadderQueue<V extends Comparable<V>> {
 
 	private boolean canIncreaseIndex(int i) {
 		return indices.get(i) + 1 < elements.get(i).size();
-	}
-
-	private void getConfigWeight(ArrayList<V> config) {
-
-		Weight weight = null;
-
-		for (V current : config) {
-//			weight = current.
-		}
-
 	}
 
 }

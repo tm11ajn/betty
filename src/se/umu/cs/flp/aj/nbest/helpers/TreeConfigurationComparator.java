@@ -17,7 +17,7 @@ public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>
 
 		int counter = 0;
 
-		for (TreeKeeper<?> t : list1) {
+		for (TreeKeeper<LabelType> t : list1) {
 
 			if (counter == 0) {
 				weight1 = t.getSmallestWeight();
@@ -30,7 +30,7 @@ public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>
 
 		counter = 0;
 
-		for (TreeKeeper<?> t : list2) {
+		for (TreeKeeper<LabelType> t : list2) {
 
 			if (counter == 0) {
 				weight2 = t.getSmallestWeight();

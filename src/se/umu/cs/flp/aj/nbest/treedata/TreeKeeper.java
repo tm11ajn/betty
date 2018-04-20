@@ -53,13 +53,29 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 			ArrayList<TreeKeeper<LabelType>> trees) {
 
 		tree = new Node<LabelType>(ruleLabel);
+		this.optWeights = new HashMap<>();
+
+		int counter = 0;
 
 		for (TreeKeeper<LabelType> currentTree : trees) {
 			tree.addChild(currentTree.getTree());
-			smallestWeight = smallestWeight.mult(currentTree.getSmallestWeight());
+
+			if (counter == 0) {
+				smallestWeight = currentTree.getSmallestWeight();
+			} else {
+				smallestWeight = smallestWeight.mult(
+						currentTree.getSmallestWeight());
+			}
+
+			counter++;
 		}
 
-		smallestWeight = smallestWeight.mult(ruleWeight);
+		if (counter == 0) {
+			smallestWeight = ruleWeight;
+		} else {
+			smallestWeight = smallestWeight.mult(ruleWeight);
+		}
+
 	}
 
 	public static void init(HashMap<State, Weight> smallestCompletionWeights) {
@@ -74,11 +90,11 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		return optimalStates;
 	}
 
-	public Weight getWeight(State s) {
+	public Weight getOptimalWeight(State s) {
 		return optWeights.get(s);
 	}
 
-	public void addWeight(State s, Weight w) {
+	public void addStateWeight(State s, Weight w) {
 
 		if (this.optWeights.containsKey(s)) {
 			if (this.optWeights.get(s).compareTo(w) == 1) {
@@ -102,7 +118,7 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		HashMap<State, Weight> map = t.optWeights;
 
 		for (Entry<State, Weight> e : map.entrySet()) {
-			addWeight(e.getKey(), e.getValue());
+			addStateWeight(e.getKey(), e.getValue());
 		}
 	}
 

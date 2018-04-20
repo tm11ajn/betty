@@ -75,8 +75,8 @@ public class SortedListMerger {
 				iterator2.remove();
 				currentEntry2 = null;
 			} else if (currentEntry1 != null && currentEntry2 != null) {
-				Weight weight1 = currentEntry1.getValue().getWeight(q);
-				Weight weight2 = currentEntry2.getValue().getWeight(q);
+				Weight weight1 = currentEntry1.getValue().getOptimalWeight(q);
+				Weight weight2 = currentEntry2.getValue().getOptimalWeight(q);
 
 				compResult = weight1.compareTo(weight2);
 

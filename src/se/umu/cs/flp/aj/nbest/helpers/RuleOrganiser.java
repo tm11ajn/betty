@@ -24,38 +24,56 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import se.umu.cs.flp.aj.nbest.treedata.RuleKeeper;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
-import se.umu.cs.flp.aj.nbest.util.LadderQueue;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
+import se.umu.cs.flp.aj.nbest.wta.State;
+import se.umu.cs.flp.aj.nbest.wta.TransitionFunction;
 
-public class RuleOrganiser {
+public class RuleOrganiser<LabelType extends Comparable<LabelType>> {
 
-	private ArrayList<Rule> rules;
-//	private BinaryHeap<Rule,Semiring> weights;
-	private HashMap<Rule,LadderQueue<TreeKeeper<?>>> ladders;
-	private LinkedList<TreeKeeper<?>> queue;
+	private TransitionFunction<LabelType> tf;
+	private LinkedList<RuleKeeper<LabelType>> queue;
+	private HashMap<Rule<LabelType>, RuleKeeper<LabelType>> ruleKeepers;
 
-	public RuleOrganiser(ArrayList<Rule> rules) {
-		this.rules = rules;
-//		this.weights = new BinaryHeap<>();
-		this.ladders = new HashMap<>();
-		initQueues();
-	}
+	public RuleOrganiser(TransitionFunction<LabelType> tf) {
+		this.tf = tf;
+		this.queue = new LinkedList<>();
+		this.ruleKeepers = new HashMap<>();
 
-	private void initQueues() {
+		ArrayList<Rule<LabelType>> rules = tf.getRules();
 
-		for (Rule r : rules) {
-			ladders.put(r, new LadderQueue<>(r.getRank(),
-					new TreeConfigurationComparator()));
+		for (Rule<LabelType> r : rules) {
+			RuleKeeper<LabelType> keeper = new RuleKeeper<>(r);
+			ruleKeepers.put(r, keeper);
+			queue.add(keeper);
 		}
 	}
 
-	public void update() {
-
+	public void update(TreeKeeper<LabelType> newTree) {
+		for (State state : newTree.getOptimalStates().keySet()) {
+			for (Rule<LabelType> rule : tf.getRulesByState(state)) {
+				ruleKeepers.get(rule).addLast(rule.getIndexOfState(state),
+						newTree);
+			}
+		}
 	}
 
-	public TreeKeeper<?> nextTree() {
-		return queue.poll();
+	public TreeKeeper<LabelType> nextTree() {
+		RuleKeeper<LabelType> ruleKeeper = queue.pop();
+		TreeKeeper<LabelType> nextTree = ruleKeeper.getSmallestTree();
+		ruleKeeper.next();
+		queue.add(ruleKeeper);
+		return nextTree;
+	}
+
+	public boolean isEmpty() {
+
+		if (queue.peek() == null) {
+			return true;
+		}
+
+		return false;
 	}
 
 }

@@ -84,7 +84,7 @@ public class EppsteinRunner {
 							wta.getTransitionFunction().getSemiring());
 					Weight w = path.getTotalCost();
 					w = w.mult(r.getWeight());
-					keeper.addWeight(q, w);
+					keeper.addStateWeight(q, w);
 					treeList.put(keeper.getTree(), keeper);
 				}
 
@@ -107,7 +107,7 @@ public class EppsteinRunner {
 			State currentState = states.get(i-1);
 
 			for (TreeKeeper<Symbol> n : exploredTrees) {
-				Weight w = n.getWeight(currentState);
+				Weight w = n.getOptimalWeight(currentState);
 
 				if (w != null) {
 					PriorityQueue<Run> pu = null;

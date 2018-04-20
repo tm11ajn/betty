@@ -110,7 +110,7 @@ public class BestTrees {
 						getRulesBySymbol(s);
 
 				for (Rule<Symbol> r : rules) {
-					tree.addWeight(r.getResultingState(), r.getWeight());
+					tree.addStateWeight(r.getResultingState(), r.getWeight());
 				}
 
 				treeQueue.put(tree, null);

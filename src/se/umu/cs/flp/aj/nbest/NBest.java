@@ -132,10 +132,10 @@ public class NBest {
 			BestTrees2.setSmallestCompletions(smallestCompletions);
 
 			startTime = System.nanoTime();
-//			List<String> result = BestTrees2.run(wta, N);
+			List<String> result = BestTrees2.run(wta, N);
 			endTime = System.nanoTime();
 
-//			printResult(result);
+			printResult(result);
 
 			if (timer) {
 				duration = (endTime - startTime)/1000000;

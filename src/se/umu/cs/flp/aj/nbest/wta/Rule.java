@@ -32,7 +32,7 @@ public class Rule<LabelType> {
 	private int rank = 0;
 
 	private ArrayList<State> states = new ArrayList<>();
-	private HashMap<State, State> stateMap = new HashMap<>();
+	private HashMap<State, Integer> stateMap = new HashMap<>();
 
 	private State resultingState;
 
@@ -45,7 +45,7 @@ public class Rule<LabelType> {
 
 		for (State state : states) {
 			this.states.add(state);
-			this.stateMap.put(state, state);
+			this.stateMap.put(state, rank);
 			rank++;
 		}
 	}
@@ -66,6 +66,7 @@ public class Rule<LabelType> {
 
 	public void addState(State state) {
 		this.states.add(state);
+		this.stateMap.put(state, rank);
 		rank++;
 	}
 
@@ -91,6 +92,10 @@ public class Rule<LabelType> {
 
 	public ArrayList<State> getStates() {
 		return states;
+	}
+
+	public int getIndexOfState(State state) {
+		return stateMap.get(state);
 	}
 
 	@Override
