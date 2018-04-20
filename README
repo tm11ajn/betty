@@ -14,16 +14,21 @@ Quick start:
 
 Download and run the .jar file by 
 
-java -jar BestTrees<current_version>.jar <RTG file> N [-v VERSION] [-timer] 
+java -jar BestTrees<current_version>.jar [options]
 
-    N is an nonnegative integer 
-    -v allows the user to select which version to run
-    -timer measures the run-time for the algorithm(s)
-    VERSION can be: 
-    2 - runs BestTrees version 2 (pruned rule queue)
-    1 - runs BestTrees version 1 (pruned tree queue)
-    basic - runs the BestTreesBasic algorithm
-    all - runs all versions
+options for BestTrees:
+ -f,--file <wta file>        file containing the input wta
+ -N <nonnegative integer>    number of trees wanted
+ -s,---semiring <semiring>   semiring used for BestTrees (the default
+                             semiring is the tropical semiring)
+ -timer                      measures running time(s)
+ -v,--version <arg>          version of BestTrees; arg can be
+                             2 (uses a pruned rule queue),
+                             1 (uses a pruned tree queue),
+                             basic (basic version) or
+                             all (runs all versions).
+                             The default version is 2
+
 
 Enjoy the forest.
     

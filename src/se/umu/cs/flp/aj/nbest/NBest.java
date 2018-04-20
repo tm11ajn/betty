@@ -23,33 +23,93 @@ package se.umu.cs.flp.aj.nbest;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 import se.umu.cs.flp.aj.knuth.SmallestCompletionsFinder;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
-import se.umu.cs.flp.aj.nbest.semiring.TropicalSemiring;
+import se.umu.cs.flp.aj.nbest.semiring.SemiringFactory;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
-//import se.umu.cs.flp.aj.wta_handlers.WTABuilder;
 import se.umu.cs.flp.aj.nbest.wta.handlers.WTAParser;
+
 
 public class NBest {
 
-	private static final String VERSION_FLAG = "-v";
+	private static final String FILE_FLAG = "f";
+	private static final String FILE_FLAG_LONG = "file";
+
+	private static final String N_FLAG = "N";
+
+	private static final String VERSION_FLAG = "v";
+	private static final String VERSION_FLAG_LONG = "version";
 	private static final String RULE_QUEUE_ARG = "2";
 	private static final String TREE_QUEUE_ARG = "1";
 	private static final String BASIC_ARG = "basic";
 	private static final String ALL_ARG = "all";
-	private static final String TIMER_FLAG = "-timer";
+	private static final String DEFAULT_VERSION = RULE_QUEUE_ARG;
+
+	private static final String TIMER_FLAG = "timer";
+	private static final boolean DEFAULT_TIMER_VAL = false;
+
+	private static final String SEMIRING_FLAG = "s";
+	private static final String SEMIRING_FLAG_LONG = "semiring";
+	private static final String TROPICAL_SEMIRING = "tropical";
+	private static final String DEFAULT_SEMIRING = TROPICAL_SEMIRING;
+
 
 	public static void main(String[] args) {
 
-		checkArgs(args);
+		Options options = createOptions();
+		CommandLineParser clParser = new DefaultParser();
 
-		String fileName = getFileName(args);
-		int N = getN(args);
+		String fileName = "";
+		int N = 0;
+		String version = DEFAULT_VERSION;
+		boolean timer = DEFAULT_TIMER_VAL;
+		String semiringType = DEFAULT_SEMIRING;
 
-		// TODO: change so that the user can choose semiring
-		Semiring semiring = new TropicalSemiring();
+		try {
+			CommandLine cmd = clParser.parse(options, args);
+
+			fileName = cmd.getOptionValue(FILE_FLAG);
+			N = Integer.parseInt(cmd.getOptionValue(N_FLAG));
+
+			if (N < 0) {
+				throw new NumberFormatException();
+			}
+
+			if (cmd.hasOption(VERSION_FLAG)) {
+				version = cmd.getOptionValue(VERSION_FLAG);
+			}
+
+			if (cmd.hasOption(TIMER_FLAG)) {
+				timer = true;
+			}
+
+			if (cmd.hasOption(SEMIRING_FLAG)) {
+				semiringType = cmd.getOptionValue(SEMIRING_FLAG);
+			}
+
+		} catch (ParseException e) {
+			System.out.println(e.getMessage());
+			HelpFormatter help = new HelpFormatter();
+			System.out.println();
+			help.printHelp("BestTrees", options);
+			System.exit(1);
+		} catch (NumberFormatException e) {
+			System.out.println("N takes a nonnegative integer.");
+			System.exit(1);
+		}
+
+		SemiringFactory semFac = new SemiringFactory();
+		Semiring semiring = semFac.getSemiring(semiringType);
 
 		WTAParser wtaParser = new WTAParser(semiring);
 		WTA wta = wtaParser.parse(fileName);
@@ -58,19 +118,16 @@ public class NBest {
 		long endTime;
 		long duration;
 
-		boolean all = runAll(args);
-		boolean timer = useTimer(args);
-
 		System.out.println("Pre-computing smallest completions...");
 		startTime = System.nanoTime();
 		HashMap<State, Weight> smallestCompletions =
-				getSmallestCompletions(wta);
+				SmallestCompletionsFinder.findSmallestCompletionWeights(wta);
 		endTime = System.nanoTime();
 		duration = (endTime - startTime)/1000000;
 		System.out.println("Smallest completions done (took "
 				+ duration + " milliseconds).");
 
-		if (runVersion2(args) || all) {
+		if (version.equals(RULE_QUEUE_ARG) || version.equals(ALL_ARG)) {
 			System.out.println("Running BestTrees version 2...");
 			BestTrees2.setSmallestCompletions(smallestCompletions);
 
@@ -87,7 +144,7 @@ public class NBest {
 			}
 		}
 
-		if (runVersion1(args) || all) {
+		if (version.equals(TREE_QUEUE_ARG) || version.equals(ALL_ARG)) {
 			System.out.println("Running BestTrees version 1...");
 			BestTrees.setSmallestCompletions(smallestCompletions);
 
@@ -104,7 +161,7 @@ public class NBest {
 			}
 		}
 
-		if (runBasic(args) || all) {
+		if (version.equals(BASIC_ARG) || version.equals(ALL_ARG)) {
 			System.out.println("Running BestTreesBasic...");
 			BestTreesBasic.setSmallestCompletions(smallestCompletions);
 
@@ -123,157 +180,44 @@ public class NBest {
 
 	}
 
-	public static HashMap<State, Weight> getSmallestCompletions(WTA wta) {
-//		WTABuilder b = new WTABuilder();
-//		return b.findSmallestCompletionWeights(wta);
-		return SmallestCompletionsFinder.findSmallestCompletionWeights(wta);
-	}
+	private static Options createOptions() {
 
-	private static void checkArgs(String[] args) {
+		Options options = new Options();
+		Option wtaFileOpt = new Option(FILE_FLAG, FILE_FLAG_LONG,
+				true, "file containing the input wta");
+		Option nOpt = new Option(N_FLAG, true, "number of trees wanted");
+		Option versionOpt = new Option(VERSION_FLAG, VERSION_FLAG_LONG,
+				true, "version of BestTrees; arg can be\n" + RULE_QUEUE_ARG +
+				" (uses a pruned rule queue), \n" +
+						TREE_QUEUE_ARG +
+				" (uses a pruned tree queue), \n" +
+						BASIC_ARG +
+				" (basic version) or \n" + ALL_ARG +
+				" (runs all versions).\n The default version is " +
+				DEFAULT_VERSION);
+		Option timerOpt = new Option(TIMER_FLAG, false,
+				"measures running time(s)");
+		Option semiringOpt = new Option(SEMIRING_FLAG, SEMIRING_FLAG_LONG, true,
+				"semiring used for BestTrees (the default semiring is the "
+						+ DEFAULT_SEMIRING + " semiring)");
 
-		int nOfArgs = args.length;
+		wtaFileOpt.setArgName("wta file");
+		nOpt.setArgName("nonnegative integer");
+		semiringOpt.setArgName("semiring");
 
-		if (nOfArgs < 2 || nOfArgs > 5) {
-			printUsageError();
-		} else if (nOfArgs == 3) {
-			String arg2 = args[2];
+		wtaFileOpt.setRequired(true);
+		nOpt.setRequired(true);
+		versionOpt.setRequired(false);
+		timerOpt.setRequired(false);
+		semiringOpt.setRequired(false);
 
-			if (!arg2.equals(TIMER_FLAG)) {
-				printUsageError();
-			}
+		options.addOption(wtaFileOpt);
+		options.addOption(nOpt);
+		options.addOption(versionOpt);
+		options.addOption(timerOpt);
+		options.addOption(semiringOpt);
 
-		} else if (nOfArgs == 4) {
-			String arg2 = args[2];
-			String arg3 = args[3];
-
-			if (!arg2.equals(VERSION_FLAG)) {
-				printUsageError();
-			} else if (!arg3.equals(ALL_ARG) &&
-					!arg3.equals(BASIC_ARG) &&
-					!arg3.equals(TREE_QUEUE_ARG) &&
-					!arg3.equals(RULE_QUEUE_ARG)) {
-				printUsageError();
-			}
-
-		} else if (nOfArgs == 5) {
-			String arg2 = args[2];
-			String arg3 = args[3];
-			String arg4 = args[4];
-
-			if (!arg2.equals(TIMER_FLAG) &&
-					!arg2.equals(VERSION_FLAG)) {
-				printUsageError();
-			} else if (!arg4.equals(TIMER_FLAG) &&
-					!arg3.equals(VERSION_FLAG)) {
-				printUsageError();
-			} else if (arg2.equals(VERSION_FLAG) &&
-					(!arg3.equals(ALL_ARG) &&
-							!arg3.equals(BASIC_ARG) &&
-							!arg3.equals(TREE_QUEUE_ARG) &&
-							!arg3.equals(RULE_QUEUE_ARG))) {
-				printUsageError();
-			} else if (arg3.equals(VERSION_FLAG) &&
-					(!arg4.equals(ALL_ARG) &&
-							!arg4.equals(BASIC_ARG) &&
-							!arg4.equals(TREE_QUEUE_ARG) &&
-							!arg4.equals(RULE_QUEUE_ARG))) {
-				printUsageError();
-			}
-		}
-	}
-
-	private static String getFileName(String[] args) {
-		return args[0];
-	}
-
-	private static int getN(String[] args) {
-
-		int N = 0;
-
-		try {
-			N = Integer.parseInt(args[1]);
-		} catch (NumberFormatException e) {
-			printUsageError();
-		}
-
-		return N;
-	}
-
-	private static boolean runVersion2(String[] args) {
-
-		if (args.length < 4) {
-			return true;
-		}
-
-		if ((args.length == 4 && args[3].equals(RULE_QUEUE_ARG)) ||
-				(args.length == 5 && (args[3].equals(RULE_QUEUE_ARG) ||
-						args[4].equals(RULE_QUEUE_ARG)))) {
-			return true;
-		}
-
-		return false;
-	}
-
-
-	private static boolean runVersion1(String[] args) {
-
-		if ((args.length == 4 && args[3].equals(TREE_QUEUE_ARG)) ||
-				(args.length == 5 && (args[3].equals(TREE_QUEUE_ARG) ||
-						args[4].equals(TREE_QUEUE_ARG)))) {
-			return true;
-		}
-
-		return false;
-	}
-
-	private static boolean runBasic(String[] args) {
-
-		if ((args.length == 4 && args[3].equals(BASIC_ARG)) ||
-				(args.length == 5 && (args[3].equals(BASIC_ARG) ||
-						args[4].equals(BASIC_ARG)))) {
-			return true;
-		}
-
-		return false;
-	}
-
-	private static boolean runAll(String[] args) {
-
-		if ((args.length == 4 && args[3].equals(ALL_ARG)) ||
-				(args.length == 5 && (args[3].equals(ALL_ARG) ||
-						args[4].equals(ALL_ARG)))) {
-			return true;
-		}
-
-		return false;
-	}
-
-	private static boolean useTimer(String[] args) {
-
-		if ((args.length == 3 && args[2].equals(TIMER_FLAG)) ||
-				(args.length == 5 &&
-				(args[2].equals(TIMER_FLAG) || args[4].equals(TIMER_FLAG)))) {
-			return true;
-		}
-
-		return false;
-	}
-
-	private static void printUsageError() {
-		System.err.println("\n"
-				+ "Usage: BestTrees <RTG file> N "
-				+ "["+ VERSION_FLAG + " VERSION] [" + TIMER_FLAG + "] \n\n"
-				+ "    N is an nonnegative integer \n"
-				+ "    -v allows the user to select which version to run\n"
-				+ "    -timer measures the run-time for the algorithm(s)\n"
-				+ "    VERSION can be: \n"
-				+ "    " + RULE_QUEUE_ARG + " - "
-				+ "runs BestTrees version 2 (pruned rule queue)\n"
-				+ "    " + TREE_QUEUE_ARG + " - "
-				+ "runs BestTrees version 1 (pruned tree queue)\n"
-				+ "    " + BASIC_ARG + " - runs the BestTreesBasic algorithm\n"
-				+ "    " + ALL_ARG + " - runs all versions\n");
-		System.exit(-1);
+		return options;
 	}
 
 	private static void printResult(List<String> result) {

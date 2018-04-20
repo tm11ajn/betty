@@ -22,8 +22,14 @@ package se.umu.cs.flp.aj.nbest.semiring;
 
 public class SemiringFactory {
 
-//	public static Semiring getSemiring() {
-//
-//	}
+	public Semiring getSemiring(String semiringType) {
+
+		switch (semiringType) {
+		case "tropical":
+			return new TropicalSemiring();
+		default:
+			return null;
+		}
+	}
 
 }
