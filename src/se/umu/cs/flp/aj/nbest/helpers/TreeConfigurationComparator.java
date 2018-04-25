@@ -4,20 +4,21 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
+import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 
-public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>> implements Comparator<ArrayList<TreeKeeper<LabelType>>> {
+public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>>
+			implements Comparator<ArrayList<TreeKeeper2<LabelType>>> {
 
 	@Override
-	public int compare(ArrayList<TreeKeeper<LabelType>> list1,
-			ArrayList<TreeKeeper<LabelType>> list2) {
+	public int compare(ArrayList<TreeKeeper2<LabelType>> list1,
+			ArrayList<TreeKeeper2<LabelType>> list2) {
 
 		Weight weight1 = null;
 		Weight weight2 = null;
 
 		int counter = 0;
 
-		for (TreeKeeper<LabelType> t : list1) {
+		for (TreeKeeper2<LabelType> t : list1) {
 
 			if (counter == 0) {
 				weight1 = t.getSmallestWeight();
@@ -30,7 +31,7 @@ public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>
 
 		counter = 0;
 
-		for (TreeKeeper<LabelType> t : list2) {
+		for (TreeKeeper2<LabelType> t : list2) {
 
 			if (counter == 0) {
 				weight2 = t.getSmallestWeight();

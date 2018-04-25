@@ -33,45 +33,76 @@ public class LadderQueue<V extends Comparable<V>> {
 	private ArrayList<V> currentConfig;
 	private PriorityQueue<ArrayList<V>> configQueue;
 //	private Comparator<ArrayList<V>> comparator;
+	private int countFilled;
+	private boolean filled;
 
 	public LadderQueue(int rank, Comparator<ArrayList<V>> comparator) {
+System.out.println("Creating ladder queue with rank " + rank);
 		this.rank = rank;
 		this.elements = new ArrayList<>();
 		this.indices = new ArrayList<>();
-		this.currentConfig = new ArrayList<>();
+		this.currentConfig = null;
 		this.configQueue = new PriorityQueue<>(comparator);
 //		this.comparator = comparator;
+		this.filled = false;
+		this.countFilled = 0;
 
 		for (int i = 0; i < rank; i++) {
 			elements.add(new LinkedList<>());
+			indices.add(0);
 		}
 
-		reset();
+System.out.println("Ladderqueue indices after creation: " + indices);
+
+//		reset();
 	}
 
-	private void reset() {
-		for (int i = 0; i < rank; i++) {
-			indices.add(i, 0);
-		}
-	}
+//	private void reset() {
+//		for (int i = 0; i < rank; i++) {
+//			indices.add(i, 0);
+//		}
+//	}
 
-	public void add(int rankIndex, V value) {
-		LinkedList<V> currentList = elements.get(rankIndex);
-		int size = currentList.size();
-
-		if (value.compareTo(currentList.get(size - 1)) >= 0) {
-			addLast(rankIndex, value);
-		}
-
-		for (int i = 0; i < size; i++) {
-			if (value.compareTo(currentList.get(i)) < 0) {
-				currentList.add(i, value);
-			}
-		}
-	}
+//	public void add(int rankIndex, V value) {
+//		LinkedList<V> currentList = elements.get(rankIndex);
+//		int size = currentList.size();
+//
+//		if (value.compareTo(currentList.get(size - 1)) >= 0) {
+//			addLast(rankIndex, value);
+//		}
+//
+//		for (int i = 0; i < size; i++) {
+//			if (value.compareTo(currentList.get(i)) < 0) {
+//				currentList.add(i, value);
+//			}
+//		}
+//	}
 
 	public void addLast(int rankIndex, V value) {
+
+		if (!filled && elements.get(rankIndex).size() == 0) {
+			countFilled++;
+
+			if (countFilled >= rank) {
+				filled = true;
+			}
+		}
+
+System.out.println("Adding " + value + " to ladderqueue");
+
 		elements.get(rankIndex).add(value);
+
+		if (currentConfig == null) {
+			updateCurrentConfig();
+		}
+	}
+
+	public boolean isReady() {
+		return filled;
+	}
+
+	public boolean hasConfig() {
+		return currentConfig != null;
 	}
 
 	public ArrayList<V> dequeue() {
@@ -82,13 +113,14 @@ public class LadderQueue<V extends Comparable<V>> {
 			updateCurrentConfig();
 
 			if (prev == null) {
-				prev = dequeue();
+				prev = configQueue.poll();
 			}
 
 		} else {
 			currentConfig = null;
 		}
 
+System.out.println("Ladderqueue dequeueing " + prev);
 		return prev;
 	}
 
@@ -114,8 +146,6 @@ public class LadderQueue<V extends Comparable<V>> {
 		}
 
 		ArrayList<Integer> indexList = null;
-//		PriorityQueue<ArrayList<V>> tempQueue =
-//				new PriorityQueue<>(comparator);
 
 		for (int i = 0; i < rank; i++) {
 			indexList = new ArrayList<>(indices);
@@ -124,23 +154,30 @@ public class LadderQueue<V extends Comparable<V>> {
 				indexList.set(i, indices.get(i) + 1);
 				ArrayList<V> tempConfig = getConfig(indexList);
 
-//				tempQueue.add(tempConfig);
-				configQueue.add(tempConfig);
+				if (tempConfig != null) {
+					configQueue.add(tempConfig);
+				}
 			}
 		}
 
 		currentConfig = configQueue.poll();
-
+System.out.println("HEEEEEEEEEEEEEEEEEEEEJ");
 		return true;
 	}
 
 	private ArrayList<V> getConfig(ArrayList<Integer> indexList) {
 		ArrayList<V> config = new ArrayList<>();
 
+System.out.println("rank=" + rank);
+
+		if (!filled) {
+			return null;
+		}
+
 		for (int i = 0; i < rank; i++) {
 			config.add(elements.get(i).get(indexList.get(i)));
 		}
-
+System.out.println("Ladderqueue returns config: " + config);
 		return config;
 	}
 

@@ -24,11 +24,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import se.umu.cs.flp.aj.nbest.helpers.RuleOrganiser;
+import se.umu.cs.flp.aj.nbest.helpers.RuleQueue;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.treedata.Node;
-import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
-import se.umu.cs.flp.aj.nbest.wta.Rule;
+import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
@@ -36,19 +34,20 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class BestTrees2 {
 
-	private static ArrayList<TreeKeeper<Symbol>> exploredTrees; // T
+//	private static ArrayList<TreeKeeper2<Symbol>> exploredTrees; // T
 //	private static PruneableQueue<TreeKeeper<Symbol>,Weight> treeQueue; // K
+	private static HashMap<TreeKeeper2<Symbol>, TreeKeeper2<Symbol>> exploredTrees;
 
 //	private static PriorityQueue<Rule> ruleQueue;
 
-	private static RuleOrganiser<Symbol> ruleOrganiser;
+	private static RuleQueue<Symbol> ruleQueue;
 
 //	private static LinkedList<TreeKeeper<Symbol>> queue;
 
 
 	public static void setSmallestCompletions(
 			HashMap<State, Weight> smallestCompletions) {
-		TreeKeeper.init(smallestCompletions);
+		TreeKeeper2.init(smallestCompletions);
 	}
 
 	public static List<String> run(WTA wta, int N) {
@@ -57,77 +56,61 @@ public class BestTrees2 {
 		List<String> nBest = new ArrayList<String>();
 
 		// T <- empty. K <- empty
-		exploredTrees = new ArrayList<TreeKeeper<Symbol>>();
-		ruleOrganiser = new RuleOrganiser<>(wta.getTransitionFunction());
-
-		// enqueue(K, Sigma_0)
-		enqueueRankZeroSymbols(wta, N);
+		exploredTrees = new HashMap<>();
+		ruleQueue = new RuleQueue<>(wta.getTransitionFunction());
 
 		// i <- 0
 		int counter = 0;
 
-		// while i < N and K nonempty do
-		while (counter < N && !ruleOrganiser.isEmpty()) {
+int debugCounter = 0;
 
+		// while i < N and K nonempty do
+		while (//debugCounter < 2 &&
+				counter < N && !ruleQueue.isEmpty()) {
+debugCounter++;
 			// t <- dequeue(K)
-			TreeKeeper<Symbol> currentTree = ruleOrganiser.nextTree();
+			TreeKeeper2<Symbol> currentTree = ruleQueue.nextTree();
 
 System.out.println("Current tree = " + currentTree);
 
-			// T <- T u {t}
-			exploredTrees.add(currentTree);
+
 
 System.out.println("Smallest weight = " + currentTree.getSmallestWeight());
 System.out.println("Delta weight = " + currentTree.getDeltaWeight());
 
 // TODO: make sure that optimal states and optimal weights are updated properly.
 
-			// if M(t) = delta(t) then
-			if (currentTree.getSmallestWeight().equals(
+			if (!exploredTrees.containsKey(currentTree)) {
+
+				// T <- T u {t}
+				//exploredTrees.put(currentTree, currentTree);
+				// TODO: when should this part not run? When we have explored
+				// the tree or when we have output it?
+
+				// if M(t) = delta(t) then
+				if (currentTree.getSmallestWeight().equals(
 					currentTree.getDeltaWeight())) {
 
-				// output(t)
-				nBest.add(currentTree.getTree().toString() + " " +
-						currentTree.getDeltaWeight().toString());
+					exploredTrees.put(currentTree, currentTree);
 
-				// i <- i + 1
-				counter++;
-			}
+					// output(t)
+					nBest.add(currentTree.getTree().toString() + " " +
+							currentTree.getDeltaWeight().toString());
 
-			// prune(T, enqueue(K, expand(T, t)))
-			if (counter < N) {
-				ruleOrganiser.update(currentTree);
+System.out.println("OUTPUTTING " + currentTree.getTree());
+
+					// i <- i + 1
+					counter++;
+				}
+
+				// prune(T, enqueue(K, expand(T, t)))
+				if (counter < N) {
+					ruleQueue.update(currentTree);
+				}
 			}
 		}
 
 		return nBest;
-	}
-
-	private static void enqueueRankZeroSymbols(WTA wta, int N) {
-
-		ArrayList<Symbol> symbols = wta.getSymbols();
-
-		for (Symbol s : symbols) {
-
-			if (s.getRank() == 0) {
-
-System.out.println("Current symbol: " + s);
-				Node<Symbol> node = new Node<Symbol>(s);
-				TreeKeeper<Symbol> tree = new TreeKeeper<>(node,
-						wta.getTransitionFunction().getSemiring());
-
-				ArrayList<Rule<Symbol>> rules = wta.getTransitionFunction().
-						getRulesBySymbol(s);
-
-				for (Rule<Symbol> r : rules) {
-					tree.addStateWeight(r.getResultingState(), r.getWeight());
-				}
-
-System.out.println("Updating rule organiser with " + tree);
-
-				ruleOrganiser.update(tree);
-			}
-		}
 	}
 
 }
