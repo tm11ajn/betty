@@ -19,12 +19,18 @@ public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 	private Rule<LabelType> rule;
 	private LadderQueue<TreeKeeper2<LabelType>> ladder;
 	private TreeKeeper2<LabelType> smallestTree;
+	private boolean paused;
 
 	public RuleKeeper(Rule<LabelType> rule) {
 		this.rule = rule;
 		this.ladder = new LadderQueue<>(rule.getRank(),
 				new TreeConfigurationComparator<LabelType>());
 		this.smallestTree = null;
+		this.paused = true;
+
+		if (rule.getRank() == 0) {
+			this.paused = false;
+		}
 
 		if (rule.getRank() == 0) {
 			this.smallestTree = new TreeKeeper2<LabelType>(rule.getSymbol(),
@@ -47,46 +53,30 @@ System.out.println("Rulekeeper returns smallesttree: " + smallestTree);
 			int stateIndex) {
 		ladder.addLast(stateIndex, tree);
 
-if (ladder.isReady()) {
-System.out.println("ladder for rule " + rule + " is ready");
-}
-
-		if (!ladder.isReady() || (ladder.hasConfig() && smallestTree == null)) {
-			ArrayList<TreeKeeper2<LabelType>> tk = ladder.peek();
-
-			if (tk != null) {
-				smallestTree = new TreeKeeper2<LabelType>(rule.getSymbol(),
-						rule.getWeight(), rule.getResultingState(), tk);
-			}
+		if (ladder.hasNext()) {
+			paused = false;
 		}
+
+//		if (smallestTree == null) {
+//			next();
+//		}
 	}
 
-	public boolean next() {
+	public boolean paused() {
+		return paused;
+	}
 
-		if (!ladder.hasConfig()) {
-			return false;
-		} else {
+	public void next() {
 
+		if (ladder.hasNext()) {
+			paused = false;
 			ArrayList<TreeKeeper2<LabelType>> temp = ladder.dequeue();
-
-			System.out.println("In next: ");
-			System.out.println("Rule = " + rule);
-			System.out.println("temp = " + temp);
-
-//			if (temp == null) {
-//				return false;
-//			} else {
-//				ladder.dequeue();
-//			}
-
 			smallestTree = new TreeKeeper2<LabelType>(rule.getSymbol(),
 					rule.getWeight(), rule.getResultingState(), temp);
-
 System.out.println("New SmallestTree=" + smallestTree);
-
+		} else {
+			paused = true;
 		}
-
-		return true;
 	}
 
 	public Rule<LabelType> getRule() {

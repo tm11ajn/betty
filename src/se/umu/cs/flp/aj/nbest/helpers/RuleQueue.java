@@ -46,13 +46,18 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 		for (Rule<LabelType> r : rules) {
 			RuleKeeper<LabelType> keeper = new RuleKeeper<>(r);
 			ruleKeepers.put(r, keeper);
-			queue.add(keeper);
+
+			if (r.getRank() == 0) {
+				queue.add(keeper);
+			}
+
+//			queue.add(keeper);
 		}
 
-		enqueueRankZeroRules();
+		addRankZeroTrees();
 	}
 
-	private void enqueueRankZeroRules() {
+	private void addRankZeroTrees() {
 		ArrayList<Rule<LabelType>> rules = tf.getRules();
 
 		for (Rule<LabelType> r : rules) {
@@ -61,23 +66,37 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 				TreeKeeper2<LabelType> tempTree = new TreeKeeper2<LabelType>(
 						r.getSymbol(), r.getWeight(),
 						r.getResultingState(), new ArrayList<>());
-System.out.println("Updating rule queue with " + tempTree);
-				update(tempTree);
+				//queue.add(ruleKeepers.get(r));
+				addTree(tempTree);
 			}
 		}
+
+System.out.println("Rulequeue after enqueuing rank 0 symbols: ");
+for (RuleKeeper<LabelType> q : queue) {
+System.out.println("" + q);
+}
 	}
 
-	public void update(TreeKeeper2<LabelType> newTree) {
+	public void addTree(TreeKeeper2<LabelType> newTree) {
 		for (State state : newTree.getOptimalStates().keySet()) {
 			for (Rule<LabelType> rule : tf.getRulesByState(state)) {
-				ruleKeepers.get(rule).addTreeForStateIndex(newTree,
+				RuleKeeper<LabelType> currentKeeper = ruleKeepers.get(rule);
+
+				boolean pausedBefore = currentKeeper.paused();
+
+				currentKeeper.addTreeForStateIndex(newTree,
 						rule.getIndexOfState(state));
+
+				if (pausedBefore && !currentKeeper.paused()) {
+					queue.add(currentKeeper);
+				}
+
 System.out.println("Adding state " + state + " of rule " + rule +
 		" with tree " + newTree);
 			}
 		}
 
-System.out.println("After update: Now rulwqueue is: ");
+System.out.println("After addtree: Now rulwqueue is: ");
 for (RuleKeeper<LabelType> q : queue) {
 System.out.println("" + q);
 }
@@ -85,11 +104,13 @@ System.out.println("" + q);
 
 	public TreeKeeper2<LabelType> nextTree() {
 		RuleKeeper<LabelType> ruleKeeper = queue.pop();
+		ruleKeeper.next();
 		TreeKeeper2<LabelType> nextTree = ruleKeeper.getSmallestTree();
 
 		if (ruleKeeper.getRule().getRank() != 0) {
-			ruleKeeper.next();
-			queue.add(ruleKeeper);
+			if (!ruleKeeper.paused()) {
+				queue.add(ruleKeeper);
+			}
 		}
 System.out.println("Ruleorganiser gets " + nextTree + " from rulekeeper");
 		return nextTree;

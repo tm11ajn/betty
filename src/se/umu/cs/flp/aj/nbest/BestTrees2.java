@@ -105,7 +105,7 @@ System.out.println("OUTPUTTING " + currentTree.getTree());
 
 				// prune(T, enqueue(K, expand(T, t)))
 				if (counter < N) {
-					ruleQueue.update(currentTree);
+					ruleQueue.addTree(currentTree);
 				}
 			}
 		}

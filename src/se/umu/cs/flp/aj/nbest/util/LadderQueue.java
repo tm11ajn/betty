@@ -29,41 +29,64 @@ public class LadderQueue<V extends Comparable<V>> {
 
 	private int rank;
 	private ArrayList<LinkedList<V>> elements;
-	private ArrayList<Integer> indices;
-	private ArrayList<V> currentConfig;
-	private PriorityQueue<ArrayList<V>> configQueue;
-//	private Comparator<ArrayList<V>> comparator;
+	private ArrayList<Integer> currentIndices;
+	private Configuration<V> currentConfig;
+	private PriorityQueue<Configuration<V>> configQueue;
 	private int countFilled;
-	private boolean filled;
+	private boolean empty;
+	private boolean isZero;
 
-	public LadderQueue(int rank, Comparator<ArrayList<V>> comparator) {
+	public LadderQueue(int rank, Comparator<Configuration<V>> comparator) {
 System.out.println("Creating ladder queue with rank " + rank);
 		this.rank = rank;
 		this.elements = new ArrayList<>();
-		this.indices = new ArrayList<>();
-		this.currentConfig = null;
+		this.currentIndices = new ArrayList<>();
+		this.currentConfig = new Configuration<>();
 		this.configQueue = new PriorityQueue<>(comparator);
-//		this.comparator = comparator;
-		this.filled = false;
+		this.empty = true;
 		this.countFilled = 0;
+		this.isZero = true;
 
 		for (int i = 0; i < rank; i++) {
 			elements.add(new LinkedList<>());
-			indices.add(0);
+			currentIndices.add(0);
 		}
 
-System.out.println("Ladderqueue indices after creation: " + indices);
+		currentConfig.setIndices(currentIndices);
 
-//		reset();
+		if (rank == 0) {
+			currentConfig.setValues(new ArrayList<>());
+			empty = false;
+		}
 	}
 
-//	private void reset() {
-//		for (int i = 0; i < rank; i++) {
-//			indices.add(i, 0);
-//		}
-//	}
+	public static class Configuration<T> {
+		private ArrayList<T> values;
+		private ArrayList<Integer> indices;
+
+		public Configuration() {
+		}
+
+		public void setValues(ArrayList<T> values) {
+			this.values = values;
+		}
+
+		public ArrayList<T> getValues() {
+			return values;
+		}
+
+		public void setIndices(ArrayList<Integer> indices) {
+			this.indices = indices;
+		}
+
+		public ArrayList<Integer> getIndices() {
+			return indices;
+		}
+	}
 
 //	public void add(int rankIndex, V value) {
+//		updateEmptyStatus(rankIndex);
+//
 //		LinkedList<V> currentList = elements.get(rankIndex);
 //		int size = currentList.size();
 //
@@ -80,52 +103,80 @@ System.out.println("Ladderqueue indices after creation: " + indices);
 
 	public void addLast(int rankIndex, V value) {
 
-		if (!filled && elements.get(rankIndex).size() == 0) {
-			countFilled++;
-
-			if (countFilled >= rank) {
-				filled = true;
-			}
-		}
+		updateEmptyStatus(rankIndex);
 
 System.out.println("Adding " + value + " to ladderqueue");
 
 		elements.get(rankIndex).add(value);
-
-		if (currentConfig == null) {
-			updateCurrentConfig();
-		}
 	}
 
-	public boolean isReady() {
-		return filled;
+	public boolean isEmpty() {
+		return empty;
 	}
 
-	public boolean hasConfig() {
-		return currentConfig != null;
+	public boolean hasNext() {
+		return (isZero && !isEmpty()) || !atLimit();
 	}
 
 	public ArrayList<V> dequeue() {
 
-		ArrayList<V> prev = peek();
+		ArrayList<V> prev = currentConfig.getValues();
 
-		if (next()) {
-			updateCurrentConfig();
+		if (hasNext()) {
+			enqueueNextConfigurations();
 
-			if (prev == null) {
-				prev = configQueue.poll();
+			if (isZero) {
+				currentConfig.setValues(getValues(currentIndices));
+				isZero = false;
+			} else {
+				currentConfig = configQueue.poll();
+				currentIndices = currentConfig.getIndices();
 			}
-
-		} else {
-			currentConfig = null;
 		}
 
 System.out.println("Ladderqueue dequeueing " + prev);
-		return prev;
+		return currentConfig.getValues();
 	}
 
 	public ArrayList<V> peek() {
-		return currentConfig;
+		return currentConfig.getValues();
+	}
+
+	private void enqueueNextConfigurations() {
+
+		ArrayList<Integer> indexList = null;
+		Configuration<V> newConfig = new Configuration<>();
+
+		for (int i = 0; i < rank; i++) {
+			indexList = new ArrayList<>(currentIndices);
+System.out.println("indexlist before=" + indexList);
+System.out.println("elements(i)=" + elements.get(i) );
+			if (!empty && canIncreaseIndex(i)) {
+				indexList.set(i, currentIndices.get(i) + 1);
+System.out.println("indexlist after=" + indexList);
+System.out.println("i=" + i);
+System.out.println("" + elements.size());
+System.out.println("" + elements.get(i));
+				ArrayList<V> tempValues = getValues(indexList);
+				newConfig.setIndices(indexList);
+				newConfig.setValues(tempValues);
+				configQueue.add(newConfig);
+				//indexMap.put(tempConfig, indexList);
+System.out.println("adds config " + tempValues + " to ladderqueue");
+			}
+		}
+	}
+
+	private ArrayList<V> getValues(ArrayList<Integer> indexList) {
+		ArrayList<V> values = new ArrayList<>();
+
+		for (int i = 0; i < rank; i++) {
+System.out.println("indexlist.get(i)=" + indexList.get(i) + "for i=" + i);
+System.out.println("elements.get(i)=" + elements.get(i));
+			values.add(elements.get(i).get(indexList.get(i)));
+		}
+
+		return values;
 	}
 
 	private boolean atLimit() {
@@ -139,54 +190,32 @@ System.out.println("Ladderqueue dequeueing " + prev);
 		return true;
 	}
 
-	private boolean next() {
+	private boolean canIncreaseIndex(int i) {
+		int size = elements.get(i).size();
 
-		if (atLimit()) {
-			return false;
+
+System.out.println("size=" + size);
+
+		if (size == 0) {
+			size--;
 		}
 
-		ArrayList<Integer> indexList = null;
+System.out.println("index=" + currentIndices.get(i));
 
-		for (int i = 0; i < rank; i++) {
-			indexList = new ArrayList<>(indices);
+		return currentIndices.get(i) + 1 < size;
+	}
 
-			if (canIncreaseIndex(i)) {
-				indexList.set(i, indices.get(i) + 1);
-				ArrayList<V> tempConfig = getConfig(indexList);
+	private void updateEmptyStatus(int rankIndex) {
 
-				if (tempConfig != null) {
-					configQueue.add(tempConfig);
-				}
+		if (empty && elements.get(rankIndex).size() == 0) {
+			countFilled++;
+System.out.println("countFilled=" + countFilled);
+System.out.println("rank=" + rank);
+System.out.println("rankIndex=" + rankIndex);
+			if (countFilled >= rank) {
+				empty = false;
 			}
 		}
-
-		currentConfig = configQueue.poll();
-System.out.println("HEEEEEEEEEEEEEEEEEEEEJ");
-		return true;
-	}
-
-	private ArrayList<V> getConfig(ArrayList<Integer> indexList) {
-		ArrayList<V> config = new ArrayList<>();
-
-System.out.println("rank=" + rank);
-
-		if (!filled) {
-			return null;
-		}
-
-		for (int i = 0; i < rank; i++) {
-			config.add(elements.get(i).get(indexList.get(i)));
-		}
-System.out.println("Ladderqueue returns config: " + config);
-		return config;
-	}
-
-	private void updateCurrentConfig() {
-		this.currentConfig = getConfig(indices);
-	}
-
-	private boolean canIncreaseIndex(int i) {
-		return indices.get(i) + 1 < elements.get(i).size();
 	}
 
 }
