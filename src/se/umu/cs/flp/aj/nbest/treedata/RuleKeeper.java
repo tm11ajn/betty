@@ -32,12 +32,12 @@ public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 			this.paused = false;
 		}
 
-		if (rule.getRank() == 0) {
-			this.smallestTree = new TreeKeeper2<LabelType>(rule.getSymbol(),
-					rule.getWeight(), rule.getResultingState(),
-					new ArrayList<>());
-System.out.println("Adding tree for " + rule + " in rulekeeper constructor");
-		}
+//		if (rule.getRank() == 0) {
+//			this.smallestTree = new TreeKeeper2<LabelType>(rule.getSymbol(),
+//					rule.getWeight(), rule.getResultingState(),
+//					new ArrayList<>());
+//System.out.println("Adding tree for " + rule + " in rulekeeper constructor");
+//		}
 	}
 
 //	public static void init(HashMap<State, Weight> smallestCompletionWeights) {
@@ -46,6 +46,10 @@ System.out.println("Adding tree for " + rule + " in rulekeeper constructor");
 
 	public TreeKeeper2<LabelType> getSmallestTree() {
 System.out.println("Rulekeeper returns smallesttree: " + smallestTree);
+		if (smallestTree == null) {
+			next();
+		}
+
 		return smallestTree;
 	}
 
@@ -85,7 +89,7 @@ System.out.println("New SmallestTree=" + smallestTree);
 
 	@Override
 	public int compareTo(RuleKeeper<LabelType> ruleKeeper) {
-		return smallestTree.compareTo(ruleKeeper.smallestTree);
+		return getSmallestTree().compareTo(ruleKeeper.getSmallestTree());
 	}
 
 	@Override

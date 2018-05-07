@@ -22,6 +22,9 @@ public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>
 		ArrayList<TreeKeeper2<LabelType>> list1 = config1.getValues();
 		ArrayList<TreeKeeper2<LabelType>> list2 = config2.getValues();
 
+System.out.println("LIST 1 SIZE: " + list1.size());
+System.out.println("LIST 2 SIZE: " + list2.size());
+
 		for (TreeKeeper2<LabelType> t : list1) {
 
 			if (counter == 0) {
@@ -42,17 +45,41 @@ public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>
 			} else {
 				weight2 = (Weight) weight2.mult(t.getSmallestWeight());
 			}
+
+			counter++;
 		}
 
-		if (weight1 == null && weight2 == null) {
-			return 0;
-		} else if (weight1 == null) {
-			return 1;
-		} else if (weight2 == null) {
-			return -1;
+//		if (weight1 == null && weight2 == null) {
+//			return 0;
+//		} else if (weight1 == null) {
+//			return 1;
+//		} else if (weight2 == null) {
+//			return -1;
+//		}
+
+		int comparison = weight1.compareTo(weight2);
+
+		if (comparison !=  0) {
+			return comparison;
 		}
 
-		return weight1.compareTo(weight2);
+		String string1 = "";
+		String string2 = "";
+
+System.out.println("COMPARING STRINGS ");
+
+		for (TreeKeeper2<LabelType> t : list1) {
+			string1 += t.getTree();
+		}
+
+		for (TreeKeeper2<LabelType> t : list2) {
+			string2 += t.getTree();
+		}
+
+System.out.println("STRING 1: " + string1);
+System.out.println("STRING 2: " + string2);
+
+		return string1.compareTo(string2);
 	}
 
 }

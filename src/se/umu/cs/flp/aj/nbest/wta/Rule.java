@@ -32,7 +32,8 @@ public class Rule<LabelType> {
 	private int rank = 0;
 
 	private ArrayList<State> states = new ArrayList<>();
-	private HashMap<State, Integer> stateMap = new HashMap<>();
+//	private HashMap<State, Integer> stateMap = new HashMap<>();
+	private HashMap<State, ArrayList<Integer>> stateMap = new HashMap<>();
 
 	private State resultingState;
 
@@ -45,7 +46,7 @@ public class Rule<LabelType> {
 
 		for (State state : states) {
 			this.states.add(state);
-			this.stateMap.put(state, rank);
+			addToStateMap(state, rank);
 			rank++;
 		}
 	}
@@ -66,8 +67,16 @@ public class Rule<LabelType> {
 
 	public void addState(State state) {
 		this.states.add(state);
-		this.stateMap.put(state, rank);
+		addToStateMap(state, rank);
 		rank++;
+	}
+
+	private void addToStateMap(State state, int index) {
+		if (!this.stateMap.containsKey(state)) {
+			this.stateMap.put(state, new ArrayList<>());
+		}
+
+		this.stateMap.get(state).add(index);
 	}
 
 	public LabelType getSymbol() {
@@ -94,7 +103,7 @@ public class Rule<LabelType> {
 		return states;
 	}
 
-	public int getIndexOfState(State state) {
+	public ArrayList<Integer> getIndexOfState(State state) {
 		return stateMap.get(state);
 	}
 
