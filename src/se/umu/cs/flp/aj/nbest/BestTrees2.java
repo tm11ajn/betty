@@ -65,7 +65,7 @@ public class BestTrees2 {
 int debugCounter = 0;
 
 		// while i < N and K nonempty do
-		while (//debugCounter < 2 &&
+		while (//debugCounter < 4 &&
 				counter < N && !ruleQueue.isEmpty()) {
 debugCounter++;
 			// t <- dequeue(K)
@@ -76,6 +76,7 @@ System.out.println("Current tree = " + currentTree);
 
 
 System.out.println("Smallest weight = " + currentTree.getSmallestWeight());
+System.out.println("Run weight = " + currentTree.getRunWeight());
 System.out.println("Delta weight = " + currentTree.getDeltaWeight());
 
 // TODO: make sure that optimal states and optimal weights are updated properly.
@@ -102,11 +103,11 @@ System.out.println("OUTPUTTING " + currentTree.getTree());
 					// i <- i + 1
 					counter++;
 				}
+			}
 
-				// prune(T, enqueue(K, expand(T, t)))
-				if (counter < N) {
-					ruleQueue.addTree(currentTree);
-				}
+			// prune(T, enqueue(K, expand(T, t)))
+			if (counter < N) {
+				ruleQueue.addTree(currentTree);
 			}
 		}
 

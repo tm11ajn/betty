@@ -208,6 +208,14 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 		String thisString = this.toString();
 		String oString = o.toString();
 
-		return thisString.compareTo(oString);
+		int comparison = thisString.compareTo(oString);
+
+		if (comparison > 0) {
+			return 1;
+		} else if (comparison < 0) {
+			return -1;
+		}
+
+		return 0;
 	}
 }

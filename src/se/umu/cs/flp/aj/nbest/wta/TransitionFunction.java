@@ -114,6 +114,7 @@ public class TransitionFunction<LabelType> {
 		}
 
 		boolean acc = true;
+		HashMap<State, State> addedStates = new HashMap<>();
 
 		for (State state : rule.getStates()) {
 			ArrayList<Rule<LabelType>> ruleListState = rulesByState.get(state);
@@ -123,7 +124,10 @@ public class TransitionFunction<LabelType> {
 				rulesByState.put(state, ruleListState);
 			}
 
-			acc = ruleListState.add(rule) && acc;
+			if (!addedStates.containsKey(state)) {
+				acc = ruleListState.add(rule) && acc;
+				addedStates.put(state, state);
+			}
 		}
 
 		return ruleListSym.add(rule) && ruleResListState.add(rule) && acc;

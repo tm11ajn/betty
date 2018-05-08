@@ -22,7 +22,7 @@ package se.umu.cs.flp.aj.nbest.helpers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 import se.umu.cs.flp.aj.nbest.treedata.RuleKeeper;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
@@ -33,12 +33,14 @@ import se.umu.cs.flp.aj.nbest.wta.TransitionFunction;
 public class RuleQueue<LabelType extends Comparable<LabelType>> {
 
 	private TransitionFunction<LabelType> tf;
-	private LinkedList<RuleKeeper<LabelType>> queue;
+//	private LinkedList<RuleKeeper<LabelType>> queue;
+	private PriorityQueue<RuleKeeper<LabelType>> queue;
 	private HashMap<Rule<LabelType>, RuleKeeper<LabelType>> ruleKeepers;
 
 	public RuleQueue(TransitionFunction<LabelType> tf) {
 		this.tf = tf;
-		this.queue = new LinkedList<>();
+//		this.queue = new LinkedList<>();
+		this.queue = new PriorityQueue<>();
 		this.ruleKeepers = new HashMap<>();
 
 		ArrayList<Rule<LabelType>> rules = tf.getRules();
@@ -50,11 +52,14 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 			if (r.getRank() == 0) {
 				queue.add(keeper);
 			}
-
-//			queue.add(keeper);
 		}
 
-		addRankZeroTrees();
+System.out.println("Rulequeue after constructor: ");
+for (RuleKeeper<LabelType> q : queue) {
+System.out.println("" + q);
+}
+
+//		addRankZeroTrees();
 	}
 
 	private void addRankZeroTrees() {
@@ -63,11 +68,11 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 		for (Rule<LabelType> r : rules) {
 
 			if (r.getRank() == 0) {
-				TreeKeeper2<LabelType> tempTree = new TreeKeeper2<LabelType>(
-						r.getSymbol(), r.getWeight(),
-						r.getResultingState(), new ArrayList<>());
+//				TreeKeeper2<LabelType> tempTree = new TreeKeeper2<LabelType>(
+//						r.getSymbol(), r.getWeight(),
+//						r.getResultingState(), new ArrayList<>());
 				//queue.add(ruleKeepers.get(r));
-				addTree(tempTree);
+				//addTree(tempTree);
 			}
 		}
 
@@ -94,9 +99,6 @@ System.out.println("Current rule is " + rule);
 					currentKeeper.addTreeForStateIndex(newTree, index);
 				}
 
-//				currentKeeper.addTreeForStateIndex(newTree,
-//						rule.getIndexOfState(state));
-
 				if (pausedBefore && !currentKeeper.paused()) {
 					queue.add(currentKeeper);
 System.out.println("Adds RULE " + currentKeeper.getRule() + " to queue");
@@ -114,9 +116,10 @@ System.out.println("" + q);
 	}
 
 	public TreeKeeper2<LabelType> nextTree() {
-		RuleKeeper<LabelType> ruleKeeper = queue.pop();
-		ruleKeeper.next();
+		RuleKeeper<LabelType> ruleKeeper = queue.poll();
 		TreeKeeper2<LabelType> nextTree = ruleKeeper.getSmallestTree();
+
+		ruleKeeper.next();
 
 		if (!ruleKeeper.paused()) {
 			queue.add(ruleKeeper);

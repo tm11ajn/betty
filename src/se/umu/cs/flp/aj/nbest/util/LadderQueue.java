@@ -121,7 +121,7 @@ System.out.println("Adding " + value + " to ladderqueue "
 
 	public ArrayList<V> dequeue() {
 
-		ArrayList<V> prev = currentConfig.getValues();
+//		ArrayList<V> prev = currentConfig.getValues();
 
 		if (hasNext()) {
 			enqueueNextConfigurations();

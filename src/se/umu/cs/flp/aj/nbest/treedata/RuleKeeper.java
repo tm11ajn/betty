@@ -45,11 +45,11 @@ public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 //	}
 
 	public TreeKeeper2<LabelType> getSmallestTree() {
-System.out.println("Rulekeeper returns smallesttree: " + smallestTree);
 		if (smallestTree == null) {
 			next();
 		}
 
+System.out.println("Rulekeeper returns smallesttree: " + smallestTree);
 		return smallestTree;
 	}
 
@@ -71,12 +71,18 @@ System.out.println("Rulekeeper returns smallesttree: " + smallestTree);
 	}
 
 	public void next() {
+System.out.println("next for rulekeeper " + rule + " with tree " + smallestTree);
 
 		if (ladder.hasNext()) {
+System.out.println("HASNEXT");
 			paused = false;
 			ArrayList<TreeKeeper2<LabelType>> temp = ladder.dequeue();
 			smallestTree = new TreeKeeper2<LabelType>(rule.getSymbol(),
 					rule.getWeight(), rule.getResultingState(), temp);
+
+			if (!ladder.hasNext()) {
+				paused = true;
+			}
 System.out.println("New SmallestTree=" + smallestTree);
 		} else {
 			paused = true;
@@ -89,7 +95,21 @@ System.out.println("New SmallestTree=" + smallestTree);
 
 	@Override
 	public int compareTo(RuleKeeper<LabelType> ruleKeeper) {
-		return getSmallestTree().compareTo(ruleKeeper.getSmallestTree());
+
+		int comparison =
+				getSmallestTree().compareTo(ruleKeeper.getSmallestTree());
+System.out.println("HEEEEEEEEEEEEEEEEEEEEEEEEEERE 11111111111111");
+System.out.println("Compares " + this.rule + " with " + ruleKeeper.rule);
+System.out.println("Result: " + comparison);
+
+		if (comparison == 0) {
+System.out.println("HEEEEEEEEEEEEEEEEEEEEEEEEEERE 22222222222");
+System.out.println("Compares " + this.rule + " with " + ruleKeeper.rule);
+System.out.println("Result: " + this.rule.getSymbol().compareTo(ruleKeeper.rule.getSymbol()));
+			return this.rule.getSymbol().compareTo(ruleKeeper.rule.getSymbol());
+		}
+
+		return comparison;
 	}
 
 	@Override

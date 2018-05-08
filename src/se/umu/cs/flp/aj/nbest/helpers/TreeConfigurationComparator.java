@@ -28,9 +28,11 @@ System.out.println("LIST 2 SIZE: " + list2.size());
 		for (TreeKeeper2<LabelType> t : list1) {
 
 			if (counter == 0) {
-				weight1 = t.getSmallestWeight();
+//				weight1 = t.getSmallestWeight();
+				weight1 = t.getRunWeight();
 			} else {
-				weight1 = (Weight) weight1.mult(t.getSmallestWeight());
+//				weight1 = weight1.mult(t.getSmallestWeight());
+				weight1 = weight1.mult(t.getRunWeight());
 			}
 
 			counter++;
@@ -41,9 +43,11 @@ System.out.println("LIST 2 SIZE: " + list2.size());
 		for (TreeKeeper2<LabelType> t : list2) {
 
 			if (counter == 0) {
-				weight2 = t.getSmallestWeight();
+//				weight2 = t.getSmallestWeight();
+				weight2 = t.getRunWeight();
 			} else {
-				weight2 = (Weight) weight2.mult(t.getSmallestWeight());
+//				weight2 = (Weight) weight2.mult(t.getSmallestWeight());
+				weight2 = weight2.mult(t.getRunWeight());
 			}
 
 			counter++;

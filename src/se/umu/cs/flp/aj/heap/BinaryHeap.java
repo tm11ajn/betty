@@ -125,16 +125,12 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 			int leftIndex = 2 * currentIndex + 1;
 			int rightIndex = leftIndex + 1;
 
-System.out.println("left=" + leftIndex);
-System.out.println("right=" + rightIndex);
-
 			if (leftIndex >= size) {
 				done = true;
 			} else {
 
 				if (rightIndex >= size) {
 					rightIndex = leftIndex;
-System.out.println("HERE");
 				}
 
 				Node<O, W> left = nodes.get(leftIndex);
