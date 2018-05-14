@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Anna Jonsson for the research group Foundations of Language
- * Processing, Department of Computing Science, Ume� university
+ * Copyright 2018 Anna Jonsson for the research group Foundations of Language
+ * Processing, Department of Computing Science, Umeå university
  *
  * This file is part of BestTrees.
  *
@@ -16,9 +16,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Created in 2018 by aj.
- * Modified in 2018 by aj.
  */
 
 package se.umu.cs.flp.aj.nbest.treedata;
@@ -38,7 +35,6 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 	private static HashMap<Node<?>, LinkedHashMap<State, State>> optimalStates =
 			new HashMap<>();
 	private static HashMap<Node<?>, State> optimalState = new HashMap<>();
-//	private static LinkedHashMap<Node<LabelType>, State> optimalStates;
 	private static HashMap<Node<?>, HashMap<State, Weight>> optWeights =
 			new HashMap<>();
 	private static HashMap<Node<?>, Weight> smallestWeight =
@@ -46,35 +42,14 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 
 	private Node<LabelType> tree;
 	private Weight runWeight;
-
-//	private LinkedHashMap<State,State> optimalStates;
-//	private State optimalState;
-//	private HashMap<State, Weight> optWeights;
-//	private Weight smallestWeight;
-
-//	public TreeKeeper2(Node<LabelType> tree, Semiring semiring) {
-//		this.tree = tree;
-//
-//		if (!smallestWeight.containsKey(tree)) {
-//			smallestWeight.put(tree, semiring.zero());
-//		}
-//
-//		if (!optWeights.containsKey(tree)) {
-//			optWeights.put(tree, new LinkedHashMap<>());
-//		}
-//
-//		if (!optimalStates.containsKey(tree)) {
-//			optimalStates.put(tree, new LinkedHashMap<>());
-//		}
-////		this.optWeights = new HashMap<>();
-////		this.smallestWeight = semiring.zero();
-//	}
+	private State resultingState;
 
 	public TreeKeeper2(LabelType ruleLabel, Weight ruleWeight,
 			State resultingState,
 			ArrayList<TreeKeeper2<LabelType>> trees) {
 
 		this.tree = new Node<LabelType>(ruleLabel);
+		this.resultingState = resultingState;
 
 		Weight temp = ruleWeight;
 
@@ -87,20 +62,6 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 		}
 
 		this.runWeight = temp;
-
-//		if (!optWeights.containsKey(tree)) {
-//			optWeights.put(tree, new HashMap<>());
-//			smallestWeight.put(tree, temp);
-//		} else if (smallestWeight.get(tree).compareTo(temp) == 1) {
-//			smallestWeight.put(tree, temp);
-//		}
-//
-//		if (!optimalStates.containsKey(tree)) {
-//			optimalStates.put(tree, new LinkedHashMap<>());
-//		}
-
-System.out.println("Creating new tree: " + tree);
-
 		addStateWeight(resultingState, temp);
 	}
 
@@ -118,6 +79,10 @@ System.out.println("Creating new tree: " + tree);
 
 	public Weight getRunWeight() {
 		return this.runWeight;
+	}
+
+	public State getResultingState() {
+		return resultingState;
 	}
 
 	public LinkedHashMap<State, State> getOptimalStates() {
@@ -163,21 +128,11 @@ System.out.println("Creating new tree: " + tree);
 		}
 	}
 
-//	public void addWeightsFrom(TreeKeeper<LabelType> t) {
-//		HashMap<State, Weight> map = t.optWeights;
-//
-//		for (Entry<State, Weight> e : map.entrySet()) {
-//			addStateWeight(e.getKey(), e.getValue());
-//		}
-//	}
-
 	public Weight getSmallestWeight() {
 		return smallestWeight.get(tree);
 	}
 
 	public Weight getDeltaWeight() {
-//		return smallestWeight.get(tree).mult(
-//				smallestCompletions.get(optimalState.get(tree)));
 		return runWeight.mult(
 				smallestCompletions.get(optimalState.get(tree)));
 	}
@@ -211,8 +166,6 @@ System.out.println("Creating new tree: " + tree);
 
 		TreeKeeper2<?> o = (TreeKeeper2<?>) obj;
 
-//		int weightComparison = smallestWeight.get(tree).compareTo(
-//				smallestWeight.get(o.tree));
 		int weightComparison = runWeight.compareTo(o.runWeight);
 		int treeComparison = this.tree.compareTo(o.tree);
 
@@ -225,8 +178,6 @@ System.out.println("Creating new tree: " + tree);
 
 	@Override
 	public int compareTo(TreeKeeper2<LabelType> o) {
-//		int weightComparison = smallestWeight.get(tree).compareTo(
-//				smallestWeight.get(o.tree));
 		int weightComparison = runWeight.compareTo(o.runWeight);
 
 		if (weightComparison == 0) {

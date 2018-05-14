@@ -1,3 +1,23 @@
+/*
+ * Copyright 2018 Anna Jonsson for the research group Foundations of Language
+ * Processing, Department of Computing Science, Umeå university
+ *
+ * This file is part of BestTrees.
+ *
+ * BestTrees is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BestTrees is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.umu.cs.flp.aj.nbest.treedata;
 
 import java.util.ArrayList;
@@ -9,17 +29,11 @@ import se.umu.cs.flp.aj.nbest.wta.Rule;
 public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 			Comparable<RuleKeeper<LabelType>> {
 
-//	private static HashMap<State, Weight> smallestCompletions;
-//	private Node<LabelType> tree;
-//	private LinkedHashMap<State,State> optimalStates;
-//	private State optimalState;
-//	private HashMap<State, Weight> optWeights;
-//	private Weight smallestWeight;
-
 	private Rule<LabelType> rule;
 	private LadderQueue<TreeKeeper2<LabelType>> ladder;
 	private TreeKeeper2<LabelType> smallestTree;
 	private boolean paused;
+	private boolean queued;
 
 	public RuleKeeper(Rule<LabelType> rule) {
 		this.rule = rule;
@@ -31,62 +45,52 @@ public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 		if (rule.getRank() == 0) {
 			this.paused = false;
 		}
-
-//		if (rule.getRank() == 0) {
-//			this.smallestTree = new TreeKeeper2<LabelType>(rule.getSymbol(),
-//					rule.getWeight(), rule.getResultingState(),
-//					new ArrayList<>());
-//System.out.println("Adding tree for " + rule + " in rulekeeper constructor");
-//		}
 	}
 
-//	public static void init(HashMap<State, Weight> smallestCompletionWeights) {
-//		smallestCompletions = smallestCompletionWeights;
-//	}
-
 	public TreeKeeper2<LabelType> getSmallestTree() {
+
 		if (smallestTree == null) {
 			next();
 		}
 
-System.out.println("Rulekeeper returns smallesttree: " + smallestTree);
 		return smallestTree;
 	}
 
 	public void addTreeForStateIndex(TreeKeeper2<LabelType> tree,
 			int stateIndex) {
 		ladder.addLast(stateIndex, tree);
-
-		if (ladder.hasNext()) {
-			paused = false;
-		}
-
-//		if (smallestTree == null) {
-//			next();
-//		}
-	}
-
-	public boolean paused() {
-		return paused;
+		setPaused();
 	}
 
 	public void next() {
-System.out.println("next for rulekeeper " + rule + " with tree " + smallestTree);
 
 		if (ladder.hasNext()) {
-System.out.println("HASNEXT");
-			paused = false;
 			ArrayList<TreeKeeper2<LabelType>> temp = ladder.dequeue();
 			smallestTree = new TreeKeeper2<LabelType>(rule.getSymbol(),
 					rule.getWeight(), rule.getResultingState(), temp);
+		}
 
-			if (!ladder.hasNext()) {
-				paused = true;
-			}
-System.out.println("New SmallestTree=" + smallestTree);
+		setPaused();
+	}
+
+	public boolean isPaused() {
+		return paused;
+	}
+
+	private void setPaused() {
+		if (ladder.hasNext()) {
+			paused = false;
 		} else {
 			paused = true;
 		}
+	}
+
+	public void setQueued(boolean queued) {
+		this.queued = queued;
+	}
+
+	public boolean isQueued() {
+		return queued;
 	}
 
 	public Rule<LabelType> getRule() {
@@ -94,22 +98,19 @@ System.out.println("New SmallestTree=" + smallestTree);
 	}
 
 	@Override
-	public int compareTo(RuleKeeper<LabelType> ruleKeeper) {
+	public boolean equals(Object obj) {
 
-		int comparison =
-				getSmallestTree().compareTo(ruleKeeper.getSmallestTree());
-System.out.println("HEEEEEEEEEEEEEEEEEEEEEEEEEERE 11111111111111");
-System.out.println("Compares " + this.rule + " with " + ruleKeeper.rule);
-System.out.println("Result: " + comparison);
-
-		if (comparison == 0) {
-System.out.println("HEEEEEEEEEEEEEEEEEEEEEEEEEERE 22222222222");
-System.out.println("Compares " + this.rule + " with " + ruleKeeper.rule);
-System.out.println("Result: " + this.rule.getSymbol().compareTo(ruleKeeper.rule.getSymbol()));
-			return this.rule.getSymbol().compareTo(ruleKeeper.rule.getSymbol());
+		if (!(obj instanceof RuleKeeper<?>)) {
+			return false;
 		}
 
-		return comparison;
+		RuleKeeper<?> o = (RuleKeeper<?>) obj;
+		return getSmallestTree().equals(o.getSmallestTree());
+	}
+
+	@Override
+	public int compareTo(RuleKeeper<LabelType> ruleKeeper) {
+		return getSmallestTree().compareTo(ruleKeeper.getSmallestTree());
 	}
 
 	@Override

@@ -34,16 +34,8 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class BestTrees2 {
 
-//	private static ArrayList<TreeKeeper2<Symbol>> exploredTrees; // T
-//	private static PruneableQueue<TreeKeeper<Symbol>,Weight> treeQueue; // K
-	private static HashMap<TreeKeeper2<Symbol>, TreeKeeper2<Symbol>> exploredTrees;
-
-//	private static PriorityQueue<Rule> ruleQueue;
-
-	private static RuleQueue<Symbol> ruleQueue;
-
-//	private static LinkedList<TreeKeeper<Symbol>> queue;
-
+	private static HashMap<TreeKeeper2<Symbol>, TreeKeeper2<Symbol>> exploredTrees; // T
+	private static RuleQueue<Symbol> ruleQueue; // K
 
 	public static void setSmallestCompletions(
 			HashMap<State, Weight> smallestCompletions) {
@@ -62,33 +54,14 @@ public class BestTrees2 {
 		// i <- 0
 		int counter = 0;
 
-int debugCounter = 0;
-
 		// while i < N and K nonempty do
-		while (//debugCounter < 4 &&
-				counter < N && !ruleQueue.isEmpty()) {
-debugCounter++;
+		while (counter < N && !ruleQueue.isEmpty()) {
+
 			// t <- dequeue(K)
 			TreeKeeper2<Symbol> currentTree = ruleQueue.nextTree();
 
-System.out.println("Current tree = " + currentTree);
-
-
-
-System.out.println("Smallest weight = " + currentTree.getSmallestWeight());
-System.out.println("Run weight = " + currentTree.getRunWeight());
-System.out.println("Delta weight = " + currentTree.getDeltaWeight());
-
-// TODO: make sure that optimal states and optimal weights are updated properly.
-
 			if (!exploredTrees.containsKey(currentTree)) {
 
-				// T <- T u {t}
-				//exploredTrees.put(currentTree, currentTree);
-				// TODO: when should this part not run? When we have explored
-				// the tree or when we have output it?
-
-				// if M(t) = delta(t) then
 				if (currentTree.getSmallestWeight().equals(
 					currentTree.getDeltaWeight())) {
 
@@ -98,14 +71,10 @@ System.out.println("Delta weight = " + currentTree.getDeltaWeight());
 					nBest.add(currentTree.getTree().toString() + " " +
 							currentTree.getDeltaWeight().toString());
 
-System.out.println("OUTPUTTING " + currentTree.getTree());
-
-					// i <- i + 1
 					counter++;
 				}
 			}
 
-			// prune(T, enqueue(K, expand(T, t)))
 			if (counter < N) {
 				ruleQueue.addTree(currentTree);
 			}

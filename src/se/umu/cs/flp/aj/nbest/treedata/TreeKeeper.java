@@ -130,27 +130,6 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		return smallestWeight.mult(smallestCompletions.get(optimalState));
 	}
 
-//	@Override
-//	public int compareTo(TreeKeeper<?> o) {
-//		int weightComparison = this.smallestWeight.compareTo(o.smallestWeight);
-//
-//		if (weightComparison == 0) {
-//			return this.tree.compareTo(o.tree);
-//		}
-//
-//		return weightComparison;
-//	}
-
-//	@Override
-//	public boolean equals(Object obj) {
-//
-//		if (!(obj instanceof TreeKeeper<?>)) {
-//			return false;
-//		}
-//
-//		return this.compareTo((TreeKeeper<?>) obj) == 0;
-//	}
-
 	@Override
 	public int hashCode() {
 		return this.tree.hashCode();

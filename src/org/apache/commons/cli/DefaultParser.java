@@ -31,28 +31,28 @@ public class DefaultParser implements CommandLineParser
 {
     /** The command-line instance. */
     protected CommandLine cmd;
-    
+
     /** The current options. */
     protected Options options;
 
     /**
      * Flag indicating how unrecognized tokens are handled. <tt>true</tt> to stop
      * the parsing and add the remaining tokens to the args list.
-     * <tt>false</tt> to throw an exception. 
+     * <tt>false</tt> to throw an exception.
      */
     protected boolean stopAtNonOption;
 
     /** The token currently processed. */
     protected String currentToken;
- 
+
     /** The last option parsed. */
     protected Option currentOption;
- 
+
     /** Flag indicating if tokens should no longer be analyzed and simply added as arguments of the command line. */
     protected boolean skipParsing;
- 
+
     /** The required options and groups expected to be found when parsing the command line. */
-    protected List expectedOpts;
+    protected List<Object> expectedOpts;
 
     /** Flag indicating if partial matching of long options is supported. */
     private  boolean allowPartialMatching;
@@ -134,7 +134,7 @@ public class DefaultParser implements CommandLineParser
      * @param arguments       the command line arguments
      * @param properties      command line option name-value pairs
      * @param stopAtNonOption if <tt>true</tt> an unrecognized argument stops
-     *     the parsing and the remaining arguments are added to the 
+     *     the parsing and the remaining arguments are added to the
      *     {@link CommandLine}s args list. If <tt>false</tt> an unrecognized
      *     argument triggers a ParseException.
      *
@@ -149,7 +149,7 @@ public class DefaultParser implements CommandLineParser
         this.stopAtNonOption = stopAtNonOption;
         skipParsing = false;
         currentOption = null;
-        expectedOpts = new ArrayList(options.getRequiredOptions());
+        expectedOpts = new ArrayList<>(options.getRequiredOptions());
 
         // clear the data from the groups
         for (final OptionGroup group : options.getOptionGroups())
@@ -339,7 +339,7 @@ public class DefaultParser implements CommandLineParser
 
     /**
      * Tells if the token looks like a short option.
-     * 
+     *
      * @param token
      */
     private boolean isShortOption(final String token)
@@ -391,10 +391,10 @@ public class DefaultParser implements CommandLineParser
     }
 
     /**
-     * Handles an unknown token. If the token starts with a dash an 
-     * UnrecognizedOptionException is thrown. Otherwise the token is added 
-     * to the arguments of the command line. If the stopAtNonOption flag 
-     * is set, this stops the parsing and the remaining tokens are added 
+     * Handles an unknown token. If the token starts with a dash an
+     * UnrecognizedOptionException is thrown. Otherwise the token is added
+     * to the arguments of the command line. If the stopAtNonOption flag
+     * is set, this stops the parsing and the remaining tokens are added
      * as-is in the arguments of the command line.
      *
      * @param token the command line token to handle
@@ -442,7 +442,7 @@ public class DefaultParser implements CommandLineParser
      * -L
      * --l
      * -l
-     * 
+     *
      * @param token the command line token to handle
      */
     private void handleLongOptionWithoutEqual(final String token) throws ParseException
@@ -639,7 +639,7 @@ public class DefaultParser implements CommandLineParser
                 break;
             }
         }
-        
+
         return opt;
     }
 

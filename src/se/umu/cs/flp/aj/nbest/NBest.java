@@ -1,6 +1,6 @@
 /*
- * Copyright 2015 Anna Jonsson for the research group Foundations of Language
- * Processing, Department of Computing Science, Ume� university
+ * Copyright 2018 Anna Jonsson for the research group Foundations of Language
+ * Processing, Department of Computing Science, Umeå university
  *
  * This file is part of BestTrees.
  *

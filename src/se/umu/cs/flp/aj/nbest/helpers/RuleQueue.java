@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Anna Jonsson for the research group Foundations of Language
+ * Copyright 2018 Anna Jonsson for the research group Foundations of Language
  * Processing, Department of Computing Science, Ume� university
  *
  * This file is part of BestTrees.
@@ -49,82 +49,62 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 			RuleKeeper<LabelType> keeper = new RuleKeeper<>(r);
 			ruleKeepers.put(r, keeper);
 
-			if (r.getRank() == 0) {
+			if (!keeper.isPaused()) {
 				queue.add(keeper);
+				keeper.setQueued(true);
 			}
 		}
 
-System.out.println("Rulequeue after constructor: ");
-for (RuleKeeper<LabelType> q : queue) {
-System.out.println("" + q);
-}
-
-//		addRankZeroTrees();
-	}
-
-	private void addRankZeroTrees() {
-		ArrayList<Rule<LabelType>> rules = tf.getRules();
-
-		for (Rule<LabelType> r : rules) {
-
-			if (r.getRank() == 0) {
-//				TreeKeeper2<LabelType> tempTree = new TreeKeeper2<LabelType>(
-//						r.getSymbol(), r.getWeight(),
-//						r.getResultingState(), new ArrayList<>());
-				//queue.add(ruleKeepers.get(r));
-				//addTree(tempTree);
-			}
-		}
-
-System.out.println("Rulequeue after enqueuing rank 0 symbols: ");
-for (RuleKeeper<LabelType> q : queue) {
-System.out.println("" + q);
-}
+//System.out.println("Rulequeue after constructor: ");
+//for (RuleKeeper<LabelType> q : queue) {
+//System.out.println("" + q);
+//}
 	}
 
 	public void addTree(TreeKeeper2<LabelType> newTree) {
-System.out.println("IN ADDTREE");
-System.out.println("adding tree " + newTree + " to rulequeue");
-		for (State state : newTree.getOptimalStates().keySet()) {
-System.out.println("Current state is " + state);
-			for (Rule<LabelType> rule : tf.getRulesByState(state)) {
-				RuleKeeper<LabelType> currentKeeper = ruleKeepers.get(rule);
-System.out.println("Current rule is " + rule);
+		State state = newTree.getResultingState();
 
-				boolean pausedBefore = currentKeeper.paused();
+		for (Rule<LabelType> rule : tf.getRulesByState(state)) {
+			RuleKeeper<LabelType> currentKeeper = ruleKeepers.get(rule);
 
-				ArrayList<Integer> stateIndices = rule.getIndexOfState(state);
+			boolean pausedBefore = currentKeeper.isPaused();
 
-				for (Integer index : stateIndices) {
-					currentKeeper.addTreeForStateIndex(newTree, index);
-				}
+			ArrayList<Integer> stateIndices = rule.getIndexOfState(state);
 
-				if (pausedBefore && !currentKeeper.paused()) {
-					queue.add(currentKeeper);
-System.out.println("Adds RULE " + currentKeeper.getRule() + " to queue");
-				}
-
-System.out.println("Adding state " + state + " of rule " + rule +
-		" with tree " + newTree);
+			for (Integer index : stateIndices) {
+				currentKeeper.addTreeForStateIndex(newTree, index);
 			}
+
+			if (!currentKeeper.isQueued() &&
+					pausedBefore && !currentKeeper.isPaused()) {
+				queue.add(currentKeeper);
+				currentKeeper.setQueued(true);
+			}
+
 		}
 
-System.out.println("After addtree: Now rulequeue is: ");
-for (RuleKeeper<LabelType> q : queue) {
-System.out.println("" + q);
-}
+//System.out.println("After ADDTREE: Now rulequeue is: ");
+//for (RuleKeeper<LabelType> q : queue) {
+//System.out.println("" + q);
+//}
 	}
 
 	public TreeKeeper2<LabelType> nextTree() {
 		RuleKeeper<LabelType> ruleKeeper = queue.poll();
 		TreeKeeper2<LabelType> nextTree = ruleKeeper.getSmallestTree();
 
+		ruleKeeper.setQueued(false);
 		ruleKeeper.next();
 
-		if (!ruleKeeper.paused()) {
+		if (!ruleKeeper.isPaused()) {
 			queue.add(ruleKeeper);
+			ruleKeeper.setQueued(true);
 		}
-System.out.println("Ruleorganiser gets " + nextTree + " from rulekeeper");
+
+//System.out.println("After NEXTTREE: Now rulequeue is: ");
+//for (RuleKeeper<LabelType> q : queue) {
+//System.out.println("" + q);
+//}
 		return nextTree;
 	}
 
