@@ -88,6 +88,12 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 
 	private void addStateWeight(State s, Weight w) {
 
+System.out.println("In add state weight for tree " + tree + " with hashcode=" + tree.hashCode());
+
+if (optimalState.get(tree) != null) {
+System.out.println("Current delta weight is " + getDeltaWeight());
+}
+
 		if (!optWeights.containsKey(tree)) {
 			optWeights.put(tree, new HashMap<>());
 		}
@@ -119,6 +125,8 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 			optimalStates.get(tree).put(s, s);
 			optimalState.put(tree, s);
 		}
+
+System.out.println("After delta weight is " + getDeltaWeight());
 	}
 
 	public Weight getSmallestWeight() {
@@ -128,8 +136,11 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 	public Weight getDeltaWeight() {
 //		return runWeight.mult(
 //				smallestCompletions.get(optimalState.get(tree)));
-		return smallestWeight.get(tree).mult(
-				smallestCompletions.get(optimalState.get(tree)));
+//		return smallestWeight.get(tree).mult(
+//				smallestCompletions.get(optimalState.get(tree)));
+		State optState = optimalState.get(tree);
+		return optWeights.get(tree).get(optState).mult(
+				smallestCompletions.get(optState));
 	}
 
 	public Weight getBestRunCompletionWeight() {

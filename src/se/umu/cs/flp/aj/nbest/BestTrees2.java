@@ -60,11 +60,11 @@ public class BestTrees2 {
 
 			// t <- dequeue(K)
 			TreeKeeper2<Symbol> currentTree = ruleQueue.nextTree();
-System.out.println("Current tree = " + currentTree);
-System.out.println("Delta weight = " + currentTree.getDeltaWeight());
-System.out.println("Smallest weight = " + currentTree.getSmallestWeight());
-System.out.println("Run weight = " + currentTree.getRunWeight());
-System.out.println("Hashcode = " + currentTree.hashCode());
+//System.out.println("Current tree = " + currentTree);
+//System.out.println("Delta weight = " + currentTree.getDeltaWeight());
+//System.out.println("Smallest weight = " + currentTree.getSmallestWeight());
+//System.out.println("Run weight = " + currentTree.getRunWeight());
+//System.out.println("Hashcode = " + currentTree.hashCode());
 
 
 			if (!exploredTrees.containsKey(currentTree)) {
@@ -75,7 +75,7 @@ System.out.println("Hashcode = " + currentTree.hashCode());
 //					currentTree.getDeltaWeight())) {
 				if (currentTree.getRunWeight().equals(
 						currentTree.getDeltaWeight())) {
-System.out.println("OUTPUT");
+//System.out.println("OUTPUT");
 //					exploredTrees.put(currentTree, currentTree);
 					//1995296597
 					// output(t)
