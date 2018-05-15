@@ -50,6 +50,24 @@ public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>
 				weight1 = weight1.mult(t.getRunWeight());
 			}
 
+//			if (counter == 0) {
+//				weight1 = t.getDeltaWeight();
+//			} else {
+//				weight1 = weight1.mult(t.getDeltaWeight());
+//			}
+
+//			if (counter == 0) {
+//				weight1 = t.getSmallestWeight();
+//			} else {
+//				weight1 = weight1.mult(t.getSmallestWeight());
+//			}
+
+//			if (counter == 0) {
+//				weight1 = t.getBestRunCompletionWeight();
+//			} else {
+//				weight1 = weight1.mult(t.getBestRunCompletionWeight());
+//			}
+
 			counter++;
 		}
 
@@ -62,6 +80,24 @@ public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>
 			} else {
 				weight2 = weight2.mult(t.getRunWeight());
 			}
+
+//			if (counter == 0) {
+//				weight2 = t.getDeltaWeight();
+//			} else {
+//				weight2 = weight2.mult(t.getDeltaWeight());
+//			}
+
+//			if (counter == 0) {
+//				weight2 = t.getSmallestWeight();
+//			} else {
+//				weight2 = weight2.mult(t.getSmallestWeight());
+//			}
+
+//			if (counter == 0) {
+//				weight2 = t.getBestRunCompletionWeight();
+//			} else {
+//				weight2 = weight2.mult(t.getBestRunCompletionWeight());
+//			}
 
 			counter++;
 		}
@@ -81,6 +117,12 @@ public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>
 
 		for (TreeKeeper2<LabelType> t : list2) {
 			string2 += t.getTree() + ", ";
+		}
+
+		if (string1.length() < string2.length()) {
+			return -1;
+		} else if (string1.length() > string2.length()) {
+			return 1;
 		}
 
 		return string1.compareTo(string2);

@@ -34,6 +34,7 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class BestTrees2 {
 
+//	private static HashMap<Node<Symbol>, Node<Symbol>> exploredTrees; // T
 	private static HashMap<TreeKeeper2<Symbol>, TreeKeeper2<Symbol>> exploredTrees; // T
 	private static RuleQueue<Symbol> ruleQueue; // K
 
@@ -59,14 +60,24 @@ public class BestTrees2 {
 
 			// t <- dequeue(K)
 			TreeKeeper2<Symbol> currentTree = ruleQueue.nextTree();
+System.out.println("Current tree = " + currentTree);
+System.out.println("Delta weight = " + currentTree.getDeltaWeight());
+System.out.println("Smallest weight = " + currentTree.getSmallestWeight());
+System.out.println("Run weight = " + currentTree.getRunWeight());
+System.out.println("Hashcode = " + currentTree.hashCode());
+
 
 			if (!exploredTrees.containsKey(currentTree)) {
 
-				if (currentTree.getSmallestWeight().equals(
-					currentTree.getDeltaWeight())) {
+				exploredTrees.put(currentTree, currentTree);
 
-					exploredTrees.put(currentTree, currentTree);
-
+//				if (currentTree.getSmallestWeight().equals(
+//					currentTree.getDeltaWeight())) {
+				if (currentTree.getRunWeight().equals(
+						currentTree.getDeltaWeight())) {
+System.out.println("OUTPUT");
+//					exploredTrees.put(currentTree, currentTree);
+					//1995296597
 					// output(t)
 					nBest.add(currentTree.getTree().toString() + " " +
 							currentTree.getDeltaWeight().toString());
@@ -75,7 +86,8 @@ public class BestTrees2 {
 				}
 			}
 
-			if (counter < N) {
+			if (counter < N //&& currentTree.getTree().getChildCount() != 0
+					) {
 				ruleQueue.addTree(currentTree);
 			}
 		}

@@ -55,10 +55,7 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 
 		for (TreeKeeper2<LabelType> currentTree : trees) {
 			tree.addChild(currentTree.getTree());
-
-			//temp = temp.mult(currentTree.getSmallestWeight());
 			temp = temp.mult(currentTree.getRunWeight());
-
 		}
 
 		this.runWeight = temp;
@@ -71,10 +68,6 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 
 	public Node<LabelType> getTree() {
 		return tree;
-	}
-
-	public void setRunWeight(Weight weight) {
-		this.runWeight = weight;
 	}
 
 	public Weight getRunWeight() {
@@ -133,8 +126,14 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 	}
 
 	public Weight getDeltaWeight() {
-		return runWeight.mult(
+//		return runWeight.mult(
+//				smallestCompletions.get(optimalState.get(tree)));
+		return smallestWeight.get(tree).mult(
 				smallestCompletions.get(optimalState.get(tree)));
+	}
+
+	public Weight getBestRunCompletionWeight() {
+		return runWeight.mult(smallestCompletions.get(resultingState));
 	}
 
 	@Override
@@ -153,7 +152,7 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 
 		return "Tree: " + tree + " RunWeight: " + runWeight +
 				" Optstates: " + optStatesString +
-				" Optstate: " + optimalState +
+				//" Optstate: " + optimalState +
 				" Optweights: " + optWeights;
 	}
 
@@ -167,6 +166,10 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 		TreeKeeper2<?> o = (TreeKeeper2<?>) obj;
 
 		int weightComparison = runWeight.compareTo(o.runWeight);
+//		int weightComparison = smallestWeight.get(tree).compareTo(smallestWeight.get(o.tree));
+//		int weightComparison = getDeltaWeight().compareTo(o.getDeltaWeight());
+//		int weightComparison = getBestRunCompletionWeight().compareTo(o.getBestRunCompletionWeight());
+
 		int treeComparison = this.tree.compareTo(o.tree);
 
 		if (weightComparison == 0 && treeComparison == 0) {
@@ -179,6 +182,9 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 	@Override
 	public int compareTo(TreeKeeper2<LabelType> o) {
 		int weightComparison = runWeight.compareTo(o.runWeight);
+//		int weightComparison = smallestWeight.get(tree).compareTo(smallestWeight.get(o.tree));
+//		int weightComparison = getDeltaWeight().compareTo(o.getDeltaWeight());
+//		int weightComparison = getBestRunCompletionWeight().compareTo(o.getBestRunCompletionWeight());
 
 		if (weightComparison == 0) {
 			return this.tree.compareTo(o.tree);

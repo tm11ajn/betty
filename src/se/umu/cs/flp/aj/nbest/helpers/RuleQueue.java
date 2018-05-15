@@ -1,6 +1,6 @@
 /*
  * Copyright 2018 Anna Jonsson for the research group Foundations of Language
- * Processing, Department of Computing Science, Ume� university
+ * Processing, Department of Computing Science, Umeå university
  *
  * This file is part of BestTrees.
  *
@@ -55,10 +55,10 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 			}
 		}
 
-//System.out.println("Rulequeue after constructor: ");
-//for (RuleKeeper<LabelType> q : queue) {
-//System.out.println("" + q);
-//}
+System.out.println("Rulequeue after constructor: ");
+for (RuleKeeper<LabelType> q : queue) {
+System.out.println("" + q);
+}
 	}
 
 	public void addTree(TreeKeeper2<LabelType> newTree) {
@@ -77,6 +77,7 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 
 			if (!currentKeeper.isQueued() &&
 					pausedBefore && !currentKeeper.isPaused()) {
+				//currentKeeper.next();
 				queue.add(currentKeeper);
 				currentKeeper.setQueued(true);
 			}
@@ -97,6 +98,8 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 		ruleKeeper.next();
 
 		if (!ruleKeeper.isPaused()) {
+
+System.out.println("inserts " + ruleKeeper);
 			queue.add(ruleKeeper);
 			ruleKeeper.setQueued(true);
 		}
