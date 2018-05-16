@@ -44,9 +44,6 @@ public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 
 		if (rule.getRank() == 0) {
 			this.paused = false;
-			smallestTree = new TreeKeeper2<LabelType>(rule.getSymbol(),
-					rule.getWeight(), rule.getResultingState(),
-					new ArrayList<>());
 		}
 	}
 
@@ -72,9 +69,6 @@ public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 
 	public void next() {
 
-		// TODO try to remove outer if if everything else is solved
-		if (rule.getRank() != 0) {
-
 		if (ladder.hasNext()) {
 			ArrayList<TreeKeeper2<LabelType>> temp = ladder.dequeue();
 			smallestTree = new TreeKeeper2<LabelType>(rule.getSymbol(),
@@ -82,15 +76,6 @@ public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 			paused = false;
 		} else {
 			paused = true;
-		}
-
-		} else {
-			if (ladder.hasNext()) {
-				ladder.dequeue();
-				paused = false;
-			} else {
-				paused = true;
-			}
 		}
 	}
 
@@ -123,18 +108,6 @@ public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 
 	@Override
 	public int compareTo(RuleKeeper<LabelType> ruleKeeper) {
-
-//		if (!(rule.getRank() == 0 && ruleKeeper.rule.getRank() == 0)) {
-////System.out.println("Compares " + smallestTree + "\n with " + ruleKeeper.smallestTree);
-//			if (rule.getRank() == 0) {
-////System.out.println("Result: " + -1);
-//				return -1;
-//			} else if (ruleKeeper.rule.getRank() == 0) {
-////System.out.println("Result: " + 1);
-//				return 1;
-//			}
-//		}
-
 		return getSmallestTree().compareTo(ruleKeeper.getSmallestTree());
 	}
 

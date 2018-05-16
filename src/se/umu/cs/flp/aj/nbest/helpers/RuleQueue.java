@@ -55,10 +55,10 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 			}
 		}
 
-System.out.println("Rulequeue after constructor: ");
-for (RuleKeeper<LabelType> q : queue) {
-System.out.println("" + q);
-}
+//System.out.println("Rulequeue after constructor: ");
+//for (RuleKeeper<LabelType> q : queue) {
+//System.out.println("" + q);
+//}
 	}
 
 	public void addTree(TreeKeeper2<LabelType> newTree) {
@@ -99,7 +99,7 @@ System.out.println("" + q);
 
 		if (!ruleKeeper.isPaused()) {
 
-System.out.println("inserts " + ruleKeeper);
+//System.out.println("inserts " + ruleKeeper);
 			queue.add(ruleKeeper);
 			ruleKeeper.setQueued(true);
 		}

@@ -69,7 +69,7 @@ public class BestTrees2 {
 
 			if (!exploredTrees.containsKey(currentTree)) {
 
-				exploredTrees.put(currentTree, currentTree);
+//				exploredTrees.put(currentTree, currentTree);
 
 //				if (currentTree.getSmallestWeight().equals(
 //					currentTree.getDeltaWeight())) {
@@ -77,10 +77,11 @@ public class BestTrees2 {
 						currentTree.getDeltaWeight())) {
 //System.out.println("OUTPUT");
 //					exploredTrees.put(currentTree, currentTree);
-					//1995296597
+
 					// output(t)
 					nBest.add(currentTree.getTree().toString() + " " +
 							currentTree.getDeltaWeight().toString());
+					exploredTrees.put(currentTree, currentTree);
 
 					counter++;
 				}

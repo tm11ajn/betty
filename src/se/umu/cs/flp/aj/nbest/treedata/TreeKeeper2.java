@@ -88,11 +88,11 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 
 	private void addStateWeight(State s, Weight w) {
 
-System.out.println("In add state weight for tree " + tree + " with hashcode=" + tree.hashCode());
-
-if (optimalState.get(tree) != null) {
-System.out.println("Current delta weight is " + getDeltaWeight());
-}
+//System.out.println("In add state weight for tree " + tree + " with hashcode=" + tree.hashCode());
+//
+//if (optimalState.get(tree) != null) {
+//System.out.println("Current delta weight is " + getDeltaWeight());
+//}
 
 		if (!optWeights.containsKey(tree)) {
 			optWeights.put(tree, new HashMap<>());
@@ -112,21 +112,47 @@ System.out.println("Current delta weight is " + getDeltaWeight());
 			treeWeights.put(s, w);
 		}
 
-		Weight currentSmallestWeight = smallestWeight.get(tree);
+		//Weight currentSmallestWeight = smallestWeight.get(tree);
+//System.out.println("Current smallest weight = " + smallestWeight.get(tree));
+//System.out.println(this);
+//System.out.println("w = " + w);
+//System.out.println("Current optimal state = " + optimalState.get(tree));
 
-		if (currentSmallestWeight == null ||
-				w.compareTo(currentSmallestWeight) == -1) {
+		Weight newDeltaWeight = w.mult(smallestCompletions.get(s));
+
+		if (optimalState.get(tree) == null) {
 			LinkedHashMap<State, State> newMap = new LinkedHashMap<>();
 			newMap.put(s, s);
 			optimalStates.put(tree, newMap);
 			optimalState.put(tree, s);
 			smallestWeight.put(tree, w);
-		} else if (w.compareTo(currentSmallestWeight) == 0) {
-			optimalStates.get(tree).put(s, s);
-			optimalState.put(tree, s);
+		} else {
+			Weight oldDeltaWeight = getDeltaWeight();
+
+			if (newDeltaWeight.compareTo(oldDeltaWeight) == -1) {
+				LinkedHashMap<State, State> newMap = new LinkedHashMap<>();
+				newMap.put(s, s);
+				optimalStates.put(tree, newMap);
+				optimalState.put(tree, s);
+				smallestWeight.put(tree, w);
+			} else if (newDeltaWeight.compareTo(oldDeltaWeight) == 0) {
+				optimalStates.get(tree).put(s, s);
+			}
 		}
 
-System.out.println("After delta weight is " + getDeltaWeight());
+//		if (currentSmallestWeight == null ||
+//				w.compareTo(currentSmallestWeight) == -1) {
+//			LinkedHashMap<State, State> newMap = new LinkedHashMap<>();
+//			newMap.put(s, s);
+//			optimalStates.put(tree, newMap);
+//			optimalState.put(tree, s);
+//			smallestWeight.put(tree, w);
+//		} else if (w.compareTo(currentSmallestWeight) == 0) {
+//			optimalStates.get(tree).put(s, s);
+//			//optimalState.put(tree, s);
+//		}
+
+//System.out.println("After delta weight is " + getDeltaWeight());
 	}
 
 	public Weight getSmallestWeight() {
@@ -136,11 +162,12 @@ System.out.println("After delta weight is " + getDeltaWeight());
 	public Weight getDeltaWeight() {
 //		return runWeight.mult(
 //				smallestCompletions.get(optimalState.get(tree)));
-//		return smallestWeight.get(tree).mult(
-//				smallestCompletions.get(optimalState.get(tree)));
-		State optState = optimalState.get(tree);
-		return optWeights.get(tree).get(optState).mult(
-				smallestCompletions.get(optState));
+		return smallestWeight.get(tree).mult(
+				smallestCompletions.get(optimalState.get(tree)));
+//		State optState = optimalState.get(tree);
+//		return optWeights.get(tree).get(optState).mult(
+//				smallestCompletions.get(optState));
+//		return smallestWeight.get(tree).mult(smallestCompletions.get(smallestState.get(tree)));
 	}
 
 	public Weight getBestRunCompletionWeight() {
@@ -163,7 +190,7 @@ System.out.println("After delta weight is " + getDeltaWeight());
 
 		return "Tree: " + tree + " RunWeight: " + runWeight +
 				" Optstates: " + optStatesString +
-				//" Optstate: " + optimalState +
+				" Optstate: " + optimalState +
 				" Optweights: " + optWeights;
 	}
 
