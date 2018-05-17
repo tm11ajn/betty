@@ -33,13 +33,11 @@ import se.umu.cs.flp.aj.nbest.wta.TransitionFunction;
 public class RuleQueue<LabelType extends Comparable<LabelType>> {
 
 	private TransitionFunction<LabelType> tf;
-//	private LinkedList<RuleKeeper<LabelType>> queue;
 	private PriorityQueue<RuleKeeper<LabelType>> queue;
 	private HashMap<Rule<LabelType>, RuleKeeper<LabelType>> ruleKeepers;
 
 	public RuleQueue(TransitionFunction<LabelType> tf) {
 		this.tf = tf;
-//		this.queue = new LinkedList<>();
 		this.queue = new PriorityQueue<>();
 		this.ruleKeepers = new HashMap<>();
 
@@ -54,11 +52,6 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 				keeper.setQueued(true);
 			}
 		}
-
-//System.out.println("Rulequeue after constructor: ");
-//for (RuleKeeper<LabelType> q : queue) {
-//System.out.println("" + q);
-//}
 	}
 
 	public void addTree(TreeKeeper2<LabelType> newTree) {
@@ -83,11 +76,6 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 			}
 
 		}
-
-//System.out.println("After ADDTREE: Now rulequeue is: ");
-//for (RuleKeeper<LabelType> q : queue) {
-//System.out.println("" + q);
-//}
 	}
 
 	public TreeKeeper2<LabelType> nextTree() {
@@ -98,16 +86,10 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 		ruleKeeper.next();
 
 		if (!ruleKeeper.isPaused()) {
-
-//System.out.println("inserts " + ruleKeeper);
 			queue.add(ruleKeeper);
 			ruleKeeper.setQueued(true);
 		}
 
-//System.out.println("After NEXTTREE: Now rulequeue is: ");
-//for (RuleKeeper<LabelType> q : queue) {
-//System.out.println("" + q);
-//}
 		return nextTree;
 	}
 

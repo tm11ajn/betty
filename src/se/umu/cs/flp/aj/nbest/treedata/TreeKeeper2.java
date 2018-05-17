@@ -90,12 +90,6 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 
 	private void addStateWeight(State s, Weight w) {
 
-//System.out.println("In add state weight for tree " + tree + " with hashcode=" + tree.hashCode());
-//
-//if (optimalState.get(tree) != null) {
-//System.out.println("Current delta weight is " + getDeltaWeight());
-//}
-
 		if (!optWeights.containsKey(tree)) {
 			optWeights.put(tree, new HashMap<>());
 		}
@@ -114,12 +108,6 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 			this.queueable = true;
 			treeWeights.put(s, w);
 		}
-
-		//Weight currentSmallestWeight = smallestWeight.get(tree);
-//System.out.println("Current smallest weight = " + smallestWeight.get(tree));
-//System.out.println(this);
-//System.out.println("w = " + w);
-//System.out.println("Current optimal state = " + optimalState.get(tree));
 
 		Weight newDeltaWeight = w.mult(smallestCompletions.get(s));
 
@@ -144,20 +132,6 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 				optimalStates.get(tree).put(s, s);
 			}
 		}
-
-//		if (currentSmallestWeight == null ||
-//				w.compareTo(currentSmallestWeight) == -1) {
-//			LinkedHashMap<State, State> newMap = new LinkedHashMap<>();
-//			newMap.put(s, s);
-//			optimalStates.put(tree, newMap);
-//			optimalState.put(tree, s);
-//			smallestWeight.put(tree, w);
-//		} else if (w.compareTo(currentSmallestWeight) == 0) {
-//			optimalStates.get(tree).put(s, s);
-//			//optimalState.put(tree, s);
-//		}
-
-//System.out.println("After delta weight is " + getDeltaWeight());
 	}
 
 	public boolean isQueueable() {
@@ -169,19 +143,13 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 	}
 
 	public Weight getDeltaWeight() {
-//		return runWeight.mult(
-//				smallestCompletions.get(optimalState.get(tree)));
 		return smallestWeight.get(tree).mult(
 				smallestCompletions.get(optimalState.get(tree)));
-//		State optState = optimalState.get(tree);
-//		return optWeights.get(tree).get(optState).mult(
-//				smallestCompletions.get(optState));
-//		return smallestWeight.get(tree).mult(smallestCompletions.get(smallestState.get(tree)));
 	}
 
-	public Weight getBestRunCompletionWeight() {
-		return runWeight.mult(smallestCompletions.get(resultingState));
-	}
+//	public Weight getBestRunCompletionWeight() {
+//		return runWeight.mult(smallestCompletions.get(resultingState));
+//	}
 
 	@Override
 	public int hashCode() {
@@ -213,9 +181,6 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 		TreeKeeper2<?> o = (TreeKeeper2<?>) obj;
 
 		int weightComparison = runWeight.compareTo(o.runWeight);
-//		int weightComparison = smallestWeight.get(tree).compareTo(smallestWeight.get(o.tree));
-//		int weightComparison = getDeltaWeight().compareTo(o.getDeltaWeight());
-//		int weightComparison = getBestRunCompletionWeight().compareTo(o.getBestRunCompletionWeight());
 
 		int treeComparison = this.tree.compareTo(o.tree);
 
@@ -229,9 +194,6 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 	@Override
 	public int compareTo(TreeKeeper2<LabelType> o) {
 		int weightComparison = runWeight.compareTo(o.runWeight);
-//		int weightComparison = smallestWeight.get(tree).compareTo(smallestWeight.get(o.tree));
-//		int weightComparison = getDeltaWeight().compareTo(o.getDeltaWeight());
-//		int weightComparison = getBestRunCompletionWeight().compareTo(o.getBestRunCompletionWeight());
 
 		if (weightComparison == 0) {
 			return this.tree.compareTo(o.tree);

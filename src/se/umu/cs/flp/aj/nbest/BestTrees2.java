@@ -34,9 +34,9 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class BestTrees2 {
 
-//	private static HashMap<Node<Symbol>, Node<Symbol>> exploredTrees; // T
-	private static HashMap<TreeKeeper2<Symbol>, TreeKeeper2<Symbol>> exploredTrees; // T
-	private static RuleQueue<Symbol> ruleQueue; // K
+	private static HashMap<TreeKeeper2<Symbol>, TreeKeeper2<Symbol>>
+			outputtedTrees;
+	private static RuleQueue<Symbol> ruleQueue;
 
 	public static void setSmallestCompletions(
 			HashMap<State, Weight> smallestCompletions) {
@@ -49,7 +49,7 @@ public class BestTrees2 {
 		List<String> nBest = new ArrayList<String>();
 
 		// T <- empty. K <- empty
-		exploredTrees = new HashMap<>();
+		outputtedTrees = new HashMap<>();
 		ruleQueue = new RuleQueue<>(wta.getTransitionFunction());
 
 		// i <- 0
@@ -60,35 +60,25 @@ public class BestTrees2 {
 
 			// t <- dequeue(K)
 			TreeKeeper2<Symbol> currentTree = ruleQueue.nextTree();
-//System.out.println("Current tree = " + currentTree);
-//System.out.println("Delta weight = " + currentTree.getDeltaWeight());
-//System.out.println("Smallest weight = " + currentTree.getSmallestWeight());
-//System.out.println("Run weight = " + currentTree.getRunWeight());
-//System.out.println("Hashcode = " + currentTree.hashCode());
 
 
-			if (!exploredTrees.containsKey(currentTree)) {
+			if (!outputtedTrees.containsKey(currentTree)) {
 
-//				exploredTrees.put(currentTree, currentTree);
-
-//				if (currentTree.getSmallestWeight().equals(
-//					currentTree.getDeltaWeight())) {
 				if (currentTree.getRunWeight().equals(
-						currentTree.getDeltaWeight()) && currentTree.getResultingState().isFinal()) {
-//System.out.println("OUTPUT");
-//					exploredTrees.put(currentTree, currentTree);
+						currentTree.getDeltaWeight()) &&
+						currentTree.getResultingState().isFinal()) {
 
 					// output(t)
 					nBest.add(currentTree.getTree().toString() + " " +
 							currentTree.getDeltaWeight().toString());
-					exploredTrees.put(currentTree, currentTree);
+					outputtedTrees.put(currentTree, currentTree);
 
 					counter++;
 				}
 			}
 
-			if (counter < N && currentTree.isQueueable() //&& currentTree.getTree().getChildCount() != 0
-					) {
+			// expand
+			if (counter < N && currentTree.isQueueable()) {
 				ruleQueue.addTree(currentTree);
 			}
 		}
