@@ -32,7 +32,6 @@ public class KnuthSmallestDerivation {
 		isFound = update(states);
 
 		while (states.size() > 0 && !isFound) {
-
 			enqueueNextLayer();
 			isFound = update(states);
 		}

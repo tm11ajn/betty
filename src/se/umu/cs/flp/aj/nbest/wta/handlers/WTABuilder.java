@@ -72,8 +72,7 @@ public class WTABuilder {
 		}
 
 		for (State s : finalStates) {
-			modWTA.setFinalState(s.getLabel().concat(
-					State.RESERVED_LABEL_EXTENSION_STRING));
+			modWTA.setFinalState(s.getLabel().concat(State.RESERVED_LABEL_EXTENSION_STRING));
 		}
 
 		Rule<Symbol> reservedSymbolRule = new Rule<>(reservedSymbol,
@@ -87,18 +86,20 @@ public class WTABuilder {
 			int nOfLHStates = leftHandStates.size();
 
 			for (int i = 0; i < nOfLHStates; i++) {
-				State newResultingState = new State(r.getResultingState().
-						getLabel().concat(
+				State newResultingState = modWTA.getStates().get(
+						r.getResultingState().getLabel().concat(
 								State.RESERVED_LABEL_EXTENSION_STRING));
+
 				Rule<Symbol> newRule = new Rule<>(r.getSymbol(), r.getWeight(),
 						newResultingState);
 
 				for (int j = 0; j < nOfLHStates; j++) {
 
 					if (i == j) {
-						newRule.addState(new State(leftHandStates.get(i).
-								getLabel().
-								concat(State.RESERVED_LABEL_EXTENSION_STRING)));
+						State s = modWTA.getStates().get(
+								leftHandStates.get(i).getLabel().concat(
+										State.RESERVED_LABEL_EXTENSION_STRING));
+						newRule.addState(s);
 					} else {
 						newRule.addState(leftHandStates.get(j));
 					}

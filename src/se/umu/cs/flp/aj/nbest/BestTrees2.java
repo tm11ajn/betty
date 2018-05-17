@@ -74,7 +74,7 @@ public class BestTrees2 {
 //				if (currentTree.getSmallestWeight().equals(
 //					currentTree.getDeltaWeight())) {
 				if (currentTree.getRunWeight().equals(
-						currentTree.getDeltaWeight())) {
+						currentTree.getDeltaWeight()) && currentTree.getResultingState().isFinal()) {
 //System.out.println("OUTPUT");
 //					exploredTrees.put(currentTree, currentTree);
 
@@ -87,7 +87,7 @@ public class BestTrees2 {
 				}
 			}
 
-			if (counter < N //&& currentTree.getTree().getChildCount() != 0
+			if (counter < N && currentTree.isQueueable() //&& currentTree.getTree().getChildCount() != 0
 					) {
 				ruleQueue.addTree(currentTree);
 			}

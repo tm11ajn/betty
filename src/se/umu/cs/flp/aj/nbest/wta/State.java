@@ -36,7 +36,7 @@ public class State {
 		return label;
 	}
 
-	public void setFinal() {
+	protected void setFinal() {
 		isFinal = true;
 	}
 

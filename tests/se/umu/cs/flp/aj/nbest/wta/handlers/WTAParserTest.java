@@ -18,6 +18,7 @@ public class WTAParserTest {
 	public static final String emptyLine = "		    			";
 	public static final String commentLine = "//a -> q1";
 	public static final String finalLine = "	  final    q0,   q1, q2	";
+	public static final String finalLine2 = "	  final    qf 	";
 	public static final String leafRuleLine = " A   -> q0 ";
 	public static final String leafRuleLineWithWeight = " a   -> q0  #  2 ";
 	public static final String nonLeafRuleLine = "  f[q0, q1] ->   qf ";

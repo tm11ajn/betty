@@ -13,7 +13,7 @@ public class WTAParserRegexTest {
 	public void shouldFindEmptyLineRegex() {
 		assertTrue(WTAParserTest.emptyLine.matches(WTAParser.EMPTY_LINE_REGEX));
 	}
-	
+
 	@Test
 	public void shouldFindCommentLineRegex() {
 		assertTrue(WTAParserTest.commentLine.matches(
@@ -23,6 +23,11 @@ public class WTAParserRegexTest {
 	@Test
 	public void shouldFindFinalLineRegex() {
 		assertTrue(WTAParserTest.finalLine.matches(WTAParser.FINAL_REGEX));
+	}
+
+	@Test
+	public void shouldFindFinalLine2Regex() {
+		assertTrue(WTAParserTest.finalLine2.matches(WTAParser.FINAL_REGEX));
 	}
 
 	@Test

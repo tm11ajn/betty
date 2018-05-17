@@ -43,6 +43,7 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 	private Node<LabelType> tree;
 	private Weight runWeight;
 	private State resultingState;
+	private boolean queueable;
 
 	public TreeKeeper2(LabelType ruleLabel, Weight ruleWeight,
 			State resultingState,
@@ -50,6 +51,7 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 
 		this.tree = new Node<LabelType>(ruleLabel);
 		this.resultingState = resultingState;
+		this.queueable = false;
 
 		Weight temp = ruleWeight;
 
@@ -109,6 +111,7 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 				treeWeights.put(s, w);
 			}
 		} else {
+			this.queueable = true;
 			treeWeights.put(s, w);
 		}
 
@@ -126,6 +129,7 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 			optimalStates.put(tree, newMap);
 			optimalState.put(tree, s);
 			smallestWeight.put(tree, w);
+			this.queueable = true;
 		} else {
 			Weight oldDeltaWeight = getDeltaWeight();
 
@@ -135,6 +139,7 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 				optimalStates.put(tree, newMap);
 				optimalState.put(tree, s);
 				smallestWeight.put(tree, w);
+				this.queueable = true;
 			} else if (newDeltaWeight.compareTo(oldDeltaWeight) == 0) {
 				optimalStates.get(tree).put(s, s);
 			}
@@ -153,6 +158,10 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 //		}
 
 //System.out.println("After delta weight is " + getDeltaWeight());
+	}
+
+	public boolean isQueueable() {
+		return queueable;
 	}
 
 	public Weight getSmallestWeight() {
