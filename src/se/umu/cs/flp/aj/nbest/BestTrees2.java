@@ -53,10 +53,10 @@ public class BestTrees2 {
 		ruleQueue = new RuleQueue<>(wta.getTransitionFunction());
 
 		// i <- 0
-		int counter = 0;
+		int foundTrees = 0;
 
 		// while i < N and K nonempty do
-		while (counter < N && !ruleQueue.isEmpty()) {
+		while (foundTrees < N && !ruleQueue.isEmpty()) {
 
 			// t <- dequeue(K)
 			TreeKeeper2<Symbol> currentTree = ruleQueue.nextTree();
@@ -73,13 +73,13 @@ public class BestTrees2 {
 							currentTree.getDeltaWeight().toString());
 					outputtedTrees.put(currentTree, currentTree);
 
-					counter++;
+					foundTrees++;
 				}
 			}
 
 			// expand
-			if (counter < N && currentTree.isQueueable()) {
-				ruleQueue.addTree(currentTree);
+			if (foundTrees < N && currentTree.isQueueable()) {
+				ruleQueue.expandWith(currentTree);
 			}
 		}
 

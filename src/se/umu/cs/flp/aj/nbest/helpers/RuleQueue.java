@@ -54,7 +54,7 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 		}
 	}
 
-	public void addTree(TreeKeeper2<LabelType> newTree) {
+	public void expandWith(TreeKeeper2<LabelType> newTree) {
 		State state = newTree.getResultingState();
 
 		for (Rule<LabelType> rule : tf.getRulesByState(state)) {
