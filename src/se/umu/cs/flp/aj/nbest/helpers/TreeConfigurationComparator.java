@@ -25,7 +25,7 @@ import java.util.Comparator;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
-import se.umu.cs.flp.aj.nbest.util.LadderQueue.Configuration;
+import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue.Configuration;
 
 public class TreeConfigurationComparator<LabelType extends Comparable<LabelType>>
 			implements Comparator<Configuration<TreeKeeper2<LabelType>>> {

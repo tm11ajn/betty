@@ -36,7 +36,7 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 	private PriorityQueue<RuleKeeper<LabelType>> queue;
 	private HashMap<Rule<LabelType>, RuleKeeper<LabelType>> ruleKeepers;
 
-	public RuleQueue(TransitionFunction<LabelType> tf) {
+	public RuleQueue(TransitionFunction<LabelType> tf, int limit) {
 		this.tf = tf;
 		this.queue = new PriorityQueue<>();
 		this.ruleKeepers = new HashMap<>();
@@ -44,7 +44,7 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 		ArrayList<Rule<LabelType>> rules = tf.getRules();
 
 		for (Rule<LabelType> r : rules) {
-			RuleKeeper<LabelType> keeper = new RuleKeeper<>(r);
+			RuleKeeper<LabelType> keeper = new RuleKeeper<>(r, limit);
 			ruleKeepers.put(r, keeper);
 
 			if (!keeper.isPaused()) {

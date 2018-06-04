@@ -23,22 +23,22 @@ package se.umu.cs.flp.aj.nbest.treedata;
 import java.util.ArrayList;
 
 import se.umu.cs.flp.aj.nbest.helpers.TreeConfigurationComparator;
-import se.umu.cs.flp.aj.nbest.util.LadderQueue;
+import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 
 public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 			Comparable<RuleKeeper<LabelType>> {
 
 	private Rule<LabelType> rule;
-	private LadderQueue<TreeKeeper2<LabelType>> ladder;
+	private LazyLimitedLadderQueue<TreeKeeper2<LabelType>> ladder;
 	private TreeKeeper2<LabelType> smallestTree;
 	private boolean paused;
 	private boolean queued;
 
-	public RuleKeeper(Rule<LabelType> rule) {
+	public RuleKeeper(Rule<LabelType> rule, int limit) {
 		this.rule = rule;
-		this.ladder = new LadderQueue<>(rule.getRank(),
-				new TreeConfigurationComparator<LabelType>());
+		this.ladder = new LazyLimitedLadderQueue<>(rule.getRank(),
+				new TreeConfigurationComparator<>(), limit);
 		this.smallestTree = null;
 		this.paused = true;
 

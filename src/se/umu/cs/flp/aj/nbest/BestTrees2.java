@@ -50,7 +50,7 @@ public class BestTrees2 {
 
 		// T <- empty. K <- empty
 		outputtedTrees = new HashMap<>();
-		ruleQueue = new RuleQueue<>(wta.getTransitionFunction());
+		ruleQueue = new RuleQueue<>(wta.getTransitionFunction(), N);
 
 		// i <- 0
 		int foundTrees = 0;

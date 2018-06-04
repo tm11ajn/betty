@@ -25,10 +25,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.util.Weighted;
 import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class TreeKeeper2<LabelType extends Comparable<LabelType>>
-		implements Comparable<TreeKeeper2<LabelType>> {
+		implements Comparable<TreeKeeper2<LabelType>>, Weighted {
 
 	private static HashMap<State, Weight> smallestCompletions;
 
@@ -200,6 +201,11 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 		}
 
 		return weightComparison;
+	}
+
+	@Override
+	public Weight getWeight() {
+		return getRunWeight();
 	}
 }
 
