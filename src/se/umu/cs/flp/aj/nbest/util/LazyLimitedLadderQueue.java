@@ -1,0 +1,235 @@
+/*
+ * Copyright 2018 Anna Jonsson for the research group Foundations of Language
+ * Processing, Department of Computing Science, Ume� university
+ *
+ * This file is part of BestTrees.
+ *
+ * BestTrees is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BestTrees is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.umu.cs.flp.aj.nbest.util;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+
+public class LazyLimitedLadderQueue<V extends Comparable<V>> {
+
+	private int rank;
+	private int limit;
+	private ArrayList<LinkedList<V>> elements;
+	private PriorityQueue<Configuration<V>> configQueue;
+	private HashMap<Configuration<V>, Configuration<V>> usedConfigs;
+	private ArrayList<Configuration<V>> pendingConfigs;
+	private int nonEmptyListCounter;
+	private int dequeueCounter;
+	private int ladderSize;
+	private boolean empty;
+
+	public LazyLimitedLadderQueue(int rank,
+			Comparator<Configuration<V>> comparator, int limit) {
+		this.rank = rank;
+		this.elements = new ArrayList<>();
+		this.configQueue = new PriorityQueue<>(comparator);
+		this.usedConfigs = new HashMap<>();
+		this.pendingConfigs = new ArrayList<>();
+		this.empty = true;
+		this.nonEmptyListCounter = 0;
+		this.limit = limit;
+		this.dequeueCounter = 0;
+		this.ladderSize = 0;
+
+		for (int i = 0; i < rank; i++) {
+			elements.add(new LinkedList<>());
+		}
+
+		if (rank == 0) {
+			Configuration<V> config = new Configuration<>();
+			config.setValues(new ArrayList<>());
+			configQueue.add(config);
+			ladderSize = 1;
+			empty = false;
+		}
+	}
+
+	public static class Configuration<T> {
+		private ArrayList<T> values;
+		private ArrayList<Integer> indices;
+
+		public Configuration() {
+		}
+
+		public void setValues(ArrayList<T> values) {
+			this.values = values;
+		}
+
+		public ArrayList<T> getValues() {
+			return values;
+		}
+
+		public void setIndices(ArrayList<Integer> indices) {
+			this.indices = indices;
+		}
+
+		public ArrayList<Integer> getIndices() {
+			return indices;
+		}
+
+		@Override
+		public int hashCode() {
+			return indices.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+
+			if (!(o instanceof Configuration<?>)) {
+				return false;
+			}
+
+			Configuration<?> c = (Configuration<?>) o;
+
+			return this.indices.equals(c.indices);
+		}
+
+		@Override
+		public String toString() {
+			return indices.toString(); //+ "/" + values;
+		}
+	}
+
+	public void addLast(int rankIndex, V value) {
+
+		if (elements.get(rankIndex).size() < limit) {
+			boolean wasEmpty = isEmpty();
+			updateEmptyStatus(rankIndex);
+			elements.get(rankIndex).add(value);
+
+			if (wasEmpty && !isEmpty()) {
+				Configuration<V> firstConfig = new Configuration<>();
+				firstConfig.setIndices(getZeroIndices());
+				firstConfig.setValues(extractValues(firstConfig.getIndices()));
+				configQueue.add(firstConfig);
+				usedConfigs.put(firstConfig, firstConfig);
+				ladderSize++;
+			}
+		}
+
+		for (Configuration<V> pending : pendingConfigs) {
+			if (!usedConfigs.containsKey(pending) && isValid(pending)) {
+				pending.setValues(extractValues(pending.getIndices()));
+				configQueue.add(pending);
+				usedConfigs.put(pending, pending);
+				ladderSize++;
+			}
+		}
+	}
+
+	private boolean isValid(Configuration<V> config) {
+		ArrayList<Integer> indices = config.getIndices();
+
+		for (int i = 0; i < rank; i++) {
+			if (indices.get(i) >= elements.get(i).size()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private void enqueueNewConfigs(Configuration<V> config) {
+
+		ArrayList<Integer> indexList;
+		Configuration<V> newConfig;
+
+		for (int i = 0; i < rank; i++) {
+			indexList = new ArrayList<>(config.getIndices());
+			int prevIndex = indexList.get(i);
+			int nOfElements = elements.get(i).size();
+
+			indexList.set(i, prevIndex + 1);
+			newConfig = new Configuration<>();
+			newConfig.setIndices(indexList);
+
+			if (nOfElements < limit && nOfElements > prevIndex + 1) {
+				newConfig.setValues(extractValues(indexList));
+
+				if (!usedConfigs.containsKey(newConfig)) {
+					configQueue.add(newConfig);
+					usedConfigs.put(newConfig, newConfig);
+					ladderSize++;
+				}
+			} else {
+				pendingConfigs.add(newConfig);
+			}
+		}
+	}
+
+	public boolean isEmpty() {
+		return empty;
+	}
+
+	public boolean hasNext() {
+		if (isEmpty() || ladderSize <= dequeueCounter ||
+				dequeueCounter >= limit) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public ArrayList<V> dequeue() {
+
+		dequeueCounter++;
+		Configuration<V> config = configQueue.poll();
+		enqueueNewConfigs(config);
+
+		return config.getValues();
+	}
+
+	private ArrayList<Integer> getZeroIndices() {
+		ArrayList<Integer> indexList = new ArrayList<>();
+
+		for (int i = 0; i < rank; i++) {
+			indexList.add(0);
+		}
+
+		return indexList;
+	}
+
+	private ArrayList<V> extractValues(ArrayList<Integer> indexList) {
+		ArrayList<V> values = new ArrayList<>();
+
+		for (int i = 0; i < rank; i++) {
+			values.add(elements.get(i).get(indexList.get(i)));
+		}
+
+		return values;
+	}
+
+	private void updateEmptyStatus(int rankIndex) {
+
+		if (empty && elements.get(rankIndex).size() == 0) {
+			nonEmptyListCounter++;
+
+			if (nonEmptyListCounter >= rank) {
+				empty = false;
+			}
+		}
+	}
+
+}
+
