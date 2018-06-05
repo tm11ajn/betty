@@ -61,7 +61,6 @@ public class BestTrees2 {
 			// t <- dequeue(K)
 			TreeKeeper2<Symbol> currentTree = ruleQueue.nextTree();
 
-
 			if (!outputtedTrees.containsKey(currentTree)) {
 
 				if (currentTree.getRunWeight().equals(

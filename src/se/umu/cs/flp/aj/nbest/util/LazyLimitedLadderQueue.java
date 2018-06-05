@@ -23,6 +23,7 @@ package se.umu.cs.flp.aj.nbest.util;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
@@ -33,10 +34,9 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 	private ArrayList<LinkedList<V>> elements;
 	private PriorityQueue<Configuration<V>> configQueue;
 	private HashMap<Configuration<V>, Configuration<V>> usedConfigs;
-	private ArrayList<Configuration<V>> pendingConfigs;
+	private LinkedList<Configuration<V>> pendingConfigs;
 	private int nonEmptyListCounter;
 	private int dequeueCounter;
-	private int ladderSize;
 	private boolean empty;
 
 	public LazyLimitedLadderQueue(int rank,
@@ -45,12 +45,11 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		this.elements = new ArrayList<>();
 		this.configQueue = new PriorityQueue<>(comparator);
 		this.usedConfigs = new HashMap<>();
-		this.pendingConfigs = new ArrayList<>();
+		this.pendingConfigs = new LinkedList<>();
 		this.empty = true;
 		this.nonEmptyListCounter = 0;
 		this.limit = limit;
 		this.dequeueCounter = 0;
-		this.ladderSize = 0;
 
 		for (int i = 0; i < rank; i++) {
 			elements.add(new LinkedList<>());
@@ -60,7 +59,6 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 			Configuration<V> config = new Configuration<>();
 			config.setValues(new ArrayList<>());
 			configQueue.add(config);
-			ladderSize = 1;
 			empty = false;
 		}
 	}
@@ -124,21 +122,28 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 				firstConfig.setValues(extractValues(firstConfig.getIndices()));
 				configQueue.add(firstConfig);
 				usedConfigs.put(firstConfig, firstConfig);
-				ladderSize++;
 			}
-		}
 
-		for (Configuration<V> pending : pendingConfigs) {
-			if (!usedConfigs.containsKey(pending) && isValid(pending)) {
-				pending.setValues(extractValues(pending.getIndices()));
-				configQueue.add(pending);
-				usedConfigs.put(pending, pending);
-				ladderSize++;
+			Iterator<Configuration<V>> iterator = pendingConfigs.iterator();
+
+			while (iterator.hasNext()) {
+				Configuration<V> pending = iterator.next();
+
+				if (isUsable(pending)) {
+
+					if (!usedConfigs.containsKey(pending)) {
+						pending.setValues(extractValues(pending.getIndices()));
+						configQueue.add(pending);
+						usedConfigs.put(pending, pending);
+					}
+
+					iterator.remove();
+				}
 			}
 		}
 	}
 
-	private boolean isValid(Configuration<V> config) {
+	private boolean isUsable(Configuration<V> config) {
 		ArrayList<Integer> indices = config.getIndices();
 
 		for (int i = 0; i < rank; i++) {
@@ -164,15 +169,14 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 			newConfig = new Configuration<>();
 			newConfig.setIndices(indexList);
 
-			if (nOfElements < limit && nOfElements > prevIndex + 1) {
+			if (nOfElements <= limit && nOfElements > prevIndex + 1) {
 				newConfig.setValues(extractValues(indexList));
 
 				if (!usedConfigs.containsKey(newConfig)) {
 					configQueue.add(newConfig);
 					usedConfigs.put(newConfig, newConfig);
-					ladderSize++;
 				}
-			} else {
+			} else if (nOfElements <= limit) {
 				pendingConfigs.add(newConfig);
 			}
 		}
@@ -183,8 +187,8 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 	}
 
 	public boolean hasNext() {
-		if (isEmpty() || ladderSize <= dequeueCounter ||
-				dequeueCounter >= limit) {
+
+		if (configQueue.isEmpty()) {
 			return false;
 		}
 
@@ -192,6 +196,10 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 	}
 
 	public ArrayList<V> dequeue() {
+
+		if (dequeueCounter >= limit) {
+			return null;
+		}
 
 		dequeueCounter++;
 		Configuration<V> config = configQueue.poll();

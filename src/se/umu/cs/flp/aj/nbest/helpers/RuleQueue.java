@@ -59,18 +59,14 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 
 		for (Rule<LabelType> rule : tf.getRulesByState(state)) {
 			RuleKeeper<LabelType> currentKeeper = ruleKeepers.get(rule);
-
-			boolean pausedBefore = currentKeeper.isPaused();
-
 			ArrayList<Integer> stateIndices = rule.getIndexOfState(state);
 
 			for (Integer index : stateIndices) {
 				currentKeeper.addTreeForStateIndex(newTree, index);
 			}
 
-			if (!currentKeeper.isQueued() &&
-					pausedBefore && !currentKeeper.isPaused()) {
-				//currentKeeper.next();
+			if (!currentKeeper.isQueued() && !currentKeeper.isPaused()) {
+				currentKeeper.next();
 				queue.add(currentKeeper);
 				currentKeeper.setQueued(true);
 			}
@@ -81,7 +77,6 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 	public TreeKeeper2<LabelType> nextTree() {
 		RuleKeeper<LabelType> ruleKeeper = queue.poll();
 		TreeKeeper2<LabelType> nextTree = ruleKeeper.getSmallestTree();
-
 		ruleKeeper.setQueued(false);
 		ruleKeeper.next();
 
@@ -100,6 +95,17 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 		}
 
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		String string = "\n";
+
+		for (RuleKeeper<LabelType> r : queue) {
+			string = string + r + "\n";
+		}
+
+		return string;
 	}
 
 }
