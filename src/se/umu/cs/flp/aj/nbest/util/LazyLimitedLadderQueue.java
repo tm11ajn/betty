@@ -34,7 +34,8 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 	private ArrayList<LinkedList<V>> elements;
 	private PriorityQueue<Configuration<V>> configQueue;
 	private HashMap<Configuration<V>, Configuration<V>> usedConfigs;
-	private LinkedList<Configuration<V>> pendingConfigs;
+	private HashMap<Configuration<V>, Integer> missingDataCounter;
+	private HashMap<Integer, LinkedList<Configuration<V>>> pendingConfigs;
 	private int nonEmptyListCounter;
 	private int dequeueCounter;
 	private boolean empty;
@@ -45,7 +46,8 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		this.elements = new ArrayList<>();
 		this.configQueue = new PriorityQueue<>(comparator);
 		this.usedConfigs = new HashMap<>();
-		this.pendingConfigs = new LinkedList<>();
+		this.missingDataCounter = new HashMap<>();
+		this.pendingConfigs = new HashMap<>();
 		this.empty = true;
 		this.nonEmptyListCounter = 0;
 		this.limit = limit;
@@ -109,78 +111,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		}
 	}
 
-	public void addLast(int rankIndex, V value) {
 
-		if (elements.get(rankIndex).size() < limit) {
-			boolean wasEmpty = isEmpty();
-			updateEmptyStatus(rankIndex);
-			elements.get(rankIndex).add(value);
-
-			if (wasEmpty && !isEmpty()) {
-				Configuration<V> firstConfig = new Configuration<>();
-				firstConfig.setIndices(getZeroIndices());
-				firstConfig.setValues(extractValues(firstConfig.getIndices()));
-				configQueue.add(firstConfig);
-				usedConfigs.put(firstConfig, firstConfig);
-			}
-
-			Iterator<Configuration<V>> iterator = pendingConfigs.iterator();
-
-			while (iterator.hasNext()) {
-				Configuration<V> pending = iterator.next();
-
-				if (isUsable(pending)) {
-
-					if (!usedConfigs.containsKey(pending)) {
-						pending.setValues(extractValues(pending.getIndices()));
-						configQueue.add(pending);
-						usedConfigs.put(pending, pending);
-					}
-
-					iterator.remove();
-				}
-			}
-		}
-	}
-
-	private boolean isUsable(Configuration<V> config) {
-		ArrayList<Integer> indices = config.getIndices();
-
-		for (int i = 0; i < rank; i++) {
-			if (indices.get(i) >= elements.get(i).size()) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	private void enqueueNewConfigs(Configuration<V> config) {
-
-		ArrayList<Integer> indexList;
-		Configuration<V> newConfig;
-
-		for (int i = 0; i < rank; i++) {
-			indexList = new ArrayList<>(config.getIndices());
-			int prevIndex = indexList.get(i);
-			int nOfElements = elements.get(i).size();
-
-			indexList.set(i, prevIndex + 1);
-			newConfig = new Configuration<>();
-			newConfig.setIndices(indexList);
-
-			if (nOfElements <= limit && nOfElements > prevIndex + 1) {
-				newConfig.setValues(extractValues(indexList));
-
-				if (!usedConfigs.containsKey(newConfig)) {
-					configQueue.add(newConfig);
-					usedConfigs.put(newConfig, newConfig);
-				}
-			} else if (nOfElements <= limit) {
-				pendingConfigs.add(newConfig);
-			}
-		}
-	}
 
 	public boolean isEmpty() {
 		return empty;
@@ -208,14 +139,98 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		return config.getValues();
 	}
 
-	private ArrayList<Integer> getZeroIndices() {
-		ArrayList<Integer> indexList = new ArrayList<>();
+	public void addLast(int rankIndex, V value) {
+
+		if (elements.get(rankIndex).size() < limit) {
+			boolean wasEmpty = isEmpty();
+			updateEmptyStatus(rankIndex);
+			elements.get(rankIndex).add(value);
+
+			if (wasEmpty && !isEmpty()) {
+				Configuration<V> firstConfig = new Configuration<>();
+				firstConfig.setIndices(getZeroIndices());
+				firstConfig.setValues(extractValues(firstConfig.getIndices()));
+				configQueue.add(firstConfig);
+				usedConfigs.put(firstConfig, firstConfig);
+			}
+
+			if (pendingConfigs.containsKey(rankIndex)) {
+				Iterator<Configuration<V>> iterator =
+						pendingConfigs.get(rankIndex).iterator();
+
+				while (iterator.hasNext()) {
+					Configuration<V> pending = iterator.next();
+					decreaseMissingDataCounter(pending);
+
+					if (isReady(pending)) {
+
+						if (!usedConfigs.containsKey(pending)) {
+							pending.setValues(extractValues(
+									pending.getIndices()));
+							configQueue.add(pending);
+							usedConfigs.put(pending, pending);
+						}
+
+						iterator.remove();
+					}
+				}
+			}
+		}
+	}
+
+	private void enqueueNewConfigs(Configuration<V> config) {
+
+		ArrayList<Integer> indexList;
+		Configuration<V> newConfig;
 
 		for (int i = 0; i < rank; i++) {
-			indexList.add(0);
+			indexList = new ArrayList<>(config.getIndices());
+			int prevIndex = indexList.get(i);
+			int nOfElements = elements.get(i).size();
+
+			indexList.set(i, prevIndex + 1);
+			newConfig = new Configuration<>();
+			newConfig.setIndices(indexList);
+
+			if (nOfElements <= limit && nOfElements > prevIndex + 1) {
+				newConfig.setValues(extractValues(indexList));
+
+				if (!usedConfigs.containsKey(newConfig)) {
+					configQueue.add(newConfig);
+					usedConfigs.put(newConfig, newConfig);
+				}
+			} else if (nOfElements <= limit) {
+
+				if (!pendingConfigs.containsKey(i)) {
+					pendingConfigs.put(i, new LinkedList<>());
+				}
+
+				pendingConfigs.get(i).add(newConfig);
+				missingDataCounter.put(newConfig,
+						countMissingElements(newConfig));
+			}
+		}
+	}
+
+	private boolean isReady(Configuration<V> config) {
+		return missingDataCounter.get(config) == 0;
+	}
+
+	private void decreaseMissingDataCounter(Configuration<V> config) {
+		missingDataCounter.put(config, missingDataCounter.get(config) - 1);
+	}
+
+	private int countMissingElements(Configuration<V> config) {
+		ArrayList<Integer> indices = config.getIndices();
+		int missingElements = 0;
+
+		for (int i = 0; i < rank; i++) {
+			if (indices.get(i) >= elements.get(i).size()) {
+				missingElements++;
+			}
 		}
 
-		return indexList;
+		return missingElements;
 	}
 
 	private ArrayList<V> extractValues(ArrayList<Integer> indexList) {
@@ -226,6 +241,16 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		}
 
 		return values;
+	}
+
+	private ArrayList<Integer> getZeroIndices() {
+		ArrayList<Integer> indexList = new ArrayList<>();
+
+		for (int i = 0; i < rank; i++) {
+			indexList.add(0);
+		}
+
+		return indexList;
 	}
 
 	private void updateEmptyStatus(int rankIndex) {
