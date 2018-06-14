@@ -49,7 +49,9 @@ public class SmallestCompletionsFinder {
 					new KnuthSmallestDerivation(modifiedWTA);
 //			HashMap<State, Weight> smallestDerivations =
 //					ksd.getSmallestDerivation();'
-			Weight smallestWeight = ksd.getSmallestDerivation();
+//			Weight smallestWeight = ksd.getSmallestDerivation();
+			Weight smallestWeight = ksd.getSmallestDerivation2();
+//System.out.println("State " + state + " gets smallest completion weight " + smallestWeight);
 
 //			Weight smallestCompletionWeight = new Weight(Weight.INF);
 //

@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.util.Hypergraph;
+import se.umu.cs.flp.aj.nbest.wta.exceptions.DuplicateRuleException;
 import se.umu.cs.flp.aj.nbest.wta.exceptions.SymbolUsageException;
 
 public class WTA {
@@ -33,17 +35,16 @@ public class WTA {
 	 */
 	private HashMap<String, State> states = new HashMap<>();
 	private ArrayList<State> finalStates = new ArrayList<>();
-
 	private RankedAlphabet rankedAlphabet = new RankedAlphabet();
+	private Semiring semiring;
 
-	private TransitionFunction<Symbol> transitionFunction;
+	private Hypergraph<State, Rule<Symbol>> transitionFunction;
+	private State source = new State("DUMMY_SOURCE");
 
 	public WTA(Semiring semiring) {
-		this.transitionFunction = new TransitionFunction<>(semiring);
-	}
-
-	public TransitionFunction<Symbol> getTransitionFunction() {
-		return transitionFunction;
+		this.semiring = semiring;
+		this.transitionFunction = new Hypergraph<>();
+		this.transitionFunction.addNode(source);
 	}
 
 	public State addState(String label) throws SymbolUsageException {
@@ -77,10 +78,6 @@ public class WTA {
 		return finalStates.add(state);
 	}
 
-//	public ArrayList<State> getStates() {
-//		return new ArrayList<State>(states.values());
-//	}
-
 	public HashMap<String, State> getStates() {
 		return states;
 	}
@@ -104,6 +101,55 @@ public class WTA {
 		return rankedAlphabet.getSymbols();
 	}
 
+	public Semiring getSemiring() {
+		return semiring;
+	}
+
+	public ArrayList<Rule<Symbol>> getSourceRules() {
+		return transitionFunction.getSourceEdges();
+	}
+
+	public ArrayList<Rule<Symbol>> getRulesByResultingState(
+			State resultingState) {
+
+		ArrayList<Rule<Symbol>> rules = transitionFunction.getIncoming(
+				resultingState);
+
+		if (rules == null) {
+			return new ArrayList<>();
+		}
+
+		return rules;
+	}
+
+	public ArrayList<Rule<Symbol>> getRulesByState(State state) {
+
+		ArrayList<Rule<Symbol>> rules = transitionFunction.getOutgoing(state);
+
+		if (rules == null) {
+			return new ArrayList<>();
+		}
+
+		return rules;
+	}
+
+	public ArrayList<Rule<Symbol>> getRules() {
+		return transitionFunction.getEdges();
+	}
+
+	public void addRule(Rule<Symbol> rule) throws DuplicateRuleException {
+
+		ArrayList<State> states = rule.getStates();
+
+		if (states.isEmpty()) {
+			states = new ArrayList<>();
+			states.add(source);
+		}
+
+		transitionFunction.addEdge(rule, rule.getWeight(),
+				rule.getResultingState(), states);
+	}
+
 	@Override
 	public String toString() {
 
@@ -115,7 +161,7 @@ public class WTA {
 
 		string += "\n";
 		string += "Ranked alphabet: " + rankedAlphabet + "\n";
-		string += "Transition function: \n" + transitionFunction;
+		string += "Transition function: \n" + printTransitionFunction();
 		string += "Final states: ";
 
 		for (State s : finalStates) {
@@ -125,4 +171,14 @@ public class WTA {
 		return string;
 	}
 
+	public String printTransitionFunction() {
+		ArrayList<Rule<Symbol>> rules = getRules();
+		String string = "";
+
+		for (Rule<Symbol> r : rules) {
+			string += r + "\n";
+		}
+
+		return string;
+	}
 }

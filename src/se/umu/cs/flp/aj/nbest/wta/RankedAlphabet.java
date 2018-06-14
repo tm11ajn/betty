@@ -1,19 +1,19 @@
 /*
- * Copyright 2015 Anna Jonsson for the research group Foundations of Language 
+ * Copyright 2015 Anna Jonsson for the research group Foundations of Language
  * Processing, Department of Computing Science, Ume� university
- * 
+ *
  * This file is part of BestTrees.
- * 
+ *
  * BestTrees is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * BestTrees is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -52,20 +52,20 @@ public class RankedAlphabet {
 	public boolean hasSymbol(String symbol) {
 		return symbols.containsKey(symbol);
 	}
-	
+
 	public ArrayList<Symbol> getSymbols() {
 		return new ArrayList<Symbol>(symbols.values());
 	}
-	
+
 	@Override
 	public String toString() {
-		
+
 		String string = "";
-		
+
 		for (Symbol s : symbols.values()) {
 			string += s + "(" + s.getRank() + ") ";
 		}
-		
+
 		return string;
 	}
 

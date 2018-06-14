@@ -51,7 +51,6 @@ public class NBest {
 	private static final String VERSION_FLAG_LONG = "version";
 	private static final String RULE_QUEUE_ARG = "2";
 	private static final String TREE_QUEUE_ARG = "1";
-	private static final String BASIC_ARG = "basic";
 	private static final String ALL_ARG = "all";
 	private static final String DEFAULT_VERSION = RULE_QUEUE_ARG;
 
@@ -160,24 +159,6 @@ public class NBest {
 						" milliseconds");
 			}
 		}
-
-		if (version.equals(BASIC_ARG) || version.equals(ALL_ARG)) {
-			System.out.println("Running BestTreesBasic...");
-			BestTreesBasic.setSmallestCompletions(smallestCompletions);
-
-			startTime = System.nanoTime();
-			List<String> resultBasic = BestTreesBasic.run(wta, N);
-			endTime = System.nanoTime();
-
-			printResult(resultBasic);
-
-			if (timer) {
-				duration = (endTime - startTime)/1000000;
-				System.out.println("BestTreesBasic took " + duration +
-					" milliseconds");
-			}
-		}
-
 	}
 
 	private static Options createOptions() {
@@ -190,9 +171,8 @@ public class NBest {
 				true, "version of BestTrees; arg can be\n" + RULE_QUEUE_ARG +
 				" (uses a pruned rule queue), \n" +
 						TREE_QUEUE_ARG +
-				" (uses a pruned tree queue), \n" +
-						BASIC_ARG +
-				" (basic version) or \n" + ALL_ARG +
+				" (uses a pruned tree queue) or \n" +
+						ALL_ARG +
 				" (runs all versions).\n The default version is " +
 				DEFAULT_VERSION);
 		Option timerOpt = new Option(TIMER_FLAG, false,

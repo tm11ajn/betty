@@ -28,23 +28,24 @@ import se.umu.cs.flp.aj.nbest.treedata.RuleKeeper;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
-import se.umu.cs.flp.aj.nbest.wta.TransitionFunction;
+import se.umu.cs.flp.aj.nbest.wta.Symbol;
+import se.umu.cs.flp.aj.nbest.wta.WTA;
 
-public class RuleQueue<LabelType extends Comparable<LabelType>> {
+public class RuleQueue {
 
-	private TransitionFunction<LabelType> tf;
-	private PriorityQueue<RuleKeeper<LabelType>> queue;
-	private HashMap<Rule<LabelType>, RuleKeeper<LabelType>> ruleKeepers;
+	private WTA wta;
+	private PriorityQueue<RuleKeeper<Symbol>> queue;
+	private HashMap<Rule<Symbol>, RuleKeeper<Symbol>> ruleKeepers;
 
-	public RuleQueue(TransitionFunction<LabelType> tf, int limit) {
-		this.tf = tf;
+	public RuleQueue(WTA wta, int limit) {
+		this.wta = wta;
 		this.queue = new PriorityQueue<>();
 		this.ruleKeepers = new HashMap<>();
 
-		ArrayList<Rule<LabelType>> rules = tf.getRules();
+		ArrayList<Rule<Symbol>> rules = wta.getRules();
 
-		for (Rule<LabelType> r : rules) {
-			RuleKeeper<LabelType> keeper = new RuleKeeper<>(r, limit);
+		for (Rule<Symbol> r : rules) {
+			RuleKeeper<Symbol> keeper = new RuleKeeper<>(r, limit);
 			ruleKeepers.put(r, keeper);
 
 			if (!keeper.isPaused()) {
@@ -54,11 +55,11 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 		}
 	}
 
-	public void expandWith(TreeKeeper2<LabelType> newTree) {
+	public void expandWith(TreeKeeper2<Symbol> newTree) {
 		State state = newTree.getResultingState();
 
-		for (Rule<LabelType> rule : tf.getRulesByState(state)) {
-			RuleKeeper<LabelType> currentKeeper = ruleKeepers.get(rule);
+		for (Rule<Symbol> rule : wta.getRulesByState(state)) {
+			RuleKeeper<Symbol> currentKeeper = ruleKeepers.get(rule);
 			ArrayList<Integer> stateIndices = rule.getIndexOfState(state);
 
 			for (Integer index : stateIndices) {
@@ -74,9 +75,9 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 		}
 	}
 
-	public TreeKeeper2<LabelType> nextTree() {
-		RuleKeeper<LabelType> ruleKeeper = queue.poll();
-		TreeKeeper2<LabelType> nextTree = ruleKeeper.getSmallestTree();
+	public TreeKeeper2<Symbol> nextTree() {
+		RuleKeeper<Symbol> ruleKeeper = queue.poll();
+		TreeKeeper2<Symbol> nextTree = ruleKeeper.getSmallestTree();
 		ruleKeeper.setQueued(false);
 		ruleKeeper.next();
 
@@ -101,7 +102,7 @@ public class RuleQueue<LabelType extends Comparable<LabelType>> {
 	public String toString() {
 		String string = "\n";
 
-		for (RuleKeeper<LabelType> r : queue) {
+		for (RuleKeeper<Symbol> r : queue) {
 			string = string + r + "\n";
 		}
 

@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -54,9 +55,11 @@ public class WTAParser {
 			"\\s*((\\]\\s*->)|#|\\[|,)\\s*";
 
 	private Semiring semiring;
+	private HashMap<State, State> finalStates;
 
 	public WTAParser(Semiring semiring) {
 		this.semiring = semiring;
+		this.finalStates = new HashMap<>();
 	}
 
 	public WTA parse(String fileName) {
@@ -101,7 +104,7 @@ public class WTAParser {
 		if (line.matches(EMPTY_LINE_REGEX) ||
 				line.matches(COMMENT_LINE_REGEX)) {
 			// Ignore empty lines and comments.
-		}else if (line.matches(FINAL_REGEX)) {
+		} else if (line.matches(FINAL_REGEX)) {
 			parseFinal(line, wta);
 		} else if (line.matches(LEAF_RULE_REGEX)) {
 			parseLeafRule(line, wta);
@@ -114,12 +117,13 @@ public class WTAParser {
 	}
 
 	private void parseFinal(String line, WTA wta) {
-
 		String[] finals = line.trim().split(FINAL_SPLIT_REGEX);
 		int size = finals.length;
 
 		for (int i = 1; i < size; i++) {
-			wta.setFinalState(finals[i]);
+			if (!finalStates.containsKey(finals[i])) {
+				wta.setFinalState(finals[i]);
+			}
 		}
 	}
 
@@ -144,7 +148,7 @@ public class WTAParser {
 			newRule = new Rule<>(symbol, weight, resultingState);
 		}
 
-		wta.getTransitionFunction().addRule(newRule);
+		wta.addRule(newRule);
 	}
 
 	private void parseNonLeafRule(String line, WTA wta)
@@ -174,7 +178,7 @@ public class WTAParser {
 			newRule.addState(wta.addState(labels[i]));
 		}
 
-		wta.getTransitionFunction().addRule(newRule);
+		wta.addRule(newRule);
 	}
 
 	// Unnecessary if the reserved symbol uses unallowed characters

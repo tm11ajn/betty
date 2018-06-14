@@ -40,13 +40,13 @@ public class WTABuilder {
 	public WTA buildModifiedWTA(WTA wta, State state)
 			throws SymbolUsageException, DuplicateRuleException {
 
-		Semiring semiring = wta.getTransitionFunction().getSemiring();
+		Semiring semiring = wta.getSemiring();
 		WTA modWTA = new WTA(semiring);
 
 		ArrayList<Symbol> symbols = wta.getSymbols();
 		Collection<State> states = wta.getStates().values();
 		ArrayList<State> finalStates = wta.getFinalStates();
-		ArrayList<Rule<Symbol>> rules = wta.getTransitionFunction().getRules();
+		ArrayList<Rule<Symbol>> rules = wta.getRules();
 
 		for (Symbol s : symbols) {
 			modWTA.addSymbol(s.getLabel(), s.getRank());
@@ -77,10 +77,10 @@ public class WTABuilder {
 
 		Rule<Symbol> reservedSymbolRule = new Rule<>(reservedSymbol,
 				semiring.one(), reservedSymbolState);
-		modWTA.getTransitionFunction().addRule(reservedSymbolRule);
+		modWTA.addRule(reservedSymbolRule);
 
 		for (Rule<Symbol> r : rules) {
-			modWTA.getTransitionFunction().addRule(r);
+			modWTA.addRule(r);
 
 			ArrayList<State> leftHandStates = r.getStates();
 			int nOfLHStates = leftHandStates.size();
@@ -105,7 +105,7 @@ public class WTABuilder {
 					}
 				}
 
-				modWTA.getTransitionFunction().addRule(newRule);
+				modWTA.addRule(newRule);
 			}
 		}
 

@@ -1,6 +1,8 @@
 package se.umu.cs.flp.aj.knuth;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.PriorityQueue;
 
 import se.umu.cs.flp.aj.heap.BinaryHeap;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
@@ -17,11 +19,107 @@ public class KnuthSmallestDerivation {
 	private HashMap<State, Weight> defined;
 	private State smallest;
 
+	private PriorityQueue<QueueElement<Rule<Symbol>>> ruleQueue;
+	private HashMap<Rule<Symbol>, Integer> coveredStates;
+	private HashMap<Rule<Symbol>, Weight> totalWeight;
+	private HashMap<Rule<Symbol>, Boolean> seen;
+
 	public KnuthSmallestDerivation(WTA wta) {
 		this.wta = wta;
 		this.queue = new BinaryHeap<>();
 		this.defined = new HashMap<>();
 		this.smallest = null;
+
+		this.ruleQueue = new PriorityQueue<>();
+		this.coveredStates = new HashMap<>();
+		this.totalWeight = new HashMap<>();
+		this.seen = new HashMap<>();
+	}
+
+	public class QueueElement<V> implements Comparable<QueueElement<V>> {
+
+		private V value;
+		private Weight weight;
+
+		public QueueElement(V value, Weight weight) {
+			this.value = value;
+			this.weight = weight;
+		}
+
+		public V getValue() {
+			return value;
+		}
+
+		public Weight getWeight() {
+			return weight;
+		}
+
+		@Override
+		public int compareTo(QueueElement<V> arg0) {
+			return this.weight.compareTo(arg0.weight);
+		}
+	}
+
+	public Weight getSmallestDerivation2() {
+
+		for (Rule<Symbol> r : wta.getSourceRules()) {
+			ruleQueue.add(new QueueElement<Rule<Symbol>>(r, r.getWeight()));
+			totalWeight.put(r, r.getWeight());
+			seen.put(r, false);
+		}
+
+		boolean found = false;
+
+		while (!found) {
+
+			QueueElement<Rule<Symbol>> currentElement = ruleQueue.poll();
+			Rule<Symbol> currentRule = currentElement.getValue();
+			Weight currentWeight = currentElement.getWeight();
+			State resultingState = currentRule.getResultingState();
+			seen.put(currentRule, true);
+
+			if (resultingState.isFinal()) {
+				return totalWeight.get(currentRule);
+			}
+
+			ArrayList<Rule<Symbol>> nextRules =
+					wta.getRulesByState(resultingState);
+
+			for (Rule<Symbol> r : nextRules) {
+
+				if (seen.get(r) == null || !seen.get(r)) {
+					ArrayList<Integer> indices =
+							r.getIndexOfState(resultingState);
+					int nOfIndices = indices.size();
+					int counter = 0;
+
+					while (counter < nOfIndices) {
+
+						if (!coveredStates.containsKey(r)) {
+							coveredStates.put(r, 1);
+						} else {
+							coveredStates.put(r, coveredStates.get(r) + 1);
+						}
+
+						if (!totalWeight.containsKey(r)) {
+							totalWeight.put(r, currentWeight);
+						} else {
+							totalWeight.put(r, totalWeight.get(r).mult(currentWeight));
+						}
+
+						counter++;
+					}
+
+					if (coveredStates.get(r) == r.getRank()) {
+						ruleQueue.add(new QueueElement<>(r, r.getWeight()));
+						seen.put(r, false);
+					}
+				}
+			}
+
+		}
+
+		return null;
 	}
 
 	public Weight getSmallestDerivation() {
@@ -40,22 +138,14 @@ public class KnuthSmallestDerivation {
 	}
 
 	private void enqueueFirstLayer() {
-
-		for (Symbol s : wta.getSymbols()) {
-
-			if (s.getRank() == 0) {
-
-				for (Rule<Symbol> r : wta.getTransitionFunction().getRulesBySymbol(s)) {
-					updateQueue(r);
-				}
-			}
+		for (Rule<Symbol> r : wta.getSourceRules()) {
+			updateQueue(r);
 		}
 	}
 
 	private void enqueueNextLayer() {
 
-		for (Rule<Symbol> r : wta.getTransitionFunction().getRulesByState(
-				smallest)) {
+		for (Rule<Symbol> r : wta.getRulesByState(smallest)) {
 			updateQueue(r);
 		}
 	}
@@ -64,7 +154,7 @@ public class KnuthSmallestDerivation {
 		State resultingState = r.getResultingState();
 		Weight currentWeight = queue.getWeight(resultingState);
 		Weight newWeight = getNewWeight(r);
-		Semiring semiring = wta.getTransitionFunction().getSemiring();
+		Semiring semiring = wta.getSemiring();
 
 		if (currentWeight == null &&
 				newWeight.compareTo(semiring.zero()) < 0) {
@@ -76,7 +166,7 @@ public class KnuthSmallestDerivation {
 	}
 
 	private Weight getNewWeight(Rule<Symbol> r) {
-		Semiring semiring = wta.getTransitionFunction().getSemiring();
+		Semiring semiring = wta.getSemiring();
 		Weight newWeight = semiring.one();
 
 		for (State stateInRule : r.getStates()) {

@@ -54,14 +54,11 @@ public class EppsteinRunner {
 
 		ArrayList<LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>>
 				kBestTreesForEachQRule = new ArrayList<>();
-		ArrayList<Rule<Symbol>> rules = wta.getTransitionFunction().
-				getRulesByResultingState(q);
+		ArrayList<Rule<Symbol>> rules = wta.getRulesByResultingState(q);
 
 		for (Rule<Symbol> r : rules) {
-			Graph<Node<Symbol>> graph = new Graph<>(
-					wta.getTransitionFunction().getSemiring());
-			Eppstein<Node<Symbol>> epp = new Eppstein<>(
-					wta.getTransitionFunction().getSemiring());
+			Graph<Node<Symbol>> graph = new Graph<>(wta.getSemiring());
+			Eppstein<Node<Symbol>> epp = new Eppstein<>(wta.getSemiring());
 
 			ArrayList<State> states = r.getStates();
 			int nOfStates = states.size();
@@ -71,7 +68,7 @@ public class EppsteinRunner {
 
 			if (edgeMap.keySet().size() > nOfStates) {
 				addKSmallestEdgesToGraph(graph, k, edgeMap, tree,
-						wta.getTransitionFunction().getSemiring());
+						wta.getSemiring());
 
 				List<Path<Node<Symbol>>> pathList = epp.ksp(graph, "u0",
 						"v" + nOfStates, k);
@@ -81,7 +78,7 @@ public class EppsteinRunner {
 				for (Path<Node<Symbol>> path : pathList) {
 					Node<Symbol> node = extractTreeFromPath(path, r);
 					TreeKeeper<Symbol> keeper = new TreeKeeper<>(node,
-							wta.getTransitionFunction().getSemiring());
+							wta.getSemiring());
 					Weight w = path.getTotalCost();
 					w = w.mult(r.getWeight());
 					keeper.addStateWeight(q, w);
@@ -157,7 +154,8 @@ public class EppsteinRunner {
 					Run run = p.poll();
 					String dummyNode = "d" + dummyCounter;
 					graph.addEdge(vertex1, dummyNode, semiring.one(), null);
-					graph.addEdge(dummyNode, vertex2, run.getWeight(), run.getTree().getTree());
+					graph.addEdge(dummyNode, vertex2, run.getWeight(),
+							run.getTree().getTree());
 					dummyCounter++;
 					counter++;
 				}

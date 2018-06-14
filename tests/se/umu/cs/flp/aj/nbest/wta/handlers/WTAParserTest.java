@@ -1,11 +1,17 @@
 package se.umu.cs.flp.aj.nbest.wta.handlers;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
+
+import java.util.ArrayList;
 
 import org.junit.Test;
 
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.TropicalSemiring;
+import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.wta.Rule;
+import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.exceptions.DuplicateRuleException;
@@ -31,7 +37,26 @@ public class WTAParserTest {
 
 	private Symbol ASymb = new Symbol("A", 0);
 	private Symbol aSymb = new Symbol("a", 0);
+	private Symbol bSymb = new Symbol("b", 0);
 	private Symbol fSymb = new Symbol("f", 2);
+
+	private State q0 = new State("q0");
+	private State q1 = new State("q1");
+	private State qf = new State("qf");
+
+	private State pa = new State("pa");
+	private State pb = new State("pb");
+
+	private Weight w0 = new TropicalSemiring().one();
+	private Weight w1 = new TropicalSemiring().createWeight(1);
+	private Weight w2 = new TropicalSemiring().createWeight(2);
+	private Weight w02 = new TropicalSemiring().createWeight(0.2);
+
+	Rule<Symbol> leafRule = new Rule<Symbol>(ASymb, w0, q0);
+	Rule<Symbol> leafRuleWithWeight = new Rule<Symbol>(aSymb, w2, q0);
+	Rule<Symbol> nonLeafRule = new Rule<Symbol>(fSymb, w0, qf, q0, q1);
+	Rule<Symbol> nonLeafRuleWithWeight = new Rule<Symbol>(fSymb, w02,
+			qf, q0, q1);
 
 	/**
 	 * Tests that states are properly set to final when parsing a final rule.
@@ -45,11 +70,40 @@ public class WTAParserTest {
 			DuplicateRuleException {
 		wtaParser.parseLine(finalLine, wta);
 		wtaParser.parseLine(leafRuleLine, wta);
-		wtaParser.parseLine(finalLine, wta);
 		System.out.println(wta);
 		assertTrue(wta.addState("q0").isFinal()
 				&& wta.addState("q1").isFinal()
 				&& wta.addState("q2").isFinal());
+	}
+
+	/**
+	 * Tests that the same final state is not added multiple times.
+	 * @throws SymbolUsageException
+	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException
+	 */
+	public void shouldNotParseFinalLineTwice()
+			throws IllegalArgumentException, SymbolUsageException,
+			DuplicateRuleException {
+		wtaParser.parseLine(finalLine, wta);
+		wtaParser.parseLine(finalLine, wta);
+		assertThat(wta.getFinalStates().size(), is(3));
+	}
+
+	/**
+	 * Tests that states are properly set to final when parsing a final rule.
+	 * @throws SymbolUsageException
+	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException
+	 */
+	@Test
+	public void shouldParseFinalLineLength()
+			throws IllegalArgumentException, SymbolUsageException,
+			DuplicateRuleException {
+		wtaParser.parseLine(finalLine, wta);
+		wtaParser.parseLine(leafRuleLine, wta);
+		System.out.println(wta);
+		assertThat(wta.getFinalStates().size(), is(3));
 	}
 
 	/**
@@ -63,8 +117,7 @@ public class WTAParserTest {
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 		wtaParser.parseLine(leafRuleLine, wta);
-		assertEquals("q0", wta.getTransitionFunction().getRulesBySymbol(ASymb).
-				get(0).getResultingState().getLabel());
+		assertThat(wta.getRulesByResultingState(q0).get(0), is(leafRule));
 	}
 
 	/**
@@ -78,8 +131,7 @@ public class WTAParserTest {
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 		wtaParser.parseLine(leafRuleLine, wta);
-		assertEquals(1, wta.getTransitionFunction().
-				getRulesBySymbol(ASymb).size());
+		assertThat(wta.getRulesByResultingState(q0).size(), is(1));
 	}
 
 	/**
@@ -94,8 +146,6 @@ public class WTAParserTest {
 			DuplicateRuleException {
 		wtaParser.parseLine(leafRuleLine, wta);
 		wtaParser.parseLine(leafRuleLine, wta);
-		assertEquals(1, wta.getTransitionFunction().
-				getRulesBySymbol(aSymb).size());
 	}
 
 	/**
@@ -109,8 +159,8 @@ public class WTAParserTest {
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 		wtaParser.parseLine(leafRuleLineWithWeight, wta);
-		assertEquals(0, wta.getTransitionFunction().getRulesBySymbol(aSymb).
-				get(0).getWeight().compareTo(semiring.createWeight(2)));
+		assertThat(wta.getRulesByResultingState(q0).get(0),
+				is(leafRuleWithWeight));
 	}
 
 	/**
@@ -124,8 +174,7 @@ public class WTAParserTest {
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 		wtaParser.parseLine(leafRuleLineWithWeight, wta);
-		assertEquals(1, wta.getTransitionFunction().
-				getRulesBySymbol(aSymb).size());
+		assertThat(wta.getRulesByResultingState(q0).size(), is(1));
 	}
 
 	/**
@@ -139,8 +188,7 @@ public class WTAParserTest {
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 		wtaParser.parseLine(nonLeafRuleLine, wta);
-		assertEquals("qf", wta.getTransitionFunction().getRulesBySymbol(fSymb).
-				get(0).getResultingState().getLabel());
+		assertThat(wta.getRulesByResultingState(qf).get(0), is(nonLeafRule));
 	}
 
 	/**
@@ -154,8 +202,8 @@ public class WTAParserTest {
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
-		assertEquals(0, wta.getTransitionFunction().getRulesBySymbol(fSymb).
-				get(0).getWeight().compareTo(semiring.createWeight(0.2)));
+		assertThat(wta.getRulesByResultingState(qf).get(0),
+				is(nonLeafRuleWithWeight));
 	}
 
 
@@ -170,8 +218,7 @@ public class WTAParserTest {
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 		wtaParser.parseLine(nonLeafRuleLine, wta);
-		assertEquals(1, wta.getTransitionFunction().
-				getRulesBySymbol(fSymb).size());
+		assertThat(wta.getRulesByResultingState(qf).size(), is(1));
 	}
 
 	/**
@@ -185,8 +232,7 @@ public class WTAParserTest {
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
-		assertEquals(1, wta.getTransitionFunction().
-				getRulesBySymbol(fSymb).size());
+		assertThat(wta.getRulesByResultingState(qf).size(), is(1));
 	}
 
 	/**
@@ -198,8 +244,7 @@ public class WTAParserTest {
 			throws Exception {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
 		wtaParser.parseLine("f[q1, q0] -> qf", wta);
-		assertEquals(2, wta.getTransitionFunction().
-				getRulesBySymbol(fSymb).size());
+		assertThat(wta.getRulesByResultingState(qf).size(), is(2));
 	}
 
 	/**
@@ -220,29 +265,88 @@ public class WTAParserTest {
 	@Test
 	public void shouldNotBeNullWhenCollectingParsed() throws Exception {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
-		assertNotNull(wta.getTransitionFunction().getRulesBySymbol(fSymb));
+		assertNotNull(wta.getRulesByResultingState(qf));
 	}
 
 	@Test
-	public void shouldParseCorrectFile() throws Exception {
+	public void shouldParseCorrectFile0() throws Exception {
 		wta = wtaParser.parse(fileName);
-		assertEquals(wta.toString(),
-				"States: pa pb qb qa \n"
-				+ "Ranked alphabet: ball(2) b(0) a(0) \n"
-				+ "Transition function: \n"
-				+ "a -> pa # 2.0\n"
-				+ "a -> pb # 1.0\n"
-				+ "ball[pa, pa] -> qa\n"
-				+ "ball[qa, qa] -> qa\n"
-				+ "ball[pb, pb] -> qb\n"
-				+ "ball[qb, qb] -> qb\n"
-				+ "ball[pa, qa] -> pa\n"
-				+ "ball[qa, pa] -> pa\n"
-				+ "ball[pb, qb] -> pb\n"
-				+ "ball[qb, pb] -> pb\n"
-				+ "b -> pa # 1.0\n"
-				+ "b -> pb # 2.0\n"
-				+ "Final states: qa qb ");
+		assertThat(wta.getStates().size(), is(4));
 	}
+
+	@Test
+	public void shouldParseCorrectFile1() throws Exception {
+		wta = wtaParser.parse(fileName);
+		assertThat(wta.getFinalStates().size(), is(2));
+	}
+
+	@Test
+	public void shouldParseCorrectFile2() throws Exception {
+		wta = wtaParser.parse(fileName);
+		assertThat(wta.getSymbols().size(), is(3));
+	}
+
+	@Test
+	public void shouldParseCorrectFile3() throws Exception {
+		wta = wtaParser.parse(fileName);
+		assertThat(wta.getRulesByResultingState(new State("pa")).size(), is(4));
+	}
+
+	@Test
+	public void shouldParseCorrectFile4() throws Exception {
+		wta = wtaParser.parse(fileName);
+		assertThat(wta.getRulesByResultingState(new State("pb")).size(), is(4));
+	}
+
+	@Test
+	public void shouldParseCorrectFile5() throws Exception {
+		wta = wtaParser.parse(fileName);
+		assertThat(wta.getRulesByResultingState(new State("qa")).size(), is(2));
+	}
+
+	@Test
+	public void shouldParseCorrectFile6() throws Exception {
+		wta = wtaParser.parse(fileName);
+		assertThat(wta.getRulesByResultingState(new State("qb")).size(), is(2));
+	}
+
+	@Test
+	public void shouldParseCorrectFile7() throws Exception {
+		wta = wtaParser.parse(fileName);
+		assertThat(wta.getStates().size(), is(4));
+	}
+
+	@Test
+	public void shouldParseCorrectFile8() throws Exception {
+		wta = wtaParser.parse(fileName);
+		ArrayList<Rule<Symbol>> list = new ArrayList<>();
+		list.add(new Rule<Symbol>(aSymb, w1, pb));
+		list.add(new Rule<Symbol>(aSymb, w2, pa));
+		list.add(new Rule<Symbol>(bSymb, w2, pb));
+		list.add(new Rule<Symbol>(bSymb, w1, pa));
+		assertThat(wta.getSourceRules().size(), is(4));
+	}
+
+//	@Test
+//	public void shouldParseCorrectFile() throws Exception {
+//		wta = wtaParser.parse(fileName);
+//		assertEquals(wta.toString(),
+//				"States: pa pb qb qa \n"
+//				+ "Ranked alphabet: ball(2) b(0) a(0) \n"
+//				+ "Transition function: \n"
+//				+ "a -> pa # 2.0\n"
+//				+ "a -> pb # 1.0\n"
+//				+ "ball[pa, pa] -> qa\n"
+//				+ "ball[qa, qa] -> qa\n"
+//				+ "ball[pb, pb] -> qb\n"
+//				+ "ball[qb, qb] -> qb\n"
+//				+ "ball[pa, qa] -> pa\n"
+//				+ "ball[qa, pa] -> pa\n"
+//				+ "ball[pb, qb] -> pb\n"
+//				+ "ball[qb, pb] -> pb\n"
+//				+ "b -> pa # 1.0\n"
+//				+ "b -> pb # 2.0\n"
+//				+ "Final states: qa qb ");
+//	}
 
 }

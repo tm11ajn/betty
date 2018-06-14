@@ -34,6 +34,7 @@ public class WTABuilderTest {
 	@Test
 	public void shouldGetModifiedWTA() throws Exception {
 		WTA modWTA = wtaBuilder.buildModifiedWTA(wta, new State("pa"));
+		System.out.println(modWTA.getSourceRules());
 		System.out.println(modWTA);
 		assertEquals(
 				"States: qa_extension qb_extension pa pb qb pa_extension qa pb_extension \n"

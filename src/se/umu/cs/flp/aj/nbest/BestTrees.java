@@ -104,12 +104,16 @@ public class BestTrees {
 			if (s.getRank() == 0) {
 				Node<Symbol> node = new Node<Symbol>(s);
 				TreeKeeper<Symbol> tree = new TreeKeeper<>(node,
-						wta.getTransitionFunction().getSemiring());
+						wta.getSemiring());
 
-				ArrayList<Rule<Symbol>> rules = wta.getTransitionFunction().
-						getRulesBySymbol(s);
+//				ArrayList<Rule<Symbol>> rules = wta.getTransitionFunction().
+//						getRulesBySymbol(s);
 
-				for (Rule<Symbol> r : rules) {
+//				for (Rule<Symbol> r : rules) {
+//					tree.addStateWeight(r.getResultingState(), r.getWeight());
+//				}
+
+				for (Rule<Symbol> r : wta.getSourceRules()) {
 					tree.addStateWeight(r.getResultingState(), r.getWeight());
 				}
 
