@@ -24,8 +24,7 @@ options for BestTrees:
  -timer                      measures running time(s)
  -v,--version <arg>          version of BestTrees; arg can be
                              2 (uses a pruned rule queue),
-                             1 (uses a pruned tree queue),
-                             basic (basic version) or
+                             1 (uses a pruned tree queue) or
                              all (runs all versions).
                              The default version is 2
 
