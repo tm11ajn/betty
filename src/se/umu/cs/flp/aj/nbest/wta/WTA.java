@@ -105,6 +105,10 @@ public class WTA {
 		return semiring;
 	}
 
+	public ArrayList<State> getSourceNodes() {
+		return transitionFunction.getSourceNodes();
+	}
+
 	public ArrayList<Rule<Symbol>> getSourceRules() {
 		return transitionFunction.getSourceEdges();
 	}
@@ -152,7 +156,6 @@ public class WTA {
 
 	@Override
 	public String toString() {
-
 		String string = "States: ";
 
 		for (State s : states.values()) {

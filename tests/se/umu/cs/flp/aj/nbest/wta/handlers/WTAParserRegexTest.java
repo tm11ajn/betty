@@ -79,6 +79,18 @@ public class WTAParserRegexTest {
 	}
 
 	@Test
+	public void shouldSplitNonLeafRuleLine2Regex() throws Exception {
+		assertEquals(3, WTAParserTest.nonLeafRuleLine2.trim().split(
+				WTAParser.NON_LEAF_RULE_SPLIT_REGEX).length);
+	}
+
+	@Test
+	public void shouldSplitMTDataRuleLine2Regex() throws Exception {
+		assertEquals(3, WTAParserTest.mtDataTestRuleLine.trim().split(
+				WTAParser.NON_LEAF_RULE_SPLIT_REGEX).length);
+	}
+
+	@Test
 	public void shouldSplitNonLeafRuleLineWithWeightRegex() throws Exception {
 		assertEquals(5, WTAParserTest.nonLeafRuleLineWithWeight.trim().split(
 				WTAParser.NON_LEAF_RULE_SPLIT_REGEX).length);

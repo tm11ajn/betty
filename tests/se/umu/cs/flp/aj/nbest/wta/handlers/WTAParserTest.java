@@ -30,6 +30,11 @@ public class WTAParserTest {
 	public static final String nonLeafRuleLine = "  f[q0, q1] ->   qf ";
 	public static final String nonLeafRuleLineWithWeight =
 			"  f[q0, q1] ->   qf  #  0.2 ";
+	public static final String nonLeafRuleLine2 = "  g[q0] ->   qf ";
+	public static final String nonLeafRuleLineWithWeight2 =
+			"  g[q0] ->   qf  #  0.2 ";
+	public static final String mtDataTestRuleLine = "nn-hd-dat.sg.masc[qtunfischfang] -> qnn-hd-dat.sg.masc";
+
 	private Semiring semiring = new TropicalSemiring();
 
 	private WTAParser wtaParser = new WTAParser(semiring);
@@ -38,7 +43,9 @@ public class WTAParserTest {
 	private Symbol ASymb = new Symbol("A", 0);
 	private Symbol aSymb = new Symbol("a", 0);
 	private Symbol bSymb = new Symbol("b", 0);
+	private Symbol gSymb = new Symbol("g", 1);
 	private Symbol fSymb = new Symbol("f", 2);
+	private Symbol mtSymb = new Symbol("nn-hd-dat.sg.masc", 1);
 
 	private State q0 = new State("q0");
 	private State q1 = new State("q1");
@@ -46,6 +53,9 @@ public class WTAParserTest {
 
 	private State pa = new State("pa");
 	private State pb = new State("pb");
+
+	private State mtq0 = new State("qtunfischfang");
+	private State mtq1 = new State("qnn-hd-dat.sg.masc");
 
 	private Weight w0 = new TropicalSemiring().one();
 	private Weight w1 = new TropicalSemiring().createWeight(1);
@@ -57,6 +67,10 @@ public class WTAParserTest {
 	Rule<Symbol> nonLeafRule = new Rule<Symbol>(fSymb, w0, qf, q0, q1);
 	Rule<Symbol> nonLeafRuleWithWeight = new Rule<Symbol>(fSymb, w02,
 			qf, q0, q1);
+	Rule<Symbol> nonLeafRule2 = new Rule<Symbol>(gSymb, w0, qf, q0);
+	Rule<Symbol> nonLeafRuleWithWeight2 = new Rule<Symbol>(gSymb, w02,
+			qf, q0);
+	Rule<Symbol> mtDataTestRule = new Rule<Symbol>(mtSymb, w0, mtq1, mtq0);
 
 	/**
 	 * Tests that states are properly set to final when parsing a final rule.
@@ -206,6 +220,92 @@ public class WTAParserTest {
 				is(nonLeafRuleWithWeight));
 	}
 
+	/**
+	 * Tests that a non-leaf rule with weight is parsed properly.
+	 * @throws SymbolUsageException
+	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException
+	 */
+	@Test
+	public void shouldParseNonLeafRuleLineWithWeightWithCorrectRank()
+			throws IllegalArgumentException, SymbolUsageException,
+			DuplicateRuleException {
+		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
+		assertThat(wta.getRulesByResultingState(qf).get(0).getRank(),
+				is(2));
+	}
+
+	/**
+	 * Tests that a non-leaf rule is parsed properly.
+	 * @throws SymbolUsageException
+	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException
+	 */
+	@Test
+	public void shouldParseNonLeafRuleLine2()
+			throws IllegalArgumentException, SymbolUsageException,
+			DuplicateRuleException {
+		wtaParser.parseLine(nonLeafRuleLine2, wta);
+		assertThat(wta.getRulesByResultingState(qf).get(0), is(nonLeafRule2));
+	}
+
+	/**
+	 * Tests that a non-leaf rule with weight is parsed properly.
+	 * @throws SymbolUsageException
+	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException
+	 */
+	@Test
+	public void shouldParseNonLeafRuleLineWithWeight2()
+			throws IllegalArgumentException, SymbolUsageException,
+			DuplicateRuleException {
+		wtaParser.parseLine(nonLeafRuleLineWithWeight2, wta);
+		assertThat(wta.getRulesByResultingState(qf).get(0),
+				is(nonLeafRuleWithWeight2));
+	}
+
+	/**
+	 * Tests that a non-leaf rule with weight is parsed properly.
+	 * @throws SymbolUsageException
+	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException
+	 */
+	@Test
+	public void shouldParseNonLeafRuleLineWithWeightWithCorrectRank2()
+			throws IllegalArgumentException, SymbolUsageException,
+			DuplicateRuleException {
+		wtaParser.parseLine(nonLeafRuleLineWithWeight2, wta);
+		assertThat(wta.getRulesByResultingState(qf).get(0).getRank(),
+				is(1));
+	}
+
+	/**
+	 * Tests that a non-leaf rule is parsed properly.
+	 * @throws SymbolUsageException
+	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException
+	 */
+	@Test
+	public void shouldParseMTDataRuleLine()
+			throws IllegalArgumentException, SymbolUsageException,
+			DuplicateRuleException {
+		wtaParser.parseLine(mtDataTestRuleLine, wta);
+		assertThat(wta.getRulesByResultingState(mtq1).get(0), is(mtDataTestRule));
+	}
+
+	/**
+	 * Tests that a non-leaf rule is parsed properly.
+	 * @throws SymbolUsageException
+	 * @throws IllegalArgumentException
+	 * @throws DuplicateRuleException
+	 */
+	@Test
+	public void shouldParseMTDataRuleLineWithCorrectRank()
+			throws IllegalArgumentException, SymbolUsageException,
+			DuplicateRuleException {
+		wtaParser.parseLine(mtDataTestRuleLine, wta);
+		assertThat(wta.getRulesByResultingState(mtq1).get(0).getRank(), is(1));
+	}
 
 	/**
 	 * Tests that a non-leaf rule is added properly to an empty wta.
@@ -270,55 +370,55 @@ public class WTAParserTest {
 
 	@Test
 	public void shouldParseCorrectFile0() throws Exception {
-		wta = wtaParser.parse(fileName);
+		wta = wtaParser.parseForBestTrees(fileName);
 		assertThat(wta.getStates().size(), is(4));
 	}
 
 	@Test
 	public void shouldParseCorrectFile1() throws Exception {
-		wta = wtaParser.parse(fileName);
+		wta = wtaParser.parseForBestTrees(fileName);
 		assertThat(wta.getFinalStates().size(), is(2));
 	}
 
 	@Test
 	public void shouldParseCorrectFile2() throws Exception {
-		wta = wtaParser.parse(fileName);
+		wta = wtaParser.parseForBestTrees(fileName);
 		assertThat(wta.getSymbols().size(), is(3));
 	}
 
 	@Test
 	public void shouldParseCorrectFile3() throws Exception {
-		wta = wtaParser.parse(fileName);
+		wta = wtaParser.parseForBestTrees(fileName);
 		assertThat(wta.getRulesByResultingState(new State("pa")).size(), is(4));
 	}
 
 	@Test
 	public void shouldParseCorrectFile4() throws Exception {
-		wta = wtaParser.parse(fileName);
+		wta = wtaParser.parseForBestTrees(fileName);
 		assertThat(wta.getRulesByResultingState(new State("pb")).size(), is(4));
 	}
 
 	@Test
 	public void shouldParseCorrectFile5() throws Exception {
-		wta = wtaParser.parse(fileName);
+		wta = wtaParser.parseForBestTrees(fileName);
 		assertThat(wta.getRulesByResultingState(new State("qa")).size(), is(2));
 	}
 
 	@Test
 	public void shouldParseCorrectFile6() throws Exception {
-		wta = wtaParser.parse(fileName);
+		wta = wtaParser.parseForBestTrees(fileName);
 		assertThat(wta.getRulesByResultingState(new State("qb")).size(), is(2));
 	}
 
 	@Test
 	public void shouldParseCorrectFile7() throws Exception {
-		wta = wtaParser.parse(fileName);
+		wta = wtaParser.parseForBestTrees(fileName);
 		assertThat(wta.getStates().size(), is(4));
 	}
 
 	@Test
 	public void shouldParseCorrectFile8() throws Exception {
-		wta = wtaParser.parse(fileName);
+		wta = wtaParser.parseForBestTrees(fileName);
 		ArrayList<Rule<Symbol>> list = new ArrayList<>();
 		list.add(new Rule<Symbol>(aSymb, w1, pb));
 		list.add(new Rule<Symbol>(aSymb, w2, pa));

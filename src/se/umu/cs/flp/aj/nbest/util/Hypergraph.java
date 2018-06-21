@@ -33,6 +33,7 @@ public class Hypergraph<N, E> {
 	private HashMap<N, Node> nodes;
 	private HashMap<E, Edge> edges;
 
+
 	public Hypergraph() {
 		this.sourceNodes = new HashMap<>();
 		this.nodes = new HashMap<>();
@@ -66,7 +67,7 @@ public class Hypergraph<N, E> {
 			throws DuplicateRuleException {
 
 		if (edges.containsKey(edge)) {
-			throw new DuplicateRuleException();
+			throw new DuplicateRuleException("Duplicate rule " + edge + "\n and " + edges.get(edge));
 		}
 
 		Edge e = new Edge(edge, weight);
@@ -195,8 +196,21 @@ public class Hypergraph<N, E> {
 		}
 
 		@Override
+		public boolean equals(Object arg0) {
+			if (arg0 instanceof Hypergraph.Node) {
+				return element.equals(((Hypergraph.Node) arg0).element);
+			}
+			return super.equals(arg0);
+		}
+
+		@Override
 		public int hashCode() {
 			return element.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return element.toString();
 		}
 	}
 
@@ -249,8 +263,21 @@ public class Hypergraph<N, E> {
 		}
 
 		@Override
+		public boolean equals(Object arg0) {
+			if (arg0 instanceof Hypergraph.Edge) {
+				return element.equals(((Hypergraph.Edge)arg0).element);
+			}
+			return false;
+		}
+
+		@Override
 		public int hashCode() {
 			return element.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return element.toString();
 		}
 	}
 }

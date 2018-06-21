@@ -113,21 +113,25 @@ public class Rule<LabelType> {
 		if (obj instanceof Rule<?>) {
 			Rule<?> rule = (Rule<?>) obj;
 
-			if (rule.symbol.equals(this.symbol)
-					&& rule.resultingState.equals(this.resultingState)
-					&& rule.states.size() == this.states.size()) {
-
-				int statesSize = this.states.size();
-
-				for (int i = 0; i < statesSize; i++) {
-
-					if (!rule.states.get(i).equals(this.states.get(i))) {
-						return false;
-					}
-				}
-
+			if (rule.toString().equals(this.toString())) {
 				return true;
 			}
+
+//			if (rule.symbol.equals(this.symbol)
+//					&& rule.resultingState.equals(this.resultingState)
+//					&& rule.states.size() == this.states.size()) {
+//
+//				int statesSize = this.states.size();
+//
+//				for (int i = 0; i < statesSize; i++) {
+//
+//					if (!rule.states.get(i).equals(this.states.get(i))) {
+//						return false;
+//					}
+//				}
+//
+//				return true;
+//			}
 		}
 
 		return false;
@@ -141,6 +145,9 @@ public class Rule<LabelType> {
 		for (State s : states) {
 			hash += s.hashCode();
 		}
+
+		// ADded when using string for equal
+		hash += weight.hashCode();
 
 		return hash;
 	}

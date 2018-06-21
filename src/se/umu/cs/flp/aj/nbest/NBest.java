@@ -35,7 +35,9 @@ import se.umu.cs.flp.aj.knuth.KnuthSmallestDerivations;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.SemiringFactory;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
+import se.umu.cs.flp.aj.nbest.wta.Symbol;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.handlers.WTAParser;
 
@@ -62,6 +64,8 @@ public class NBest {
 	private static final String TROPICAL_SEMIRING = "tropical";
 	private static final String DEFAULT_SEMIRING = TROPICAL_SEMIRING;
 
+	private static final String DERIVATION_FLAG = "r";
+	private static final String DERIVATION_FLAG_LONG = "runs";
 
 	public static void main(String[] args) {
 
@@ -73,6 +77,7 @@ public class NBest {
 		String version = DEFAULT_VERSION;
 		boolean timer = DEFAULT_TIMER_VAL;
 		String semiringType = DEFAULT_SEMIRING;
+		boolean derivations = false;
 
 		try {
 			CommandLine cmd = clParser.parse(options, args);
@@ -96,6 +101,10 @@ public class NBest {
 				semiringType = cmd.getOptionValue(SEMIRING_FLAG);
 			}
 
+			if (cmd.hasOption(DERIVATION_FLAG)) {
+				derivations = true;
+			}
+
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
 			HelpFormatter help = new HelpFormatter();
@@ -111,7 +120,26 @@ public class NBest {
 		Semiring semiring = semFac.getSemiring(semiringType);
 
 		WTAParser wtaParser = new WTAParser(semiring);
-		WTA wta = wtaParser.parse(fileName);
+		WTA wta = null;
+
+		if (derivations) {
+			wta = wtaParser.parseForBestDerivations(fileName);
+		} else {
+			wta = wtaParser.parseForBestTrees(fileName);
+		}
+
+//System.out.println("wta");
+//System.out.println(wta);
+//System.out.println("Leaf rules:");
+//for (Rule<Symbol> r : wta.getSourceRules()) {
+//System.out.println(r);
+//System.out.println("rank=" + r.getRank());
+//}
+//System.out.println("Source nodes: ");
+//for (State s : wta.getSourceNodes()) {
+//System.out.println(s);
+//}
+//System.exit(-1);
 
 		long startTime;
 		long endTime;
@@ -134,7 +162,7 @@ public class NBest {
 			List<String> result = BestTrees2.run(wta, N);
 			endTime = System.nanoTime();
 
-			printResult(result);
+			printResult(result, derivations);
 
 			if (timer) {
 				duration = (endTime - startTime)/1000000;
@@ -151,7 +179,7 @@ public class NBest {
 			List<String> result = BestTrees.run(wta, N);
 			endTime = System.nanoTime();
 
-			printResult(result);
+			printResult(result, derivations);
 
 			if (timer) {
 				duration = (endTime - startTime)/1000000;
@@ -180,6 +208,9 @@ public class NBest {
 		Option semiringOpt = new Option(SEMIRING_FLAG, SEMIRING_FLAG_LONG, true,
 				"semiring used for BestTrees (the default semiring is the "
 						+ DEFAULT_SEMIRING + " semiring)");
+		Option derivationsOpt = new Option(DERIVATION_FLAG,
+				DERIVATION_FLAG_LONG, false,
+				"finds the best runs instead of the best trees");
 
 		wtaFileOpt.setArgName("wta file");
 		nOpt.setArgName("nonnegative integer");
@@ -190,19 +221,26 @@ public class NBest {
 		versionOpt.setRequired(false);
 		timerOpt.setRequired(false);
 		semiringOpt.setRequired(false);
+		derivationsOpt.setRequired(false);
 
 		options.addOption(wtaFileOpt);
 		options.addOption(nOpt);
 		options.addOption(versionOpt);
 		options.addOption(timerOpt);
 		options.addOption(semiringOpt);
+		options.addOption(derivationsOpt);
 
 		return options;
 	}
 
-	private static void printResult(List<String> result) {
+	private static void printResult(List<String> result, boolean derivations) {
 
 		for (String treeString : result) {
+
+			if (derivations) {
+				treeString = treeString.replaceAll("//rule[0-9]*", "");
+			}
+
 			System.out.println(treeString);
 		}
 	}

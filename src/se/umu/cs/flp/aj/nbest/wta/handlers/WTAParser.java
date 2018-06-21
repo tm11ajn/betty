@@ -38,16 +38,32 @@ import se.umu.cs.flp.aj.nbest.wta.exceptions.SymbolUsageException;
 
 public class WTAParser {
 
+//	public static final String EMPTY_LINE_REGEX = "^\\s*$";
+//	public static final String COMMENT_LINE_REGEX = "^//.*";
+//	public static final String FINAL_REGEX =
+//			"^\\s*final\\s*([a-zA-Z0-9]+\\s*,\\s*)*([a-zA-Z0-9]+\\s*)+$";
+//	public static final String LEAF_RULE_REGEX =
+//			"^\\s*[a-zA-Z0-9]+\\s*->\\s*[a-zA-Z0-9]+" +
+//			"\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)?$";
+//	public static final String NON_LEAF_RULE_REGEX =
+//			"^\\s*[a-zA-Z0-9]+\\[\\s*[a-zA-Z0-9]+\\s*(,\\s*[a-zA-Z0-9]+\\s*)*"
+//			+ "\\]\\s*->\\s*[a-zA-Z0-9]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)*$";
+//
+//	public static final String FINAL_SPLIT_REGEX = "\\s+|(\\s*,\\s*)";
+//	public static final String LEAF_RULE_SPLIT_REGEX = "\\s*((->)|#)\\s*";
+//	public static final String NON_LEAF_RULE_SPLIT_REGEX =
+//			"\\s*((\\]\\s*->)|#|\\[|,)\\s*";
+
 	public static final String EMPTY_LINE_REGEX = "^\\s*$";
 	public static final String COMMENT_LINE_REGEX = "^//.*";
 	public static final String FINAL_REGEX =
-			"^\\s*final\\s*([a-zA-Z0-9]+\\s*,\\s*)*([a-zA-Z0-9]+\\s*)+$";
+			"^\\s*final\\s*([^,# \\[\\]]+\\s*,\\s*)*([^,# \\[\\]]+\\s*)+$";
 	public static final String LEAF_RULE_REGEX =
-			"^\\s*[a-zA-Z0-9]+\\s*->\\s*[a-zA-Z0-9]+" +
+			"^\\s*[^,# \\[\\]]+\\s*->\\s*[^,# \\[\\]]+" +
 			"\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)?$";
 	public static final String NON_LEAF_RULE_REGEX =
-			"^\\s*[a-zA-Z0-9]+\\[\\s*[a-zA-Z0-9]+\\s*(,\\s*[a-zA-Z0-9]+\\s*)*"
-			+ "\\]\\s*->\\s*[a-zA-Z0-9]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)*$";
+			"^\\s*[^,# \\[\\]]+\\[\\s*[^,# \\[\\]]+\\s*(,\\s*[^,# \\[\\]]+\\s*)*"
+			+ "\\]\\s*->\\s*[^,# \\[\\]]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)*$";
 
 	public static final String FINAL_SPLIT_REGEX = "\\s+|(\\s*,\\s*)";
 	public static final String LEAF_RULE_SPLIT_REGEX = "\\s*((->)|#)\\s*";
@@ -57,12 +73,27 @@ public class WTAParser {
 	private Semiring semiring;
 	private HashMap<State, State> finalStates;
 
+	private boolean forDerivations;
+	private int ruleCounter;
+
 	public WTAParser(Semiring semiring) {
 		this.semiring = semiring;
 		this.finalStates = new HashMap<>();
+		this.ruleCounter = 0;
+		this.forDerivations = false;
 	}
 
-	public WTA parse(String fileName) {
+	public WTA parseForBestTrees(String fileName) {
+		this.forDerivations = false;
+		return parse(fileName);
+	}
+
+	public WTA parseForBestDerivations(String fileName) {
+		this.forDerivations = true;
+		return parse(fileName);
+	}
+
+	private WTA parse(String fileName) {
 
 		WTA wta = new WTA(semiring);
 		int rowCounter = 1;
@@ -132,9 +163,14 @@ public class WTAParser {
 
 		String[] labels = line.trim().split(LEAF_RULE_SPLIT_REGEX);
 
-		checkSymbol(labels[0]);
+		String symbolString = labels[0];
+		checkSymbol(symbolString);
 
-		Symbol symbol = wta.addSymbol(labels[0], 0);
+		if (forDerivations) {
+			symbolString += "//rule" + ruleCounter;
+		}
+
+		Symbol symbol = wta.addSymbol(symbolString, 0);
 		State resultingState = wta.addState(labels[1]);
 
 		Rule<Symbol> newRule;
@@ -149,6 +185,7 @@ public class WTAParser {
 		}
 
 		wta.addRule(newRule);
+		ruleCounter++;
 	}
 
 	private void parseNonLeafRule(String line, WTA wta)
@@ -167,9 +204,14 @@ public class WTAParser {
 			numberOfLeftHandStates -= 1;
 		}
 
-		checkSymbol(labels[0]);
+		String symbolString = labels[0];
+		checkSymbol(symbolString);
 
-		Symbol symbol = wta.addSymbol(labels[0], numberOfLeftHandStates);
+		if (forDerivations) {
+			symbolString += "//rule" + ruleCounter;
+		}
+
+		Symbol symbol = wta.addSymbol(symbolString, numberOfLeftHandStates);
 		State resultingState = wta.addState(labels[1 + numberOfLeftHandStates]);
 
 		Rule<Symbol> newRule = new Rule<>(symbol, weight, resultingState);
@@ -177,8 +219,8 @@ public class WTAParser {
 		for (int i = 1; i < numberOfLeftHandStates + 1; i++) {
 			newRule.addState(wta.addState(labels[i]));
 		}
-
 		wta.addRule(newRule);
+		ruleCounter++;
 	}
 
 	// Unnecessary if the reserved symbol uses unallowed characters

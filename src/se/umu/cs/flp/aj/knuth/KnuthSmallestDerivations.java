@@ -2,6 +2,7 @@ package se.umu.cs.flp.aj.knuth;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.PriorityQueue;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -13,6 +14,10 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 public class KnuthSmallestDerivations {
 
 	private static WTA wta;
+	private static PriorityQueue<QueueElement<State>> queue;
+	private static HashMap<State, Weight> defined;
+	private static LinkedList<Rule<Symbol>> usableRules;
+	private static HashMap<State, Weight> totalWeight;
 
 	public static class QueueElement<V> implements Comparable<QueueElement<V>> {
 
@@ -49,11 +54,11 @@ public class KnuthSmallestDerivations {
 	}
 
 	private static HashMap<State, Weight> computeCheapestTrees() {
-		PriorityQueue<QueueElement<State>> queue = new PriorityQueue<>();
-		HashMap<State, Weight> defined = new HashMap<>();
+		queue = new PriorityQueue<>();
+		defined = new HashMap<>();
+		usableRules = new LinkedList<>();
+		totalWeight = new HashMap<>();
 		HashMap<Rule<Symbol>, Integer> missingIndices = new HashMap<>();
-		LinkedList<Rule<Symbol>> usableRules = new LinkedList<>();
-		HashMap<State, Weight> totalWeight = new HashMap<>();
 
 		for (Rule<Symbol> r : wta.getSourceRules()) {
 			usableRules.add(r);
@@ -62,19 +67,21 @@ public class KnuthSmallestDerivations {
 		int nOfStates = wta.getStates().size();
 
 		while (defined.size() < nOfStates) {
+			ListIterator<Rule<Symbol>> it = usableRules.listIterator();
 
-			for (Rule<Symbol> r : usableRules) {
+			while (it.hasNext()) {
+				Rule<Symbol> r = it.next();
 				State resState = r.getResultingState();
-
-				Weight oldWeight = totalWeight.get(
-						r.getResultingState());
-				Weight newWeight = getWeight(r, defined);
+				Weight oldWeight = totalWeight.get(resState);
+				Weight newWeight = getWeight(r);
 
 				if (oldWeight == null ||
 						newWeight.compareTo(oldWeight) < 0) {
 					queue.add(new QueueElement<State>(resState, newWeight));
 					totalWeight.put(resState, newWeight);
 				}
+
+				it.remove();
 			}
 
 			QueueElement<State> element = queue.poll();
@@ -99,8 +106,7 @@ public class KnuthSmallestDerivations {
 		return defined;
 	}
 
-	private static Weight getWeight(Rule<Symbol> rule,
-			HashMap<State, Weight> defined) {
+	private static Weight getWeight(Rule<Symbol> rule) {
 		Weight result = rule.getWeight();
 
 		for (State s : rule.getStates()) {
@@ -112,11 +118,10 @@ public class KnuthSmallestDerivations {
 
 	private static HashMap<State, Weight> computeCheapestContexts(
 			HashMap<State, Weight> cheapestTrees) {
-		PriorityQueue<QueueElement<State>> queue = new PriorityQueue<>();
-		HashMap<State, Weight> defined = new HashMap<>();
-
-		LinkedList<Rule<Symbol>> usableRules = new LinkedList<>();
-		HashMap<State, Weight> totalWeight = new HashMap<>();
+		queue = new PriorityQueue<>();
+		defined = new HashMap<>();
+		usableRules = new LinkedList<>();
+		totalWeight = new HashMap<>();
 
 		for (State s : wta.getFinalStates()) {
 			defined.put(s, wta.getSemiring().one());
@@ -129,8 +134,10 @@ public class KnuthSmallestDerivations {
 		int nOfStates = wta.getStates().size();
 
 		while (defined.size() < nOfStates) {
+			ListIterator<Rule<Symbol>> it = usableRules.listIterator();
 
-			for (Rule<Symbol> r : usableRules) {
+			while (it.hasNext()) {
+				Rule<Symbol> r = it.next();
 				State resState = r.getResultingState();
 				Weight newWeight = r.getWeight().mult(defined.get(resState));
 
@@ -149,6 +156,7 @@ public class KnuthSmallestDerivations {
 						totalWeight.put(s, newWeight);
 					}
 				}
+				it.remove();
 			}
 
 			QueueElement<State> element = queue.poll();
@@ -160,7 +168,6 @@ public class KnuthSmallestDerivations {
 				usableRules.addLast(r);
 			}
 		}
-
 
 		return defined;
 	}
