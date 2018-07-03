@@ -119,6 +119,10 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 
 	public boolean hasNext() {
 
+		if (dequeueCounter >= limit) {
+			return false;
+		}
+
 		if (configQueue.isEmpty()) {
 			return false;
 		}

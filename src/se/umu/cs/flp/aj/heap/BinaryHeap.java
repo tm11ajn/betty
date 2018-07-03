@@ -18,6 +18,14 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 			this.object = object;
 			this.weight = weight;
 		}
+
+		public K getObject() {
+			return object;
+		}
+
+		public V getWeight() {
+			return weight;
+		}
 	}
 
 

@@ -1,10 +1,11 @@
 package se.umu.cs.flp.aj.knuth;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.PriorityQueue;
 
+import se.umu.cs.flp.aj.heap.BinaryHeap;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
@@ -14,39 +15,62 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 public class KnuthSmallestDerivations {
 
 	private static WTA wta;
-	private static PriorityQueue<QueueElement<State>> queue;
+	private static BinaryHeap<State, Weight> queue;
 	private static HashMap<State, Weight> defined;
 	private static LinkedList<Rule<Symbol>> usableRules;
 	private static HashMap<State, Weight> totalWeight;
 
-	public static class QueueElement<V> implements Comparable<QueueElement<V>> {
-
-		private V value;
-		private Weight weight;
-
-		public QueueElement(V value, Weight weight) {
-			this.value = value;
-			this.weight = weight;
-		}
-
-		public V getValue() {
-			return value;
-		}
-
-		public Weight getWeight() {
-			return weight;
-		}
-
-		@Override
-		public int hashCode() {
-			return value.hashCode();
-		}
-
-		@Override
-		public int compareTo(QueueElement<V> arg0) {
-			return this.weight.compareTo(arg0.weight);
-		}
-	}
+//	public static class QueueElement<V extends Comparable<V>> implements Comparable<QueueElement<V>> {
+//
+//		private V value;
+//		private Weight weight;
+//
+//		public QueueElement(V value, Weight weight) {
+//			this.value = value;
+//			this.weight = weight;
+//		}
+//
+//		public V getValue() {
+//			return value;
+//		}
+//
+//		public Weight getWeight() {
+//			return weight;
+//		}
+//
+//		@Override
+//		public int hashCode() {
+//			return value.hashCode();
+//		}
+//
+//		@Override
+//		public int compareTo(QueueElement<V> arg0) {
+//			int weightComparison = this.weight.compareTo(arg0.weight);
+//
+//			if (weightComparison == 0) {
+//				return this.value.compareTo(arg0.value);
+//			}
+//
+//			return weightComparison;
+//		}
+//
+//		@Override
+//		public boolean equals(Object arg0) {
+//
+//			if (!(arg0 instanceof QueueElement<?>)) {
+//				return false;
+//			}
+//
+//			QueueElement<?> o = (QueueElement<?>) arg0;
+//
+//			return value.equals(o.value) && weight.equals(o.weight);
+//		}
+//
+//		@Override
+//		public String toString() {
+//			return value.toString() + " # " +  weight.toString();
+//		}
+//	}
 
 	public static HashMap<State, Weight> getSmallestDerivations(WTA wta) {
 		KnuthSmallestDerivations.wta = wta;
@@ -54,11 +78,12 @@ public class KnuthSmallestDerivations {
 	}
 
 	private static HashMap<State, Weight> computeCheapestTrees() {
-		queue = new PriorityQueue<>();
+		queue = new BinaryHeap<>();
 		defined = new HashMap<>();
 		usableRules = new LinkedList<>();
 		totalWeight = new HashMap<>();
 		HashMap<Rule<Symbol>, Integer> missingIndices = new HashMap<>();
+		HashMap<Rule<Symbol>, HashMap<State, State>> seenStates = new HashMap<>();
 
 		for (Rule<Symbol> r : wta.getSourceRules()) {
 			usableRules.add(r);
@@ -77,28 +102,40 @@ public class KnuthSmallestDerivations {
 
 				if (oldWeight == null ||
 						newWeight.compareTo(oldWeight) < 0) {
-					queue.add(new QueueElement<State>(resState, newWeight));
+
+					if (!queue.contains(resState)) {
+						queue.add(resState, newWeight);
+					} else {
+						queue.decreaseWeight(resState, newWeight);
+					}
+
 					totalWeight.put(resState, newWeight);
 				}
 
 				it.remove();
 			}
 
-			QueueElement<State> element = queue.poll();
-			State state = element.getValue();
+			BinaryHeap<State, Weight>.Node<State, Weight> element =
+					queue.dequeue();
+			State state = element.getObject();
 			Weight weight = element.getWeight();
 			defined.put(state, weight);
 
 			for (Rule<Symbol> r2 : wta.getRulesByState(state)) {
 				if (missingIndices.get(r2) == null) {
 					missingIndices.put(r2, r2.getRank());
+					seenStates.put(r2, new HashMap<>());
 				}
 
-				missingIndices.put(r2, missingIndices.get(r2) -
-						r2.getIndexOfState(state).size());
+				if (!seenStates.get(r2).containsKey(state)) {
+					missingIndices.put(r2, missingIndices.get(r2) -
+							r2.getIndexOfState(state).size());
 
-				if (missingIndices.get(r2) == 0) {
-					usableRules.addLast(r2);
+					if (missingIndices.get(r2) == 0) {
+						usableRules.addLast(r2);
+					}
+
+					seenStates.get(r2).put(state, state);
 				}
 			}
 		}
@@ -108,6 +145,11 @@ public class KnuthSmallestDerivations {
 
 	private static Weight getWeight(Rule<Symbol> rule) {
 		Weight result = rule.getWeight();
+		ArrayList<State> states = rule.getStates();
+
+		if (states.size() == 0) {
+			result = result.mult(wta.getSemiring().one());
+		}
 
 		for (State s : rule.getStates()) {
 			result.mult(defined.get(s));
@@ -118,7 +160,7 @@ public class KnuthSmallestDerivations {
 
 	private static HashMap<State, Weight> computeCheapestContexts(
 			HashMap<State, Weight> cheapestTrees) {
-		queue = new PriorityQueue<>();
+		queue = new BinaryHeap<>();
 		defined = new HashMap<>();
 		usableRules = new LinkedList<>();
 		totalWeight = new HashMap<>();
@@ -152,15 +194,21 @@ public class KnuthSmallestDerivations {
 
 					if (oldWeight == null ||
 							newWeight.compareTo(oldWeight) < 0) {
-						queue.add(new QueueElement<>(s, newWeight));
+
+						if (!queue.contains(s)) {
+							queue.add(s, newWeight);
+						} else {
+							queue.decreaseWeight(s, newWeight);
+						}
+
 						totalWeight.put(s, newWeight);
 					}
 				}
 				it.remove();
 			}
 
-			QueueElement<State> element = queue.poll();
-			State state = element.getValue();
+			BinaryHeap<State, Weight>.Node<State, Weight> element = queue.dequeue();
+			State state = element.getObject();
 			Weight weight = element.getWeight();
 			defined.put(state, weight);
 
@@ -171,5 +219,4 @@ public class KnuthSmallestDerivations {
 
 		return defined;
 	}
-
 }

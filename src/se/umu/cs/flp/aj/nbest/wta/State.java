@@ -20,7 +20,7 @@
 
 package se.umu.cs.flp.aj.nbest.wta;
 
-public class State {
+public class State implements Comparable<State> {
 
 	public static final String RESERVED_LABEL_EXTENSION_STRING = "_extension";
 
@@ -66,6 +66,11 @@ public class State {
 	@Override
 	public String toString() {
 		return label;
+	}
+
+	@Override
+	public int compareTo(State arg0) {
+		return this.getLabel().compareTo(arg0.getLabel());
 	}
 
 }
