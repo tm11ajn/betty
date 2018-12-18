@@ -1,24 +1,4 @@
-/*
- * Copyright 2015 Anna Jonsson for the research group Foundations of Language
- * Processing, Department of Computing Science, Ume� university
- *
- * This file is part of BestTrees.
- *
- * BestTrees is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * BestTrees is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-package se.umu.cs.flp.aj.nbest.wta.handlers;
+package se.umu.cs.flp.aj.nbest.wta.parsers;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -35,38 +15,25 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.exceptions.DuplicateRuleException;
 import se.umu.cs.flp.aj.nbest.wta.exceptions.SymbolUsageException;
 
-
-public class WTAParser {
-
-//	public static final String EMPTY_LINE_REGEX = "^\\s*$";
-//	public static final String COMMENT_LINE_REGEX = "^//.*";
-//	public static final String FINAL_REGEX =
-//			"^\\s*final\\s*([a-zA-Z0-9]+\\s*,\\s*)*([a-zA-Z0-9]+\\s*)+$";
-//	public static final String LEAF_RULE_REGEX =
-//			"^\\s*[a-zA-Z0-9]+\\s*->\\s*[a-zA-Z0-9]+" +
-//			"\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)?$";
-//	public static final String NON_LEAF_RULE_REGEX =
-//			"^\\s*[a-zA-Z0-9]+\\[\\s*[a-zA-Z0-9]+\\s*(,\\s*[a-zA-Z0-9]+\\s*)*"
-//			+ "\\]\\s*->\\s*[a-zA-Z0-9]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)*$";
-//
-//	public static final String FINAL_SPLIT_REGEX = "\\s+|(\\s*,\\s*)";
-//	public static final String LEAF_RULE_SPLIT_REGEX = "\\s*((->)|#)\\s*";
-//	public static final String NON_LEAF_RULE_SPLIT_REGEX =
-//			"\\s*((\\]\\s*->)|#|\\[|,)\\s*";
+public class RTGParser implements Parser {
 
 	public static final String EMPTY_LINE_REGEX = "^\\s*$";
-	public static final String COMMENT_LINE_REGEX = "^//.*";
-	public static final String FINAL_REGEX =
-			"^\\s*final\\s*([^,# \\[\\]]+\\s*,\\s*)*([^,# \\[\\]]+\\s*)+$";
+	public static final String COMMENT_LINE_REGEX = "^//.*|^%.*";
+	public static final String FINAL_REGEX = "^\\s*[^,# \\[\\]]+\\s*$";
+
 	public static final String LEAF_RULE_REGEX =
 			"^\\s*[^,# \\[\\]]+\\s*->\\s*[^,# \\[\\]]+" +
 			"\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)?$";
+
 	public static final String NON_LEAF_RULE_REGEX =
 			"^\\s*[^,# \\[\\]]+\\[\\s*[^,# \\[\\]]+\\s*(,\\s*[^,# \\[\\]]+\\s*)*"
 			+ "\\]\\s*->\\s*[^,# \\[\\]]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)*$";
 
+
 	public static final String FINAL_SPLIT_REGEX = "\\s+|(\\s*,\\s*)";
+
 	public static final String LEAF_RULE_SPLIT_REGEX = "\\s*((->)|#)\\s*";
+
 	public static final String NON_LEAF_RULE_SPLIT_REGEX =
 			"\\s*((\\]\\s*->)|#|\\[|,)\\s*";
 
@@ -76,7 +43,7 @@ public class WTAParser {
 	private boolean forDerivations;
 	private int ruleCounter;
 
-	public WTAParser(Semiring semiring) {
+	public RTGParser(Semiring semiring) {
 		this.semiring = semiring;
 		this.finalStates = new HashMap<>();
 		this.ruleCounter = 0;
@@ -99,7 +66,6 @@ public class WTAParser {
 		int rowCounter = 1;
 
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-
 			String line;
 
 			while ((line = br.readLine()) != null) {
@@ -127,6 +93,8 @@ public class WTAParser {
 
 		return wta;
 	}
+
+
 
 	public void parseLine(String line, WTA wta)
 			throws IllegalArgumentException, SymbolUsageException,

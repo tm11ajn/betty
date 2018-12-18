@@ -40,6 +40,8 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 	private boolean validSize;
 	private boolean validHash;
 
+	private boolean isNonTerminal;
+
 	public Node(LabelType label) {
 		this.label = label;
 		nOfChildren = 0;
@@ -52,6 +54,8 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 		validString = false;
 		validSize = true;
 		validHash = false;
+
+		isNonTerminal = false;
 	}
 
 	public Node(LabelType label, List<Node<LabelType>> children) {
@@ -113,6 +117,14 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 		}
 
 		return size;
+	}
+
+	public boolean isNonTerminal() {
+		return isNonTerminal;
+	}
+
+	public void setNonTerminal(boolean value) {
+		this.isNonTerminal = value;
 	}
 
 	private void invalidateHash() {

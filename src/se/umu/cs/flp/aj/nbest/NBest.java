@@ -22,7 +22,6 @@ package se.umu.cs.flp.aj.nbest;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -36,17 +35,21 @@ import se.umu.cs.flp.aj.knuth.KnuthSmallestDerivations;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.SemiringFactory;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
-import se.umu.cs.flp.aj.nbest.wta.Symbol;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
-import se.umu.cs.flp.aj.nbest.wta.handlers.WTAParser;
+import se.umu.cs.flp.aj.nbest.wta.parsers.Parser;
+import se.umu.cs.flp.aj.nbest.wta.parsers.RTGParser;
+import se.umu.cs.flp.aj.nbest.wta.parsers.WTAParser;
 
 
 public class NBest {
 
 	private static final String FILE_FLAG = "f";
 	private static final String FILE_FLAG_LONG = "file";
+
+	private static final String FILE_TYPE_FLAG = "t";
+	private static final String FILE_TYPE_LONG = "type";
+	private static final String DEFAULT_FILE_TYPE = "wta";
 
 	private static final String N_FLAG = "N";
 
@@ -79,12 +82,17 @@ public class NBest {
 		boolean timer = DEFAULT_TIMER_VAL;
 		String semiringType = DEFAULT_SEMIRING;
 		boolean derivations = false;
+		String fileType = DEFAULT_FILE_TYPE;
 
 		try {
 			CommandLine cmd = clParser.parse(options, args);
 
 			fileName = cmd.getOptionValue(FILE_FLAG);
 			N = Integer.parseInt(cmd.getOptionValue(N_FLAG));
+
+			if (cmd.hasOption(FILE_TYPE_FLAG)) {
+				fileType = cmd.getOptionValue(FILE_TYPE_FLAG);
+			}
 
 			if (N < 0) {
 				throw new NumberFormatException();
@@ -120,13 +128,19 @@ public class NBest {
 		SemiringFactory semFac = new SemiringFactory();
 		Semiring semiring = semFac.getSemiring(semiringType);
 
-		WTAParser wtaParser = new WTAParser(semiring);
+		Parser parser = null;
 		WTA wta = null;
 
+		if (fileType.equals("wta")) {
+			parser = new WTAParser(semiring);
+		} else if (fileType.equals("rtg")) {
+			parser = new RTGParser(semiring);
+		}
+
 		if (derivations) {
-			wta = wtaParser.parseForBestDerivations(fileName);
+			wta = parser.parseForBestDerivations(fileName);
 		} else {
-			wta = wtaParser.parseForBestTrees(fileName);
+			wta = parser.parseForBestTrees(fileName);
 		}
 
 //System.out.println("wta");
@@ -199,6 +213,8 @@ public class NBest {
 		Options options = new Options();
 		Option wtaFileOpt = new Option(FILE_FLAG, FILE_FLAG_LONG,
 				true, "file containing the input wta");
+		Option fileTypeOpt = new Option(FILE_TYPE_FLAG, FILE_TYPE_LONG,
+				true, "file type (detault is "+ DEFAULT_FILE_TYPE + ")");
 		Option nOpt = new Option(N_FLAG, true, "number of trees wanted");
 		Option versionOpt = new Option(VERSION_FLAG, VERSION_FLAG_LONG,
 				true, "version of BestTrees; arg can be\n" + RULE_QUEUE_ARG +
@@ -218,10 +234,12 @@ public class NBest {
 				"finds the best runs instead of the best trees");
 
 		wtaFileOpt.setArgName("wta file");
+		fileTypeOpt.setArgName("file type ('wta' or 'rtg')");
 		nOpt.setArgName("nonnegative integer");
 		semiringOpt.setArgName("semiring");
 
 		wtaFileOpt.setRequired(true);
+		fileTypeOpt.setRequired(false);
 		nOpt.setRequired(true);
 		versionOpt.setRequired(false);
 		timerOpt.setRequired(false);
@@ -229,6 +247,7 @@ public class NBest {
 		derivationsOpt.setRequired(false);
 
 		options.addOption(wtaFileOpt);
+		options.addOption(fileTypeOpt);
 		options.addOption(nOpt);
 		options.addOption(versionOpt);
 		options.addOption(timerOpt);

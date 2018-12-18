@@ -24,12 +24,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.treedata.Node;
 
-public class Rule<LabelType> {
+public class Rule<LabelType extends Comparable<LabelType>> {
 
 	private LabelType symbol;
 	private Weight weight;
 	private int rank = 0;
+	private Node<LabelType> tree;
 
 	private ArrayList<State> states = new ArrayList<>();
 //	private HashMap<State, Integer> stateMap = new HashMap<>();
@@ -38,10 +40,28 @@ public class Rule<LabelType> {
 	private State resultingState;
 
 	public Rule(LabelType symbol, Weight weight, State resultingState,
-			State ... states) {
+			Node<LabelType> tree, State ... states) {
 
 		this.symbol = symbol;
 		this.weight = weight;
+		this.tree = tree;
+		this.resultingState = resultingState;
+
+		for (State state : states) {
+			this.states.add(state);
+			addToStateMap(state, rank);
+			rank++;
+		}
+	}
+
+	public Rule(LabelType symbol, Weight weight, State resultingState,
+			State ... states) {
+
+//		Rule(symbol, weight, resultingState, null, states);
+
+		this.symbol = symbol;
+		this.weight = weight;
+		this.tree = null;
 		this.resultingState = resultingState;
 
 		for (State state : states) {
@@ -146,7 +166,7 @@ public class Rule<LabelType> {
 			hash += s.hashCode();
 		}
 
-		// ADded when using string for equal
+		// Added when using string for equal
 		hash += weight.hashCode();
 
 		return hash;

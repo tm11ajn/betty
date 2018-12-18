@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import se.umu.cs.flp.aj.nbest.wta.handlers.WTAParser;
+import se.umu.cs.flp.aj.nbest.wta.parsers.WTAParser;
 
 
 public class WTAParserRegexTest {

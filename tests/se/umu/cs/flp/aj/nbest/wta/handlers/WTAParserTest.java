@@ -16,7 +16,7 @@ import se.umu.cs.flp.aj.nbest.wta.Symbol;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.exceptions.DuplicateRuleException;
 import se.umu.cs.flp.aj.nbest.wta.exceptions.SymbolUsageException;
-import se.umu.cs.flp.aj.nbest.wta.handlers.WTAParser;
+import se.umu.cs.flp.aj.nbest.wta.parsers.WTAParser;
 
 public class WTAParserTest {
 	public static final String fileName = "wta_examples/wta0.rtg";
