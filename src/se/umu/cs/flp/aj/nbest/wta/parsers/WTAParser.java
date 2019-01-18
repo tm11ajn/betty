@@ -161,9 +161,7 @@ public class WTAParser implements Parser {
 			throws SymbolUsageException, DuplicateRuleException {
 
 		String[] labels = line.trim().split(LEAF_RULE_SPLIT_REGEX);
-
 		String symbolString = labels[0];
-		checkSymbol(symbolString);
 
 		if (forDerivations) {
 			symbolString += "//rule" + ruleCounter;
@@ -204,7 +202,6 @@ public class WTAParser implements Parser {
 		}
 
 		String symbolString = labels[0];
-		checkSymbol(symbolString);
 
 		if (forDerivations) {
 			symbolString += "//rule" + ruleCounter;
@@ -220,15 +217,6 @@ public class WTAParser implements Parser {
 		}
 		wta.addRule(newRule);
 		ruleCounter++;
-	}
-
-	// Unnecessary if the reserved symbol uses unallowed characters
-	private void checkSymbol(String label) throws SymbolUsageException {
-
-		if (label.equals(Symbol.RESERVED_SYMBOL_STRING)) {
-			throw new SymbolUsageException("The symbol " + label +
-					" is reserved and cannot be used in the input WTA.");
-		}
 	}
 
 }

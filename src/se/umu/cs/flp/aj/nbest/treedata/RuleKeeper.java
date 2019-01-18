@@ -71,12 +71,6 @@ public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 
 		if (ladder.hasNext()) {
 			ArrayList<TreeKeeper2<LabelType>> temp = ladder.dequeue();
-if (temp == null) {
-System.out.println("Rule=" + rule);
-System.out.println("Rank=" + rule.getRank());
-System.out.println("Weight=" + rule.getWeight());
-System.out.println("temp=" + temp);
-}
 			smallestTree = new TreeKeeper2<LabelType>(rule.getSymbol(),
 					rule.getWeight(), rule.getResultingState(), temp);
 			paused = false;

@@ -22,7 +22,7 @@ package se.umu.cs.flp.aj.nbest.wta;
 
 public class State implements Comparable<State> {
 
-	public static final String RESERVED_LABEL_EXTENSION_STRING = "_extension";
+//	public static final String RESERVED_LABEL_EXTENSION_STRING = "_extension";
 
 	private String label;
 	private boolean isFinal;
