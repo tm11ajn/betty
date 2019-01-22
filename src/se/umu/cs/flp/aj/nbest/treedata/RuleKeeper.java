@@ -26,19 +26,18 @@ import se.umu.cs.flp.aj.nbest.helpers.TreeConfigurationComparator;
 import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 
-public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
-			Comparable<RuleKeeper<LabelType>> {
+public class RuleKeeper implements Comparable<RuleKeeper> {
 
-	private Rule<LabelType> rule;
-	private LazyLimitedLadderQueue<TreeKeeper2<LabelType>> ladder;
-	private TreeKeeper2<LabelType> smallestTree;
+	private Rule rule;
+	private LazyLimitedLadderQueue<TreeKeeper2> ladder;
+	private TreeKeeper2 smallestTree;
 	private boolean paused;
 	private boolean queued;
 
-	public RuleKeeper(Rule<LabelType> rule, int limit) {
+	public RuleKeeper(Rule rule, int limit) {
 		this.rule = rule;
 		this.ladder = new LazyLimitedLadderQueue<>(rule.getRank(),
-				new TreeConfigurationComparator<>(), limit);
+				new TreeConfigurationComparator(), limit);
 		this.smallestTree = null;
 		this.paused = true;
 
@@ -47,7 +46,7 @@ public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 		}
 	}
 
-	public TreeKeeper2<LabelType> getSmallestTree() {
+	public TreeKeeper2 getSmallestTree() {
 
 		if (smallestTree == null) {
 			next();
@@ -56,8 +55,7 @@ public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 		return smallestTree;
 	}
 
-	public void addTreeForStateIndex(TreeKeeper2<LabelType> tree,
-			int stateIndex) {
+	public void addTreeForStateIndex(TreeKeeper2 tree, int stateIndex) {
 		ladder.addLast(stateIndex, tree);
 
 		if (ladder.hasNext()) {
@@ -70,9 +68,16 @@ public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 	public void next() {
 
 		if (ladder.hasNext()) {
-			ArrayList<TreeKeeper2<LabelType>> temp = ladder.dequeue();
-			smallestTree = new TreeKeeper2<LabelType>(rule.getSymbol(),
+			ArrayList<TreeKeeper2> temp = ladder.dequeue();
+			smallestTree = new TreeKeeper2(rule.getSymbol(),
 					rule.getWeight(), rule.getResultingState(), temp);
+//			smallestTree = rule.apply(temp);
+			TreeKeeper2 compTree = rule.apply(temp);
+			if (!compTree.equals(smallestTree)) {
+//System.out.println(compTree);
+//System.out.println(smallestTree);
+//System.exit(1);
+			}
 			paused = false;
 		} else {
 			paused = true;
@@ -91,23 +96,23 @@ public class RuleKeeper<LabelType extends Comparable<LabelType>> implements
 		return queued;
 	}
 
-	public Rule<LabelType> getRule() {
+	public Rule getRule() {
 		return rule;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 
-		if (!(obj instanceof RuleKeeper<?>)) {
+		if (!(obj instanceof RuleKeeper)) {
 			return false;
 		}
 
-		RuleKeeper<?> o = (RuleKeeper<?>) obj;
+		RuleKeeper o = (RuleKeeper) obj;
 		return getSmallestTree().equals(o.getSmallestTree());
 	}
 
 	@Override
-	public int compareTo(RuleKeeper<LabelType> ruleKeeper) {
+	public int compareTo(RuleKeeper ruleKeeper) {
 		return getSmallestTree().compareTo(ruleKeeper.getSmallestTree());
 	}
 

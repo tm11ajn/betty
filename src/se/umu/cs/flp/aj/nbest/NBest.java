@@ -22,6 +22,7 @@ package se.umu.cs.flp.aj.nbest;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -169,9 +170,9 @@ public class NBest {
 		System.out.println("Smallest completions done (took "
 				+ duration + " milliseconds).");
 
-//for (Entry<State, Weight> sc : smallestCompletions.entrySet()) {
-//System.out.println(sc.getKey() + " : " + sc.getValue());
-//}
+for (Entry<State, Weight> sc : smallestCompletions.entrySet()) {
+System.out.println(sc.getKey() + " : " + sc.getValue());
+}
 
 		if (version.equals(RULE_QUEUE_ARG) || version.equals(ALL_ARG)) {
 			System.out.println("Running BestTrees version 2...");

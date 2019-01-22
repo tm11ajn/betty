@@ -40,7 +40,7 @@ public class RTGParser implements Parser {
 
 	private Semiring semiring;
 //	private HashMap<State, State> finalStates;
-	private State finalState;
+//	private State finalState;
 	private boolean hasFinalState;
 
 	private boolean forDerivations;
@@ -49,7 +49,7 @@ public class RTGParser implements Parser {
 	public RTGParser(Semiring semiring) {
 		this.semiring = semiring;
 //		this.finalStates = new HashMap<>();
-		this.finalState = null;
+//		this.finalState = null;
 		this.hasFinalState = false;
 		this.ruleCounter = 0;
 		this.forDerivations = false;
@@ -134,16 +134,16 @@ public class RTGParser implements Parser {
 			String lhs = sides[0].trim();
 			String rhs = sides[1].trim();
 
-			if (containsParsingCharacters(rhs)) {
+			if (containsParsingCharacters(lhs)) {
 				throw new IllegalArgumentException("Line " + line +
-						" has parentheses in its right-hand side.");
+						" has parentheses in its left-hand side.");
 			}
 
-			Node<Symbol> tree = buildTree(wta, lhs);
-			State resultingState = wta.addState(rhs);
+			Node<Symbol> tree = buildTree(wta, rhs);
+			State resultingState = wta.addState(lhs);
 
-			Rule<Symbol> newRule = new Rule<>(tree.getLabel(), weight,
-					resultingState, tree);
+			Rule<Symbol> newRule = new Rule<>(tree, weight,
+					resultingState);
 
 //			if (!containsParsingCharacters(lhs)) { // Leaf rule
 //				String symbolString = lhs;
@@ -231,10 +231,6 @@ public class RTGParser implements Parser {
 
 			Node<Symbol> tree = new Node<Symbol>(wta.addSymbol(lhs,
 					numberOfLeftHandStates));
-
-
-
-
 
 			String symbolString = parts[0];
 

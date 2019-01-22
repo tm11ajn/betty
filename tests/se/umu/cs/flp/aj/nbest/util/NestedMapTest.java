@@ -9,18 +9,19 @@ import org.junit.Test;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.util.NestedMap;
 import se.umu.cs.flp.aj.nbest.wta.State;
+import se.umu.cs.flp.aj.nbest.wta.Symbol;
 
 public class NestedMapTest {
 
-	NestedMap<Node<String>, State, Double> map = new NestedMap<>();
+	NestedMap<Node, State, Double> map = new NestedMap<>();
 
-	Node<String> tree = new Node<String>("root");
-	Node<String> child3 = new Node<String>("child3");
+	Node tree = new Node(new Symbol("root", 3));
+	Node child3 = new Node(new Symbol("child3", 1));
 
-	State s0 = new State("s0");
-	State s1 = new State("s1");
-	State s2 = new State("s2");
-	State s3 = new State("s3");
+	State s0 = new State(new Symbol("s0", 0));
+	State s1 = new State(new Symbol("s1", 0));
+	State s2 = new State(new Symbol("s2", 0));
+	State s3 = new State(new Symbol("s3", 0));
 
 	int initialTreeHash;
 
@@ -28,12 +29,12 @@ public class NestedMapTest {
 	public void setUp() throws Exception {
 		initialTreeHash = tree.hashCode();
 
-		tree.addChild(new Node<String>("child0"));
-		tree.addChild(new Node<String>("child1"));
-		tree.addChild(new Node<String>("child2"));
+		tree.addChild(new Node(new Symbol("child0", 0)));
+		tree.addChild(new Node(new Symbol("child1", 0)));
+		tree.addChild(new Node(new Symbol("child2", 0)));
 
-		child3.addChild(new Node<String>("grandchild30"));
-		child3.addChild(new Node<String>("grandchild31"));
+		child3.addChild(new Node(new Symbol("grandchild30", 0)));
+		child3.addChild(new Node(new Symbol("grandchild31", 0)));
 
 		tree.addChild(child3);
 	}
@@ -75,5 +76,5 @@ public class NestedMapTest {
 		tree.addChild(child3);
 		assertNotSame(initialTreeHash, tree.hashCode());
 	}
-	
+
 }

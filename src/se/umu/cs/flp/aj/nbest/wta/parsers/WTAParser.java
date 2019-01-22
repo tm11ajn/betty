@@ -28,6 +28,7 @@ import java.util.HashMap;
 
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
@@ -37,22 +38,6 @@ import se.umu.cs.flp.aj.nbest.wta.exceptions.SymbolUsageException;
 
 
 public class WTAParser implements Parser {
-
-//	public static final String EMPTY_LINE_REGEX = "^\\s*$";
-//	public static final String COMMENT_LINE_REGEX = "^//.*";
-//	public static final String FINAL_REGEX =
-//			"^\\s*final\\s*([a-zA-Z0-9]+\\s*,\\s*)*([a-zA-Z0-9]+\\s*)+$";
-//	public static final String LEAF_RULE_REGEX =
-//			"^\\s*[a-zA-Z0-9]+\\s*->\\s*[a-zA-Z0-9]+" +
-//			"\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)?$";
-//	public static final String NON_LEAF_RULE_REGEX =
-//			"^\\s*[a-zA-Z0-9]+\\[\\s*[a-zA-Z0-9]+\\s*(,\\s*[a-zA-Z0-9]+\\s*)*"
-//			+ "\\]\\s*->\\s*[a-zA-Z0-9]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)*$";
-//
-//	public static final String FINAL_SPLIT_REGEX = "\\s+|(\\s*,\\s*)";
-//	public static final String LEAF_RULE_SPLIT_REGEX = "\\s*((->)|#)\\s*";
-//	public static final String NON_LEAF_RULE_SPLIT_REGEX =
-//			"\\s*((\\]\\s*->)|#|\\[|,)\\s*";
 
 	public static final String EMPTY_LINE_REGEX = "^\\s*$";
 	public static final String COMMENT_LINE_REGEX = "^//.*|^%.*";
@@ -146,7 +131,7 @@ public class WTAParser implements Parser {
 		}
 	}
 
-	private void parseFinal(String line, WTA wta) {
+	private void parseFinal(String line, WTA wta) throws SymbolUsageException {
 		String[] finals = line.trim().split(FINAL_SPLIT_REGEX);
 		int size = finals.length;
 
@@ -168,17 +153,20 @@ public class WTAParser implements Parser {
 		}
 
 		Symbol symbol = wta.addSymbol(symbolString, 0);
+		Node tree = new Node(symbol);
 		State resultingState = wta.addState(labels[1]);
 
-		Rule<Symbol> newRule;
+		Rule newRule;
 
 		if (labels.length == 3) {
 			double value = Double.parseDouble(labels[2]);
 			Weight weight = semiring.createWeight(value);
-			newRule = new Rule<>(symbol, weight, resultingState);
+			newRule = new Rule(tree, weight, resultingState);
+//			newRule = new Rule<>(symbol, weight, resultingState);
 		} else {
 			Weight weight = semiring.one();
-			newRule = new Rule<>(symbol, weight, resultingState);
+			newRule = new Rule(tree, weight, resultingState);
+//			newRule = new Rule<>(symbol, weight, resultingState);
 		}
 
 		wta.addRule(newRule);
@@ -208,13 +196,15 @@ public class WTAParser implements Parser {
 		}
 
 		Symbol symbol = wta.addSymbol(symbolString, numberOfLeftHandStates);
+		Node tree = new Node(symbol);
 		State resultingState = wta.addState(labels[1 + numberOfLeftHandStates]);
 
-		Rule<Symbol> newRule = new Rule<>(symbol, weight, resultingState);
+		Rule newRule = new Rule(tree, weight, resultingState);
 
 		for (int i = 1; i < numberOfLeftHandStates + 1; i++) {
 			newRule.addState(wta.addState(labels[i]));
 		}
+
 		wta.addRule(newRule);
 		ruleCounter++;
 	}

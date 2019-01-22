@@ -31,33 +31,33 @@ import java.util.Map.Entry;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.wta.State;
+import se.umu.cs.flp.aj.nbest.wta.Symbol;
 
-public class TreeKeeper<LabelType extends Comparable<LabelType>>
-		implements Comparable<TreeKeeper<LabelType>> {
+public class TreeKeeper implements Comparable<TreeKeeper> {
 
 	private static HashMap<State, Weight> smallestCompletions;
 
-	private Node<LabelType> tree;
+	private Node tree;
 	private LinkedHashMap<State,State> optimalStates;
 	private State optimalState;
 	private HashMap<State, Weight> optWeights;
 	private Weight smallestWeight;
 
-	public TreeKeeper(Node<LabelType> tree, Semiring semiring) {
+	public TreeKeeper(Node tree, Semiring semiring) {
 		this.tree = tree;
 		this.optWeights = new HashMap<>();
 		this.smallestWeight = semiring.zero();
 	}
 
-	public TreeKeeper(LabelType ruleLabel, Weight ruleWeight,
-			ArrayList<TreeKeeper<LabelType>> trees) {
+	public TreeKeeper(Symbol ruleLabel, Weight ruleWeight,
+			ArrayList<TreeKeeper> trees) {
 
-		tree = new Node<LabelType>(ruleLabel);
+		tree = new Node(ruleLabel);
 		this.optWeights = new HashMap<>();
 
 		int counter = 0;
 
-		for (TreeKeeper<LabelType> currentTree : trees) {
+		for (TreeKeeper currentTree : trees) {
 			tree.addChild(currentTree.getTree());
 
 			if (counter == 0) {
@@ -82,7 +82,7 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		smallestCompletions = smallestCompletionWeights;
 	}
 
-	public Node<LabelType> getTree() {
+	public Node getTree() {
 		return tree;
 	}
 
@@ -114,7 +114,7 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 		}
 	}
 
-	public void addWeightsFrom(TreeKeeper<LabelType> t) {
+	public void addWeightsFrom(TreeKeeper t) {
 		HashMap<State, Weight> map = t.optWeights;
 
 		for (Entry<State, Weight> e : map.entrySet()) {
@@ -150,11 +150,11 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 	@Override
 	public boolean equals(Object obj) {
 
-		if (!(obj instanceof TreeKeeper<?>)) {
+		if (!(obj instanceof TreeKeeper)) {
 			return false;
 		}
 
-		TreeKeeper<?> o = (TreeKeeper<?>) obj;
+		TreeKeeper o = (TreeKeeper) obj;
 
 		int weightComparison = this.smallestWeight.compareTo(o.smallestWeight);
 		int treeComparison = this.tree.compareTo(o.tree);
@@ -167,7 +167,7 @@ public class TreeKeeper<LabelType extends Comparable<LabelType>>
 	}
 
 	@Override
-	public int compareTo(TreeKeeper<LabelType> o) {
+	public int compareTo(TreeKeeper o) {
 		int weightComparison = this.smallestWeight.compareTo(o.smallestWeight);
 
 		if (weightComparison == 0) {

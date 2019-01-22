@@ -41,8 +41,8 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class BestTrees {
 
-	private static ArrayList<TreeKeeper<Symbol>> exploredTrees; // T
-	private static PruneableQueue<TreeKeeper<Symbol>,Weight> treeQueue; // K
+	private static ArrayList<TreeKeeper> exploredTrees; // T
+	private static PruneableQueue<TreeKeeper,Weight> treeQueue; // K
 
 
 	public static void setSmallestCompletions(
@@ -56,8 +56,8 @@ public class BestTrees {
 		List<String> nBest = new ArrayList<String>();
 
 		// T <- empty. K <- empty
-		exploredTrees = new ArrayList<TreeKeeper<Symbol>>();
-		treeQueue = new PruneableQueue<TreeKeeper<Symbol>,Weight>(new TreePruner<Symbol,Weight>(N));
+		exploredTrees = new ArrayList<TreeKeeper>();
+		treeQueue = new PruneableQueue<TreeKeeper,Weight>(new TreePruner<Weight>(N));
 
 		// enqueue(K, Sigma_0)
 		enqueueRankZeroSymbols(wta, N);
@@ -69,7 +69,7 @@ public class BestTrees {
 		while (counter < N && !treeQueue.isEmpty()) {
 
 			// t <- dequeue(K)
-			TreeKeeper<Symbol> currentTree = treeQueue.pollFirstEntry().getKey();
+			TreeKeeper currentTree = treeQueue.pollFirstEntry().getKey();
 
 			// T <- T u {t}
 			exploredTrees.add(currentTree);
@@ -96,38 +96,35 @@ public class BestTrees {
 	}
 
 	private static void enqueueRankZeroSymbols(WTA wta, int N) {
+		HashMap<Symbol, TreeKeeper> trees = new HashMap<>();
 
-		ArrayList<Symbol> symbols = wta.getSymbols();
+		for (Rule r : wta.getSourceRules()) {
 
-		for (Symbol s : symbols) {
+			Symbol symbol = r.getSymbol();
+			TreeKeeper tree = null;
 
-			if (s.getRank() == 0) {
-				Node<Symbol> node = new Node<Symbol>(s);
-				TreeKeeper<Symbol> tree = new TreeKeeper<>(node,
-						wta.getSemiring());
-
-//				ArrayList<Rule<Symbol>> rules = wta.getTransitionFunction().
-//						getRulesBySymbol(s);
-
-//				for (Rule<Symbol> r : rules) {
-//					tree.addStateWeight(r.getResultingState(), r.getWeight());
-//				}
-
-				for (Rule<Symbol> r : wta.getSourceRules()) {
-					tree.addStateWeight(r.getResultingState(), r.getWeight());
-				}
-
-				treeQueue.put(tree, null);
+			if (trees.containsKey(symbol)) {
+				tree = trees.get(symbol);
+			} else {
+				tree = new TreeKeeper(new Node(symbol), wta.getSemiring());
+				trees.put(symbol, tree);
 			}
+
+			tree.addStateWeight(r.getResultingState(),
+					r.getWeight().duplicate());
+		}
+
+		for (TreeKeeper t : trees.values()) {
+			treeQueue.put(t, null);
 		}
 	}
 
 	public static void enqueueWithExpansionAndPruning(WTA wta, int N,
-			TreeKeeper<Symbol> tree) {
+			TreeKeeper tree) {
 
-		HashMap<State, ArrayList<LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>>> allRuns =
+		HashMap<State, ArrayList<LinkedHashMap<Node,TreeKeeper>>> allRuns =
 				new HashMap<>();
-		HashMap<State, LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>>> nRuns = new HashMap<>();
+		HashMap<State, LinkedHashMap<Node,TreeKeeper>> nRuns = new HashMap<>();
 
 		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees);
 
@@ -135,13 +132,13 @@ public class BestTrees {
 			allRuns.put(q, eRunner.runEppstein(wta, N, tree, q));
 		}
 
-		for (Entry<State, ArrayList<LinkedHashMap<Node<Symbol>,
-				TreeKeeper<Symbol>>>> e : allRuns.entrySet()) {
+		for (Entry<State, ArrayList<LinkedHashMap<Node,
+				TreeKeeper>>> e : allRuns.entrySet()) {
 
-			LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> mergedTreeList = new LinkedHashMap<>();
+			LinkedHashMap<Node,TreeKeeper> mergedTreeList = new LinkedHashMap<>();
 			State q = e.getKey();
 
-			for (LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> treeList : e.getValue()) {
+			for (LinkedHashMap<Node, TreeKeeper> treeList : e.getValue()) {
 				mergedTreeList = SortedListMerger.mergeTreeListsForState(treeList,
 						mergedTreeList, N, q);
 			}
@@ -149,15 +146,15 @@ public class BestTrees {
 			nRuns.put(q, mergedTreeList);
 		}
 
-		LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> mergedList = new LinkedHashMap<>();
+		LinkedHashMap<Node,TreeKeeper> mergedList = new LinkedHashMap<>();
 		int nOfStatesInWTA = wta.getStates().size();
 
-		for (LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> currentList : nRuns.values()) {
+		for (LinkedHashMap<Node, TreeKeeper> currentList : nRuns.values()) {
 			mergedList = SortedListMerger.mergeTreeListsByDeltaWeights(currentList, mergedList,
 					N*nOfStatesInWTA);
 		}
 
-		for (TreeKeeper<Symbol> n : mergedList.values()) {
+		for (TreeKeeper n : mergedList.values()) {
 			treeQueue.put(n, null);
 		}
 	}

@@ -38,8 +38,8 @@ public class WTA {
 	private RankedAlphabet rankedAlphabet = new RankedAlphabet();
 	private Semiring semiring;
 
-	private Hypergraph<State, Rule<Symbol>> transitionFunction;
-	private State source = new State("DUMMY_SOURCE");
+	private Hypergraph<State, Rule> transitionFunction;
+	private State source = new State(new Symbol("DUMMY_SOURCE", 0));
 
 	public WTA(Semiring semiring) {
 		this.semiring = semiring;
@@ -49,27 +49,31 @@ public class WTA {
 
 	public State addState(String label) throws SymbolUsageException {
 
-		if (rankedAlphabet.hasSymbol(label)) {
-			throw new SymbolUsageException("The symbol " + label +
-					" is used for both state and symbol.");
-		}
+//		if (rankedAlphabet.hasSymbol(label)) {
+//			throw new SymbolUsageException("The symbol " + label +
+//					" is used for both state and symbol.");
+//		}
 
 		State newState = states.get(label);
 
 		if (newState == null) {
-			newState = new State(label);
+			Symbol symbol = rankedAlphabet.addSymbol(label, 0);
+			symbol.setNonterminal(true);
+			newState = new State(symbol);
 			states.put(label, newState);
 		}
 
 		return newState;
 	}
 
-	public boolean setFinalState(String label) {
+	public boolean setFinalState(String label) throws SymbolUsageException {
 
 		State state = states.get(label);
 
 		if (state == null) {
-			state = new State(label);
+			Symbol symbol = rankedAlphabet.addSymbol(label, 0);
+			symbol.setNonterminal(true);
+			state = new State(symbol);
 			states.put(label, state);
 		}
 
@@ -89,10 +93,10 @@ public class WTA {
 	public Symbol addSymbol(String symbol, int rank)
 			throws SymbolUsageException {
 
-		if (states.containsKey(symbol)) {
-			throw new SymbolUsageException("The symbol " + symbol +
-					" is used for both state and symbol.");
-		}
+//		if (states.containsKey(symbol)) {
+//			throw new SymbolUsageException("The symbol " + symbol +
+//					" is used for both state and symbol.");
+//		}
 
 		return rankedAlphabet.addSymbol(symbol, rank);
 	}
@@ -109,14 +113,14 @@ public class WTA {
 		return transitionFunction.getSourceNodes();
 	}
 
-	public ArrayList<Rule<Symbol>> getSourceRules() {
+	public ArrayList<Rule> getSourceRules() {
 		return transitionFunction.getSourceEdges();
 	}
 
-	public ArrayList<Rule<Symbol>> getRulesByResultingState(
+	public ArrayList<Rule> getRulesByResultingState(
 			State resultingState) {
 
-		ArrayList<Rule<Symbol>> rules = transitionFunction.getIncoming(
+		ArrayList<Rule> rules = transitionFunction.getIncoming(
 				resultingState);
 
 		if (rules == null) {
@@ -126,9 +130,9 @@ public class WTA {
 		return rules;
 	}
 
-	public ArrayList<Rule<Symbol>> getRulesByState(State state) {
+	public ArrayList<Rule> getRulesByState(State state) {
 
-		ArrayList<Rule<Symbol>> rules = transitionFunction.getOutgoing(state);
+		ArrayList<Rule> rules = transitionFunction.getOutgoing(state);
 
 		if (rules == null) {
 			return new ArrayList<>();
@@ -137,11 +141,11 @@ public class WTA {
 		return rules;
 	}
 
-	public ArrayList<Rule<Symbol>> getRules() {
+	public ArrayList<Rule> getRules() {
 		return transitionFunction.getEdges();
 	}
 
-	public void addRule(Rule<Symbol> rule) throws DuplicateRuleException {
+	public void addRule(Rule rule) throws DuplicateRuleException {
 
 		ArrayList<State> states = rule.getStates();
 
@@ -175,10 +179,10 @@ public class WTA {
 	}
 
 	public String printTransitionFunction() {
-		ArrayList<Rule<Symbol>> rules = getRules();
+		ArrayList<Rule> rules = getRules();
 		String string = "";
 
-		for (Rule<Symbol> r : rules) {
+		for (Rule r : rules) {
 			string += r + "\n";
 		}
 

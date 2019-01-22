@@ -24,15 +24,15 @@ public class State implements Comparable<State> {
 
 //	public static final String RESERVED_LABEL_EXTENSION_STRING = "_extension";
 
-	private String label;
+	private Symbol label;
 	private boolean isFinal;
 
-	public State(String label) {
+	public State(Symbol label) {
 		this.label = label;
 		isFinal = false;
 	}
 
-	public String getLabel() {
+	public Symbol getLabel() {
 		return label;
 	}
 
@@ -65,7 +65,7 @@ public class State implements Comparable<State> {
 
 	@Override
 	public String toString() {
-		return label;
+		return label.toString();
 	}
 
 	@Override

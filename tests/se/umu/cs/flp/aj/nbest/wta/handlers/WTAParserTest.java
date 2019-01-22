@@ -10,6 +10,7 @@ import org.junit.Test;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.TropicalSemiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
@@ -47,30 +48,30 @@ public class WTAParserTest {
 	private Symbol fSymb = new Symbol("f", 2);
 	private Symbol mtSymb = new Symbol("nn-hd-dat.sg.masc", 1);
 
-	private State q0 = new State("q0");
-	private State q1 = new State("q1");
-	private State qf = new State("qf");
+	private State q0 = new State(new Symbol("q0", 0));
+	private State q1 = new State(new Symbol("q1", 0));
+	private State qf = new State(new Symbol("qf", 0));
 
-	private State pa = new State("pa");
-	private State pb = new State("pb");
+	private State pa = new State(new Symbol("pa", 0));
+	private State pb = new State(new Symbol("pb", 0));
 
-	private State mtq0 = new State("qtunfischfang");
-	private State mtq1 = new State("qnn-hd-dat.sg.masc");
+	private State mtq0 = new State(new Symbol("qtunfischfang", 0));
+	private State mtq1 = new State(new Symbol("qnn-hd-dat.sg.masc", 0));
 
 	private Weight w0 = new TropicalSemiring().one();
 	private Weight w1 = new TropicalSemiring().createWeight(1);
 	private Weight w2 = new TropicalSemiring().createWeight(2);
 	private Weight w02 = new TropicalSemiring().createWeight(0.2);
 
-	Rule<Symbol> leafRule = new Rule<Symbol>(ASymb, w0, q0);
-	Rule<Symbol> leafRuleWithWeight = new Rule<Symbol>(aSymb, w2, q0);
-	Rule<Symbol> nonLeafRule = new Rule<Symbol>(fSymb, w0, qf, q0, q1);
-	Rule<Symbol> nonLeafRuleWithWeight = new Rule<Symbol>(fSymb, w02,
+	Rule leafRule = new Rule(new Node(ASymb), w0, q0);
+	Rule leafRuleWithWeight = new Rule(new Node(aSymb), w2, q0);
+	Rule nonLeafRule = new Rule(new Node(fSymb), w0, qf, q0, q1);
+	Rule nonLeafRuleWithWeight = new Rule(new Node(fSymb), w02,
 			qf, q0, q1);
-	Rule<Symbol> nonLeafRule2 = new Rule<Symbol>(gSymb, w0, qf, q0);
-	Rule<Symbol> nonLeafRuleWithWeight2 = new Rule<Symbol>(gSymb, w02,
+	Rule nonLeafRule2 = new Rule(new Node(gSymb), w0, qf, q0);
+	Rule nonLeafRuleWithWeight2 = new Rule(new Node(gSymb), w02,
 			qf, q0);
-	Rule<Symbol> mtDataTestRule = new Rule<Symbol>(mtSymb, w0, mtq1, mtq0);
+	Rule mtDataTestRule = new Rule(new Node(mtSymb), w0, mtq1, mtq0);
 
 	/**
 	 * Tests that states are properly set to final when parsing a final rule.
@@ -389,25 +390,29 @@ public class WTAParserTest {
 	@Test
 	public void shouldParseCorrectFile3() throws Exception {
 		wta = wtaParser.parseForBestTrees(fileName);
-		assertThat(wta.getRulesByResultingState(new State("pa")).size(), is(4));
+		assertThat(wta.getRulesByResultingState(
+				new State(new Symbol("pa", 0))).size(), is(4));
 	}
 
 	@Test
 	public void shouldParseCorrectFile4() throws Exception {
 		wta = wtaParser.parseForBestTrees(fileName);
-		assertThat(wta.getRulesByResultingState(new State("pb")).size(), is(4));
+		assertThat(wta.getRulesByResultingState(
+				new State(new Symbol("pb", 0))).size(), is(4));
 	}
 
 	@Test
 	public void shouldParseCorrectFile5() throws Exception {
 		wta = wtaParser.parseForBestTrees(fileName);
-		assertThat(wta.getRulesByResultingState(new State("qa")).size(), is(2));
+		assertThat(wta.getRulesByResultingState(
+				new State(new Symbol("qa", 0))).size(), is(2));
 	}
 
 	@Test
 	public void shouldParseCorrectFile6() throws Exception {
 		wta = wtaParser.parseForBestTrees(fileName);
-		assertThat(wta.getRulesByResultingState(new State("qb")).size(), is(2));
+		assertThat(wta.getRulesByResultingState(
+				new State(new Symbol("qb", 0))).size(), is(2));
 	}
 
 	@Test
@@ -419,11 +424,11 @@ public class WTAParserTest {
 	@Test
 	public void shouldParseCorrectFile8() throws Exception {
 		wta = wtaParser.parseForBestTrees(fileName);
-		ArrayList<Rule<Symbol>> list = new ArrayList<>();
-		list.add(new Rule<Symbol>(aSymb, w1, pb));
-		list.add(new Rule<Symbol>(aSymb, w2, pa));
-		list.add(new Rule<Symbol>(bSymb, w2, pb));
-		list.add(new Rule<Symbol>(bSymb, w1, pa));
+		ArrayList<Rule> list = new ArrayList<>();
+		list.add(new Rule(new Node(aSymb), w1, pb));
+		list.add(new Rule(new Node(aSymb), w2, pa));
+		list.add(new Rule(new Node(bSymb), w2, pb));
+		list.add(new Rule(new Node(bSymb), w1, pa));
 		assertThat(wta.getSourceRules().size(), is(4));
 	}
 

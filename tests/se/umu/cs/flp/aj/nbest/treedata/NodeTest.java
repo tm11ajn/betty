@@ -7,24 +7,43 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.umu.cs.flp.aj.nbest.treedata.Node;
+import se.umu.cs.flp.aj.nbest.wta.Symbol;
 
 public class NodeTest {
 
-	Node<String> root;
+	Node root;
+	Node root2;
+	Node np1;
+	Node np2;
+	Node vp;
+	Node n1;
+	Node n2;
+	Node v;
+
+	Symbol sS = new Symbol("S", 0);
+	Symbol npS = new Symbol("NP", 0);
+	Symbol vpS = new Symbol("VP", 0);
+	Symbol nS = new Symbol("N", 0);
+	Symbol vS = new Symbol("V", 0);
+
+	Symbol jS = new Symbol("John", 0);
+	Symbol lS = new Symbol("loves", 0);
+	Symbol mS = new Symbol("Mary", 0);
 
 	@Before
 	public void setUp() throws Exception {
-		root = new Node<String>("S");
-		Node<String> np1 = new Node<String>("NP");
-		Node<String> np2 = new Node<String>("NP");
-		Node<String> vp = new Node<String>("VP");
-		Node<String> n1 = new Node<String>("N");
-		Node<String> n2 = new Node<String>("N");
-		Node<String> v = new Node<String>("V");
+		root = new Node(sS);
+		root2 = new Node(sS);
+		np1 = new Node(npS);
+		np2 = new Node(npS);
+		vp = new Node(vpS);
+		n1 = new Node(nS);
+		n2 = new Node(nS);
+		v = new Node(vS);
 
-		n1.addChild(new Node<String>("John"));
-		v.addChild(new Node<String>("loves"));
-		n2.addChild(new Node<String>("Mary"));
+		n1.addChild(new Node(jS));
+		v.addChild(new Node(lS));
+		n2.addChild(new Node(mS));
 
 		np1.addChild(n1);
 		vp.addChild(v);
@@ -49,31 +68,31 @@ public class NodeTest {
 
 	@Test
 	public void shouldBeEqualLeafNodes() throws Exception {
-		Node<String> n1 = new Node<String>("A");
-		Node<String> n2 = new Node<String>("A");
+		Node n1 = new Node(new Symbol("A", 0));
+		Node n2 = new Node(new Symbol("A", 0));
 		assertTrue(n1.equals(n2));
 	}
 
 	@Test
 	public void shouldNotBeEqualLeafNodes() throws Exception {
-		Node<String> n1 = new Node<String>("A");
-		Node<String> n2 = new Node<String>("B");
+		Node n1 = new Node(new Symbol("A", 0));
+		Node n2 = new Node(new Symbol("B", 0));
 		assertFalse(n1.equals(n2));
 	}
 
 	@Test
 	public void shouldBeEqual() throws Exception {
-		Node<String> root2 = new Node<String>("S");
-		Node<String> np1 = new Node<String>("NP");
-		Node<String> np2 = new Node<String>("NP");
-		Node<String> vp = new Node<String>("VP");
-		Node<String> n1 = new Node<String>("N");
-		Node<String> n2 = new Node<String>("N");
-		Node<String> v = new Node<String>("V");
+		Node root2 = new Node(sS);
+		Node np1 = new Node(npS);
+		Node np2 = new Node(npS);
+		Node vp = new Node(vpS);
+		Node n1 = new Node(nS);
+		Node n2 = new Node(nS);
+		Node v = new Node(vS);
 
-		n1.addChild(new Node<String>("John"));
-		v.addChild(new Node<String>("loves"));
-		n2.addChild(new Node<String>("Mary"));
+		n1.addChild(new Node(jS));
+		v.addChild(new Node(lS));
+		n2.addChild(new Node(mS));
 
 		np1.addChild(n1);
 		vp.addChild(v);
@@ -89,17 +108,17 @@ public class NodeTest {
 
 	@Test
 	public void shouldNotBeEqual() throws Exception {
-		Node<String> root2 = new Node<String>("S");
-		Node<String> np1 = new Node<String>("NP");
-		Node<String> np2 = new Node<String>("NP");
-		Node<String> vp = new Node<String>("VP");
-		Node<String> n1 = new Node<String>("N");
-		Node<String> n2 = new Node<String>("N");
-		Node<String> v = new Node<String>("V");
+		Node root2 = new Node(sS);
+		Node np1 = new Node(npS);
+		Node np2 = new Node(npS);
+		Node vp = new Node(vpS);
+		Node n1 = new Node(nS);
+		Node n2 = new Node(nS);
+		Node v = new Node(vS);
 
-		n1.addChild(new Node<String>("Mary"));
-		v.addChild(new Node<String>("loves"));
-		n2.addChild(new Node<String>("John"));
+		n1.addChild(new Node(mS));
+		v.addChild(new Node(lS));
+		n2.addChild(new Node(jS));
 
 		np1.addChild(n1);
 		vp.addChild(v);
@@ -110,7 +129,7 @@ public class NodeTest {
 		root2.addChild(np1);
 		root2.addChild(vp);
 
-		assertFalse(root2.equals(root));
+		assertNotEquals(root2, root);
 	}
 
 	@Test
@@ -120,19 +139,19 @@ public class NodeTest {
 
 	@Test
 	public void shouldBeSmallerThanLargerTree() throws Exception {
-		Node<String> a = new Node<>("c");
-		Node<String> b = new Node<>("ball");
-		b.addChild(new Node<>("b"));
-		b.addChild(new Node<>("b"));
+		Node a = new Node(new Symbol("c", 0));
+		Node b = new Node(new Symbol("ball", 2));
+		b.addChild(new Node(new Symbol("b", 0)));
+		b.addChild(new Node(new Symbol("b", 0)));
 		assertEquals(-1, a.compareTo(b));
 	}
 
 	@Test
 	public void shouldBeLargerThanSmallerTree() throws Exception {
-		Node<String> a = new Node<>("c");
-		Node<String> b = new Node<>("ball");
-		b.addChild(new Node<>("b"));
-		b.addChild(new Node<>("b"));
+		Node a = new Node(new Symbol("c", 0));
+		Node b = new Node(new Symbol("ball", 2));
+		b.addChild(new Node(new Symbol("b", 0)));
+		b.addChild(new Node(new Symbol("b", 0)));
 		assertEquals(1, b.compareTo(a));
 	}
 
@@ -141,40 +160,40 @@ public class NodeTest {
 
 	@Test
 	public void shouldBeSmallerThanLargerTree2() throws Exception {
-		Node<String> aroot = new Node<>("ball");
-		Node<String> broot = new Node<>("ball");
-		Node<String> ba = new Node<>("ball");
-		Node<String> b1 = new Node<>("ball");
-		Node<String> b2 = new Node<>("ball");
-		ba.addChild(new Node<>("b"));
-		ba.addChild(new Node<>("b"));
-		b1.addChild(new Node<>("b"));
-		b1.addChild(new Node<>("b"));
-		b2.addChild(new Node<>("b"));
-		b2.addChild(new Node<>("b"));
+		Node aroot = new Node(new Symbol("ball", 2));
+		Node broot = new Node(new Symbol("ball", 2));
+		Node ba = new Node(new Symbol("ball", 2));
+		Node b1 = new Node(new Symbol("ball", 2));
+		Node b2 = new Node(new Symbol("ball", 2));
+		ba.addChild(new Node(new Symbol("b", 0)));
+		ba.addChild(new Node(new Symbol("b", 0)));
+		b1.addChild(new Node(new Symbol("b", 0)));
+		b1.addChild(new Node(new Symbol("b", 0)));
+		b2.addChild(new Node(new Symbol("b", 0)));
+		b2.addChild(new Node(new Symbol("b", 0)));
 		broot.addChild(b1);
 		broot.addChild(b2);
-		aroot.addChild(new Node<>("a"));
+		aroot.addChild(new Node(new Symbol("a", 0)));
 		aroot.addChild(b1);
 		assertEquals(-1, aroot.compareTo(broot));
 	}
 
 	@Test
 	public void shouldBeLargerThanSmallerTree2() throws Exception {
-		Node<String> a = new Node<>("ball");
-		Node<String> broot = new Node<>("ball");
-		Node<String> ba = new Node<>("ball");
-		Node<String> b1 = new Node<>("ball");
-		Node<String> b2 = new Node<>("ball");
-		ba.addChild(new Node<>("b"));
-		ba.addChild(new Node<>("b"));
-		b1.addChild(new Node<>("b"));
-		b1.addChild(new Node<>("b"));
-		b2.addChild(new Node<>("b"));
-		b2.addChild(new Node<>("b"));
+		Node a = new Node(new Symbol("ball", 2));
+		Node broot = new Node(new Symbol("ball", 2));
+		Node ba = new Node(new Symbol("ball", 2));
+		Node b1 = new Node(new Symbol("ball", 2));
+		Node b2 = new Node(new Symbol("ball", 2));
+		ba.addChild(new Node(new Symbol("b", 0)));
+		ba.addChild(new Node(new Symbol("b", 0)));
+		b1.addChild(new Node(new Symbol("b", 0)));
+		b1.addChild(new Node(new Symbol("b", 0)));
+		b2.addChild(new Node(new Symbol("b", 0)));
+		b2.addChild(new Node(new Symbol("b", 0)));
 		broot.addChild(b1);
 		broot.addChild(b2);
-		a.addChild(new Node<>("a"));
+		a.addChild(new Node(new Symbol("a", 0)));
 		a.addChild(b1);
 		assertEquals(1, broot.compareTo(a));
 	}
@@ -182,24 +201,24 @@ public class NodeTest {
 	@Test
 	public void shouldBeSmallerThanEqualLengthButLexicallySmallerTree()
 			throws Exception {
-		Node<String> a = new Node<>("a");
-		Node<String> b = new Node<>("b");
+		Node a = new Node(new Symbol("a", 0));
+		Node b = new Node(new Symbol("b", 0));
 		assertEquals(-1, a.compareTo(b));
 	}
 
 	@Test
 	public void shouldBeLargerThanEqualLengthButLexicallyLargerString()
 			throws Exception {
-		Node<String> a = new Node<>("a");
-		Node<String> b = new Node<>("b");
+		Node a = new Node(new Symbol("a", 0));
+		Node b = new Node(new Symbol("b", 0));
 		assertEquals(1, b.compareTo(a));
 	}
 
 	@Test
 	public void shouldBeEqualToEqualString()
 			throws Exception {
-		Node<String> a = new Node<>("ball[b, b]");
-		Node<String> b = new Node<>("ball[b, b]");
+		Node a = new Node(new Symbol("ball[b, b]", 0));
+		Node b = new Node(new Symbol("ball[b, b]", 0));
 		assertEquals(0, b.compareTo(a));
 	}
 }

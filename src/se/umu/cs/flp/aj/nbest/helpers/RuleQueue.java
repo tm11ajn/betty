@@ -28,24 +28,23 @@ import se.umu.cs.flp.aj.nbest.treedata.RuleKeeper;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
-import se.umu.cs.flp.aj.nbest.wta.Symbol;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class RuleQueue {
 
 	private WTA wta;
-	private PriorityQueue<RuleKeeper<Symbol>> queue;
-	private HashMap<Rule<Symbol>, RuleKeeper<Symbol>> ruleKeepers;
+	private PriorityQueue<RuleKeeper> queue;
+	private HashMap<Rule, RuleKeeper> ruleKeepers;
 
 	public RuleQueue(WTA wta, int limit) {
 		this.wta = wta;
 		this.queue = new PriorityQueue<>();
 		this.ruleKeepers = new HashMap<>();
 
-		ArrayList<Rule<Symbol>> rules = wta.getRules();
+		ArrayList<Rule> rules = wta.getRules();
 
-		for (Rule<Symbol> r : rules) {
-			RuleKeeper<Symbol> keeper = new RuleKeeper<>(r, limit);
+		for (Rule r : rules) {
+			RuleKeeper keeper = new RuleKeeper(r, limit);
 			ruleKeepers.put(r, keeper);
 
 			if (!keeper.isPaused()) {
@@ -55,11 +54,11 @@ public class RuleQueue {
 		}
 	}
 
-	public void expandWith(TreeKeeper2<Symbol> newTree) {
+	public void expandWith(TreeKeeper2 newTree) {
 		State state = newTree.getResultingState();
 
-		for (Rule<Symbol> rule : wta.getRulesByState(state)) {
-			RuleKeeper<Symbol> currentKeeper = ruleKeepers.get(rule);
+		for (Rule rule : wta.getRulesByState(state)) {
+			RuleKeeper currentKeeper = ruleKeepers.get(rule);
 			ArrayList<Integer> stateIndices = rule.getIndexOfState(state);
 
 			for (Integer index : stateIndices) {
@@ -75,9 +74,9 @@ public class RuleQueue {
 		}
 	}
 
-	public TreeKeeper2<Symbol> nextTree() {
-		RuleKeeper<Symbol> ruleKeeper = queue.poll();
-		TreeKeeper2<Symbol> nextTree = ruleKeeper.getSmallestTree();
+	public TreeKeeper2 nextTree() {
+		RuleKeeper ruleKeeper = queue.poll();
+		TreeKeeper2 nextTree = ruleKeeper.getSmallestTree();
 		ruleKeeper.setQueued(false);
 		ruleKeeper.next();
 
@@ -102,7 +101,7 @@ public class RuleQueue {
 	public String toString() {
 		String string = "\n";
 
-		for (RuleKeeper<Symbol> r : queue) {
+		for (RuleKeeper r : queue) {
 			string = string + r + "\n";
 		}
 

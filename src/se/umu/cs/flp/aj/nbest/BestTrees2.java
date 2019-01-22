@@ -28,13 +28,12 @@ import se.umu.cs.flp.aj.nbest.helpers.RuleQueue;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.wta.State;
-import se.umu.cs.flp.aj.nbest.wta.Symbol;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 
 public class BestTrees2 {
 
-	private static HashMap<TreeKeeper2<Symbol>, TreeKeeper2<Symbol>>
+	private static HashMap<TreeKeeper2, TreeKeeper2>
 			outputtedTrees;
 	private static RuleQueue ruleQueue;
 
@@ -59,7 +58,7 @@ public class BestTrees2 {
 		while (foundTrees < N && !ruleQueue.isEmpty()) {
 
 			// t <- dequeue(K)
-			TreeKeeper2<Symbol> currentTree = ruleQueue.nextTree();
+			TreeKeeper2 currentTree = ruleQueue.nextTree();
 
 			if (!outputtedTrees.containsKey(currentTree)) {
 

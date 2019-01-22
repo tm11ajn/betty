@@ -26,49 +26,70 @@ import java.util.LinkedHashMap;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.wta.State;
+import se.umu.cs.flp.aj.nbest.wta.Symbol;
 
-public class TreeKeeper2<LabelType extends Comparable<LabelType>>
-		implements Comparable<TreeKeeper2<LabelType>> {
+public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 
 	private static HashMap<State, Weight> smallestCompletions;
 
-	private static HashMap<Node<?>, LinkedHashMap<State, State>> optimalStates =
+	private static HashMap<Node, LinkedHashMap<State, State>> optimalStates =
 			new HashMap<>();
-	private static HashMap<Node<?>, State> optimalState = new HashMap<>();
-	private static HashMap<Node<?>, HashMap<State, Weight>> optWeights =
+	private static HashMap<Node, State> optimalState = new HashMap<>();
+	private static HashMap<Node, HashMap<State, Weight>> optWeights =
 			new HashMap<>();
-	private static HashMap<Node<?>, Weight> smallestWeight =
+	private static HashMap<Node, Weight> smallestWeight =
 			new HashMap<>();
 
-	private Node<LabelType> tree;
+	private Node tree;
 	private Weight runWeight;
 	private State resultingState;
 	private boolean queueable;
 
-	public TreeKeeper2(LabelType ruleLabel, Weight ruleWeight,
+	// Remove this constructor in the end
+	public TreeKeeper2(Symbol ruleLabel, Weight ruleWeight,
 			State resultingState,
-			ArrayList<TreeKeeper2<LabelType>> trees) {
+			ArrayList<TreeKeeper2> trees) {
 
-		this.tree = new Node<LabelType>(ruleLabel);
+		this.tree = new Node(ruleLabel);
 		this.resultingState = resultingState;
 		this.queueable = false;
 
-		Weight temp = ruleWeight;
+		Weight temp = ruleWeight.mult(ruleWeight.one());
 
-		for (TreeKeeper2<LabelType> currentTree : trees) {
+		for (TreeKeeper2 currentTree : trees) {
 			tree.addChild(currentTree.getTree());
 			temp = temp.mult(currentTree.getRunWeight());
 		}
 
 		this.runWeight = temp;
 		addStateWeight(resultingState, temp);
+
+//System.out.println(tree);
+//System.out.println(resultingState);
+//System.out.println(resultingState.isFinal());
+//System.out.println(runWeight);
+//System.exit(1);
+	}
+
+	public TreeKeeper2(Node tree, Weight treeWeight,
+			State resultingState) {
+		this.tree = tree;
+		this.runWeight = treeWeight.mult(treeWeight.one());
+		this.resultingState = resultingState;
+		this.queueable = false;
+		addStateWeight(resultingState, treeWeight);
+//System.out.println(tree);
+//System.out.println(resultingState);
+//System.out.println(resultingState.isFinal());
+//System.out.println(runWeight);
+//System.exit(1);
 	}
 
 	public static void init(HashMap<State, Weight> smallestCompletionWeights) {
 		smallestCompletions = smallestCompletionWeights;
 	}
 
-	public Node<LabelType> getTree() {
+	public Node getTree() {
 		return tree;
 	}
 
@@ -160,11 +181,11 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 	@Override
 	public boolean equals(Object obj) {
 
-		if (!(obj instanceof TreeKeeper2<?>)) {
+		if (!(obj instanceof TreeKeeper2)) {
 			return false;
 		}
 
-		TreeKeeper2<?> o = (TreeKeeper2<?>) obj;
+		TreeKeeper2 o = (TreeKeeper2) obj;
 		int weightComparison = runWeight.compareTo(o.runWeight);
 		int treeComparison = this.tree.compareTo(o.tree);
 
@@ -176,7 +197,7 @@ public class TreeKeeper2<LabelType extends Comparable<LabelType>>
 	}
 
 	@Override
-	public int compareTo(TreeKeeper2<LabelType> o) {
+	public int compareTo(TreeKeeper2 o) {
 		int weightComparison = runWeight.compareTo(o.runWeight);
 
 		if (weightComparison == 0) {

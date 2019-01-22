@@ -26,11 +26,13 @@ package se.umu.cs.flp.aj.nbest.treedata;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Node<LabelType extends Comparable<LabelType>> implements Comparable<Node<?>> {
+import se.umu.cs.flp.aj.nbest.wta.Symbol;
 
-	private LabelType label;
-	private Node<LabelType> parent;
-	private List<Node<LabelType>> children = new ArrayList<Node<LabelType>>();
+public class Node implements Comparable<Node> {
+
+	private Symbol label;
+	private Node parent;
+	private List<Node> children = new ArrayList<Node>();
 	private int nOfChildren;
 
 	private String treeString;
@@ -40,9 +42,9 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 	private boolean validSize;
 	private boolean validHash;
 
-	private boolean isNonTerminal;
+//	private boolean isNonTerminal;
 
-	public Node(LabelType label) {
+	public Node(Symbol label) {
 		this.label = label;
 		nOfChildren = 0;
 		parent = null;
@@ -55,34 +57,35 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 		validSize = true;
 		validHash = false;
 
-		isNonTerminal = false;
+//		isNonTerminal = false;
 	}
 
-	public Node(LabelType label, List<Node<LabelType>> children) {
+	public Node(Symbol label, List<Node> children) {
 		this(label);
 
 		this.children = children;
 		nOfChildren = children.size();
 
-		for (Node<LabelType> n : children) {
+		for (Node n : children) {
 			n.setParent(this);
 		}
 	}
 
-	public LabelType getLabel() {
+	public Symbol getLabel() {
 		return label;
 	}
 
-	public void addChild(Node<LabelType> child) {
+	public Node addChild(Node child) {
 		children.add(child);
 		child.setParent(this);
 		nOfChildren++;
 		validString = false;
 		validSize = false;
 		this.invalidateHash();
+		return child;
 	}
 
-	public Node<LabelType> getChildAt(int childIndex) {
+	public Node getChildAt(int childIndex) {
 		return children.get(childIndex);
 	}
 
@@ -90,12 +93,12 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 		return nOfChildren;
 	}
 
-	public void setParent(Node<LabelType> parent) {
+	public void setParent(Node parent) {
 		this.parent = parent;
 //		validHash = false;
 	}
 
-	public Node<LabelType> getParent() {
+	public Node getParent() {
 		return parent;
 	}
 
@@ -112,20 +115,20 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 		validSize = true;
 		size = 1;
 
-		for (Node<LabelType> child : children) {
+		for (Node child : children) {
 			size += child.getSize();
 		}
 
 		return size;
 	}
 
-	public boolean isNonTerminal() {
-		return isNonTerminal;
-	}
-
-	public void setNonTerminal(boolean value) {
-		this.isNonTerminal = value;
-	}
+//	public boolean isNonTerminal() {
+//		return isNonTerminal;
+//	}
+//
+//	public void setNonTerminal(boolean value) {
+//		this.isNonTerminal = value;
+//	}
 
 	private void invalidateHash() {
 		this.validHash = false;
@@ -147,7 +150,7 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 
 		int counter = 3;
 
-		for (Node<LabelType> n : children) {
+		for (Node n : children) {
 			hash += counter * n.hashCode();
 			counter += 2;
 		}
@@ -188,10 +191,10 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 	@Override
 	public boolean equals(Object obj) {
 
-		Node<?> n = null;
+		Node n = null;
 
-		if (obj instanceof Node<?>) {
-			n = (Node<?>) obj;
+		if (obj instanceof Node) {
+			n = (Node) obj;
 
 			if (this.hashCode() != obj.hashCode()) {
 				return false;
@@ -206,7 +209,7 @@ public class Node<LabelType extends Comparable<LabelType>> implements Comparable
 	}
 
 	@Override
-	public int compareTo(Node<?> o) {
+	public int compareTo(Node o) {
 
 		int thisSize = this.getSize();
 		int oSize = o.getSize();

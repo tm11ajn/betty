@@ -31,5 +31,5 @@ public abstract class Weight implements Comparable<Weight> {
 	public abstract boolean isOne();
 	public abstract boolean isZero();
 	public abstract Weight div(Weight s);
-
+	public abstract Weight duplicate();
 }

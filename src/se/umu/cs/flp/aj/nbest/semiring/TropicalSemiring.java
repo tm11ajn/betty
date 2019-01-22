@@ -142,6 +142,11 @@ public class TropicalSemiring extends Semiring {
 			return "" + value;
 		}
 
+		@Override
+		public Weight duplicate() {
+			return new TropicalWeight(value);
+		}
+
 	}
 
 	@Override

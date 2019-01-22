@@ -24,10 +24,18 @@ public class Symbol implements Comparable<Symbol> {
 
 	private String label;
 	private int rank;
+	private boolean isNonterminal;
 
 	public Symbol(String symbol, int rank) {
 		this.label = symbol;
 		this.rank = rank;
+		this.isNonterminal = false;
+	}
+
+	public Symbol(String symbol, int rank, boolean isNonterminal) {
+		this.label = symbol;
+		this.rank = rank;
+		this.isNonterminal = isNonterminal;
 	}
 
 	public String getLabel() {
@@ -36,6 +44,14 @@ public class Symbol implements Comparable<Symbol> {
 
 	public int getRank() {
 		return rank;
+	}
+
+	public void setNonterminal(boolean isNonterminal) {
+		this.isNonterminal = true;
+	}
+
+	public boolean isNonterminal() {
+		return isNonterminal;
 	}
 
 	@Override

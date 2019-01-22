@@ -24,20 +24,19 @@
 package se.umu.cs.flp.aj.nbest.treedata;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.wta.Symbol;
 
 public class Run implements Comparable<Run> {
 
-	private TreeKeeper<Symbol> tree;
+	private TreeKeeper tree;
 
 	private Weight weight;
 
-	public Run(TreeKeeper<Symbol> tree, Weight weight) {
+	public Run(TreeKeeper tree, Weight weight) {
 		this.tree = tree;
 		this.weight = weight;
 	}
 
-	public TreeKeeper<Symbol> getTree() {
+	public TreeKeeper getTree() {
 		return this.tree;
 	}
 

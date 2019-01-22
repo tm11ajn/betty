@@ -25,13 +25,14 @@ import java.util.HashMap;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
+import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 
-public class Rule<LabelType extends Comparable<LabelType>> {
+public class Rule {
 
-	private LabelType symbol;
+//	private Symbol symbol;
 	private Weight weight;
 	private int rank = 0;
-	private Node<LabelType> tree;
+	private Node tree;
 
 	private ArrayList<State> states = new ArrayList<>();
 //	private HashMap<State, Integer> stateMap = new HashMap<>();
@@ -39,29 +40,12 @@ public class Rule<LabelType extends Comparable<LabelType>> {
 
 	private State resultingState;
 
-	public Rule(LabelType symbol, Weight weight, State resultingState,
-			Node<LabelType> tree, State ... states) {
+	public Rule(Node tree, Weight weight,
+			State resultingState, State ... states) {
 
-		this.symbol = symbol;
-		this.weight = weight;
+//		this.symbol = symbol;
 		this.tree = tree;
-		this.resultingState = resultingState;
-
-		for (State state : states) {
-			this.states.add(state);
-			addToStateMap(state, rank);
-			rank++;
-		}
-	}
-
-	public Rule(LabelType symbol, Weight weight, State resultingState,
-			State ... states) {
-
-//		Rule(symbol, weight, resultingState, null, states);
-
-		this.symbol = symbol;
 		this.weight = weight;
-		this.tree = null;
 		this.resultingState = resultingState;
 
 		for (State state : states) {
@@ -70,6 +54,23 @@ public class Rule<LabelType extends Comparable<LabelType>> {
 			rank++;
 		}
 	}
+
+//	public Rule(Symbol symbol, Weight weight, State resultingState,
+//			State ... states) {
+//
+////		Rule(symbol, weight, resultingState, null, states);
+//
+//		this.symbol = symbol;
+//		this.weight = weight;
+//		this.tree = null;
+//		this.resultingState = resultingState;
+//
+//		for (State state : states) {
+//			this.states.add(state);
+//			addToStateMap(state, rank);
+//			rank++;
+//		}
+//	}
 
 //	public Rule(LabelType symbol, State resultingState, State ... states) {
 //
@@ -85,6 +86,40 @@ public class Rule<LabelType extends Comparable<LabelType>> {
 //
 //	}
 
+	public TreeKeeper2 apply(ArrayList<TreeKeeper2> tklist) {
+		Node t = tree;
+		Weight treeWeight = this.weight;
+
+		for (TreeKeeper2 tk : tklist) {
+			treeWeight = treeWeight.mult(tk.getRunWeight());
+		}
+
+		Node newTree = buildTree(t, tklist);
+		return new TreeKeeper2(newTree, treeWeight, resultingState);
+	}
+
+	private Node buildTree(Node t, ArrayList<TreeKeeper2> tklist) {
+
+		if (t.getChildCount() == 0) {
+			return new Node(t.getLabel());
+		}
+
+		Node newTree = new Node(t.getLabel());
+
+		for (int i = 0; i < t.getChildCount(); i++) {
+			Node tempTree = buildTree(t.getChildAt(i), tklist);
+
+			if (t.getChildAt(i).getLabel().isNonterminal()) {
+				newTree.addChild(tklist.get(0).getTree());
+				tklist.remove(0);
+			} else {
+				newTree.addChild(tempTree);
+			}
+		}
+
+		return newTree;
+	}
+
 	public void addState(State state) {
 		this.states.add(state);
 		addToStateMap(state, rank);
@@ -99,8 +134,8 @@ public class Rule<LabelType extends Comparable<LabelType>> {
 		this.stateMap.get(state).add(index);
 	}
 
-	public LabelType getSymbol() {
-		return symbol;
+	public Symbol getSymbol() {
+		return tree.getLabel();
 	}
 
 	public Weight getWeight() {
@@ -130,8 +165,8 @@ public class Rule<LabelType extends Comparable<LabelType>> {
 	@Override
 	public boolean equals(Object obj) {
 
-		if (obj instanceof Rule<?>) {
-			Rule<?> rule = (Rule<?>) obj;
+		if (obj instanceof Rule) {
+			Rule rule = (Rule) obj;
 
 			if (rule.toString().equals(this.toString())) {
 				return true;
@@ -160,7 +195,7 @@ public class Rule<LabelType extends Comparable<LabelType>> {
 	@Override
 	public int hashCode() {
 
-		int hash = 7*symbol.hashCode() + 11*resultingState.hashCode();
+		int hash = 7*tree.getLabel().hashCode() + 11*resultingState.hashCode();
 
 		for (State s : states) {
 			hash += s.hashCode();
@@ -196,7 +231,7 @@ public class Rule<LabelType extends Comparable<LabelType>> {
 			weightString = " # " + weight;
 		}
 
-		return symbol + stateString + " -> " + resultingState + weightString;
+		return tree + stateString + " -> " + resultingState + weightString;
 	}
 
 }

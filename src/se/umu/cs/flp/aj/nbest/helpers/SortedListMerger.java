@@ -28,13 +28,12 @@ import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
 import se.umu.cs.flp.aj.nbest.wta.State;
-import se.umu.cs.flp.aj.nbest.wta.Symbol;
 
 public class SortedListMerger {
 
-	public static LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> mergeTreeListsForState(
-			LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> list1,
-			LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> list2,
+	public static LinkedHashMap<Node,TreeKeeper> mergeTreeListsForState(
+			LinkedHashMap<Node,TreeKeeper> list1,
+			LinkedHashMap<Node,TreeKeeper> list2,
 			int listSizeLimit, State q) {
 
 		if (list1.isEmpty()) {
@@ -45,16 +44,16 @@ public class SortedListMerger {
 			return list1;
 		}
 
-		LinkedHashMap<Node<Symbol>,TreeKeeper<Symbol>> result = new LinkedHashMap<>();
+		LinkedHashMap<Node,TreeKeeper> result = new LinkedHashMap<>();
 
 		int added = 0;
 		int compResult;
 
-		Iterator<Entry<Node<Symbol>, TreeKeeper<Symbol>>> iterator1 = list1.entrySet().iterator();
-		Iterator<Entry<Node<Symbol>, TreeKeeper<Symbol>>> iterator2 = list2.entrySet().iterator();
+		Iterator<Entry<Node, TreeKeeper>> iterator1 = list1.entrySet().iterator();
+		Iterator<Entry<Node, TreeKeeper>> iterator2 = list2.entrySet().iterator();
 
-		Entry<Node<Symbol>, TreeKeeper<Symbol>> currentEntry1 = null;
-		Entry<Node<Symbol>, TreeKeeper<Symbol>> currentEntry2 = null;
+		Entry<Node, TreeKeeper> currentEntry1 = null;
+		Entry<Node, TreeKeeper> currentEntry2 = null;
 
 		if (iterator1.hasNext()) {
 			currentEntry1 = iterator1.next();
@@ -132,9 +131,9 @@ public class SortedListMerger {
 		return result;
 	}
 
-	public static LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> mergeTreeListsByDeltaWeights(
-			LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> currentList,
-			LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> mergedList,
+	public static LinkedHashMap<Node, TreeKeeper> mergeTreeListsByDeltaWeights(
+			LinkedHashMap<Node, TreeKeeper> currentList,
+			LinkedHashMap<Node, TreeKeeper> mergedList,
 			int listSizeLimit) {
 
 		if (currentList.isEmpty()) {
@@ -145,16 +144,16 @@ public class SortedListMerger {
 			return currentList;
 		}
 
-		LinkedHashMap<Node<Symbol>, TreeKeeper<Symbol>> result = new LinkedHashMap<>();
+		LinkedHashMap<Node, TreeKeeper> result = new LinkedHashMap<>();
 
 		int added = 0;
 		int compResult;
 
-		Iterator<Entry<Node<Symbol>, TreeKeeper<Symbol>>> iterator1 = currentList.entrySet().iterator();
-		Iterator<Entry<Node<Symbol>, TreeKeeper<Symbol>>> iterator2 = mergedList.entrySet().iterator();
+		Iterator<Entry<Node, TreeKeeper>> iterator1 = currentList.entrySet().iterator();
+		Iterator<Entry<Node, TreeKeeper>> iterator2 = mergedList.entrySet().iterator();
 
-		Entry<Node<Symbol>, TreeKeeper<Symbol>> currentEntry1 = null;
-		Entry<Node<Symbol>, TreeKeeper<Symbol>> currentEntry2 = null;
+		Entry<Node, TreeKeeper> currentEntry1 = null;
+		Entry<Node, TreeKeeper> currentEntry2 = null;
 
 		if (iterator1.hasNext()) {
 			currentEntry1 = iterator1.next();
