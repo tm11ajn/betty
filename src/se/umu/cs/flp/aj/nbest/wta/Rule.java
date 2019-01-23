@@ -22,6 +22,7 @@ package se.umu.cs.flp.aj.nbest.wta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
@@ -94,27 +95,36 @@ public class Rule {
 			treeWeight = treeWeight.mult(tk.getRunWeight());
 		}
 
-		Node newTree = buildTree(t, tklist);
+		LinkedList<TreeKeeper2> copy = new LinkedList<>();
+
+		for (TreeKeeper2 tk : tklist) {
+			copy.addLast(tk);
+		}
+
+		Node newTree = buildTree(t, copy);
+
 		return new TreeKeeper2(newTree, treeWeight, resultingState);
 	}
 
-	private Node buildTree(Node t, ArrayList<TreeKeeper2> tklist) {
+	private Node buildTree(Node t, LinkedList<TreeKeeper2> tklist) {
 
 		if (t.getChildCount() == 0) {
-			return new Node(t.getLabel());
+			Node node;
+
+			if (t.getLabel().isNonterminal()) {
+				node = tklist.poll().getTree();
+			} else {
+				node = new Node(t.getLabel());
+			}
+
+			return node;
 		}
 
 		Node newTree = new Node(t.getLabel());
 
 		for (int i = 0; i < t.getChildCount(); i++) {
 			Node tempTree = buildTree(t.getChildAt(i), tklist);
-
-			if (t.getChildAt(i).getLabel().isNonterminal()) {
-				newTree.addChild(tklist.get(0).getTree());
-				tklist.remove(0);
-			} else {
-				newTree.addChild(tempTree);
-			}
+			newTree.addChild(tempTree);
 		}
 
 		return newTree;
@@ -134,8 +144,8 @@ public class Rule {
 		this.stateMap.get(state).add(index);
 	}
 
-	public Symbol getSymbol() {
-		return tree.getLabel();
+	public Node getTree() {
+		return tree;
 	}
 
 	public Weight getWeight() {
@@ -233,5 +243,23 @@ public class Rule {
 
 		return tree + stateString + " -> " + resultingState + weightString;
 	}
+
+//	private class Application {
+//		Node tree;
+//		Weight weight;
+//
+//		public Application(Node tree, Weight weight) {
+//			this.tree = tree;
+//			this.weight = weight;
+//		}
+//
+//		public Node getTree() {
+//			return tree;
+//		}
+//
+//		public Weight getWeight() {
+//			return weight;
+//		}
+//	}
 
 }

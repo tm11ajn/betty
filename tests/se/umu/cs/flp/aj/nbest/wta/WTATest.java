@@ -55,7 +55,7 @@ public class WTATest {
 		wta.addRule(new Rule(tree,
 				semiring.one(), resState));
 		Rule rule = wta.getRulesByResultingState(state).get(0);
-		assertEquals(aSymb, rule.getSymbol());
+		assertEquals(aSymb, rule.getTree().getLabel());
 	}
 
 	@Test

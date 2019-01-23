@@ -74,7 +74,7 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 	public TreeKeeper2(Node tree, Weight treeWeight,
 			State resultingState) {
 		this.tree = tree;
-		this.runWeight = treeWeight.mult(treeWeight.one());
+		this.runWeight = treeWeight.duplicate();
 		this.resultingState = resultingState;
 		this.queueable = false;
 		addStateWeight(resultingState, treeWeight);

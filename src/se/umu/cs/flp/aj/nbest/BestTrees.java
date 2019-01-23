@@ -100,7 +100,7 @@ public class BestTrees {
 
 		for (Rule r : wta.getSourceRules()) {
 
-			Symbol symbol = r.getSymbol();
+			Symbol symbol = r.getTree().getLabel();
 			TreeKeeper tree = null;
 
 			if (trees.containsKey(symbol)) {

@@ -139,10 +139,11 @@ public class RTGParser implements Parser {
 						" has parentheses in its left-hand side.");
 			}
 
-			Node<Symbol> tree = buildTree(wta, rhs);
+			Node tree = buildTree(wta, rhs);
 			State resultingState = wta.addState(lhs);
+			resultingState.getLabel().setNonterminal(true);
 
-			Rule<Symbol> newRule = new Rule<>(tree, weight,
+			Rule newRule = new Rule(tree, weight,
 					resultingState);
 
 //			if (!containsParsingCharacters(lhs)) { // Leaf rule
@@ -154,17 +155,17 @@ public class RTGParser implements Parser {
 //
 //				Symbol symbol = wta.addSymbol(symbolString, 0);
 //				State resultingState = wta.addState(rhs);
-//				Node<Symbol> tree = new Node<Symbol>(symbol);
+//				Node tree = new Node(symbol);
 //
 //				newRule = new Rule<>(symbol, weight, resultingState, tree);
 //
 //			} else { // Non-leaf rule
 //
 //				if (!containsParsingCharacters(lhs)) {
-//					Node<Symbol> tree = new Node<Symbol>(wta.addSymbol(lhs, 0));
+//					Node tree = new Node(wta.addSymbol(lhs, 0));
 //				} else {
 //
-//					Node<Symbol> tree = new Node<Symbol>(getSymbol(wta, lhs));
+//					Node tree = new Node(getSymbol(wta, lhs));
 //
 //					tree.addChild();
 //
@@ -209,7 +210,7 @@ public class RTGParser implements Parser {
 //		}
 	}
 
-	private Node<Symbol> buildTree(WTA wta, String lhs)
+	private Node buildTree(WTA wta, String lhs)
 			throws SymbolUsageException {
 
 		if (!containsParsingCharacters(lhs)) { // Leaf rule
@@ -220,7 +221,7 @@ public class RTGParser implements Parser {
 			}
 
 			Symbol symbol = wta.addSymbol(symbolString, 0);
-			Node<Symbol> tree = new Node<Symbol>(symbol);
+			Node tree = new Node(symbol);
 
 			return tree;
 
@@ -229,7 +230,7 @@ public class RTGParser implements Parser {
 			String[] parts = lhs.split(" ");
 			int numberOfLeftHandStates = parts.length;
 
-			Node<Symbol> tree = new Node<Symbol>(wta.addSymbol(lhs,
+			Node tree = new Node(wta.addSymbol(lhs,
 					numberOfLeftHandStates));
 
 			String symbolString = parts[0];
@@ -295,67 +296,67 @@ public class RTGParser implements Parser {
 //		}
 	}
 
-	private void parseLeafRule(String line, WTA wta)
-			throws SymbolUsageException, DuplicateRuleException {
+//	private void parseLeafRule(String line, WTA wta)
+//			throws SymbolUsageException, DuplicateRuleException {
+//
+//		String[] labels = line.trim().split(LEAF_RULE_SPLIT_REGEX);
+//
+//		String symbolString = labels[0];
+//
+//		if (forDerivations) {
+//			symbolString += "//rule" + ruleCounter;
+//		}
+//
+//		Symbol symbol = wta.addSymbol(symbolString, 0);
+//		State resultingState = wta.addState(labels[1]);
+//
+//		Rule newRule;
+//
+//		if (labels.length == 3) {
+//			double value = Double.parseDouble(labels[2]);
+//			Weight weight = semiring.createWeight(value);
+//			newRule = new Rule(symbol, weight, resultingState);
+//		} else {
+//			Weight weight = semiring.one();
+//			newRule = new Rule(symbol, weight, resultingState);
+//		}
+//
+//		wta.addRule(newRule);
+//		ruleCounter++;
+//	}
 
-		String[] labels = line.trim().split(LEAF_RULE_SPLIT_REGEX);
-
-		String symbolString = labels[0];
-
-		if (forDerivations) {
-			symbolString += "//rule" + ruleCounter;
-		}
-
-		Symbol symbol = wta.addSymbol(symbolString, 0);
-		State resultingState = wta.addState(labels[1]);
-
-		Rule<Symbol> newRule;
-
-		if (labels.length == 3) {
-			double value = Double.parseDouble(labels[2]);
-			Weight weight = semiring.createWeight(value);
-			newRule = new Rule<>(symbol, weight, resultingState);
-		} else {
-			Weight weight = semiring.one();
-			newRule = new Rule<>(symbol, weight, resultingState);
-		}
-
-		wta.addRule(newRule);
-		ruleCounter++;
-	}
-
-	private void parseNonLeafRule(String line, WTA wta)
-			throws SymbolUsageException, DuplicateRuleException {
-
-		String[] labels = line.trim().split(NON_LEAF_RULE_SPLIT_REGEX);
-
-		int numberOfLabels = labels.length;
-		int numberOfLeftHandStates = numberOfLabels - 2;
-
-		Weight weight = semiring.one();
-
-		if (line.contains("#")) {
-			double value = Double.parseDouble(labels[numberOfLabels - 1]);
-			weight = semiring.createWeight(value);
-			numberOfLeftHandStates -= 1;
-		}
-
-		String symbolString = labels[0];
-
-		if (forDerivations) {
-			symbolString += "//rule" + ruleCounter;
-		}
-
-		Symbol symbol = wta.addSymbol(symbolString, numberOfLeftHandStates);
-		State resultingState = wta.addState(labels[1 + numberOfLeftHandStates]);
-
-		Rule<Symbol> newRule = new Rule<>(symbol, weight, resultingState);
-
-		for (int i = 1; i < numberOfLeftHandStates + 1; i++) {
-			newRule.addState(wta.addState(labels[i]));
-		}
-		wta.addRule(newRule);
-		ruleCounter++;
-	}
+//	private void parseNonLeafRule(String line, WTA wta)
+//			throws SymbolUsageException, DuplicateRuleException {
+//
+//		String[] labels = line.trim().split(NON_LEAF_RULE_SPLIT_REGEX);
+//
+//		int numberOfLabels = labels.length;
+//		int numberOfLeftHandStates = numberOfLabels - 2;
+//
+//		Weight weight = semiring.one();
+//
+//		if (line.contains("#")) {
+//			double value = Double.parseDouble(labels[numberOfLabels - 1]);
+//			weight = semiring.createWeight(value);
+//			numberOfLeftHandStates -= 1;
+//		}
+//
+//		String symbolString = labels[0];
+//
+//		if (forDerivations) {
+//			symbolString += "//rule" + ruleCounter;
+//		}
+//
+//		Symbol symbol = wta.addSymbol(symbolString, numberOfLeftHandStates);
+//		State resultingState = wta.addState(labels[1 + numberOfLeftHandStates]);
+//
+//		Rule newRule = new Rule(symbol, weight, resultingState);
+//
+//		for (int i = 1; i < numberOfLeftHandStates + 1; i++) {
+//			newRule.addState(wta.addState(labels[i]));
+//		}
+//		wta.addRule(newRule);
+//		ruleCounter++;
+//	}
 
 }

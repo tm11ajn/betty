@@ -22,6 +22,7 @@ package se.umu.cs.flp.aj.eppstein_k_best.runner;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -165,18 +166,52 @@ public class EppsteinRunner {
 	private Node extractTreeFromPath(Path<Node> path,
 			Rule r) {
 
-		Node root = new Node(r.getSymbol());
+		Node ruleTree = r.getTree();
+//		Node root = new Node(ruleTree.getLabel());
 		int counter = 0;
+
+		LinkedList<Node> inputList = new LinkedList<>();
 
 		for (Edge<Node> e : path.getEdges()) {
 
 			if (counter%2 == 1) {
-				root.addChild(e.getLabel());
+//				root.addChild(e.getLabel());
+				inputList.add(e.getLabel());
 			}
 
 			counter++;
 		}
 
+		Node root = buildTree(ruleTree, inputList);
+
 		return root;
 	}
+
+	private Node buildTree(Node t, LinkedList<Node> tklist) {
+
+		if (t.getChildCount() == 0) {
+			Node node;
+
+			if (t.getLabel().isNonterminal()) {
+				node = tklist.poll();
+			} else {
+				node = new Node(t.getLabel());
+			}
+
+			return node;
+		}
+
+		Node newTree = new Node(t.getLabel());
+
+		for (int i = 0; i < t.getChildCount(); i++) {
+			Node tempTree = buildTree(t.getChildAt(i), tklist);
+			newTree.addChild(tempTree);
+		}
+
+		return newTree;
+	}
+
+
+
+
 }

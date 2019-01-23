@@ -69,14 +69,14 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 
 		if (ladder.hasNext()) {
 			ArrayList<TreeKeeper2> temp = ladder.dequeue();
-			smallestTree = new TreeKeeper2(rule.getSymbol(),
-					rule.getWeight(), rule.getResultingState(), temp);
-//			smallestTree = rule.apply(temp);
+//			smallestTree = new TreeKeeper2(rule.getSymbol(),
+//					rule.getWeight(), rule.getResultingState(), temp);
+			smallestTree = rule.apply(temp);
 			TreeKeeper2 compTree = rule.apply(temp);
 			if (!compTree.equals(smallestTree)) {
-//System.out.println(compTree);
-//System.out.println(smallestTree);
-//System.exit(1);
+System.out.println(compTree);
+System.out.println(smallestTree);
+System.exit(1);
 			}
 			paused = false;
 		} else {

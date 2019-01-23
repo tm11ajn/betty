@@ -202,7 +202,10 @@ public class WTAParser implements Parser {
 		Rule newRule = new Rule(tree, weight, resultingState);
 
 		for (int i = 1; i < numberOfLeftHandStates + 1; i++) {
-			newRule.addState(wta.addState(labels[i]));
+			State state = wta.addState(labels[i]);
+			state.getLabel().setNonterminal(true);
+			newRule.addState(state);
+			tree.addChild(new Node(state.getLabel()));
 		}
 
 		wta.addRule(newRule);
