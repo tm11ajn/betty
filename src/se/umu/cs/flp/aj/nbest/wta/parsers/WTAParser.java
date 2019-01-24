@@ -61,6 +61,8 @@ public class WTAParser implements Parser {
 	private boolean forDerivations;
 	private int ruleCounter;
 
+	private WTA wta;
+
 	public WTAParser(Semiring semiring) {
 		this.semiring = semiring;
 		this.finalStates = new HashMap<>();
@@ -80,14 +82,14 @@ public class WTAParser implements Parser {
 
 	private WTA parse(String fileName) {
 
-		WTA wta = new WTA(semiring);
+		wta = new WTA(semiring);
 		int rowCounter = 1;
 
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 			String line;
 
 			while ((line = br.readLine()) != null) {
-				parseLine(line, wta);
+				parseLine(line);
 				rowCounter++;
 			}
 
@@ -112,7 +114,7 @@ public class WTAParser implements Parser {
 		return wta;
 	}
 
-	public void parseLine(String line, WTA wta)
+	public void parseLine(String line)
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 
@@ -120,18 +122,18 @@ public class WTAParser implements Parser {
 				line.matches(COMMENT_LINE_REGEX)) {
 			// Ignore empty lines and comments.
 		} else if (line.matches(FINAL_REGEX)) {
-			parseFinal(line, wta);
+			parseFinal(line);
 		} else if (line.matches(LEAF_RULE_REGEX)) {
-			parseLeafRule(line, wta);
+			parseLeafRule(line);
 		} else if (line.matches(NON_LEAF_RULE_REGEX)) {
-			parseNonLeafRule(line, wta);
+			parseNonLeafRule(line);
 		} else {
 			throw new IllegalArgumentException("Line " + line +
 					" was not correct.");
 		}
 	}
 
-	private void parseFinal(String line, WTA wta) throws SymbolUsageException {
+	private void parseFinal(String line) throws SymbolUsageException {
 		String[] finals = line.trim().split(FINAL_SPLIT_REGEX);
 		int size = finals.length;
 
@@ -142,7 +144,7 @@ public class WTAParser implements Parser {
 		}
 	}
 
-	private void parseLeafRule(String line, WTA wta)
+	private void parseLeafRule(String line)
 			throws SymbolUsageException, DuplicateRuleException {
 
 		String[] labels = line.trim().split(LEAF_RULE_SPLIT_REGEX);
@@ -173,7 +175,7 @@ public class WTAParser implements Parser {
 		ruleCounter++;
 	}
 
-	private void parseNonLeafRule(String line, WTA wta)
+	private void parseNonLeafRule(String line)
 			throws SymbolUsageException, DuplicateRuleException {
 
 		String[] labels = line.trim().split(NON_LEAF_RULE_SPLIT_REGEX);

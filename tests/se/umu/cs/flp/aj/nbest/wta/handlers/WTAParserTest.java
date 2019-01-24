@@ -83,8 +83,8 @@ public class WTAParserTest {
 	public void shouldParseFinalLine()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(finalLine, wta);
-		wtaParser.parseLine(leafRuleLine, wta);
+		wtaParser.parseLine(finalLine);
+		wtaParser.parseLine(leafRuleLine);
 		System.out.println(wta);
 		assertTrue(wta.addState("q0").isFinal()
 				&& wta.addState("q1").isFinal()
@@ -100,8 +100,8 @@ public class WTAParserTest {
 	public void shouldNotParseFinalLineTwice()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(finalLine, wta);
-		wtaParser.parseLine(finalLine, wta);
+		wtaParser.parseLine(finalLine);
+		wtaParser.parseLine(finalLine);
 		assertThat(wta.getFinalStates().size(), is(3));
 	}
 
@@ -115,8 +115,8 @@ public class WTAParserTest {
 	public void shouldParseFinalLineLength()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(finalLine, wta);
-		wtaParser.parseLine(leafRuleLine, wta);
+		wtaParser.parseLine(finalLine);
+		wtaParser.parseLine(leafRuleLine);
 		System.out.println(wta);
 		assertThat(wta.getFinalStates().size(), is(3));
 	}
@@ -131,7 +131,7 @@ public class WTAParserTest {
 	public void shouldParseLeafRuleLine()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(leafRuleLine, wta);
+		wtaParser.parseLine(leafRuleLine);
 		assertThat(wta.getRulesByResultingState(q0).get(0), is(leafRule));
 	}
 
@@ -145,7 +145,7 @@ public class WTAParserTest {
 	public void shouldParseLeafRuleLineLength()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(leafRuleLine, wta);
+		wtaParser.parseLine(leafRuleLine);
 		assertThat(wta.getRulesByResultingState(q0).size(), is(1));
 	}
 
@@ -159,8 +159,8 @@ public class WTAParserTest {
 	public void shouldParseLeafRuleLineLengthNoMultiple()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(leafRuleLine, wta);
-		wtaParser.parseLine(leafRuleLine, wta);
+		wtaParser.parseLine(leafRuleLine);
+		wtaParser.parseLine(leafRuleLine);
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class WTAParserTest {
 	public void shouldParseLeafRuleLineWithWeight()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(leafRuleLineWithWeight, wta);
+		wtaParser.parseLine(leafRuleLineWithWeight);
 		assertThat(wta.getRulesByResultingState(q0).get(0),
 				is(leafRuleWithWeight));
 	}
@@ -188,7 +188,7 @@ public class WTAParserTest {
 	public void shouldParseLeafRuleWithWeightLineLength()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(leafRuleLineWithWeight, wta);
+		wtaParser.parseLine(leafRuleLineWithWeight);
 		assertThat(wta.getRulesByResultingState(q0).size(), is(1));
 	}
 
@@ -202,7 +202,7 @@ public class WTAParserTest {
 	public void shouldParseNonLeafRuleLine()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(nonLeafRuleLine, wta);
+		wtaParser.parseLine(nonLeafRuleLine);
 		assertThat(wta.getRulesByResultingState(qf).get(0), is(nonLeafRule));
 	}
 
@@ -216,7 +216,7 @@ public class WTAParserTest {
 	public void shouldParseNonLeafRuleLineWithWeight()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
+		wtaParser.parseLine(nonLeafRuleLineWithWeight);
 		assertThat(wta.getRulesByResultingState(qf).get(0),
 				is(nonLeafRuleWithWeight));
 	}
@@ -231,7 +231,7 @@ public class WTAParserTest {
 	public void shouldParseNonLeafRuleLineWithWeightWithCorrectRank()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
+		wtaParser.parseLine(nonLeafRuleLineWithWeight);
 		assertThat(wta.getRulesByResultingState(qf).get(0).getRank(),
 				is(2));
 	}
@@ -246,7 +246,7 @@ public class WTAParserTest {
 	public void shouldParseNonLeafRuleLine2()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(nonLeafRuleLine2, wta);
+		wtaParser.parseLine(nonLeafRuleLine2);
 		assertThat(wta.getRulesByResultingState(qf).get(0), is(nonLeafRule2));
 	}
 
@@ -260,7 +260,7 @@ public class WTAParserTest {
 	public void shouldParseNonLeafRuleLineWithWeight2()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(nonLeafRuleLineWithWeight2, wta);
+		wtaParser.parseLine(nonLeafRuleLineWithWeight2);
 		assertThat(wta.getRulesByResultingState(qf).get(0),
 				is(nonLeafRuleWithWeight2));
 	}
@@ -275,7 +275,7 @@ public class WTAParserTest {
 	public void shouldParseNonLeafRuleLineWithWeightWithCorrectRank2()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(nonLeafRuleLineWithWeight2, wta);
+		wtaParser.parseLine(nonLeafRuleLineWithWeight2);
 		assertThat(wta.getRulesByResultingState(qf).get(0).getRank(),
 				is(1));
 	}
@@ -290,7 +290,7 @@ public class WTAParserTest {
 	public void shouldParseMTDataRuleLine()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(mtDataTestRuleLine, wta);
+		wtaParser.parseLine(mtDataTestRuleLine);
 		assertThat(wta.getRulesByResultingState(mtq1).get(0), is(mtDataTestRule));
 	}
 
@@ -304,7 +304,7 @@ public class WTAParserTest {
 	public void shouldParseMTDataRuleLineWithCorrectRank()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(mtDataTestRuleLine, wta);
+		wtaParser.parseLine(mtDataTestRuleLine);
 		assertThat(wta.getRulesByResultingState(mtq1).get(0).getRank(), is(1));
 	}
 
@@ -318,7 +318,7 @@ public class WTAParserTest {
 	public void shouldParseNonLeafRuleLineLength()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(nonLeafRuleLine, wta);
+		wtaParser.parseLine(nonLeafRuleLine);
 		assertThat(wta.getRulesByResultingState(qf).size(), is(1));
 	}
 
@@ -332,7 +332,7 @@ public class WTAParserTest {
 	public void shouldParseNonLeafRuleLineWithWeightLength()
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
-		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
+		wtaParser.parseLine(nonLeafRuleLineWithWeight);
 		assertThat(wta.getRulesByResultingState(qf).size(), is(1));
 	}
 
@@ -343,8 +343,8 @@ public class WTAParserTest {
 	@Test
 	public void shouldAllowForSymbolToBeUsedWithSameRank()
 			throws Exception {
-		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
-		wtaParser.parseLine("f[q1, q0] -> qf", wta);
+		wtaParser.parseLine(nonLeafRuleLineWithWeight);
+		wtaParser.parseLine("f[q1, q0] -> qf");
 		assertThat(wta.getRulesByResultingState(qf).size(), is(2));
 	}
 
@@ -355,8 +355,8 @@ public class WTAParserTest {
 	@Test(expected=SymbolUsageException.class)
 	public void shouldNotAllowForSymbolToBeUsedWithDifferentRanks()
 			throws Exception {
-		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
-		wtaParser.parseLine("f[q0, q1, q2] -> qf", wta);
+		wtaParser.parseLine(nonLeafRuleLineWithWeight);
+		wtaParser.parseLine("f[q0, q1, q2] -> qf");
 	}
 
 	/**
@@ -365,7 +365,7 @@ public class WTAParserTest {
 	 */
 	@Test
 	public void shouldNotBeNullWhenCollectingParsed() throws Exception {
-		wtaParser.parseLine(nonLeafRuleLineWithWeight, wta);
+		wtaParser.parseLine(nonLeafRuleLineWithWeight);
 		assertNotNull(wta.getRulesByResultingState(qf));
 	}
 

@@ -5,7 +5,11 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ WTAParserRegexTest.class, WTAParserTest.class })
+@SuiteClasses({
+	RTGParserTest.class,
+	WTAParserRegexTest.class,
+	WTAParserTest.class
+	})
 public class AllWTAHandlerTests {
 
 }

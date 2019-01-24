@@ -221,27 +221,27 @@ public class Rule {
 	@Override
 	public String toString() {
 
-		String stateString = "";
+//		String stateString = "";
 		String weightString = "";
 
-		if (!states.isEmpty()) {
-			stateString += "[";
-
-			int nOfStates = states.size();
-			stateString += states.get(0).toString();
-
-			for (int i = 1; i < nOfStates; i++) {
-				stateString += ", " + states.get(i);
-			}
-
-			stateString += "]";
-		}
+//		if (!states.isEmpty()) {
+//			stateString += "[";
+//
+//			int nOfStates = states.size();
+//			stateString += states.get(0).toString();
+//
+//			for (int i = 1; i < nOfStates; i++) {
+//				stateString += ", " + states.get(i);
+//			}
+//
+//			stateString += "]";
+//		}
 
 		if (!weight.isOne()) {
 			weightString = " # " + weight;
 		}
 
-		return tree + stateString + " -> " + resultingState + weightString;
+		return tree + " -> " + resultingState + weightString;
 	}
 
 //	private class Application {

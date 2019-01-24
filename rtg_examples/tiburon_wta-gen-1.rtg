@@ -1,0 +1,23 @@
+qq
+qq -> qa
+qq -> qb
+qq -> qa1
+qq -> qb1
+pa -> b # 1.0
+pb -> b # 2.0
+pa1 -> b # 1.0
+pb1 -> b # 2.0
+pa -> a # 2.0
+pb -> a # 1.0
+pa1 -> a # 2.0
+pb1 -> a # 1.0
+qa -> ball(pa pa)
+qa -> ball(qa qa)
+qb -> ball(pb pb)
+qb -> ball(qb qb)
+pa -> ball(pa qa)
+pa -> ball(qa pa)
+pb -> ball(pb qb)
+pb -> ball(qb pb)
+qa1 -> ball(pa1 pa1)
+qb1 -> ball(pb1 pb1)

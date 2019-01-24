@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Stack;
 
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -46,6 +49,8 @@ public class RTGParser implements Parser {
 	private boolean forDerivations;
 	private int ruleCounter;
 
+	private WTA wta;
+
 	public RTGParser(Semiring semiring) {
 		this.semiring = semiring;
 //		this.finalStates = new HashMap<>();
@@ -53,6 +58,7 @@ public class RTGParser implements Parser {
 		this.hasFinalState = false;
 		this.ruleCounter = 0;
 		this.forDerivations = false;
+		wta = new WTA(semiring);
 	}
 
 	public WTA parseForBestTrees(String fileName) {
@@ -67,14 +73,14 @@ public class RTGParser implements Parser {
 
 	private WTA parse(String fileName) {
 
-		WTA wta = new WTA(semiring);
+		wta = new WTA(semiring);
 		int rowCounter = 1;
 
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 			String line;
 
 			while ((line = br.readLine()) != null) {
-				parseLine(line, wta);
+				parseLine(line);
 				rowCounter++;
 			}
 
@@ -101,7 +107,7 @@ public class RTGParser implements Parser {
 
 
 
-	public void parseLine(String line, WTA wta)
+	public void parseLine(String line)
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 
@@ -116,7 +122,11 @@ public class RTGParser implements Parser {
 						+ "illegal characters.");
 			}
 
-			wta.setFinalState(line.trim());
+			String stateLabel = line.trim();
+			Symbol stateSymb = wta.addSymbol(stateLabel, 0);
+			stateSymb.setNonterminal(true);
+			wta.addState(stateLabel);
+			wta.setFinalState(stateLabel);
 			hasFinalState = true;
 
 		} else {
@@ -139,116 +149,80 @@ public class RTGParser implements Parser {
 						" has parentheses in its left-hand side.");
 			}
 
-			Node tree = buildTree(wta, rhs);
+			Node tree = buildTree(rhs, 0);
 			State resultingState = wta.addState(lhs);
 			resultingState.getLabel().setNonterminal(true);
 
 			Rule newRule = new Rule(tree, weight,
 					resultingState);
 
-//			if (!containsParsingCharacters(lhs)) { // Leaf rule
-//				String symbolString = lhs;
-//
-//				if (forDerivations) {
-//					symbolString += "//rule" + ruleCounter;
-//				}
-//
-//				Symbol symbol = wta.addSymbol(symbolString, 0);
-//				State resultingState = wta.addState(rhs);
-//				Node tree = new Node(symbol);
-//
-//				newRule = new Rule<>(symbol, weight, resultingState, tree);
-//
-//			} else { // Non-leaf rule
-//
-//				if (!containsParsingCharacters(lhs)) {
-//					Node tree = new Node(wta.addSymbol(lhs, 0));
-//				} else {
-//
-//					Node tree = new Node(getSymbol(wta, lhs));
-//
-//					tree.addChild();
-//
-//					String[] parts = lhs.split(" ");
-//					int numberOfLeftHandStates = parts.length;
-//
-//					String symbolString = parts[0];
-//
-//					if (forDerivations) {
-//						symbolString += "//rule" + ruleCounter;
-//					}
-//
-//					Symbol symbol = wta.addSymbol(symbolString, numberOfLeftHandStates);
-//					State resultingState = wta.addState(parts[1 + numberOfLeftHandStates]);
-//
-//					newRule = new Rule<>(symbol, weight, resultingState);
-//
-//					for (int i = 1; i < numberOfLeftHandStates + 1; i++) {
-//						newRule.addState(wta.addState(parts[i]));
-//					}
-//
-//				}
-//			}
-
 			wta.addRule(newRule);
 			ruleCounter++;
 		}
-
-
-//		if (line.matches(EMPTY_LINE_REGEX) ||
-//				line.matches(COMMENT_LINE_REGEX)) {
-//			// Ignore empty lines and comments.
-//		} else if (line.matches(FINAL_REGEX)) {
-//			parseFinal(line, wta);
-//		} else if (line.matches(LEAF_RULE_REGEX)) {
-//			parseLeafRule(line, wta);
-//		} else if (line.matches(NON_LEAF_RULE_REGEX)) {
-//			parseNonLeafRule(line, wta);
-//		} else {
-//			throw new IllegalArgumentException("Line " + line +
-//					" was not correct.");
-//		}
 	}
 
-	private Node buildTree(WTA wta, String lhs)
+	private Node buildTree(String rhs, int nOfChildren)
 			throws SymbolUsageException {
 
-		if (!containsParsingCharacters(lhs)) { // Leaf rule
-			String symbolString = lhs;
-
+		if (!containsParsingCharacters(rhs)) {
+			String symbolString = rhs.trim();
 			if (forDerivations) {
 				symbolString += "//rule" + ruleCounter;
 			}
 
-			Symbol symbol = wta.addSymbol(symbolString, 0);
+			Symbol symbol = wta.addSymbol(symbolString, nOfChildren);
 			Node tree = new Node(symbol);
 
 			return tree;
 
-		} else { // Non-leaf rule
+		} else {
 
-			String[] parts = lhs.split(" ");
-			int numberOfLeftHandStates = parts.length;
+			int length = rhs.length();
+			Stack<Character> parStack = new Stack<>();
+			String currentString = "";
 
-			Node tree = new Node(wta.addSymbol(lhs,
-					numberOfLeftHandStates));
+			Node tree = null;
+			String treeString = null;
+			LinkedList<Node> children = new LinkedList<>();
 
-			String symbolString = parts[0];
+			for (int i = 0; i < length; i++) {
+				char c = rhs.charAt(i);
 
-			if (forDerivations) {
-				symbolString += "//rule" + ruleCounter;
+				if (c == '(') {
+					treeString = rhs.substring(0, i);
+					boolean done = false;
+					parStack.push(c);
+
+					while (!done) {
+						i++;
+						c = rhs.charAt(i);
+
+						if (c == '(') {
+							parStack.push(c);
+						} else if (c == ')') {
+							parStack.pop();
+						}
+
+						if (parStack.empty()) {
+							done = true;
+						}
+
+						if (done || (c == ' ' && !currentString.isEmpty() && parStack.size() == 1)) {
+							Node tempTree = buildTree(currentString, 0);
+							children.addLast(tempTree);
+							currentString = "";
+						} else {
+							currentString += c;
+						}
+					}
+				}
 			}
 
-			Symbol symbol = wta.addSymbol(symbolString, numberOfLeftHandStates);
-			State resultingState = wta.addState(parts[1 + numberOfLeftHandStates]);
+			int size = children.size();
+			tree = buildTree(treeString, size);
 
-//			newRule = new Rule<>(symbol, weight, resultingState);
-			// How to handle states? Add in tree and to wta but just mark them as states?
-			// they are states if leaves is not true.
-
-			for (int i = 1; i < numberOfLeftHandStates + 1; i++) {
-//				newRule.addState(wta.addState(parts[i]));
-				tree.addChild(buildTree(wta, parts[i]));
+			while (!children.isEmpty()) {
+				tree.addChild(children.pollFirst());
 			}
 
 			return tree;
