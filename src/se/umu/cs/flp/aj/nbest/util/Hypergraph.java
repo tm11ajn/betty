@@ -25,17 +25,19 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.wta.State;
+import se.umu.cs.flp.aj.nbest.wta.Symbol;
 import se.umu.cs.flp.aj.nbest.wta.exceptions.DuplicateRuleException;
 
 public class Hypergraph<N, E> {
 
-	private HashMap<N, Node> sourceNodes;
+//	private HashMap<N, Node> sourceNodes;
 	private HashMap<N, Node> nodes;
 	private HashMap<E, Edge> edges;
 
 
 	public Hypergraph() {
-		this.sourceNodes = new HashMap<>();
+//		this.sourceNodes = new HashMap<>();
 		this.nodes = new HashMap<>();
 		this.edges = new HashMap<>();
 	}
@@ -52,7 +54,30 @@ public class Hypergraph<N, E> {
 		if (!nodes.containsKey(node)) {
 			Node newNode = new Node(node);
 			nodes.put(node, newNode);
-			sourceNodes.put(node, newNode);
+//			sourceNodes.put(node, newNode);
+		}
+	}
+
+	public void removeNode(N node) {
+
+		if (nodes.containsKey(node)) {
+			Node n = nodes.get(node);
+			ArrayList<E> incoming = new ArrayList<>(n.getIncoming().keySet());
+			ArrayList<E> outgoing = new ArrayList<>(n.getOutgoing().keySet());
+
+			for (E edge : incoming) {
+				removeEdge(edge);
+			}
+
+			for (E edge : outgoing) {
+				removeEdge(edge);
+			}
+
+//			if (sourceNodes.containsKey(node)) {
+//				sourceNodes.remove(node);
+//			}
+
+			nodes.remove(node);
 		}
 	}
 
@@ -78,9 +103,9 @@ public class Hypergraph<N, E> {
 			to = nodes.get(toNode);
 		}
 
-		if (sourceNodes.containsKey(toNode)) {
-			sourceNodes.remove(toNode);
-		}
+//		if (sourceNodes.containsKey(toNode)) {
+//			sourceNodes.remove(toNode);
+//		}
 
 		e.setTo(to);
 		to.addIncoming(e);
@@ -106,35 +131,41 @@ public class Hypergraph<N, E> {
 	}
 
 	public void removeEdge(E edge) {
-		Edge e = edges.get(edge);
-		Node to = e.getTo();
-		to.removeIncoming(e);
 
-		if (to.getIncoming().isEmpty()) {
-			sourceNodes.put(to.getElement(), to);
+		if (edges.containsKey(edge)) {
+			Edge e = edges.get(edge);
+			Node to = e.getTo();
+			to.removeIncoming(e);
+
+//		if (to.getIncoming().isEmpty() && !to.getOutgoing().isEmpty()) {
+//			sourceNodes.put(to.getElement(), to);
+//		}
+
+			for (Node from : e.getFrom()) {
+//if (from.getElement().toString().equals("DUMMY_SOURCE")) {
+//System.out.println("removing " + e + " from dummy source");
+//}
+				from.removeOutgoing(e);
+			}
+
+			edges.remove(edge);
 		}
-
-		for (Node from : e.getFrom()) {
-			from.removeOutgoing(e);
-		}
-
-		edges.remove(e);
 	}
 
-	public ArrayList<N> getSourceNodes() {
-		return new ArrayList<>(sourceNodes.keySet());
-	}
+//	public ArrayList<N> getSourceNodes() {
+//		return new ArrayList<>(sourceNodes.keySet());
+//	}
 
-	public ArrayList<E> getSourceEdges() {
-		ArrayList<E> sourceEdges = new ArrayList<>();
-
-		for (Node n : sourceNodes.values()) {
-			HashMap<E, Edge> edgeList = n.getOutgoing();
-			sourceEdges.addAll(edgeList.keySet());
-		}
-
-		return sourceEdges;
-	}
+//	public ArrayList<E> getSourceEdges() {
+//		ArrayList<E> sourceEdges = new ArrayList<>();
+//
+//		for (Node n : sourceNodes.values()) {
+//			HashMap<E, Edge> edgeList = n.getOutgoing();
+//			sourceEdges.addAll(edgeList.keySet());
+//		}
+//
+//		return sourceEdges;
+//	}
 
 	public ArrayList<N> getNodes() {
 		return new ArrayList<>(nodes.keySet());
@@ -198,7 +229,7 @@ public class Hypergraph<N, E> {
 		@Override
 		public boolean equals(Object arg0) {
 			if (arg0 instanceof Hypergraph.Node) {
-				return element.equals(((Hypergraph.Node) arg0).element);
+				return element.equals(((Hypergraph<?,?>.Node) arg0).element);
 			}
 			return super.equals(arg0);
 		}
@@ -244,12 +275,6 @@ public class Hypergraph<N, E> {
 			this.from.add(prev);
 		}
 
-//		public void setFrom(ArrayList<Node> fromNodes) {
-//			for (Node n : fromNodes) {
-//				addFrom(n);
-//			}
-//		}
-
 		public void setTo(Node next) {
 			this.to = next;
 		}
@@ -265,7 +290,7 @@ public class Hypergraph<N, E> {
 		@Override
 		public boolean equals(Object arg0) {
 			if (arg0 instanceof Hypergraph.Edge) {
-				return element.equals(((Hypergraph.Edge)arg0).element);
+				return element.equals(((Hypergraph<?,?>.Edge)arg0).element);
 			}
 			return false;
 		}

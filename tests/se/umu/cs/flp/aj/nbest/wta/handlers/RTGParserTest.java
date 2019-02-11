@@ -33,7 +33,7 @@ public class RTGParserTest {
 	private Semiring semiring = new TropicalSemiring();
 
 	private RTGParser rtgParser = new RTGParser(semiring);
-	private WTA wta = new WTA(semiring);
+	private WTA wta;
 
 //	private Symbol ASymb = new Symbol("A", 0);
 //	private Symbol aSymb = new Symbol("a", 0);

@@ -146,6 +146,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 	public void addLast(int rankIndex, V value) {
 
 		if (elements.get(rankIndex).size() < limit) {
+//System.out.println("IF");
 			boolean wasEmpty = isEmpty();
 			updateEmptyStatus(rankIndex);
 			elements.get(rankIndex).add(value);
@@ -178,7 +179,14 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 						iterator.remove();
 					}
 				}
+
+				/* Just added in case */
+				if (pendingConfigs.get(rankIndex).isEmpty()) {
+					pendingConfigs.remove(rankIndex);
+				}
 			}
+		} else {
+//System.out.println("ELSE");
 		}
 	}
 

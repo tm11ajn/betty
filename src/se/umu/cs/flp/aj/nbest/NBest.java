@@ -36,6 +36,8 @@ import se.umu.cs.flp.aj.knuth.KnuthSmallestDerivations;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.SemiringFactory;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
+import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.parsers.Parser;
@@ -147,13 +149,20 @@ public class NBest {
 //System.out.println("wta");
 //System.out.println(wta);
 //System.out.println("Leaf rules:");
-//for (Rule<Symbol> r : wta.getSourceRules()) {
+//for (Rule r : wta.getSourceRules()) {
 //System.out.println(r);
-//System.out.println("rank=" + r.getRank());
+//System.out.println("Number of states=" + r.getNumberOfStates());
+//System.out.println("Leaves: " + r.getTree().getLeaves());
 //}
 //System.out.println("Source nodes: ");
 //for (State s : wta.getSourceNodes()) {
 //System.out.println(s);
+//}
+//System.out.println("ALL RULES: ");
+//for (Rule r : wta.getRules()) {
+//System.out.println(r);
+//System.out.println("Number of states=" + r.getNumberOfStates());
+//System.out.println("Leaves: " + r.getTree().getLeaves());
 //}
 //System.exit(-1);
 
@@ -170,6 +179,9 @@ public class NBest {
 		System.out.println("Smallest completions done (took "
 				+ duration + " milliseconds).");
 
+//System.out.println("wta");
+//System.out.println(wta);
+
 //for (Entry<State, Weight> sc : smallestCompletions.entrySet()) {
 //System.out.println(sc.getKey() + " : " + sc.getValue());
 //}
@@ -180,9 +192,11 @@ public class NBest {
 
 			startTime = System.nanoTime();
 			List<String> result = BestTrees2.run(wta, N);
+//			List<TreeKeeper2> result = BestTrees2.run(wta, N);
 			endTime = System.nanoTime();
 
 			printResult(result, derivations);
+//			printResult2(result, derivations);
 
 			if (timer) {
 				duration = (endTime - startTime)/1000000;
@@ -261,6 +275,20 @@ public class NBest {
 	private static void printResult(List<String> result, boolean derivations) {
 
 		for (String treeString : result) {
+
+			if (derivations) {
+				treeString = treeString.replaceAll("//rule[0-9]*", "");
+			}
+
+			System.out.println(treeString);
+		}
+	}
+
+	private static void printResult2(List<TreeKeeper2> result, boolean derivations) {
+
+		for (TreeKeeper2 tk : result) {
+
+			String treeString = tk.getTree() + " " + tk.getRunWeight();
 
 			if (derivations) {
 				treeString = treeString.replaceAll("//rule[0-9]*", "");

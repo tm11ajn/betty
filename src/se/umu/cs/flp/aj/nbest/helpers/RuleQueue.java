@@ -36,6 +36,9 @@ public class RuleQueue {
 	private PriorityQueue<RuleKeeper> queue;
 	private HashMap<Rule, RuleKeeper> ruleKeepers;
 
+	private int limit;
+	private HashMap<State, Integer> stateUsage;
+
 	public RuleQueue(WTA wta, int limit) {
 		this.wta = wta;
 		this.queue = new PriorityQueue<>();
@@ -52,25 +55,36 @@ public class RuleQueue {
 				keeper.setQueued(true);
 			}
 		}
+
+		this.limit = limit;
+		this.stateUsage = new HashMap<>();
 	}
 
 	public void expandWith(TreeKeeper2 newTree) {
 		State state = newTree.getResultingState();
 
-		for (Rule rule : wta.getRulesByState(state)) {
-			RuleKeeper currentKeeper = ruleKeepers.get(rule);
-			ArrayList<Integer> stateIndices = rule.getIndexOfState(state);
+		if (!stateUsage.containsKey(state)) {
+			stateUsage.put(state, 0);
+		}
 
-			for (Integer index : stateIndices) {
-				currentKeeper.addTreeForStateIndex(newTree, index);
+		if (stateUsage.get(state) < limit) {
+			for (Rule rule : wta.getRulesByState(state)) {
+				RuleKeeper currentKeeper = ruleKeepers.get(rule);
+				ArrayList<Integer> stateIndices = rule.getIndexOfState(state);
+
+				for (Integer index : stateIndices) {
+					currentKeeper.addTreeForStateIndex(newTree, index);
+				}
+
+				if (!currentKeeper.isQueued() && !currentKeeper.isPaused()) {
+					currentKeeper.next();
+					queue.add(currentKeeper);
+					currentKeeper.setQueued(true);
+				}
+
 			}
 
-			if (!currentKeeper.isQueued() && !currentKeeper.isPaused()) {
-				currentKeeper.next();
-				queue.add(currentKeeper);
-				currentKeeper.setQueued(true);
-			}
-
+			stateUsage.put(state, stateUsage.get(state) + 1);
 		}
 	}
 

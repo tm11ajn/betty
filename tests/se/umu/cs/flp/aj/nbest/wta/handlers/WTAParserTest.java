@@ -232,7 +232,7 @@ public class WTAParserTest {
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight);
-		assertThat(wta.getRulesByResultingState(qf).get(0).getRank(),
+		assertThat(wta.getRulesByResultingState(qf).get(0).getNumberOfStates(),
 				is(2));
 	}
 
@@ -276,7 +276,7 @@ public class WTAParserTest {
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 		wtaParser.parseLine(nonLeafRuleLineWithWeight2);
-		assertThat(wta.getRulesByResultingState(qf).get(0).getRank(),
+		assertThat(wta.getRulesByResultingState(qf).get(0).getNumberOfStates(),
 				is(1));
 	}
 
@@ -305,7 +305,8 @@ public class WTAParserTest {
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 		wtaParser.parseLine(mtDataTestRuleLine);
-		assertThat(wta.getRulesByResultingState(mtq1).get(0).getRank(), is(1));
+		assertThat(wta.getRulesByResultingState(mtq1).get(0).getNumberOfStates(),
+				is(1));
 	}
 
 	/**

@@ -41,6 +41,9 @@ public class Rule {
 
 	private State resultingState;
 
+	private int hashCode;
+	private boolean validHash;
+
 	public Rule(Node tree, Weight weight,
 			State resultingState, State ... states) {
 
@@ -54,6 +57,8 @@ public class Rule {
 			addToStateMap(state, rank);
 			rank++;
 		}
+
+		validHash = false;
 	}
 
 //	public Rule(Symbol symbol, Weight weight, State resultingState,
@@ -134,6 +139,7 @@ public class Rule {
 		this.states.add(state);
 		addToStateMap(state, rank);
 		rank++;
+		validHash = false;
 	}
 
 	private void addToStateMap(State state, int index) {
@@ -152,8 +158,12 @@ public class Rule {
 		return weight;
 	}
 
-	public int getRank() {
-		return rank;
+//	public int getRank() {
+//		return rank;
+//	}
+
+	public int getNumberOfStates() {
+		return states.size();
 	}
 
 	public boolean hasState(State state) {
@@ -205,16 +215,24 @@ public class Rule {
 	@Override
 	public int hashCode() {
 
-		int hash = 7*tree.getLabel().hashCode() + 11*resultingState.hashCode();
+		if (!validHash) {
 
-		for (State s : states) {
-			hash += s.hashCode();
+//		int hash = 7*tree.getLabel().hashCode() + 11*resultingState.hashCode();
+			hashCode = 7*tree.hashCode() + 11*resultingState.hashCode();
+
+			for (State s : states) {
+				hashCode += s.hashCode();
+			}
+
+			// Added when using string for equal
+			hashCode += weight.hashCode();
+
+			validHash = true;
 		}
 
-		// Added when using string for equal
-		hash += weight.hashCode();
+//System.out.println("Hash for " + this + " is " + hash);
 
-		return hash;
+		return hashCode;
 	}
 
 

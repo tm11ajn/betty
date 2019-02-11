@@ -26,6 +26,7 @@ import java.util.List;
 
 import se.umu.cs.flp.aj.nbest.helpers.RuleQueue;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
@@ -33,7 +34,7 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class BestTrees2 {
 
-	private static HashMap<TreeKeeper2, TreeKeeper2>
+	private static HashMap<Node, TreeKeeper2>
 			outputtedTrees;
 	private static RuleQueue ruleQueue;
 
@@ -42,10 +43,13 @@ public class BestTrees2 {
 		TreeKeeper2.init(smallestCompletions);
 	}
 
+
 	public static List<String> run(WTA wta, int N) {
+//	public static List<TreeKeeper2> run(WTA wta, int N) {
 
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();
+//		List<TreeKeeper2> nBest = new ArrayList<>();
 
 		// T <- empty. K <- empty
 		outputtedTrees = new HashMap<>();
@@ -60,7 +64,7 @@ public class BestTrees2 {
 			// t <- dequeue(K)
 			TreeKeeper2 currentTree = ruleQueue.nextTree();
 
-			if (!outputtedTrees.containsKey(currentTree)) {
+			if (!outputtedTrees.containsKey(currentTree.getTree())) {
 
 				if (currentTree.getRunWeight().equals(
 						currentTree.getDeltaWeight()) &&
@@ -69,7 +73,8 @@ public class BestTrees2 {
 					// output(t)
 					nBest.add(currentTree.getTree().toString() + " " +
 							currentTree.getDeltaWeight().toString());
-					outputtedTrees.put(currentTree, currentTree);
+//					nBest.add(currentTree);
+					outputtedTrees.put(currentTree.getTree(), null);
 
 					foundTrees++;
 				}

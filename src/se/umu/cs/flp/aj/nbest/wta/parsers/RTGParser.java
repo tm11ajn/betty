@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -23,41 +24,25 @@ public class RTGParser implements Parser {
 
 	public static final String EMPTY_LINE_REGEX = "^\\s*$";
 	public static final String COMMENT_LINE_REGEX = "^//.*|^%.*";
-	public static final String FINAL_REGEX = "^\\s*[^,# \\[\\]]+\\s*$";
-
-	public static final String LEAF_RULE_REGEX =
-			"^\\s*[^,# \\[\\]]+\\s*->\\s*[^,# \\[\\]]+" +
-			"\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)?$";
-
-	public static final String NON_LEAF_RULE_REGEX =
-			"^\\s*[^,# \\[\\]]+\\[\\s*[^,# \\[\\]]+\\s*(,\\s*[^,# \\[\\]]+\\s*)*"
-			+ "\\]\\s*->\\s*[^,# \\[\\]]+\\s*(\\#\\s*\\d+(\\.\\d+)?\\s*)*$";
-
-
-	public static final String FINAL_SPLIT_REGEX = "\\s+|(\\s*,\\s*)";
-
-	public static final String LEAF_RULE_SPLIT_REGEX = "\\s*((->)|#)\\s*";
-
-	public static final String NON_LEAF_RULE_SPLIT_REGEX =
-			"\\s*((\\]\\s*->)|#|\\[|,)\\s*";
 
 	private Semiring semiring;
-//	private HashMap<State, State> finalStates;
-//	private State finalState;
 	private boolean hasFinalState;
 
 	private boolean forDerivations;
 	private int ruleCounter;
+	private ArrayList<Rule> tempRules;
 
 	private WTA wta;
 
+	private HashMap<Symbol, Node> nodeMap;
+
 	public RTGParser(Semiring semiring) {
 		this.semiring = semiring;
-//		this.finalStates = new HashMap<>();
-//		this.finalState = null;
 		this.hasFinalState = false;
 		this.ruleCounter = 0;
 		this.forDerivations = false;
+		nodeMap = new HashMap<>();
+		tempRules = new ArrayList<>();
 		wta = new WTA(semiring);
 	}
 
@@ -73,6 +58,8 @@ public class RTGParser implements Parser {
 
 	private WTA parse(String fileName) {
 
+		nodeMap = new HashMap<>();
+		tempRules = new ArrayList<>();
 		wta = new WTA(semiring);
 		int rowCounter = 1;
 
@@ -83,6 +70,24 @@ public class RTGParser implements Parser {
 				parseLine(line);
 				rowCounter++;
 			}
+
+//System.out.println("Going through tempRules: ");
+			for (Rule r : tempRules) {
+//System.out.println("Current rule: " + r);
+				ArrayList<Node> leaves = r.getTree().getLeaves();
+//System.out.println("Leaves of current tree: " + leaves);
+				for (Node leaf : leaves) {
+//System.out.println("Current leaf: " + leaf);
+					if (leaf.getLabel().isNonterminal()) {
+//System.out.println("Put as nonterminal");
+						r.addState(wta.addState(leaf.getLabel().getLabel()));
+					}
+				}
+				wta.addRule(r);
+			}
+
+//System.out.println("wta:");
+//System.out.println(wta);
 
 		} catch (FileNotFoundException e) {
 			System.err.println("File " + fileName + " not found.");
@@ -101,7 +106,6 @@ public class RTGParser implements Parser {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
-
 		return wta;
 	}
 
@@ -130,7 +134,7 @@ public class RTGParser implements Parser {
 			hasFinalState = true;
 
 		} else {
-			String[] sides = line.trim().split("(->)|#");
+			String[] sides = line.trim().split("(->)|[^\\\\]#");
 			Weight weight = semiring.one();
 
 			if (sides.length < 2 || sides.length > 3) {
@@ -156,7 +160,7 @@ public class RTGParser implements Parser {
 			Rule newRule = new Rule(tree, weight,
 					resultingState);
 
-			wta.addRule(newRule);
+			tempRules.add(newRule);
 			ruleCounter++;
 		}
 	}
@@ -166,12 +170,23 @@ public class RTGParser implements Parser {
 
 		if (!containsParsingCharacters(rhs)) {
 			String symbolString = rhs.trim();
-			if (forDerivations) {
+			if (forDerivations && nOfChildren > 0) {
 				symbolString += "//rule" + ruleCounter;
 			}
 
 			Symbol symbol = wta.addSymbol(symbolString, nOfChildren);
+
+//			Node tree;
+//
+//			if (nodeMap.containsKey(symbol)) {
+//				tree = nodeMap.get(symbol);
+//			} else {
+//				tree = new Node(symbol);
+//				nodeMap.put(symbol, tree);
+//			}
+
 			Node tree = new Node(symbol);
+//System.out.println("New node " + tree);
 
 			return tree;
 
@@ -207,7 +222,9 @@ public class RTGParser implements Parser {
 							done = true;
 						}
 
-						if (done || (c == ' ' && !currentString.isEmpty() && parStack.size() == 1)) {
+						if (done || (c == ' ' &&
+								!currentString.isEmpty() &&
+								parStack.size() == 1)) {
 							Node tempTree = buildTree(currentString, 0);
 							children.addLast(tempTree);
 							currentString = "";
@@ -225,112 +242,29 @@ public class RTGParser implements Parser {
 				tree.addChild(children.pollFirst());
 			}
 
+//			Iterator<Node> it = children.iterator();
+//
+//			while (it.hasNext()) {
+//				tree.addChild(it.next());
+//				it.remove();
+//			}
+
+
+
+//System.out.println("RETURN TREE: " + tree);
+//System.out.println("TREE LEAVES: " + tree.getLeaves());
+
 			return tree;
 		}
 	}
 
-//	private Symbol getSymbol(WTA wta, String lhs) {
-//
-//		String[] parts = lhs.split(" ");
-//		int numberOfLeftHandStates = parts.length;
-//
-//		String symbolString = parts[0];
-//
-//		if (forDerivations) {
-//			symbolString += "//rule" + ruleCounter;
-//		}
-//
-//		Symbol symbol = wta.addSymbol(symbolString, numberOfLeftHandStates);
-//		State resultingState = wta.addState(parts[1 + numberOfLeftHandStates]);
-//
-//		newRule = new Rule<>(symbol, weight, resultingState);
-//
-//		for (int i = 1; i < numberOfLeftHandStates + 1; i++) {
-//			newRule.addState(wta.addState(parts[i]));
-//		}
-//	}
-
 	private boolean containsParsingCharacters(String line) {
 
-		if (line.matches(".*\\(.*|.*\\).*|.*#.*|.*->.*")) {
+		if (line.matches(".*\\(.*|.*\\).*|.*[^\\\\]#.*|.*->.*")) {
 			return true;
 		}
 
 		return false;
 	}
-
-	private void parseFinal(String line, WTA wta) {
-		String[] finals = line.trim().split(FINAL_SPLIT_REGEX);
-		int size = finals.length;
-
-//		for (int i = 1; i < size; i++) {
-//			if (!finalStates.containsKey(finals[i])) {
-//				wta.setFinalState(finals[i]);
-//			}
-//		}
-	}
-
-//	private void parseLeafRule(String line, WTA wta)
-//			throws SymbolUsageException, DuplicateRuleException {
-//
-//		String[] labels = line.trim().split(LEAF_RULE_SPLIT_REGEX);
-//
-//		String symbolString = labels[0];
-//
-//		if (forDerivations) {
-//			symbolString += "//rule" + ruleCounter;
-//		}
-//
-//		Symbol symbol = wta.addSymbol(symbolString, 0);
-//		State resultingState = wta.addState(labels[1]);
-//
-//		Rule newRule;
-//
-//		if (labels.length == 3) {
-//			double value = Double.parseDouble(labels[2]);
-//			Weight weight = semiring.createWeight(value);
-//			newRule = new Rule(symbol, weight, resultingState);
-//		} else {
-//			Weight weight = semiring.one();
-//			newRule = new Rule(symbol, weight, resultingState);
-//		}
-//
-//		wta.addRule(newRule);
-//		ruleCounter++;
-//	}
-
-//	private void parseNonLeafRule(String line, WTA wta)
-//			throws SymbolUsageException, DuplicateRuleException {
-//
-//		String[] labels = line.trim().split(NON_LEAF_RULE_SPLIT_REGEX);
-//
-//		int numberOfLabels = labels.length;
-//		int numberOfLeftHandStates = numberOfLabels - 2;
-//
-//		Weight weight = semiring.one();
-//
-//		if (line.contains("#")) {
-//			double value = Double.parseDouble(labels[numberOfLabels - 1]);
-//			weight = semiring.createWeight(value);
-//			numberOfLeftHandStates -= 1;
-//		}
-//
-//		String symbolString = labels[0];
-//
-//		if (forDerivations) {
-//			symbolString += "//rule" + ruleCounter;
-//		}
-//
-//		Symbol symbol = wta.addSymbol(symbolString, numberOfLeftHandStates);
-//		State resultingState = wta.addState(labels[1 + numberOfLeftHandStates]);
-//
-//		Rule newRule = new Rule(symbol, weight, resultingState);
-//
-//		for (int i = 1; i < numberOfLeftHandStates + 1; i++) {
-//			newRule.addState(wta.addState(labels[i]));
-//		}
-//		wta.addRule(newRule);
-//		ruleCounter++;
-//	}
 
 }

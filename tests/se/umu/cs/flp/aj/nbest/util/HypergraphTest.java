@@ -29,9 +29,18 @@ public class HypergraphTest {
 	}
 
 	@Test
+	public void testAutomataGraph3() throws DuplicateRuleException {
+		h = createAutomataGraph();
+		assertThat(h.getOutgoing("source").get(0), is("a -> pa"));
+	}
+
+	@Test
 	public void testAutomataGraph2() throws DuplicateRuleException {
 		h = createAutomataGraph();
-		assertThat(h.getSourceEdges().get(0), is("a -> pa"));
+		h.removeEdge("a -> pa");
+		h.removeEdge("f[pa, qa] -> pa");
+		h.removeEdge("f[qa, pa] -> pa");
+		assertThat(h.getIncoming("pa").size(), is(0));
 	}
 
 	@Test
@@ -40,19 +49,22 @@ public class HypergraphTest {
 		h.removeEdge("a -> pa");
 		h.removeEdge("f[pa, qa] -> pa");
 		h.removeEdge("f[qa, pa] -> pa");
-		assertThat(h.getSourceNodes().size(), is(2));
+		assertThat(h.getOutgoing("pa").size(), is(1));
 	}
 
 	@Test
 	public void testAutomataGraph0() throws DuplicateRuleException {
 		h = createAutomataGraph();
-		assertThat(h.getSourceNodes().get(0), is("source"));
+		assertThat(h.getOutgoing("source").get(0), is("a -> pa"));
 	}
 
 	@Test
-	public void testInsertion() {
+	public void testInsertion() throws DuplicateRuleException {
 		h.addNode("source");
-		assertThat(h.getSourceNodes().get(0), is("source"));
+		h.addNode("q0");
+		h.addEdge("edge", "q0", "source");
+		assertThat(h.getOutgoing("source").get(0), is("edge"));
+//		assertThat(h.getOutgoing("source").get(0), is("source"));
 	}
 
 	@Test
@@ -60,16 +72,76 @@ public class HypergraphTest {
 		h.addNode("source");
 		h.addNode("q");
 		h.addEdge("edge", "q", "source");
-		assertThat(h.getSourceNodes().get(0), is("source"));
+		assertThat(h.getOutgoing("source").size(), is(1));
 	}
 
 	@Test
-	public void testRemove() throws DuplicateRuleException {
+	public void testAdd2() throws DuplicateRuleException {
+		h.addNode("source");
+		h.addNode("q");
+		h.addEdge("edge", "q", "source");
+		assertThat(h.getOutgoing("source").get(0).toString(), is("edge"));
+	}
+
+	@Test
+	public void testAdd3() throws DuplicateRuleException {
+		h.addNode("source");
+		h.addNode("q");
+		h.addEdge("edge", "q", "source");
+		assertThat(h.getIncoming("q").size(), is(1));
+	}
+
+	@Test
+	public void testAdd4() throws DuplicateRuleException {
+		h.addNode("source");
+		h.addNode("q");
+		h.addEdge("edge", "q", "source");
+		assertThat(h.getIncoming("q").get(0).toString(), is("edge"));
+	}
+
+	@Test
+	public void testRemoveEdge() throws DuplicateRuleException {
 		h.addNode("source");
 		h.addNode("q");
 		h.addEdge("edge", "q", "source");
 		h.removeEdge("edge");
-		assertThat(h.getSourceNodes().size(), is(2));
+		assertThat(h.getOutgoing("source").size(), is(0));
+//		assertThat(h.getSourceNodes().size(), is(2));
+	}
+
+	@Test
+	public void testRemoveEdge2() throws DuplicateRuleException {
+		h = createAutomataGraph();
+		h.removeEdge("a -> pa");
+		assertThat(h.getOutgoing("source").size(), is(0));
+	}
+
+	@Test
+	public void testRemoveEdge3() throws DuplicateRuleException {
+		h = createAutomataGraph();
+		h.removeEdge("a -> pa");
+		assertThat(h.getOutgoing("pa").size(), is(3));
+	}
+
+	@Test
+	public void testRemoveNode() throws DuplicateRuleException {
+		h = createAutomataGraph();
+		h.removeNode("pa");
+		assertThat(h.getOutgoing("source").size(), is(0));
+	}
+
+	@Test
+	public void testRemoveNode2() throws DuplicateRuleException {
+		h = createAutomataGraph();
+		h.removeNode("pa");
+		assertThat(h.getEdges().size(), is(1));
+	}
+
+	@Test
+	public void testRemoveNode3() throws DuplicateRuleException {
+		h = createAutomataGraph();
+		h.removeNode("pa");
+		assertThat(h.getNodes().size(), is(2));
 	}
 
 	@Test
@@ -78,7 +150,7 @@ public class HypergraphTest {
 		h.addNode("q");
 		h.addEdge("edge", "q", "source");
 		h.addEdge("edge2", "q", "source");
-		assertThat(h.getSourceEdges().size(), is(2));
+		assertThat(h.getOutgoing("source").size(), is(2));
 	}
 
 

@@ -19,58 +19,6 @@ public class KnuthSmallestDerivations {
 	private static LinkedList<Rule> usableRules;
 	private static HashMap<State, Weight> totalWeight;
 
-//	public static class QueueElement<V extends Comparable<V>> implements Comparable<QueueElement<V>> {
-//
-//		private V value;
-//		private Weight weight;
-//
-//		public QueueElement(V value, Weight weight) {
-//			this.value = value;
-//			this.weight = weight;
-//		}
-//
-//		public V getValue() {
-//			return value;
-//		}
-//
-//		public Weight getWeight() {
-//			return weight;
-//		}
-//
-//		@Override
-//		public int hashCode() {
-//			return value.hashCode();
-//		}
-//
-//		@Override
-//		public int compareTo(QueueElement<V> arg0) {
-//			int weightComparison = this.weight.compareTo(arg0.weight);
-//
-//			if (weightComparison == 0) {
-//				return this.value.compareTo(arg0.value);
-//			}
-//
-//			return weightComparison;
-//		}
-//
-//		@Override
-//		public boolean equals(Object arg0) {
-//
-//			if (!(arg0 instanceof QueueElement<?>)) {
-//				return false;
-//			}
-//
-//			QueueElement<?> o = (QueueElement<?>) arg0;
-//
-//			return value.equals(o.value) && weight.equals(o.weight);
-//		}
-//
-//		@Override
-//		public String toString() {
-//			return value.toString() + " # " +  weight.toString();
-//		}
-//	}
-
 	public static HashMap<State, Weight> getSmallestDerivations(WTA wta) {
 		KnuthSmallestDerivations.wta = wta;
 		HashMap<State, Weight> temp = computeCheapestTrees();
@@ -123,7 +71,9 @@ public class KnuthSmallestDerivations {
 
 			for (Rule r2 : wta.getRulesByState(state)) {
 				if (missingIndices.get(r2) == null) {
-					missingIndices.put(r2, r2.getRank());
+//					missingIndices.put(r2, r2.getRank());
+//					missingIndices.put(r2, r2.getStates().size());
+					missingIndices.put(r2, r2.getNumberOfStates());
 					seenStates.put(r2, new HashMap<>());
 				}
 
@@ -175,15 +125,14 @@ public class KnuthSmallestDerivations {
 		}
 
 		int nOfStates = wta.getStates().size();
+		boolean done = false;
 
-		while (defined.size() < nOfStates) {
+		while (!done && defined.size() < nOfStates) {
 			ListIterator<Rule> it = usableRules.listIterator();
 
 			while (it.hasNext()) {
 				Rule r = it.next();
 				State resState = r.getResultingState();
-//				Weight newWeight = r.getWeight().mult(defined.get(resState));
-
 				ArrayList<State> stateList = r.getStates();
 				int listSize = stateList.size();
 
@@ -211,16 +160,32 @@ public class KnuthSmallestDerivations {
 						totalWeight.put(s, newWeight);
 					}
 				}
+
 				it.remove();
 			}
 
-			BinaryHeap<State, Weight>.Node<State, Weight> element = queue.dequeue();
-			State state = element.getObject();
-			Weight weight = element.getWeight();
-			defined.put(state, weight);
+			if (!queue.empty()) {
+				BinaryHeap<State, Weight>.Node<State, Weight> element = queue.dequeue();
+				State state = element.getObject();
+				Weight weight = element.getWeight();
+				defined.put(state, weight);
 
-			for (Rule r : wta.getRulesByResultingState(state)) {
-				usableRules.addLast(r);
+				for (Rule r : wta.getRulesByResultingState(state)) {
+					usableRules.addLast(r);
+				}
+
+			} else {
+				done = true;
+
+				ArrayList<State> states = new ArrayList<>(
+						wta.getStates().values());
+
+				for (State s : states) {
+					if (!defined.containsKey(s)) {
+//						defined.put(s, wta.getSemiring().zero());
+						wta.removeState(s);
+					}
+				}
 			}
 		}
 

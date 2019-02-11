@@ -42,8 +42,12 @@ public class RankedAlphabet {
 			s = new Symbol(symbol, rank);
 			symbols.put(symbol, s);
 		} else if (s.getRank() != rank) {
-			throw new SymbolUsageException("Rank error: The symbol " +
-					symbol + " cannot be of two different ranks");
+//			throw new SymbolUsageException("Rank error: The symbol " +
+//					symbol + " cannot be of two different ranks (first "
+//							+ s.getRank() + " then " + rank +")");
+
+			s = new Symbol(symbol, rank);
+			symbols.put(symbol, s);
 		}
 
 		return s;

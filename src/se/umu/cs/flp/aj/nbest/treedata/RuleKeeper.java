@@ -36,12 +36,12 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 
 	public RuleKeeper(Rule rule, int limit) {
 		this.rule = rule;
-		this.ladder = new LazyLimitedLadderQueue<>(rule.getRank(),
+		this.ladder = new LazyLimitedLadderQueue<>(rule.getNumberOfStates(),
 				new TreeConfigurationComparator(), limit);
 		this.smallestTree = null;
 		this.paused = true;
 
-		if (rule.getRank() == 0) {
+		if (rule.getNumberOfStates() == 0) {
 			this.paused = false;
 		}
 	}
@@ -72,12 +72,12 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 //			smallestTree = new TreeKeeper2(rule.getSymbol(),
 //					rule.getWeight(), rule.getResultingState(), temp);
 			smallestTree = rule.apply(temp);
-			TreeKeeper2 compTree = rule.apply(temp);
-			if (!compTree.equals(smallestTree)) {
-System.out.println(compTree);
-System.out.println(smallestTree);
-System.exit(1);
-			}
+//			TreeKeeper2 compTree = rule.apply(temp);
+//			if (!compTree.equals(smallestTree)) {
+//System.out.println(compTree);
+//System.out.println(smallestTree);
+//System.exit(1);
+//			}
 			paused = false;
 		} else {
 			paused = true;

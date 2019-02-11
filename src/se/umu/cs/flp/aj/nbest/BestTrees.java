@@ -75,7 +75,7 @@ public class BestTrees {
 			exploredTrees.add(currentTree);
 
 			// if M(t) = delta(t) then
-			if (currentTree.getSmallestWeight().equals(currentTree.getDeltaWeight())) {
+			if (exploredTrees.contains(currentTree) && currentTree.getSmallestWeight().equals(currentTree.getDeltaWeight())) {
 
 				// output(t)
 				nBest.add(currentTree.getTree().toString() + " " +
@@ -98,17 +98,23 @@ public class BestTrees {
 	private static void enqueueRankZeroSymbols(WTA wta, int N) {
 		HashMap<Symbol, TreeKeeper> trees = new HashMap<>();
 
+		/* TODO: Här köar vi på även de regler som inte leder någonstans,
+		 * vilket senare ger problem i Eppstein. */
 		for (Rule r : wta.getSourceRules()) {
-
 			Symbol symbol = r.getTree().getLabel();
 			TreeKeeper tree = null;
 
 			if (trees.containsKey(symbol)) {
 				tree = trees.get(symbol);
 			} else {
-				tree = new TreeKeeper(new Node(symbol), wta.getSemiring());
+				tree = new TreeKeeper(r.getTree(), wta.getSemiring());
 				trees.put(symbol, tree);
 			}
+System.out.println(r.getResultingState().toString());
+if (r.getResultingState().toString().equals("in[6,6]_in_piat-hd-dat.pl.fem")) {
+System.out.println("NOOOO");
+System.exit(1);
+}
 
 			tree.addStateWeight(r.getResultingState(),
 					r.getWeight().duplicate());
@@ -129,6 +135,7 @@ public class BestTrees {
 		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees);
 
 		for (State q : wta.getStates().values()) {
+//System.out.println("Current state: " + q);
 			allRuns.put(q, eRunner.runEppstein(wta, N, tree, q));
 		}
 

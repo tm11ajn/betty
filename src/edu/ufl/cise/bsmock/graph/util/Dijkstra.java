@@ -71,6 +71,8 @@ public final class Dijkstra<T> {
             predecessorTree.add(newNode);
         }
         DijkstraNode<T> sourceNode = predecessorTree.getNodes().get(predecessorTree.getRoot());
+//System.out.println(predecessorTree.getRoot());
+//System.out.println(sourceNode);
         sourceNode.setDist(semiring.one());
         sourceNode.setDepth(0);
         pq.add(sourceNode);

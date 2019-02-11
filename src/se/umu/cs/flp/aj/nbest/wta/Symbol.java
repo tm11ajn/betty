@@ -63,12 +63,20 @@ public class Symbol implements Comparable<Symbol> {
 			return true;
 		}
 
+//		if (obj instanceof Symbol &&
+//				((Symbol) obj).getLabel().equals(label)) {
+//			return true;
+//		}
+
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return label.hashCode() * 11 + rank * 17;
+		int hashCode = label.hashCode() * 11 + rank * 17;
+//System.out.println("Symbol: " + label + " hashcode: " + hashCode);
+//		return label.hashCode();
+		return hashCode;
 	}
 
 	@Override

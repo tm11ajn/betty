@@ -60,8 +60,10 @@ public class EppsteinRunner {
 			Graph<Node> graph = new Graph<>(wta.getSemiring());
 			Eppstein<Node> epp = new Eppstein<>(wta.getSemiring());
 
+//System.out.println("Current rule: " + r);
 			ArrayList<State> states = r.getStates();
 			int nOfStates = states.size();
+//System.out.println("Number of states: " + nOfStates);
 
 			NestedMap<String, String, PriorityQueue<Run>> edgeMap =
 					buildEdges(states, tree);
@@ -70,6 +72,8 @@ public class EppsteinRunner {
 				addKSmallestEdgesToGraph(graph, k, edgeMap, tree,
 						wta.getSemiring());
 
+//System.out.println("Graph: ");
+//System.out.println(graph);
 				List<Path<Node>> pathList = epp.ksp(graph, "u0",
 						"v" + nOfStates, k);
 				LinkedHashMap<Node, TreeKeeper> treeList =
@@ -77,16 +81,18 @@ public class EppsteinRunner {
 
 				for (Path<Node> path : pathList) {
 					Node node = extractTreeFromPath(path, r);
-					TreeKeeper keeper = new TreeKeeper(node,
-							wta.getSemiring());
-					Weight w = path.getTotalCost();
-					w = w.mult(r.getWeight());
-					keeper.addStateWeight(q, w);
-					treeList.put(keeper.getTree(), keeper);
+
+					if (!node.equals(tree.getTree())) {
+						TreeKeeper keeper = new TreeKeeper(node,
+								wta.getSemiring());
+						Weight w = path.getTotalCost();
+						w = w.mult(r.getWeight());
+						keeper.addStateWeight(q, w);
+						treeList.put(keeper.getTree(), keeper);
+					}
 				}
 
 				kBestTreesForEachQRule.add(treeList);
-
 			}
 		}
 
@@ -167,7 +173,6 @@ public class EppsteinRunner {
 			Rule r) {
 
 		Node ruleTree = r.getTree();
-//		Node root = new Node(ruleTree.getLabel());
 		int counter = 0;
 
 		LinkedList<Node> inputList = new LinkedList<>();
@@ -175,7 +180,6 @@ public class EppsteinRunner {
 		for (Edge<Node> e : path.getEdges()) {
 
 			if (counter%2 == 1) {
-//				root.addChild(e.getLabel());
 				inputList.add(e.getLabel());
 			}
 

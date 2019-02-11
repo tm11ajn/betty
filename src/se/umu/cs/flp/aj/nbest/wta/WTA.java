@@ -49,11 +49,6 @@ public class WTA {
 
 	public State addState(String label) throws SymbolUsageException {
 
-//		if (rankedAlphabet.hasSymbol(label)) {
-//			throw new SymbolUsageException("The symbol " + label +
-//					" is used for both state and symbol.");
-//		}
-
 		State newState = states.get(label);
 
 		if (newState == null) {
@@ -92,12 +87,6 @@ public class WTA {
 
 	public Symbol addSymbol(String symbol, int rank)
 			throws SymbolUsageException {
-
-//		if (states.containsKey(symbol)) {
-//			throw new SymbolUsageException("The symbol " + symbol +
-//					" is used for both state and symbol.");
-//		}
-
 		return rankedAlphabet.addSymbol(symbol, rank);
 	}
 
@@ -109,12 +98,13 @@ public class WTA {
 		return semiring;
 	}
 
-	public ArrayList<State> getSourceNodes() {
-		return transitionFunction.getSourceNodes();
-	}
+//	public ArrayList<State> getSourceNodes() {
+//		return transitionFunction.getSourceNodes();
+//	}
 
 	public ArrayList<Rule> getSourceRules() {
-		return transitionFunction.getSourceEdges();
+		return transitionFunction.getOutgoing(source);
+//		return transitionFunction.getSourceEdges();
 	}
 
 	public ArrayList<Rule> getRulesByResultingState(
@@ -132,6 +122,7 @@ public class WTA {
 
 	public ArrayList<Rule> getRulesByState(State state) {
 
+//System.out.println("Get rules by state " + state);
 		ArrayList<Rule> rules = transitionFunction.getOutgoing(state);
 
 		if (rules == null) {
@@ -156,6 +147,15 @@ public class WTA {
 
 		transitionFunction.addEdge(rule, rule.getWeight(),
 				rule.getResultingState(), states);
+	}
+
+	public void removeRule(Rule rule) {
+		transitionFunction.removeEdge(rule);
+	}
+
+	public void removeState(State state) {
+		transitionFunction.removeNode(state);
+		states.remove(state.toString());
 	}
 
 	@Override

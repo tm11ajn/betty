@@ -2,14 +2,31 @@ package se.umu.cs.flp.aj.nbest.treedata;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.umu.cs.flp.aj.nbest.semiring.Semiring;
+import se.umu.cs.flp.aj.nbest.semiring.TropicalSemiring;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
+import se.umu.cs.flp.aj.nbest.wta.Rule;
+import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
+import se.umu.cs.flp.aj.nbest.wta.WTA;
+import se.umu.cs.flp.aj.nbest.wta.parsers.RTGParser;
+import se.umu.cs.flp.aj.nbest.wta.parsers.WTAParser;
 
 public class NodeTest {
+
+	public static final String wtaFile = "wta_examples/wta2.rtg";
+	public static final String rtgFile = "rtg_examples/leaf_handling_test.rtg";
+	private Semiring semiring = new TropicalSemiring();
+
+	private RTGParser rtgParser = new RTGParser(semiring);
+	private WTAParser wtaParser = new WTAParser(semiring);
+	private WTA wta;
 
 	Node root;
 	Node root2;
@@ -19,6 +36,9 @@ public class NodeTest {
 	Node n1;
 	Node n2;
 	Node v;
+	Node jSN;
+	Node lSN;
+	Node mSN;
 
 	Symbol sS = new Symbol("S", 0);
 	Symbol npS = new Symbol("NP", 0);
@@ -40,10 +60,13 @@ public class NodeTest {
 		n1 = new Node(nS);
 		n2 = new Node(nS);
 		v = new Node(vS);
+		jSN = new Node(jS);
+		lSN = new Node(lS);
+		mSN = new Node(mS);
 
-		n1.addChild(new Node(jS));
-		v.addChild(new Node(lS));
-		n2.addChild(new Node(mS));
+		n1.addChild(jSN);
+		v.addChild(lSN);
+		n2.addChild(mSN);
 
 		np1.addChild(n1);
 		vp.addChild(v);
@@ -58,6 +81,47 @@ public class NodeTest {
 	@After
 	public void tearDown() throws Exception {
 		root = null;
+	}
+
+	@Test
+	public void shouldGetLeaves() {
+		ArrayList<Node> leaves = new ArrayList<>();
+		leaves.add(jSN);
+		leaves.add(lSN);
+		leaves.add(mSN);
+		ArrayList<Node> result = root.getLeaves();
+System.out.println("RESULT: " + result);
+		assertEquals(leaves, result);
+	}
+
+	@Test
+	public void shouldGetLeavesAfterParsingWTAFile() {
+		wta = wtaParser.parseForBestTrees(wtaFile);
+		Rule rule = wta.getRulesByState(new State(new Symbol("qe", 0))).get(0);
+		ArrayList<Node> result = rule.getTree().getLeaves();
+
+		ArrayList<Node> leaves = new ArrayList<>();
+		leaves.add(new Node(new Symbol("qe", 0)));
+		leaves.add(new Node(new Symbol("qe", 0)));
+
+System.out.println("RESULT: " + result);
+		assertEquals(leaves, result);
+	}
+
+	@Test
+	public void shouldGetLeavesAfterParsingRTGFile() {
+		wta = rtgParser.parseForBestTrees(rtgFile);
+		Rule rule = wta.getRulesByState(new State(new Symbol("q", 0))).get(0);
+		ArrayList<Node> result = rule.getTree().getLeaves();
+
+		ArrayList<Node> leaves = new ArrayList<>();
+		leaves.add(new Node(new Symbol("q", 0)));
+		leaves.add(new Node(new Symbol("a", 0)));
+		leaves.add(new Node(new Symbol("q", 0)));
+		leaves.add(new Node(new Symbol("q2", 0)));
+
+System.out.println("RESULT: " + result);
+		assertEquals(leaves, result);
 	}
 
 	@Test

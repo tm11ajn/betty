@@ -1,0 +1,22 @@
+// The example graph from the "Best trees" paper
+
+qf
+qf -> qa
+qf -> qb
+
+pa -> a # 2
+pb -> a # 1
+pa -> b # 1
+pb -> b # 2
+
+qa -> ball(pa pa)
+qa -> ball(qa qa)
+
+qb -> ball(pb pb)
+qb -> ball(qb qb)
+
+pa -> ball(pa qa)
+pa -> ball(qa pa)
+
+pb -> ball(pb qb)
+pb -> ball(qb pb)
