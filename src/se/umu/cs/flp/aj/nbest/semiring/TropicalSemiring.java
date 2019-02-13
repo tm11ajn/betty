@@ -20,6 +20,8 @@
 
 package se.umu.cs.flp.aj.nbest.semiring;
 
+import java.text.DecimalFormat;
+
 public class TropicalSemiring extends Semiring {
 
 	private static final double zero = Double.MAX_VALUE;
@@ -147,7 +149,10 @@ public class TropicalSemiring extends Semiring {
 
 		@Override
 		public String toString() {
-			return "" + value;
+			DecimalFormat df = new DecimalFormat("#.000000");
+			return df.format(value);
+//			return String.format("%.5g", value);
+//			return "" + value;
 		}
 
 		@Override

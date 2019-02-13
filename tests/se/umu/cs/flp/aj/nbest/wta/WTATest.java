@@ -54,7 +54,9 @@ public class WTATest {
 		Node tree = new Node(symbol);
 		wta.addRule(new Rule(tree,
 				semiring.one(), resState));
-		Rule rule = wta.getRulesByResultingState(state).get(0);
+//		Rule rule = wta.getRulesByResultingState(state).get(0);
+//System.out.println(state.getIncoming());
+		Rule rule = resState.getIncoming().get(0);
 		assertEquals(aSymb, rule.getTree().getLabel());
 	}
 
@@ -68,8 +70,10 @@ public class WTATest {
 				resState));
 //		Rule rule = wta.getTransitionFunction().getRulesBySymbol(fSymb).get(0);
 //		assertEquals(finalState, rule.getResultingState());
+//		assertEquals(finalState,
+//				wta.getRulesByResultingState(resState).get(0).getResultingState());
 		assertEquals(finalState,
-				wta.getRulesByResultingState(resState).get(0).getResultingState());
+				resState.getIncoming().get(0).getResultingState());
 	}
 
 	@Test
@@ -79,7 +83,8 @@ public class WTATest {
 		wta.addRule(new Rule(new Node(fSymb), semiring.one(), state));
 		wta.addRule(new Rule(new Node(gSymb), semiring.one(), state));
 
-		assertEquals(2, wta.getRulesByResultingState(state).size());
+//		assertEquals(2, wta.getRulesByResultingState(state).size());
+		assertEquals(2, state.getIncoming().size());
 	}
 
 //	@Test

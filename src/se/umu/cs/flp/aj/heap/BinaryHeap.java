@@ -28,7 +28,6 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 		}
 	}
 
-
 	public BinaryHeap(boolean isMinHeap) {
 		this.nodes = new ArrayList<>();
 		this.positions = new HashMap<>();

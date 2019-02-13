@@ -68,8 +68,10 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 	public static class Configuration<T> {
 		private ArrayList<T> values;
 		private ArrayList<Integer> indices;
+		private int hash;
 
 		public Configuration() {
+			hash = 0;
 		}
 
 		public void setValues(ArrayList<T> values) {
@@ -81,6 +83,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		}
 
 		public void setIndices(ArrayList<Integer> indices) {
+			hash = 0;
 			this.indices = indices;
 		}
 
@@ -90,13 +93,22 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 
 		@Override
 		public int hashCode() {
-			return indices.hashCode();
+
+			if (hash == 0) {
+				hash = indices.hashCode();
+			}
+
+			return hash;
 		}
 
 		@Override
 		public boolean equals(Object o) {
 
 			if (!(o instanceof Configuration<?>)) {
+				return false;
+			}
+
+			if (this.hash != o.hashCode()) {
 				return false;
 			}
 
@@ -132,9 +144,9 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 
 	public ArrayList<V> dequeue() {
 
-		if (dequeueCounter >= limit) {
-			return null;
-		}
+//		if (dequeueCounter >= limit) {
+//			return null;
+//		}
 
 		dequeueCounter++;
 		Configuration<V> config = configQueue.poll();
@@ -145,7 +157,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 
 	public void addLast(int rankIndex, V value) {
 
-		if (elements.get(rankIndex).size() < limit) {
+//		if (elements.get(rankIndex).size() < limit) {
 //System.out.println("IF");
 			boolean wasEmpty = isEmpty();
 			updateEmptyStatus(rankIndex);
@@ -180,14 +192,14 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 					}
 				}
 
-				/* Just added in case */
-				if (pendingConfigs.get(rankIndex).isEmpty()) {
-					pendingConfigs.remove(rankIndex);
-				}
+//				/* Just added in case */
+//				if (pendingConfigs.get(rankIndex).isEmpty()) {
+//					pendingConfigs.remove(rankIndex);
+//				}
 			}
-		} else {
-//System.out.println("ELSE");
-		}
+//		} else {
+////System.out.println("ELSE");
+//		}
 	}
 
 	private void enqueueNewConfigs(Configuration<V> config) {
@@ -204,14 +216,16 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 			newConfig = new Configuration<>();
 			newConfig.setIndices(indexList);
 
-			if (nOfElements <= limit && nOfElements > prevIndex + 1) {
+			if (//nOfElements <= limit &&
+					nOfElements > prevIndex + 1) {
 				newConfig.setValues(extractValues(indexList));
 
 				if (!usedConfigs.containsKey(newConfig)) {
 					configQueue.add(newConfig);
 					usedConfigs.put(newConfig, newConfig);
 				}
-			} else if (nOfElements <= limit) {
+			} else //if (nOfElements <= limit)
+			{
 
 				if (!pendingConfigs.containsKey(i)) {
 					pendingConfigs.put(i, new LinkedList<>());

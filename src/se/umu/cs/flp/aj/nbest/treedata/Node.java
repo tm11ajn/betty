@@ -186,6 +186,35 @@ public class Node implements Comparable<Node> {
 		return hash;
 	}
 
+//	@Override
+//	public String toString() {
+//
+//		if (validString) {
+//			return treeString;
+//		}
+//
+//		treeString = "" + label;
+//
+//		if (!this.isLeaf()) {
+//			treeString += "[";
+//
+//			int nOfChildren = children.size();
+//			for (int i = 0; i < nOfChildren; i++) {
+//				treeString += children.get(i);
+//
+//				if (i != nOfChildren - 1) {
+//					treeString += ", ";
+//				}
+//			}
+//
+//			treeString += "]";
+//		}
+//
+//		validString = true;
+//
+//		return treeString;
+//	}
+
 	@Override
 	public String toString() {
 
@@ -196,18 +225,18 @@ public class Node implements Comparable<Node> {
 		treeString = "" + label;
 
 		if (!this.isLeaf()) {
-			treeString += "[";
+			treeString += "(";
 
 			int nOfChildren = children.size();
 			for (int i = 0; i < nOfChildren; i++) {
 				treeString += children.get(i);
 
 				if (i != nOfChildren - 1) {
-					treeString += ", ";
+					treeString += " ";
 				}
 			}
 
-			treeString += "]";
+			treeString += ")";
 		}
 
 		validString = true;
@@ -247,11 +276,11 @@ public class Node implements Comparable<Node> {
 			return 1;
 		}
 
-//		if (this.children.size() < o.children.size()) {
-//			return -1;
-//		} else if (o.children.size() > this.children.size()) {
-//			return 1;
-//		}
+		if (this.children.size() < o.children.size()) {
+			return -1;
+		} else if (o.children.size() > this.children.size()) {
+			return 1;
+		}
 //
 //		for (int i = 0; i < children.size(); i++) {
 //			int comparison = this.children.get(i).compareTo(o.children.get(i));

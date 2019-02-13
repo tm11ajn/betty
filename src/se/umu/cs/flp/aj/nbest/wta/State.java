@@ -20,7 +20,11 @@
 
 package se.umu.cs.flp.aj.nbest.wta;
 
-public class State implements Comparable<State> {
+import java.util.ArrayList;
+
+import se.umu.cs.flp.aj.nbest.util.Hypergraph;
+
+public class State extends Hypergraph.Node<Rule> implements Comparable<State> {
 
 //	public static final String RESERVED_LABEL_EXTENSION_STRING = "_extension";
 
@@ -28,6 +32,7 @@ public class State implements Comparable<State> {
 	private boolean isFinal;
 
 	public State(Symbol label) {
+		super();
 		this.label = label;
 		isFinal = false;
 	}
@@ -42,6 +47,13 @@ public class State implements Comparable<State> {
 
 	public boolean isFinal() {
 		return isFinal;
+	}
+
+	public ArrayList<Rule> getIncoming() {
+		super.getIncoming();
+
+		// TODO Auto-generated method stub
+		return (ArrayList<Rule>) super.getIncoming();
 	}
 
 	@Override
@@ -70,7 +82,15 @@ public class State implements Comparable<State> {
 
 	@Override
 	public int compareTo(State arg0) {
-		return this.getLabel().compareTo(arg0.getLabel());
+//		return this.getLabel().compareTo(arg0.getLabel());
+
+		if (this.getID() < arg0.getID()) {
+			return -1;
+		} else if (this.getID() > arg0.getID()) {
+			return 1;
+		}
+
+		return 0;
 	}
 
 }

@@ -27,8 +27,9 @@ import java.util.LinkedList;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
+import se.umu.cs.flp.aj.nbest.util.Hypergraph;
 
-public class Rule {
+public class Rule extends Hypergraph.Edge<State> {
 
 //	private Symbol symbol;
 	private Weight weight;
@@ -46,6 +47,7 @@ public class Rule {
 
 	public Rule(Node tree, Weight weight,
 			State resultingState, State ... states) {
+		super();
 
 //		this.symbol = symbol;
 		this.tree = tree;
@@ -188,9 +190,13 @@ public class Rule {
 		if (obj instanceof Rule) {
 			Rule rule = (Rule) obj;
 
-			if (rule.toString().equals(this.toString())) {
+			if (this.getID() == rule.getID()) {
 				return true;
 			}
+
+//			if (rule.toString().equals(this.toString())) {
+//				return true;
+//			}
 
 //			if (rule.symbol.equals(this.symbol)
 //					&& rule.resultingState.equals(this.resultingState)
@@ -215,24 +221,25 @@ public class Rule {
 	@Override
 	public int hashCode() {
 
-		if (!validHash) {
-
-//		int hash = 7*tree.getLabel().hashCode() + 11*resultingState.hashCode();
-			hashCode = 7*tree.hashCode() + 11*resultingState.hashCode();
-
-			for (State s : states) {
-				hashCode += s.hashCode();
-			}
-
-			// Added when using string for equal
-			hashCode += weight.hashCode();
-
-			validHash = true;
-		}
-
-//System.out.println("Hash for " + this + " is " + hash);
-
-		return hashCode;
+//		if (!validHash) {
+//
+////		int hash = 7*tree.getLabel().hashCode() + 11*resultingState.hashCode();
+//			hashCode = 7*tree.hashCode() + 11*resultingState.hashCode();
+//
+//			for (State s : states) {
+//				hashCode += s.hashCode();
+//			}
+//
+//			// Added when using string for equal
+//			hashCode += weight.hashCode();
+//
+//			validHash = true;
+//		}
+//
+////System.out.println("Hash for " + this + " is " + hash);
+//
+//		return hashCode;
+		return this.getID();
 	}
 
 

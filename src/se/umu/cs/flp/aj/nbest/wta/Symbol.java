@@ -22,19 +22,25 @@ package se.umu.cs.flp.aj.nbest.wta;
 
 public class Symbol implements Comparable<Symbol> {
 
+//	private static int counter = 0;
+
 	private String label;
 	private int rank;
 	private boolean isNonterminal;
+//	private int id;
+	private int hash;
 
 	public Symbol(String symbol, int rank) {
 		this.label = symbol;
 		this.rank = rank;
 		this.isNonterminal = false;
+//		this.id = counter;
+		this.hash = 0;
+//		counter++;
 	}
 
 	public Symbol(String symbol, int rank, boolean isNonterminal) {
-		this.label = symbol;
-		this.rank = rank;
+		this(symbol, rank);
 		this.isNonterminal = isNonterminal;
 	}
 
@@ -57,26 +63,38 @@ public class Symbol implements Comparable<Symbol> {
 	@Override
 	public boolean equals(Object obj) {
 
-		if (obj instanceof Symbol &&
-				((Symbol) obj).getLabel().equals(label) &&
-				((Symbol) obj).getRank() == rank) {
-			return true;
-		}
-
 //		if (obj instanceof Symbol &&
-//				((Symbol) obj).getLabel().equals(label)) {
+//				((Symbol) obj).getLabel().equals(label) &&
+//				((Symbol) obj).getRank() == rank) {
 //			return true;
 //		}
+
+//		if (obj instanceof Symbol && ((Symbol)obj).id == this.id) {
+//			return true;
+//		}
+
+		if (obj instanceof Symbol &&
+				this.hashCode() == obj.hashCode() &&
+				((Symbol) obj).getLabel().equals(label)) {
+			return true;
+		}
 
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		int hashCode = label.hashCode() * 11 + rank * 17;
-//System.out.println("Symbol: " + label + " hashcode: " + hashCode);
-//		return label.hashCode();
-		return hashCode;
+//		int hashCode = label.hashCode() * 11 + rank * 17;
+////System.out.println("Symbol: " + label + " hashcode: " + hashCode);
+////		return label.hashCode();
+//		return hashCode;
+//		return id;
+
+		if (hash == 0) {
+			hash = label.hashCode() * 11 + rank * 17;
+		}
+
+		return hash;
 	}
 
 	@Override

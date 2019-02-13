@@ -37,7 +37,7 @@ public class KnuthSmallestDerivations {
 			usableRules.add(r);
 		}
 
-		int nOfStates = wta.getStates().size();
+		int nOfStates = wta.getStateCount();
 
 		while (defined.size() < nOfStates) {
 			ListIterator<Rule> it = usableRules.listIterator();
@@ -69,7 +69,8 @@ public class KnuthSmallestDerivations {
 			Weight weight = element.getWeight();
 			defined.put(state, weight);
 
-			for (Rule r2 : wta.getRulesByState(state)) {
+//			for (Rule r2 : wta.getRulesByState(state)) {
+			for (Rule r2 : state.getOutgoing()) {
 				if (missingIndices.get(r2) == null) {
 //					missingIndices.put(r2, r2.getRank());
 //					missingIndices.put(r2, r2.getStates().size());
@@ -114,17 +115,20 @@ public class KnuthSmallestDerivations {
 		defined = new HashMap<>();
 		usableRules = new LinkedList<>();
 		totalWeight = new HashMap<>();
+//		HashMap<State, Boolean> wasUsed = new HashMap<>();
 
 		for (State s : wta.getFinalStates()) {
 			defined.put(s, wta.getSemiring().one());
 			totalWeight.put(s, wta.getSemiring().one());
 
-			for (Rule r : wta.getRulesByResultingState(s)) {
+//			for (Rule r : wta.getRulesByResultingState(s)) {
+			for (Rule r : s.getIncoming()) {
 				usableRules.add(r);
 			}
 		}
 
-		int nOfStates = wta.getStates().size();
+//		int nOfStates = wta.getStates().size();
+		int nOfStates = wta.getStateCount();
 		boolean done = false;
 
 		while (!done && defined.size() < nOfStates) {
@@ -170,15 +174,15 @@ public class KnuthSmallestDerivations {
 				Weight weight = element.getWeight();
 				defined.put(state, weight);
 
-				for (Rule r : wta.getRulesByResultingState(state)) {
+//				for (Rule r : wta.getRulesByResultingState(state)) {
+				for (Rule r : state.getIncoming()) {
 					usableRules.addLast(r);
 				}
 
 			} else {
 				done = true;
 
-				ArrayList<State> states = new ArrayList<>(
-						wta.getStates().values());
+				ArrayList<State> states = new ArrayList<>(cheapestTrees.keySet());
 
 				for (State s : states) {
 					if (!defined.containsKey(s)) {

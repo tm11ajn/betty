@@ -53,7 +53,11 @@ public class BestTrees2 {
 
 		// T <- empty. K <- empty
 		outputtedTrees = new HashMap<>();
-		ruleQueue = new RuleQueue(wta, N);
+		ruleQueue = new RuleQueue(N, wta.getSourceRules());
+
+//		for (Rule r : wta.getSourceRules()) {
+//			ruleQueue.addRule(r);
+//		}
 
 		// i <- 0
 		int foundTrees = 0;
@@ -66,12 +70,12 @@ public class BestTrees2 {
 
 			if (!outputtedTrees.containsKey(currentTree.getTree())) {
 
-				if (currentTree.getRunWeight().equals(
-						currentTree.getDeltaWeight()) &&
+				if (//currentTree.getRunWeight().equals(
+						//currentTree.getDeltaWeight()) &&
 						currentTree.getResultingState().isFinal()) {
 
 					// output(t)
-					nBest.add(currentTree.getTree().toString() + " " +
+					nBest.add(currentTree.getTree().toString() + " # " +
 							currentTree.getDeltaWeight().toString());
 //					nBest.add(currentTree);
 					outputtedTrees.put(currentTree.getTree(), null);
@@ -80,8 +84,15 @@ public class BestTrees2 {
 				}
 			}
 
+//			if (ruleQueue.size() < wta.getRuleCount()) {
+//				for (Rule r : currentTree.getResultingState().getOutgoing()) {
+//					ruleQueue.addRule(r);
+//				}
+//			}
+
 			// expand
-			if (foundTrees < N && currentTree.isQueueable()) {
+			if (foundTrees < N //&& currentTree.isQueueable()
+					) {
 				ruleQueue.expandWith(currentTree);
 			}
 		}

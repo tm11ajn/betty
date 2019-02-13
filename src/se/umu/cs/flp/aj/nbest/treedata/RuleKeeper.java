@@ -43,6 +43,8 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 
 		if (rule.getNumberOfStates() == 0) {
 			this.paused = false;
+			this.smallestTree = new TreeKeeper2(rule.getTree(),
+					rule.getWeight(), rule.getResultingState()); //Added
 		}
 	}
 
@@ -67,8 +69,12 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 
 	public void next() {
 
+//System.out.println("For rule " + rule);
+//System.out.println("ladder.hasNext=" + ladder.hasNext());
+//System.out.println("Smallest tree: " + smallestTree);
 		if (ladder.hasNext()) {
 			ArrayList<TreeKeeper2> temp = ladder.dequeue();
+//System.out.println("temp=" + temp);
 //			smallestTree = new TreeKeeper2(rule.getSymbol(),
 //					rule.getWeight(), rule.getResultingState(), temp);
 			smallestTree = rule.apply(temp);

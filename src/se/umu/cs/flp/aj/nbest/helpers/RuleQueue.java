@@ -28,36 +28,56 @@ import se.umu.cs.flp.aj.nbest.treedata.RuleKeeper;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
-import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class RuleQueue {
 
-	private WTA wta;
+//	private WTA wta;
 	private PriorityQueue<RuleKeeper> queue;
 	private HashMap<Rule, RuleKeeper> ruleKeepers;
+	private int size;
 
 	private int limit;
 	private HashMap<State, Integer> stateUsage;
 
-	public RuleQueue(WTA wta, int limit) {
-		this.wta = wta;
+//	public RuleQueue(WTA wta, int limit) {
+//	public RuleQueue(int limit) {
+	public RuleQueue(int limit, ArrayList<Rule> startRules) {
+//		this.wta = wta;
 		this.queue = new PriorityQueue<>();
 		this.ruleKeepers = new HashMap<>();
+		this.size = 0;
 
-		ArrayList<Rule> rules = wta.getRules();
+//		ArrayList<Rule> rules = wta.getRules();
+//
+//		for (Rule r : rules) {
+//			RuleKeeper keeper = new RuleKeeper(r, limit);
+//			ruleKeepers.put(r, keeper);
+//
+//			if (!keeper.isPaused()) {
+//				queue.add(keeper);
+//				keeper.setQueued(true);
+//			}
+//		}
 
-		for (Rule r : rules) {
-			RuleKeeper keeper = new RuleKeeper(r, limit);
-			ruleKeepers.put(r, keeper);
-
-			if (!keeper.isPaused()) {
-				queue.add(keeper);
-				keeper.setQueued(true);
-			}
+		for (Rule r : startRules) {
+			addRule(r);
 		}
 
 		this.limit = limit;
 		this.stateUsage = new HashMap<>();
+	}
+
+	private void addRule(Rule rule) {
+		RuleKeeper keeper = new RuleKeeper(rule, limit);
+		ruleKeepers.put(rule, keeper);
+
+		if (!keeper.isPaused()) {
+//System.out.println("Adding to rule queue: " + rule);
+			queue.add(keeper);
+			keeper.setQueued(true);
+		}
+
+		size++;
 	}
 
 	public void expandWith(TreeKeeper2 newTree) {
@@ -68,7 +88,13 @@ public class RuleQueue {
 		}
 
 		if (stateUsage.get(state) < limit) {
-			for (Rule rule : wta.getRulesByState(state)) {
+//			for (Rule rule : wta.getRulesByState(state)) {
+			for (Rule rule : state.getOutgoing()) {
+
+				if (!ruleKeepers.containsKey(rule)) {
+					addRule(rule);
+				}
+
 				RuleKeeper currentKeeper = ruleKeepers.get(rule);
 				ArrayList<Integer> stateIndices = rule.getIndexOfState(state);
 
@@ -81,7 +107,6 @@ public class RuleQueue {
 					queue.add(currentKeeper);
 					currentKeeper.setQueued(true);
 				}
-
 			}
 
 			stateUsage.put(state, stateUsage.get(state) + 1);
@@ -109,6 +134,10 @@ public class RuleQueue {
 		}
 
 		return false;
+	}
+
+	public int size() {
+		return size;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package se.umu.cs.flp.aj.nbest.treedata;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -90,28 +91,35 @@ public class NodeTest {
 		leaves.add(lSN);
 		leaves.add(mSN);
 		ArrayList<Node> result = root.getLeaves();
-System.out.println("RESULT: " + result);
+//System.out.println("RESULT: " + result);
 		assertEquals(leaves, result);
 	}
 
 	@Test
 	public void shouldGetLeavesAfterParsingWTAFile() {
 		wta = wtaParser.parseForBestTrees(wtaFile);
-		Rule rule = wta.getRulesByState(new State(new Symbol("qe", 0))).get(0);
+		HashMap<String,State> states = wta.getStates();
+		State qe = states.get("qe");
+//		Rule rule = wta.getRulesByState(new State(new Symbol("qe", 0))).get(0);
+//System.out.println(qe.getOutgoing());
+		Rule rule = qe.getOutgoing().get(0);
 		ArrayList<Node> result = rule.getTree().getLeaves();
 
 		ArrayList<Node> leaves = new ArrayList<>();
 		leaves.add(new Node(new Symbol("qe", 0)));
-		leaves.add(new Node(new Symbol("qe", 0)));
+		leaves.add(new Node(new Symbol("qo", 0)));
 
-System.out.println("RESULT: " + result);
+//System.out.println("RESULT: " + result);
 		assertEquals(leaves, result);
 	}
 
 	@Test
 	public void shouldGetLeavesAfterParsingRTGFile() {
 		wta = rtgParser.parseForBestTrees(rtgFile);
-		Rule rule = wta.getRulesByState(new State(new Symbol("q", 0))).get(0);
+		HashMap<String,State> states = wta.getStates();
+		State q = states.get("q");
+//		Rule rule = wta.getRulesByState(new State(new Symbol("q", 0))).get(0);
+		Rule rule = q.getOutgoing().get(0);
 		ArrayList<Node> result = rule.getTree().getLeaves();
 
 		ArrayList<Node> leaves = new ArrayList<>();
@@ -120,7 +128,7 @@ System.out.println("RESULT: " + result);
 		leaves.add(new Node(new Symbol("q", 0)));
 		leaves.add(new Node(new Symbol("q2", 0)));
 
-System.out.println("RESULT: " + result);
+//System.out.println("RESULT: " + result);
 		assertEquals(leaves, result);
 	}
 

@@ -36,35 +36,66 @@ public class TreeConfigurationComparator
 
 		Weight weight1 = null;
 		Weight weight2 = null;
-
-		int counter = 0;
+//		Weight weight1 = config1.getWeight();
+//		Weight weight2 = config2.getWeight();
 
 		ArrayList<TreeKeeper2> list1 = config1.getValues();
 		ArrayList<TreeKeeper2> list2 = config2.getValues();
+		int size1 = list1.size();
+		int size2 = list2.size();
 
-		for (TreeKeeper2 t : list1) {
-
-			if (counter == 0) {
-				weight1 = t.getRunWeight();
-			} else {
-				weight1 = weight1.mult(t.getRunWeight());
-			}
-
-			counter++;
+		if (size1 < size2) {
+			return -1;
+		} else if (size1 > size2) {
+			return 1;
 		}
 
-		counter = 0;
+		for (int i = 0; i < size1; i++) {
+			TreeKeeper2 t1 = list1.get(i);
+			TreeKeeper2 t2 = list2.get(i);
 
-		for (TreeKeeper2 t : list2) {
-
-			if (counter == 0) {
-				weight2 = t.getRunWeight();
+			if (i == 0) {
+				weight1 = t1.getRunWeight();
+				weight2 = t2.getRunWeight();
 			} else {
-				weight2 = weight2.mult(t.getRunWeight());
+				weight1 = weight1.mult(t1.getRunWeight());
+				weight2 = weight2.mult(t2.getRunWeight());
 			}
-
-			counter++;
 		}
+
+//		if (weight1 == null || weight2 == null) {
+//
+//			int counter = 0;
+//
+//			ArrayList<TreeKeeper2> list1 = config1.getValues();
+//			ArrayList<TreeKeeper2> list2 = config2.getValues();
+//			int size1 = list1.size();
+//			int size2 = list2.size();
+//
+//			if (size1 < size2) {
+//				return -1;
+//			} else if (size1 > size2) {
+//				return 1;
+//			}
+//
+//			for (int i = 0; i < size1; i++) {
+//				TreeKeeper2 t1 = list1.get(i);
+//				TreeKeeper2 t2 = list2.get(i);
+//
+//				if (counter == 0) {
+//					weight1 = t1.getRunWeight();
+//					weight2 = t2.getRunWeight();
+//				} else {
+//					weight1 = weight1.mult(t1.getRunWeight());
+//					weight2 = weight2.mult(t2.getRunWeight());
+//				}
+//
+//				counter++;
+//			}
+//
+//			config1.setWeight(weight1);
+//			config2.setWeight(weight2);
+//		}
 
 		int comparison = weight1.compareTo(weight2);
 
@@ -72,24 +103,38 @@ public class TreeConfigurationComparator
 			return comparison;
 		}
 
-		String string1 = "";
-		String string2 = "";
-
-		for (TreeKeeper2 t : list1) {
-			string1 += t.getTree() + ", ";
+		for (int i = 0; i < list1.size(); i++) {
+			TreeKeeper2 t1 = list1.get(i);
+			TreeKeeper2 t2 = list2.get(i);
+			int compare = t1.compareTo(t2);
+			if (compare != 0) {
+				return compare;
+			}
 		}
 
-		for (TreeKeeper2 t : list2) {
-			string2 += t.getTree() + ", ";
-		}
+		return 0;
 
-		if (string1.length() < string2.length()) {
-			return -1;
-		} else if (string1.length() > string2.length()) {
-			return 1;
-		}
+//		String string1 = "";
+//		String string2 = "";
+//
+//		for (TreeKeeper2 t : list1) {
+//			string1 += t.getTree() + ", ";
+//		}
+//
+//		for (TreeKeeper2 t : list2) {
+//			string2 += t.getTree() + ", ";
+//		}
+//
+//		if (string1.length() < string2.length()) {
+//			return -1;
+//		} else if (string1.length() > string2.length()) {
+//			return 1;
+//		}
+//
+//		return string1.compareTo(string2);
 
-		return string1.compareTo(string2);
+//		return weight1.compareTo(weight2);
+
 	}
 
 }

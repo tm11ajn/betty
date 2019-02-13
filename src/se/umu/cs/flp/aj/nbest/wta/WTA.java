@@ -39,11 +39,13 @@ public class WTA {
 	private Semiring semiring;
 
 	private Hypergraph<State, Rule> transitionFunction;
+//	private Hypergraph transitionFunction;
 	private State source = new State(new Symbol("DUMMY_SOURCE", 0));
 
 	public WTA(Semiring semiring) {
 		this.semiring = semiring;
 		this.transitionFunction = new Hypergraph<>();
+//		this.transitionFunction = new Hypergraph();
 		this.transitionFunction.addNode(source);
 	}
 
@@ -77,6 +79,7 @@ public class WTA {
 		return finalStates.add(state);
 	}
 
+	/* Should not be necessary, and is not for v2 */
 	public HashMap<String, State> getStates() {
 		return states;
 	}
@@ -102,51 +105,68 @@ public class WTA {
 //		return transitionFunction.getSourceNodes();
 //	}
 
+//	public ArrayList<Rule> getSourceRules() {
+//		return transitionFunction.getOutgoing(source);
+////		return transitionFunction.getSourceEdges();
+//	}
+
 	public ArrayList<Rule> getSourceRules() {
-		return transitionFunction.getOutgoing(source);
+		return source.getOutgoing();
+//		return transitionFunction.getOutgoing(source);
 //		return transitionFunction.getSourceEdges();
 	}
 
-	public ArrayList<Rule> getRulesByResultingState(
-			State resultingState) {
+//	public ArrayList<Rule> getRulesByResultingState(
+//			State resultingState) {
+//
+//		return resultingState.getIncoming();
+//
+////		ArrayList<Rule> rules = transitionFunction.getIncoming(
+////				resultingState);
+//		ArrayList<Rule> rules = resultingState.getIncoming());
+//
+//		if (rules == null) {
+//			return new ArrayList<>();
+//		}
+//
+//		return rules;
+//	}
 
-		ArrayList<Rule> rules = transitionFunction.getIncoming(
-				resultingState);
+//	public ArrayList<Rule> getRulesByState(State state) {
+//
+////System.out.println("Get rules by state " + state);
+////		ArrayList<Rule> rules = transitionFunction.getOutgoing(state);
+//		ArrayList<Rule> rules = state.getOutgoing();
+//
+//		if (rules == null) {
+//			return new ArrayList<>();
+//		}
+//
+//		return rules;
+//	}
 
-		if (rules == null) {
-			return new ArrayList<>();
-		}
-
-		return rules;
-	}
-
-	public ArrayList<Rule> getRulesByState(State state) {
-
-//System.out.println("Get rules by state " + state);
-		ArrayList<Rule> rules = transitionFunction.getOutgoing(state);
-
-		if (rules == null) {
-			return new ArrayList<>();
-		}
-
-		return rules;
-	}
-
-	public ArrayList<Rule> getRules() {
-		return transitionFunction.getEdges();
-	}
+//	public ArrayList<Rule> getRules() {
+//		return transitionFunction.getEdges();
+//	}
 
 	public void addRule(Rule rule) throws DuplicateRuleException {
 
 		ArrayList<State> states = rule.getStates();
+		HashMap<State, State> nonDuplicateStates = new HashMap<>();
 
 		if (states.isEmpty()) {
 			states = new ArrayList<>();
 			states.add(source);
+		} else {
+			for (State s : states) {
+				nonDuplicateStates.put(s, null);
+			}
+			states = new ArrayList<>(nonDuplicateStates.keySet());
 		}
 
-		transitionFunction.addEdge(rule, rule.getWeight(),
-				rule.getResultingState(), states);
+//		transitionFunction.addEdge(rule, rule.getWeight(),
+//				rule.getResultingState(), states);
+		transitionFunction.addEdge(rule, rule.getResultingState(), states);
 	}
 
 	public void removeRule(Rule rule) {
@@ -156,6 +176,14 @@ public class WTA {
 	public void removeState(State state) {
 		transitionFunction.removeNode(state);
 		states.remove(state.toString());
+	}
+
+	public int getStateCount() {
+		return transitionFunction.getNodeCount() - 1;
+	}
+
+	public int getRuleCount() {
+		return transitionFunction.getEdgeCount();
 	}
 
 	@Override
@@ -168,7 +196,7 @@ public class WTA {
 
 		string += "\n";
 		string += "Ranked alphabet: " + rankedAlphabet + "\n";
-		string += "Transition function: \n" + printTransitionFunction();
+		string += "Transition function: \n"; //+ printTransitionFunction();
 		string += "Final states: ";
 
 		for (State s : finalStates) {
@@ -178,14 +206,14 @@ public class WTA {
 		return string;
 	}
 
-	public String printTransitionFunction() {
-		ArrayList<Rule> rules = getRules();
-		String string = "";
-
-		for (Rule r : rules) {
-			string += r + "\n";
-		}
-
-		return string;
-	}
+//	public String printTransitionFunction() {
+//		ArrayList<Rule> rules = getRules();
+//		String string = "";
+//
+//		for (Rule r : rules) {
+//			string += r + "\n";
+//		}
+//
+//		return string;
+//	}
 }
