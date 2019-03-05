@@ -22,6 +22,7 @@ package se.umu.cs.flp.aj.nbest.helpers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 import se.umu.cs.flp.aj.nbest.treedata.RuleKeeper;
@@ -31,8 +32,13 @@ import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class RuleQueue {
 
+	private ArrayList<LinkedList<TreeKeeper2>> elements;
+	private HashMap<State, Integer> stateElementIndex;
+
 //	private WTA wta;
 	private PriorityQueue<RuleKeeper> queue;
+//	private HashMap<State, PriorityQueue<RuleKeeper>> stateQueues;
+//	private HashMap<State, Boolean> stateQueuesUsage;
 	private HashMap<Rule, RuleKeeper> ruleKeepers;
 	private int size;
 
@@ -43,7 +49,12 @@ public class RuleQueue {
 //	public RuleQueue(int limit) {
 	public RuleQueue(int limit, ArrayList<Rule> startRules) {
 //		this.wta = wta;
+		this.elements = new ArrayList<>();
+		this.stateElementIndex = new HashMap<>();
+
 		this.queue = new PriorityQueue<>();
+//		this.stateQueues = new HashMap<>();
+//		this.stateQueuesUsage = new HashMap<>();
 		this.ruleKeepers = new HashMap<>();
 		this.size = 0;
 
@@ -63,54 +74,111 @@ public class RuleQueue {
 			addRule(r);
 		}
 
+//		for (State s : stateQueues.keySet()) {
+//			queue.add(stateQueues.get(s).poll());
+//			stateQueuesUsage.put(s, true);
+//		}
+
 		this.limit = limit;
 		this.stateUsage = new HashMap<>();
 	}
 
 	private void addRule(Rule rule) {
-		RuleKeeper keeper = new RuleKeeper(rule, limit);
+//System.out.println("Add rule " + rule);
+
+		ArrayList<State> states = rule.getStates();
+		ArrayList<Integer> elementIndices = new ArrayList<>();
+
+		for (State s : states) {
+			controlInitState(s);
+			elementIndices.add(stateElementIndex.get(s));
+		}
+
+		RuleKeeper keeper = new RuleKeeper(rule, limit,
+				elements, elementIndices);
 		ruleKeepers.put(rule, keeper);
 
 		if (!keeper.isPaused()) {
 //System.out.println("Adding to rule queue: " + rule);
 			queue.add(keeper);
+//			insertIntoStateQueues(keeper);
 			keeper.setQueued(true);
 		}
 
 		size++;
 	}
 
+//	private void insertIntoStateQueues(RuleKeeper keeper) {
+//		State resState = keeper.getRule().getResultingState();
+//		if (!stateQueues.containsKey(resState)) {
+//			stateQueues.put(resState, new PriorityQueue<>());
+//		}
+//
+//		stateQueues.get(resState).add(keeper);
+//	}
+
+	private void controlInitState(State s) {
+		if (!stateElementIndex.containsKey(s)) {
+			elements.add(new LinkedList<>());
+			stateElementIndex.put(s, elements.size() - 1);
+		}
+	}
+
 	public void expandWith(TreeKeeper2 newTree) {
 		State state = newTree.getResultingState();
+
+System.out.println("Expand for " + state + " with " + newTree);
 
 		if (!stateUsage.containsKey(state)) {
 			stateUsage.put(state, 0);
 		}
 
+		controlInitState(state);
+		int size = elements.get(stateElementIndex.get(state)).size();
+
+if (size > 0) {
+TreeKeeper2 old = elements.get(stateElementIndex.get(state)).getLast();
+if (old.getOptWeight().compareTo(newTree.getOptWeight()) == 1) {
+System.out.println("AJAJ: current weight=" + old.getOptWeight() + " new weight=" + newTree.getOptWeight());
+//System.exit(1);
+}
+}
+
+		elements.get(stateElementIndex.get(state)).add(newTree);
+
 		if (stateUsage.get(state) < limit) {
 //			for (Rule rule : wta.getRulesByState(state)) {
 			for (Rule rule : state.getOutgoing()) {
-
+//System.out.println("For rule " + rule);
 				if (!ruleKeepers.containsKey(rule)) {
 					addRule(rule);
 				}
 
 				RuleKeeper currentKeeper = ruleKeepers.get(rule);
 				ArrayList<Integer> stateIndices = rule.getIndexOfState(state);
+//System.out.println("State indices for rule: " + rule.getIndexOfState(state));
 
 				for (Integer index : stateIndices) {
-					currentKeeper.addTreeForStateIndex(newTree, index);
+//					currentKeeper.addTreeForStateIndex(newTree, index);
+					currentKeeper.updateForStateIndex(index);
 				}
 
 				if (!currentKeeper.isQueued() && !currentKeeper.isPaused()) {
 					currentKeeper.next();
 					queue.add(currentKeeper);
+//					insertIntoStateQueues(currentKeeper);
+//					State resState = rule.getResultingState();
+//					if (!stateQueuesUsage.containsKey(resState) || !stateQueuesUsage.get(resState)) {
+//						queue.add(stateQueues.get(resState).poll());
+//						stateQueuesUsage.put(resState, true);
+//					}
 					currentKeeper.setQueued(true);
 				}
 			}
 
 			stateUsage.put(state, stateUsage.get(state) + 1);
 		}
+
 	}
 
 	public TreeKeeper2 nextTree() {
@@ -121,8 +189,17 @@ public class RuleQueue {
 
 		if (!ruleKeeper.isPaused()) {
 			queue.add(ruleKeeper);
+//			insertIntoStateQueues(ruleKeeper);
 			ruleKeeper.setQueued(true);
 		}
+
+//		State resState = ruleKeeper.getRule().getResultingState();
+//		stateQueuesUsage.put(resState, false);
+//
+//		if (!stateQueues.get(resState).isEmpty()) {
+//			queue.add(stateQueues.get(resState).poll());
+//			stateQueuesUsage.put(resState, true);
+//		}
 
 		return nextTree;
 	}

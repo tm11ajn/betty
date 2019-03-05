@@ -29,9 +29,11 @@ import java.util.PriorityQueue;
 
 public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 
+
 	private int rank;
 	private int limit;
 	private ArrayList<LinkedList<V>> elements;
+	private ArrayList<Integer> elementIndices;
 	private PriorityQueue<Configuration<V>> configQueue;
 	private HashMap<Configuration<V>, Configuration<V>> usedConfigs;
 	private HashMap<Configuration<V>, Integer> missingDataCounter;
@@ -40,10 +42,13 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 	private int dequeueCounter;
 	private boolean empty;
 
-	public LazyLimitedLadderQueue(int rank,
+	public LazyLimitedLadderQueue(int rank, ArrayList<LinkedList<V>> elements,
+			ArrayList<Integer> elementIndices,
 			Comparator<Configuration<V>> comparator, int limit) {
 		this.rank = rank;
-		this.elements = new ArrayList<>();
+//		this.elements = new ArrayList<>();
+		this.elements = elements;
+		this.elementIndices = elementIndices;
 		this.configQueue = new PriorityQueue<>(comparator);
 		this.usedConfigs = new HashMap<>();
 		this.missingDataCounter = new HashMap<>();
@@ -53,9 +58,12 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		this.limit = limit;
 		this.dequeueCounter = 0;
 
-		for (int i = 0; i < rank; i++) {
-			elements.add(new LinkedList<>());
-		}
+//System.out.println("elements: " + elements);
+//System.out.println("element indices: " + elementIndices);
+
+//		for (int i = 0; i < rank; i++) {
+//			elements.add(new LinkedList<>());
+//		}
 
 		if (rank == 0) {
 			Configuration<V> config = new Configuration<>();
@@ -155,13 +163,14 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		return config.getValues();
 	}
 
-	public void addLast(int rankIndex, V value) {
+//	public void addLast(int rankIndex, V value) {
+	public void update(int rankIndex) {
 
 //		if (elements.get(rankIndex).size() < limit) {
 //System.out.println("IF");
 			boolean wasEmpty = isEmpty();
 			updateEmptyStatus(rankIndex);
-			elements.get(rankIndex).add(value);
+//			elements.get(rankIndex).add(value);
 
 			if (wasEmpty && !isEmpty()) {
 				Configuration<V> firstConfig = new Configuration<>();
@@ -210,7 +219,8 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		for (int i = 0; i < rank; i++) {
 			indexList = new ArrayList<>(config.getIndices());
 			int prevIndex = indexList.get(i);
-			int nOfElements = elements.get(i).size();
+//			int nOfElements = elements.get(i).size();
+			int nOfElements = elements.get(elementIndices.get(i)).size();
 
 			indexList.set(i, prevIndex + 1);
 			newConfig = new Configuration<>();
@@ -223,6 +233,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 				if (!usedConfigs.containsKey(newConfig)) {
 					configQueue.add(newConfig);
 					usedConfigs.put(newConfig, newConfig);
+//System.out.println("Adds config " + newConfig);
 				}
 			} else //if (nOfElements <= limit)
 			{
@@ -251,7 +262,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		int missingElements = 0;
 
 		for (int i = 0; i < rank; i++) {
-			if (indices.get(i) >= elements.get(i).size()) {
+			if (indices.get(i) >= elements.get(elementIndices.get(i)).size()) {
 				missingElements++;
 			}
 		}
@@ -263,7 +274,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		ArrayList<V> values = new ArrayList<>();
 
 		for (int i = 0; i < rank; i++) {
-			values.add(elements.get(i).get(indexList.get(i)));
+			values.add(elements.get(elementIndices.get(i)).get(indexList.get(i)));
 		}
 
 		return values;
@@ -280,14 +291,19 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 	}
 
 	private void updateEmptyStatus(int rankIndex) {
+//System.out.println("In updateEmptyStatus");
+//System.out.println("Elements: " + elements);
+//System.out.println("ElementIndices: " + elementIndices);
+//System.out.println("Rank index: " + rankIndex);
 
-		if (empty && elements.get(rankIndex).size() == 0) {
+		if (empty && elements.get(elementIndices.get(rankIndex)).size() == 1) {
 			nonEmptyListCounter++;
 
 			if (nonEmptyListCounter >= rank) {
 				empty = false;
 			}
 		}
+//System.out.println("Done with updating empty status. It is now " + empty);
 	}
 
 }

@@ -1,0 +1,8 @@
+q
+q -> h(a g(b q1) q3 g(q2 a))
+q3 -> h(q1 q2 q2)
+q1 -> f(q2 q1 q)
+q1 -> f(q2 q2 q2)
+q1 -> f(q1 q2 q1)
+q1 -> a # 1
+q2 -> b # 1

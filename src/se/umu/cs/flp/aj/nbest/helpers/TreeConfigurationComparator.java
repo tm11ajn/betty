@@ -55,11 +55,15 @@ public class TreeConfigurationComparator
 			TreeKeeper2 t2 = list2.get(i);
 
 			if (i == 0) {
-				weight1 = t1.getRunWeight();
-				weight2 = t2.getRunWeight();
+//				weight1 = t1.getRunWeight();
+//				weight2 = t2.getRunWeight();
+				weight1 = t1.getOptWeight();
+				weight2 = t2.getOptWeight();
 			} else {
-				weight1 = weight1.mult(t1.getRunWeight());
-				weight2 = weight2.mult(t2.getRunWeight());
+//				weight1 = weight1.mult(t1.getRunWeight());
+//				weight2 = weight2.mult(t2.getRunWeight());
+				weight1 = weight1.mult(t1.getOptWeight());
+				weight2 = weight2.mult(t2.getOptWeight());
 			}
 		}
 

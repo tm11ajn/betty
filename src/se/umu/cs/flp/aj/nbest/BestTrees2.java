@@ -23,11 +23,13 @@ package se.umu.cs.flp.aj.nbest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import se.umu.cs.flp.aj.nbest.helpers.RuleQueue;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
+import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 
@@ -36,11 +38,16 @@ public class BestTrees2 {
 
 	private static HashMap<Node, TreeKeeper2>
 			outputtedTrees;
+	private static HashMap<TreeKeeper2, TreeKeeper2> seenTrees;
 	private static RuleQueue ruleQueue;
 
 	public static void setSmallestCompletions(
 			HashMap<State, Weight> smallestCompletions) {
 		TreeKeeper2.init(smallestCompletions);
+
+//for ( Map.Entry<State, Weight> s: smallestCompletions.entrySet()) {
+//System.out.println(s.getKey() + " # " + s.getValue());
+//}
 	}
 
 
@@ -51,9 +58,13 @@ public class BestTrees2 {
 		List<String> nBest = new ArrayList<String>();
 //		List<TreeKeeper2> nBest = new ArrayList<>();
 
+//System.out.println("Before creating rulequeue");
 		// T <- empty. K <- empty
 		outputtedTrees = new HashMap<>();
+		seenTrees = new HashMap<>();
 		ruleQueue = new RuleQueue(N, wta.getSourceRules());
+
+//System.out.println("After creating rulequeue");
 
 //		for (Rule r : wta.getSourceRules()) {
 //			ruleQueue.addRule(r);
@@ -67,6 +78,7 @@ public class BestTrees2 {
 
 			// t <- dequeue(K)
 			TreeKeeper2 currentTree = ruleQueue.nextTree();
+//System.out.println("Current tree=" + currentTree);
 
 			if (!outputtedTrees.containsKey(currentTree.getTree())) {
 
@@ -74,26 +86,42 @@ public class BestTrees2 {
 						//currentTree.getDeltaWeight()) &&
 						currentTree.getResultingState().isFinal()) {
 
+//					String usedRuleString = "";
+//					for (Rule r : currentTree.getUsedRules()) {
+//						usedRuleString += r + "\n";
+//					}
+
 					// output(t)
 					nBest.add(currentTree.getTree().toString() + " # " +
-							currentTree.getDeltaWeight().toString());
+//							currentTree.getDeltaWeight().toString());
+//							currentTree.getRunWeight().toString());
+							currentTree.getOptWeight().toString()); //+ " Used rules: "
+//							+ usedRuleString);
 //					nBest.add(currentTree);
 					outputtedTrees.put(currentTree.getTree(), null);
+System.out.println("OUTPUT " + currentTree);
 
 					foundTrees++;
 				}
+
+//				// expand
+//				if (foundTrees < N //&& currentTree.isQueueable()
+//						) {
+////System.out.println("Expand with " + currentTree);
+//					ruleQueue.expandWith(currentTree);
+//				}
 			}
 
-//			if (ruleQueue.size() < wta.getRuleCount()) {
-//				for (Rule r : currentTree.getResultingState().getOutgoing()) {
-//					ruleQueue.addRule(r);
-//				}
-//			}
+			if (!seenTrees.containsKey(currentTree)) {
 
-			// expand
-			if (foundTrees < N //&& currentTree.isQueueable()
-					) {
-				ruleQueue.expandWith(currentTree);
+				// expand
+				if (foundTrees < N //&& currentTree.isQueueable()
+						) {
+//System.out.println("Expand with " + currentTree);
+					ruleQueue.expandWith(currentTree);
+				}
+
+				seenTrees.put(currentTree, null);
 			}
 		}
 

@@ -98,19 +98,26 @@ public class Rule extends Hypergraph.Edge<State> {
 		Node t = tree;
 		Weight treeWeight = this.weight;
 
-		for (TreeKeeper2 tk : tklist) {
-			treeWeight = treeWeight.mult(tk.getRunWeight());
-		}
-
-		LinkedList<TreeKeeper2> copy = new LinkedList<>();
+		ArrayList<Rule> usedRules = new ArrayList<>();
 
 		for (TreeKeeper2 tk : tklist) {
-			copy.addLast(tk);
+//			treeWeight = treeWeight.mult(tk.getRunWeight());
+			treeWeight = treeWeight.mult(tk.getOptWeight());
+
+			usedRules.addAll(tk.getUsedRules());
 		}
+
+		usedRules.add(this);
+
+		LinkedList<TreeKeeper2> copy = new LinkedList<>(tklist);
+
+//		for (TreeKeeper2 tk : tklist) {
+//			copy.addLast(tk);
+//		}
 
 		Node newTree = buildTree(t, copy);
 
-		return new TreeKeeper2(newTree, treeWeight, resultingState);
+		return new TreeKeeper2(newTree, treeWeight, resultingState, usedRules);
 	}
 
 	private Node buildTree(Node t, LinkedList<TreeKeeper2> tklist) {
@@ -266,7 +273,8 @@ public class Rule extends Hypergraph.Edge<State> {
 			weightString = " # " + weight;
 		}
 
-		return tree + " -> " + resultingState + weightString;
+		return resultingState + " -> " + tree + weightString;
+//		return tree + " -> " + resultingState + weightString;
 	}
 
 //	private class Application {

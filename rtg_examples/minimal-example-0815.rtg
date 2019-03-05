@@ -1,0 +1,108 @@
+%%%%%% MINIMAL EXAMPLE
+%%%%%% For replicating smallest completions error.
+%%%%%% The rules in the comments are not part of the optimal run.
+
+root[0,28]_root_top
+
+%%%% Rules used for correct tree
+
+in[1,1]_in_appr-ac -> appr-ac(mit) # 1.316108
+dt[2,2]_dt_art-hd-acc.sg.fem -> art-hd-acc.sg.fem(eine) # 1.164003
+jj[3,3]_jj_adja-hd-pos.acc.sg.fem -> adja-hd-pos.acc.sg.fem(hohe) # 2.991087
+nn[4,4]_nn_nn-hd-acc.sg.fem -> nn-hd-acc.sg.fem(zahl) # 3.355746
+in[5,5]_in_art-hd-gen.pl.masc -> art-hd-gen.pl.masc(der) # 1.211019
+np[6,6]_np_nn-hd-gen.pl.masc -> nn-hd-gen.pl.masc(teilnehmer) # 3.956403
+
+pp[5,9]_pp_np-ag -> np-ag(in[5,5]_in_art-hd-gen.pl.masc np[6,6]_np_nn-hd-gen.pl.masc pp[7,9]_pp_pp-mnr\/n) # 4.188785
+np[2,9]_np_np-hd -> np-hd(dt[2,2]_dt_art-hd-acc.sg.fem jj[3,3]_jj_adja-hd-pos.acc.sg.fem nn[4,4]_nn_nn-hd-acc.sg.fem pp[5,9]_pp_np-ag) # 3.424170
+%%conjp[11,13]_conjp_kon-cd -> kon-cd(sowie) # 5.041640
+
+%%np[2,20]_np_cnp-hd -> cnp-hd(np[2,9]_np_np-hd conjp[11,13]_conjp_kon-cd np[14,20]_np_np-hd) # 5.467167
+pp[1,20]_pp_pp-mo\/v -> pp-mo\/v(in[1,1]_in_appr-ac np[2,20]_np_cnp-hd) # 2.195026
+
+%%vbn[24,24]_vbn_vainf-hd -> vainf-hd(werden) # 7.633913
+%%vp[24,27]_vp_vp-oc\/inf -> vp-oc\/inf(np[25,27]_np_np-oa vbn[24,24]_vbn_vainf-hd) # 6.975670
+
+
+%%%% Rules used for incorrect tree
+
+%%dt[2,2]_dt_art-hd-nom.sg.fem -> art-hd-nom.sg.fem(eine) # 1.467775
+%%jj[3,3]_jj_adja-hd-pos.nom.sg.fem -> adja-hd-pos.nom.sg.fem(hohe) # 2.993012
+%%nn[4,4]_nn_nn-hd-nom.sg.fem -> nn-hd-nom.sg.fem(zahl) # 2.911729
+%%in[5,5]_in_appr-ac\/dat\/von -> appr-ac\/dat\/von(von) # 1.210445
+%%np[6,6]_np_nn-hd-dat.pl.masc -> nn-hd-dat.pl.masc(teilnehmern) # 4.070163
+
+%%pp[5,9]_pp_pp-pg\/n -> pp-pg\/n(in[5,5]_in_appr-ac\/dat\/von np[6,6]_np_nn-hd-dat.pl.masc pp[7,9]_pp_pp-mnr\/n) # 3.348184
+%%np[2,9]_np_np-hd -> np-hd(dt[2,2]_dt_art-hd-nom.sg.fem jj[3,3]_jj_adja-hd-pos.nom.sg.fem nn[4,4]_nn_nn-hd-nom.sg.fem pp[5,9]_pp_pp-pg\/n) # 4.329569
+
+np[2,20]_np_cnp-hd -> cnp-hd(np[2,9]_np_np-hd kon-cd(sowie) np[14,20]_np_np-hd) # 9.320343
+%%pp[1,20]_pp_pp-mo\/v -> pp-mo\/v(appr-ac\/dat(mit) art-hd-dat.sg.masc(dem) np[2,20]_np_cnp-hd) # 6.388580
+
+vb[24,24]_vb_vainf-hd -> vainf-hd(werden) # 3.977345
+vp[24,27]_vp_vp-oc\/inf -> vp-oc\/inf(np[25,27]_np_np-oa vb[24,24]_vb_vainf-hd) # 2.418278
+
+
+%%%% Shared rules
+
+cc[0,0]_cc_kon-ju -> kon-ju(aber) # .962369
+dt[8,8]_dt_art-hd-dat.sg.fem -> art-hd-dat.sg.fem(der) # .854616
+pp[7,9]_pp_pp-mnr\/n -> pp-mnr\/n(appr-ac\/dat\/in(in) dt[8,8]_dt_art-hd-dat.sg.fem nn-hd-dat.sg.fem(bevölkerung)) # 7.862615
+dt[14,14]_dt_adja-hd-pos.acc.pl.masc -> adja-hd-pos.acc.pl.masc(einige) # 3.774249
+nns[15,15]_nns_nn-hd-acc.pl.masc -> nn-hd-acc.pl.masc(laienhandwerker) # 5.911352
+in[16,16]_in_appr-ac\/dat -> appr-ac\/dat(aus) # 1.765882
+dt[19,19]_dt_art-hd-dat.sg.fem -> art-hd-dat.sg.fem(der) # .854614
+pp[16,20]_pp_pp-mnr\/n -> pp-mnr\/n(in[16,16]_in_appr-ac\/dat dt[19,19]_dt_art-hd-dat.sg.fem adja-hd-pos.dat.sg.fem(ganzen) nn-hd-dat.sg.fem(welt)) # 9.571497
+np[14,20]_np_np-hd -> np-hd(dt[14,14]_dt_adja-hd-pos.acc.pl.masc nns[15,15]_nns_nn-hd-acc.pl.masc pp[16,20]_pp_pp-mnr\/n) # 4.780584
+md[23,23]_md_vafin-hd-sg -> vafin-hd-sg(wird) # 1.467806
+np[22,22]_np_np-sb\/sg -> np-sb\/sg(pper-hd-nom.sg.neut(es)) # 1.821758
+dt[25,25]_dt_art-hd-acc.sg.masc -> art-hd-acc.sg.masc(einen) # 1.345996
+nn[26,26]_nn_adja-hd-pos.acc.sg.masc -> adja-hd-pos.acc.sg.masc(touristischen) # 5.499772
+nn[27,27]_nn_nn-hd-acc.sg.masc -> nn-hd-acc.sg.masc(anziehungspunkt) # 5.918270
+np[25,27]_np_np-oa -> np-oa(dt[25,25]_dt_art-hd-acc.sg.masc nn[26,26]_nn_adja-hd-pos.acc.sg.masc nn[27,27]_nn_nn-hd-acc.sg.masc) # 3.821871
+.[28,28]_._\$. -> \$.(.) # .065691 
+root[0,28]_root_top -> top(s-top(cc[0,0]_cc_kon-ju pp[1,20]_pp_pp-mo\/v md[23,23]_md_vafin-hd-sg np[22,22]_np_np-sb\/sg vp[24,27]_vp_vp-oc\/inf) .[28,28]_._\$.) # 6.581019 
+
+
+
+%%%% Optimal run
+
+%{root[0,28]_root_top -> top(s-top(cc[0,0]_cc_kon-ju pp[1,20]_pp_pp-mo\/v md[23,23]_md_vafin-hd-sg np[22,22]_np_np-sb\/sg vp[24,27]_vp_vp-oc\/inf) .[28,28]_._\$.) # 6.581019 
+%    {cc[0,0]_cc_kon-ju -> kon-ju(aber) # .962369} 
+%    {pp[1,20]_pp_pp-mo\/v -> pp-mo\/v(in[1,1]_in_appr-ac np[2,20]_np_cnp-hd) # 2.195026 
+%        {in[1,1]_in_appr-ac -> appr-ac(mit) # 1.316108} 
+%        {np[2,20]_np_cnp-hd -> cnp-hd(np[2,9]_np_np-hd kon-cd(sowie) np[14,20]_np_np-hd) # 9.320343 
+%            {np[2,9]_np_np-hd -> np-hd(dt[2,2]_dt_art-hd-acc.sg.fem jj[3,3]_jj_adja-hd-pos.acc.sg.fem nn[4,4]_nn_nn-hd-acc.sg.fem pp[5,9]_pp_np-ag) # 3.424170
+%                {dt[2,2]_dt_art-hd-acc.sg.fem -> art-hd-acc.sg.fem(eine) # 1.164003}
+%                {jj[3,3]_jj_adja-hd-pos.acc.sg.fem -> adja-hd-pos.acc.sg.fem(hohe) # 2.991087}
+%                {nn[4,4]_nn_nn-hd-acc.sg.fem -> nn-hd-acc.sg.fem(zahl) # 3.355746}
+%                {pp[5,9]_pp_np-ag -> np-ag(in[5,5]_in_art-hd-gen.pl.masc np[6,6]_np_nn-hd-gen.pl.masc pp[7,9]_pp_pp-mnr\/n) # 4.188785 
+%                    {in[5,5]_in_art-hd-gen.pl.masc -> art-hd-gen.pl.masc(der) # 1.211019}
+%                    {np[6,6]_np_nn-hd-gen.pl.masc -> nn-hd-gen.pl.masc(teilnehmer) # 3.956403}
+%                    {pp[7,9]_pp_pp-mnr\/n -> pp-mnr\/n(appr-ac\/dat\/in(in) dt[8,8]_dt_art-hd-dat.sg.fem nn-hd-dat.sg.fem(bevölkerung)) # 7.862615
+%                        {dt[8,8]_dt_art-hd-dat.sg.fem -> art-hd-dat.sg.fem(der) # .854616}
+%                    }
+%                }
+%            }
+%            {np[14,20]_np_np-hd -> np-hd(dt[14,14]_dt_adja-hd-pos.acc.pl.masc nns[15,15]_nns_nn-hd-acc.pl.masc pp[16,20]_pp_pp-mnr\/n) # 4.780584
+%                {dt[14,14]_dt_adja-hd-pos.acc.pl.masc -> adja-hd-pos.acc.pl.masc(einige) # 3.774249}
+%                {nns[15,15]_nns_nn-hd-acc.pl.masc -> nn-hd-acc.pl.masc(laienhandwerker) # 5.911352}
+%                {pp[16,20]_pp_pp-mnr\/n -> pp-mnr\/n(in[16,16]_in_appr-ac\/dat dt[19,19]_dt_art-hd-dat.sg.fem adja-hd-pos.dat.sg.fem(ganzen) nn-hd-dat.sg.fem(welt)) # 9.571497
+%                    {in[16,16]_in_appr-ac\/dat -> appr-ac\/dat(aus) # 1.765882}
+%                    {dt[19,19]_dt_art-hd-dat.sg.fem -> art-hd-dat.sg.fem(der) # .854614}
+%                }
+%            }
+%        }
+%    }
+%    {md[23,23]_md_vafin-hd-sg -> vafin-hd-sg(wird) # 1.467806}
+%    {np[22,22]_np_np-sb\/sg -> np-sb\/sg(pper-hd-nom.sg.neut(es)) # 1.821758}
+%    {vp[24,27]_vp_vp-oc\/inf -> vp-oc\/inf(np[25,27]_np_np-oa vb[24,24]_vb_vainf-hd) # 2.418278
+%        {np[25,27]_np_np-oa -> np-oa(dt[25,25]_dt_art-hd-acc.sg.masc nn[26,26]_nn_adja-hd-pos.acc.sg.masc nn[27,27]_nn_nn-hd-acc.sg.masc) # 3.821871
+%            {dt[25,25]_dt_art-hd-acc.sg.masc -> art-hd-acc.sg.masc(einen) # 1.345996}
+%            {nn[26,26]_nn_adja-hd-pos.acc.sg.masc -> adja-hd-pos.acc.sg.masc(touristischen) # 5.499772}
+%            {nn[27,27]_nn_nn-hd-acc.sg.masc -> nn-hd-acc.sg.masc(anziehungspunkt) # 5.918270}
+%        }
+%        {vb[24,24]_vb_vainf-hd -> vainf-hd(werden) # 3.977345}
+%    }
+%    {.[28,28]_._\$. -> \$.(.) # .065691}
+%}
+

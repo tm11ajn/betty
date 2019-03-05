@@ -21,6 +21,7 @@
 package se.umu.cs.flp.aj.nbest.treedata;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import se.umu.cs.flp.aj.nbest.helpers.TreeConfigurationComparator;
 import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue;
@@ -34,17 +35,23 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 	private boolean paused;
 	private boolean queued;
 
-	public RuleKeeper(Rule rule, int limit) {
+	public RuleKeeper(Rule rule, int limit,
+			ArrayList<LinkedList<TreeKeeper2>> elements,
+			ArrayList<Integer> elementIndices) {
 		this.rule = rule;
+//System.out.println("Creating ladder queue for rule " + rule);
 		this.ladder = new LazyLimitedLadderQueue<>(rule.getNumberOfStates(),
-				new TreeConfigurationComparator(), limit);
+				elements, elementIndices, new TreeConfigurationComparator(),
+				limit);
 		this.smallestTree = null;
 		this.paused = true;
 
 		if (rule.getNumberOfStates() == 0) {
 			this.paused = false;
+			ArrayList<Rule> usedRules = new ArrayList<>();
+			usedRules.add(rule);
 			this.smallestTree = new TreeKeeper2(rule.getTree(),
-					rule.getWeight(), rule.getResultingState()); //Added
+					rule.getWeight(), rule.getResultingState(), usedRules); //Added
 		}
 	}
 
@@ -57,14 +64,20 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 		return smallestTree;
 	}
 
-	public void addTreeForStateIndex(TreeKeeper2 tree, int stateIndex) {
-		ladder.addLast(stateIndex, tree);
+//	public void addTreeForStateIndex(TreeKeeper2 tree, int stateIndex) {
+	public void updateForStateIndex(int stateIndex) {
+//		ladder.addLast(stateIndex, tree);
+		ladder.update(stateIndex);
+//System.out.println("Updates ladder with state index " + stateIndex + " for rule " + rule);
 
 		if (ladder.hasNext()) {
 			paused = false;
+//System.out.println("After updating, ladder is paused");
 		} else {
 			paused = true;
+//System.out.println("After updating, ladder is not paused");
 		}
+//System.out.println("Is empty ladder? " + ladder.isEmpty());
 	}
 
 	public void next() {
@@ -74,10 +87,12 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 //System.out.println("Smallest tree: " + smallestTree);
 		if (ladder.hasNext()) {
 			ArrayList<TreeKeeper2> temp = ladder.dequeue();
+//System.out.println("Dequeues " + temp + " from ladder and creates tree ...");
 //System.out.println("temp=" + temp);
 //			smallestTree = new TreeKeeper2(rule.getSymbol(),
 //					rule.getWeight(), rule.getResultingState(), temp);
 			smallestTree = rule.apply(temp);
+//System.out.println(smallestTree);
 //			TreeKeeper2 compTree = rule.apply(temp);
 //			if (!compTree.equals(smallestTree)) {
 //System.out.println(compTree);
@@ -114,13 +129,40 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 		}
 
 		RuleKeeper o = (RuleKeeper) obj;
-		return getSmallestTree().equals(o.getSmallestTree());
+		return this.compareTo(o) == 0;
+//		return getSmallestTree().compareTo(o.getSmallestTree()) == 0;
 	}
 
 	@Override
 	public int compareTo(RuleKeeper ruleKeeper) {
+//		TreeKeeper2 smallest1 = getSmallestTree();
+//		TreeKeeper2 smallest2 = ruleKeeper.getSmallestTree();
+//		int weightComparison = smallest1.getDeltaWeight().compareTo(smallest2.getDeltaWeight());
+//
+//		if (weightComparison == 0) {
+//			Node n1 = smallest1.getTree();
+//			Node n2 = smallest2.getTree();
+//			return n1.compareTo(n2);
+//		}
+//
+//		return weightComparison;
+
+//		TreeKeeper2 smallest1 = getSmallestTree();
+//		TreeKeeper2 smallest2 = ruleKeeper.getSmallestTree();
+//		int weightComparison = smallest1.getDeltaWeight().compareTo(smallest2.getDeltaWeight());
+//
+//		if (weightComparison == 0) {
+//			Node n1 = smallest1.getTree();
+//			Node n2 = smallest2.getTree();
+//			return n1.compareTo(n2);
+//		}
+//
+//		return weightComparison;
+
 		return getSmallestTree().compareTo(ruleKeeper.getSmallestTree());
 	}
+
+
 
 	@Override
 	public String toString() {
