@@ -101,8 +101,8 @@ public class Rule extends Hypergraph.Edge<State> {
 		ArrayList<Rule> usedRules = new ArrayList<>();
 
 		for (TreeKeeper2 tk : tklist) {
-//			treeWeight = treeWeight.mult(tk.getRunWeight());
-			treeWeight = treeWeight.mult(tk.getOptWeight());
+			treeWeight = treeWeight.mult(tk.getRunWeight());
+//			treeWeight = treeWeight.mult(tk.getOptWeight());
 
 			usedRules.addAll(tk.getUsedRules());
 		}

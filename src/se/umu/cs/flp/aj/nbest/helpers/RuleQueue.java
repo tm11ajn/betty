@@ -72,6 +72,7 @@ public class RuleQueue {
 
 		for (Rule r : startRules) {
 			addRule(r);
+//System.out.println("Start rule: " + r);
 		}
 
 //		for (State s : stateQueues.keySet()) {
@@ -101,6 +102,8 @@ public class RuleQueue {
 		if (!keeper.isPaused()) {
 //System.out.println("Adding to rule queue: " + rule);
 			queue.add(keeper);
+//System.out.println("Enqueues tree " + keeper.getSmallestTree());
+//System.out.println("For rule " + keeper.getRule());
 //			insertIntoStateQueues(keeper);
 			keeper.setQueued(true);
 		}
@@ -136,10 +139,18 @@ System.out.println("Expand for " + state + " with " + newTree);
 		controlInitState(state);
 		int size = elements.get(stateElementIndex.get(state)).size();
 
+//if (size > 0) {
+//TreeKeeper2 old = elements.get(stateElementIndex.get(state)).getLast();
+//if (old.getOptWeight().compareTo(newTree.getOptWeight()) == 1) {
+//System.out.println("AJAJ: current weight=" + old.getOptWeight() + " new weight=" + newTree.getOptWeight());
+////System.exit(1);
+//}
+//}
+
 if (size > 0) {
 TreeKeeper2 old = elements.get(stateElementIndex.get(state)).getLast();
-if (old.getOptWeight().compareTo(newTree.getOptWeight()) == 1) {
-System.out.println("AJAJ: current weight=" + old.getOptWeight() + " new weight=" + newTree.getOptWeight());
+if (old.getRunWeight().compareTo(newTree.getRunWeight()) == 1) {
+System.out.println("AJAJ: current weight=" + old.getRunWeight() + " new weight=" + newTree.getRunWeight());
 //System.exit(1);
 }
 }
@@ -166,6 +177,8 @@ System.out.println("AJAJ: current weight=" + old.getOptWeight() + " new weight="
 				if (!currentKeeper.isQueued() && !currentKeeper.isPaused()) {
 					currentKeeper.next();
 					queue.add(currentKeeper);
+//System.out.println("Enqueues tree " + currentKeeper.getSmallestTree());
+//System.out.println("For rule " + currentKeeper.getRule());
 //					insertIntoStateQueues(currentKeeper);
 //					State resState = rule.getResultingState();
 //					if (!stateQueuesUsage.containsKey(resState) || !stateQueuesUsage.get(resState)) {
@@ -187,8 +200,13 @@ System.out.println("AJAJ: current weight=" + old.getOptWeight() + " new weight="
 		ruleKeeper.setQueued(false);
 		ruleKeeper.next();
 
+System.out.println("Dequeues tree " + nextTree);
+System.out.println("For rule " + ruleKeeper.getRule());
+
 		if (!ruleKeeper.isPaused()) {
 			queue.add(ruleKeeper);
+//System.out.println("Enqueues tree " + ruleKeeper.getSmallestTree());
+//System.out.println("For rule " + ruleKeeper.getRule());
 //			insertIntoStateQueues(ruleKeeper);
 			ruleKeeper.setQueued(true);
 		}

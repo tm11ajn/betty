@@ -135,7 +135,7 @@ public class KnuthSmallestDerivations {
 			State state = element.getState();
 			Weight weight = element.getWeight();
 			defined.put(state, weight);
-//System.out.println("Defines treeweight of " + state + " as " + weight );
+System.out.println("Defines treeweight of " + state + " as " + weight );
 
 //			for (Rule r2 : wta.getRulesByState(state)) {
 			for (Rule r2 : state.getOutgoing()) {
@@ -271,7 +271,7 @@ public class KnuthSmallestDerivations {
 				State state = element.getState();
 				Weight weight = element.getWeight();
 				defined.put(state, weight);
-//System.out.println("Defines weight of " + state + " as " + weight );
+System.out.println("Defines weight of " + state + " as " + weight );
 
 //				for (Rule r : wta.getRulesByResultingState(state)) {
 				for (Rule r : state.getIncoming()) {

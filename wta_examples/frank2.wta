@@ -1,0 +1,6 @@
+a -> q # 10
+a -> p # 1
+f[p,p] -> q # 3
+f[q,q] -> p # 1
+g[q] -> final # 1
+final final

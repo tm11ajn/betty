@@ -1,0 +1,168 @@
+ruletrees
+
+Is outputted as tree four:
+
+top(s-top(kon-ju(aber) pp-mo\/v(appr-ac(mit) cnp-hd(np-hd(art-hd-nom.sg.fem(eine) adja-hd-pos.nom.sg.fem(hohe) nn-hd-nom.sg.fem(zahl) pp-pg\/n(appr-ac\/dat\/von(von) nn-hd-dat.pl.masc(teilnehmern) pp-mnr\/n(appr-ac\/dat\/in(in) art-hd-dat.sg.fem(der) nn-hd-dat.sg.fem(bevölkerung)))) kon-cd(sowie) np-hd(adja-hd-pos.acc.pl.masc(einige) nn-hd-acc.pl.masc(laienhandwerker) pp-mnr\/n(appr-ac\/dat(aus) art-hd-dat.sg.fem(der) adja-hd-pos.dat.sg.fem(ganzen) nn-hd-dat.sg.fem(welt))))) vafin-hd-sg(wird) np-sb\/sg(pper-hd-nom.sg.neut(es)) vp-oc\/inf(np-oa(art-hd-acc.sg.masc(einen) adja-hd-pos.acc.sg.masc(touristischen) nn-hd-acc.sg.masc(magneten)) vainf-hd(werden))) \$.(.)) # 102.442663
+
+{root[0,28]_root_top -> top(s-top(cc[0,0]_cc_kon-ju pp[1,20]_pp_pp-mo\/v md[23,23]_md_vafin-hd-sg np[22,22]_np_np-sb\/sg vp[24,27]_vp_vp-oc\/inf) .[28,28]_._\$.) # 6.581019
+    {cc[0,0]_cc_kon-ju -> kon-ju(aber) # .962369}
+    {*pp[1,20]_pp_pp-mo\/v -> pp-mo\/v(in[1,1]_in_appr-ac np[2,20]_np_cnp-hd) # 2.195026
+        {in[1,1]_in_appr-ac -> appr-ac(mit) # 1.316108}
+        {*np[2,20]_np_cnp-hd -> cnp-hd(np[2,9]_np_np-hd kon-cd(sowie) np[14,20]_np_np-hd) # 9.320343
+            {*np[2,9]_np_np-hd -> np-hd(dt[2,2]_dt_art-hd-nom.sg.fem jj[3,3]_jj_adja-hd-pos.nom.sg.fem nn[4,4]_nn_nn-hd-nom.sg.fem pp[5,9]_pp_pp-pg\/n) # 4.329569
+                {*dt[2,2]_dt_art-hd-nom.sg.fem -> art-hd-nom.sg.fem(eine) # 1.467775}
+                {*jj[3,3]_jj_adja-hd-pos.nom.sg.fem -> adja-hd-pos.nom.sg.fem(hohe) # 2.993012}
+                {*nn[4,4]_nn_nn-hd-nom.sg.fem -> nn-hd-nom.sg.fem(zahl) # 2.911729}
+                {*pp[5,9]_pp_pp-pg\/n -> pp-pg\/n(in[5,5]_in_appr-ac\/dat\/von np[6,6]_np_nn-hd-dat.pl.masc pp[7,9]_pp_pp-mnr\/n) # 3.348184
+                    {*in[5,5]_in_appr-ac\/dat\/von -> appr-ac\/dat\/von(von) # 1.210445}
+                    {*np[6,6]_np_nn-hd-dat.pl.masc -> nn-hd-dat.pl.masc(teilnehmern) # 4.070163}
+                    {pp[7,9]_pp_pp-mnr\/n -> pp-mnr\/n(appr-ac\/dat\/in(in) dt[8,8]_dt_art-hd-dat.sg.fem nn-hd-dat.sg.fem(bevölkerung)) # 7.862615
+                        {dt[8,8]_dt_art-hd-dat.sg.fem -> art-hd-dat.sg.fem(der) # .854616}
+                    }
+                }
+            }
+            {np[14,20]_np_np-hd -> np-hd(dt[14,14]_dt_adja-hd-pos.acc.pl.masc nns[15,15]_nns_nn-hd-acc.pl.masc pp[16,20]_pp_pp-mnr\/n) # 4.780584
+                {dt[14,14]_dt_adja-hd-pos.acc.pl.masc -> adja-hd-pos.acc.pl.masc(einige) # 3.774249}
+                {nns[15,15]_nns_nn-hd-acc.pl.masc -> nn-hd-acc.pl.masc(laienhandwerker) # 5.911352}
+                {pp[16,20]_pp_pp-mnr\/n -> pp-mnr\/n(in[16,16]_in_appr-ac\/dat dt[19,19]_dt_art-hd-dat.sg.fem adja-hd-pos.dat.sg.fem(ganzen) nn-hd-dat.sg.fem(welt)) # 9.571497
+                    {in[16,16]_in_appr-ac\/dat -> appr-ac\/dat(aus) # 1.765882}
+                    {dt[19,19]_dt_art-hd-dat.sg.fem -> art-hd-dat.sg.fem(der) # .854614}
+                }
+            }
+        }
+    }
+    {md[23,23]_md_vafin-hd-sg -> vafin-hd-sg(wird) # 1.467806}
+    {np[22,22]_np_np-sb\/sg -> np-sb\/sg(pper-hd-nom.sg.neut(es)) # 1.821758}
+    {vp[24,27]_vp_vp-oc\/inf -> vp-oc\/inf(np[25,27]_np_np-oa vb[24,24]_vb_vainf-hd) # 2.418278
+        {np[25,27]_np_np-oa -> np-oa(dt[25,25]_dt_art-hd-acc.sg.masc nn[26,26]_nn_adja-hd-pos.acc.sg.masc nn[27,27]_nn_nn-hd-acc.sg.masc) # 3.821871
+            {dt[25,25]_dt_art-hd-acc.sg.masc -> art-hd-acc.sg.masc(einen) # 1.345996}
+            {nn[26,26]_nn_adja-hd-pos.acc.sg.masc -> adja-hd-pos.acc.sg.masc(touristischen) # 5.499772}
+            {**nn[27,27]_nn_nn-hd-acc.sg.masc -> nn-hd-acc.sg.masc(magneten) # 5.942994}
+        }
+        {vb[24,24]_vb_vainf-hd -> vainf-hd(werden) # 3.977345}
+    }
+    {.[28,28]_._\$. -> \$.(.) # .065691}
+}
+
+* With delta weight 102.417938 (the weight of the third tree) 
+** With delta weight 102.402999 (the weight of the second tree)
+The rest are dequeued with delta weight 102.378274 (weight of optimal tree)
+
+
+Should be outputted as tree four:
+
+top(s-top(kon-ju(aber) pp-mo\/v(appr-ac(mit) cnp-hd(np-hd(art-hd-acc.sg.fem(eine) adja-hd-pos.acc.sg.fem(hohe) nn-hd-acc.sg.fem(anzahl) np-ag(art-hd-gen.pl.masc(der) nn-hd-gen.pl.masc(teilnehmer) pp-mnr\/n(appr-ac\/dat\/in(in) art-hd-dat.sg.fem(der) nn-hd-dat.sg.fem(bevölkerung)))) kon-cd(sowie) np-hd(adja-hd-pos.acc.pl.masc(einige) nn-hd-acc.pl.masc(laienhandwerker) pp-mnr\/n(appr-ac\/dat(aus) art-hd-dat.sg.fem(der) adja-hd-pos.dat.sg.fem(ganzen) nn-hd-dat.sg.fem(welt))))) vafin-hd-sg(wird) np-sb\/sg(pper-hd-nom.sg.neut(es)) vp-oc\/inf(np-oa(art-hd-acc.sg.masc(einen) adja-hd-pos.acc.sg.masc(touristischen) nn-hd-acc.sg.masc(anziehungspunkt)) vainf-hd(werden))) \$.(.)) # 102.440833
+
+{root[0,28]_root_top -> top(s-top(cc[0,0]_cc_kon-ju pp[1,20]_pp_pp-mo\/v md[23,23]_md_vafin-hd-sg np[22,22]_np_np-sb\/sg vp[24,27]_vp_vp-oc\/inf) .[28,28]_._\$.) # 6.581019
+    {cc[0,0]_cc_kon-ju -> kon-ju(aber) # .962369}
+    {pp[1,20]_pp_pp-mo\/v -> pp-mo\/v(in[1,1]_in_appr-ac np[2,20]_np_cnp-hd) # 2.195026
+        {in[1,1]_in_appr-ac -> appr-ac(mit) # 1.316108}
+        {np[2,20]_np_cnp-hd -> cnp-hd(np[2,9]_np_np-hd kon-cd(sowie) np[14,20]_np_np-hd) # 9.320343
+            {np[2,9]_np_np-hd -> np-hd(dt[2,2]_dt_art-hd-acc.sg.fem jj[3,3]_jj_adja-hd-pos.acc.sg.fem nn[4,4]_nn_nn-hd-acc.sg.fem pp[5,9]_pp_np-ag) # 3.424170
+                {dt[2,2]_dt_art-hd-acc.sg.fem -> art-hd-acc.sg.fem(eine) # 1.164003}
+                {jj[3,3]_jj_adja-hd-pos.acc.sg.fem -> adja-hd-pos.acc.sg.fem(hohe) # 2.991087}
+                {*nn[4,4]_nn_nn-hd-acc.sg.fem -> nn-hd-acc.sg.fem(anzahl) # 3.418305}
+                {pp[5,9]_pp_np-ag -> np-ag(in[5,5]_in_art-hd-gen.pl.masc np[6,6]_np_nn-hd-gen.pl.masc pp[7,9]_pp_pp-mnr\/n) # 4.188785
+                    {in[5,5]_in_art-hd-gen.pl.masc -> art-hd-gen.pl.masc(der) # 1.211019}
+                    {np[6,6]_np_nn-hd-gen.pl.masc -> nn-hd-gen.pl.masc(teilnehmer) # 3.956403}
+                    {pp[7,9]_pp_pp-mnr\/n -> pp-mnr\/n(appr-ac\/dat\/in(in) dt[8,8]_dt_art-hd-dat.sg.fem nn-hd-dat.sg.fem(bevölkerung)) # 7.862615
+                        {dt[8,8]_dt_art-hd-dat.sg.fem -> art-hd-dat.sg.fem(der) # .854616}
+                    }
+                }
+            }
+            {np[14,20]_np_np-hd -> np-hd(dt[14,14]_dt_adja-hd-pos.acc.pl.masc nns[15,15]_nns_nn-hd-acc.pl.masc pp[16,20]_pp_pp-mnr\/n) # 4.780584
+                {dt[14,14]_dt_adja-hd-pos.acc.pl.masc -> adja-hd-pos.acc.pl.masc(einige) # 3.774249}
+                {nns[15,15]_nns_nn-hd-acc.pl.masc -> nn-hd-acc.pl.masc(laienhandwerker) # 5.911352}
+                {pp[16,20]_pp_pp-mnr\/n -> pp-mnr\/n(in[16,16]_in_appr-ac\/dat dt[19,19]_dt_art-hd-dat.sg.fem adja-hd-pos.dat.sg.fem(ganzen) nn-hd-dat.sg.fem(welt)) # 9.571497
+                    {in[16,16]_in_appr-ac\/dat -> appr-ac\/dat(aus) # 1.765882}
+                    {dt[19,19]_dt_art-hd-dat.sg.fem -> art-hd-dat.sg.fem(der) # .854614}
+                }
+            }
+        }
+    }
+    {md[23,23]_md_vafin-hd-sg -> vafin-hd-sg(wird) # 1.467806}
+    {np[22,22]_np_np-sb\/sg -> np-sb\/sg(pper-hd-nom.sg.neut(es)) # 1.821758}
+    {vp[24,27]_vp_vp-oc\/inf -> vp-oc\/inf(np[25,27]_np_np-oa vb[24,24]_vb_vainf-hd) # 2.418278
+        {np[25,27]_np_np-oa -> np-oa(dt[25,25]_dt_art-hd-acc.sg.masc nn[26,26]_nn_adja-hd-pos.acc.sg.masc nn[27,27]_nn_nn-hd-acc.sg.masc) # 3.821871
+            {dt[25,25]_dt_art-hd-acc.sg.masc -> art-hd-acc.sg.masc(einen) # 1.345996}
+            {nn[26,26]_nn_adja-hd-pos.acc.sg.masc -> adja-hd-pos.acc.sg.masc(touristischen) # 5.499772}
+            {nn[27,27]_nn_nn-hd-acc.sg.masc -> nn-hd-acc.sg.masc(anziehungspunkt) # 5.918270}
+        }
+        {vb[24,24]_vb_vainf-hd -> vainf-hd(werden) # 3.977345}
+    }
+    {.[28,28]_._\$. -> \$.(.) # .065691}
+}
+
+* With delta weight 102.440833
+The rest are dequeued with delta weight 102.378274 (weight of optimal tree)
+
+
+Dequeues tree Tree: vp-oc\/inf(np-oa(art-hd-acc.sg.masc(einen) adja-hd-pos.acc.sg.masc(touristischen) nn-hd-acc.sg.masc(anziehungspunkt)) vainf-hd(werden)) RunWeight: 22.981533 Delta weight: 102.378274 Resulting state: vp[24,27]_vp_vp-oc\/inf
+For rule vp[24,27]_vp_vp-oc\/inf -> vp-oc\/inf(np[25,27]_np_np-oa vb[24,24]_vb_vainf-hd) # 2.418278
+
+Dequeues tree Tree: np-oa(art-hd-acc.sg.masc(einen) adja-hd-pos.acc.sg.masc(touristischen) nn-hd-acc.sg.masc(anziehungspunkt)) RunWeight: 16.585909 Delta weight: 102.378274 Resulting state: np[25,27]_np_np-oa
+For rule np[25,27]_np_np-oa -> np-oa(dt[25,25]_dt_art-hd-acc.sg.masc nn[26,26]_nn_adja-hd-pos.acc.sg.masc nn[27,27]_nn_nn-hd-acc.sg.masc) # 3.821871
+
+
+
+6.581019 + 
+0.962369 + 
+2.195026 + 
+1.316108 + 
+9.320343 + 
+4.329569 + 
+1.467775 + 
+2.993012 + 
+2.911729 + 
+3.348184 + 
+1.210445 + 
+4.070163 + 
+7.862615 + 
+0.854616 + 
+4.780584 + 
+3.774249 + 
+5.911352 + 
+9.571497 + 
+1.765882 + 
+0.854614 + 
+1.467806 + 
+1.821758 + 
+2.418278 + 
+3.821871 + 
+1.345996 + 
+5.499772 + 
+5.942994 + 
+3.977345 + 
+0.065691
+= 102.442662
+
+6.581019 +
+0.962369 +
+2.195026 +
+1.316108 +
+9.320343 +
+3.424170 +
+1.164003 +
+2.991087 +
+3.418305 +
+4.188785 +
+1.211019 +
+3.956403 +
+7.862615 +
+0.854616 +
+4.780584 + 
+3.774249 + 
+5.911352 + 
+9.571497 + 
+1.765882 + 
+0.854614 + 
+1.467806 +
+1.821758 +
+2.418278 +
+3.821871 +
+1.345996 +
+5.499772 +
+5.918270 +
+3.977345 +
+0.065691
+= 102.440833

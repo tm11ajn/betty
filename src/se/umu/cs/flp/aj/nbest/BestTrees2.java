@@ -38,7 +38,9 @@ public class BestTrees2 {
 
 	private static HashMap<Node, TreeKeeper2>
 			outputtedTrees;
-	private static HashMap<TreeKeeper2, TreeKeeper2> seenTrees;
+//	private static HashMap<TreeKeeper2, TreeKeeper2> seenTrees;
+//	private static HashMap<Node, Node> seenTrees;
+	private static HashMap<State, HashMap<Node, Node>> seenTrees;
 	private static RuleQueue ruleQueue;
 
 	public static void setSmallestCompletions(
@@ -64,11 +66,8 @@ public class BestTrees2 {
 		seenTrees = new HashMap<>();
 		ruleQueue = new RuleQueue(N, wta.getSourceRules());
 
-//System.out.println("After creating rulequeue");
-
-//		for (Rule r : wta.getSourceRules()) {
-//			ruleQueue.addRule(r);
-//		}
+//System.out.println("After creating rulequeue:");
+//System.out.println(ruleQueue);
 
 		// i <- 0
 		int foundTrees = 0;
@@ -94,8 +93,8 @@ public class BestTrees2 {
 					// output(t)
 					nBest.add(currentTree.getTree().toString() + " # " +
 //							currentTree.getDeltaWeight().toString());
-//							currentTree.getRunWeight().toString());
-							currentTree.getOptWeight().toString()); //+ " Used rules: "
+							currentTree.getRunWeight().toString());
+//							currentTree.getOptWeight().toString()); //+ " Used rules: "
 //							+ usedRuleString);
 //					nBest.add(currentTree);
 					outputtedTrees.put(currentTree.getTree(), null);
@@ -112,7 +111,16 @@ System.out.println("OUTPUT " + currentTree);
 //				}
 			}
 
-			if (!seenTrees.containsKey(currentTree)) {
+			 HashMap<Node, Node> temp = seenTrees.get(currentTree.getResultingState());
+
+			 if (temp == null) {
+				 temp = new HashMap<>();
+				 seenTrees.put(currentTree.getResultingState(), temp);
+			 }
+
+//			if (!seenTrees.containsKey(currentTree)) {
+//			if (!seenTrees.containsKey(currentTree.getTree())) {
+			if (!temp.containsKey(currentTree.getTree())) {
 
 				// expand
 				if (foundTrees < N //&& currentTree.isQueueable()
@@ -121,7 +129,9 @@ System.out.println("OUTPUT " + currentTree);
 					ruleQueue.expandWith(currentTree);
 				}
 
-				seenTrees.put(currentTree, null);
+//				seenTrees.put(currentTree, null);
+//				seenTrees.put(currentTree.getTree(), null);
+				temp.put(currentTree.getTree(), null);
 			}
 		}
 

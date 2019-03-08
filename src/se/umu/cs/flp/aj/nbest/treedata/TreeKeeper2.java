@@ -111,9 +111,9 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		return this.runWeight;
 	}
 
-	public Weight getOptWeight() {
-		return optWeights.get(tree).get(resultingState);
-	}
+//	public Weight getOptWeight() {
+//		return optWeights.get(tree).get(resultingState);
+//	}
 
 	public State getResultingState() {
 		return resultingState;
@@ -247,9 +247,9 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 //		return deltaWeight.get(tree);
 
 //		return smallestWeight.get(tree).mult(smallestCompletions.get(resultingState));
-//		return runWeight.mult(smallestCompletions.get(resultingState));
+		return runWeight.mult(smallestCompletions.get(resultingState));
 //		return optWeights.get(tree).get(resultingState).mult(smallestCompletions.get(resultingState));
-		return getOptWeight().mult(smallestCompletions.get(resultingState));
+//		return getOptWeight().mult(smallestCompletions.get(resultingState));
 	}
 
 	@Override
@@ -326,6 +326,12 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 //		int weightComparison = runWeight.compareTo(o.runWeight);
 		int weightComparison = this.getDeltaWeight().compareTo(o.getDeltaWeight());
 //		int weightComparison = getOptWeight().compareTo(o.getOptWeight());
+
+		if (weightComparison != 0) {
+			return weightComparison;
+		}
+
+		weightComparison = runWeight.compareTo(o.runWeight);
 
 		if (weightComparison != 0) {
 			return weightComparison;
