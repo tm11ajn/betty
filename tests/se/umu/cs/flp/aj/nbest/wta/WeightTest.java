@@ -40,21 +40,6 @@ public class WeightTest {
 		assertEquals(1, w.compareTo(wSmaller));
 	}
 
-//	@Test
-//	public void shouldBeLargerNINF() throws Exception {
-//		assertEquals(1, w.compareTo(ninf));
-//	}
-
-//	@Test
-//	public void shouldBeSmallerNINFComparedToINF() throws Exception {
-//		assertEquals(-1, ninf.compareTo(inf));
-//	}
-
-//	@Test
-//	public void shouldBeNegativeInfinity() throws Exception {
-//		assertTrue(ninf.isNegativeInfinity());
-//	}
-
 	@Test
 	public void shouldBeInfinity() throws Exception {
 		assertTrue(inf.isZero());

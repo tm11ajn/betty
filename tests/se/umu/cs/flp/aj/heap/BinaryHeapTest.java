@@ -76,7 +76,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 1; i++) {
-			String temp = heap.dequeue().getObject();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getObject(), is("korv1"));
 	}
@@ -94,7 +94,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 1; i++) {
-			Weight temp = heap.dequeue().getWeight();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.02)));
 	}
@@ -112,7 +112,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 2; i++) {
-			String temp = heap.dequeue().getObject();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getObject(), is("korv2"));
 	}
@@ -130,9 +130,9 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 2; i++) {
-			Weight temp = heap.dequeue().getWeight();
+			heap.dequeue();
 		}
-		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.1)));
+		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.03)));
 	}
 
 	@Test
@@ -148,7 +148,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 3; i++) {
-			String temp = heap.dequeue().getObject();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getObject(), is("korv3"));
 	}
@@ -166,9 +166,9 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 3; i++) {
-			Weight temp = heap.dequeue().getWeight();
+			heap.dequeue();
 		}
-		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.1)));
+		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.04)));
 	}
 
 	@Test
@@ -184,7 +184,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 4; i++) {
-			String temp = heap.dequeue().getObject();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getObject(), is("korv4"));
 	}
@@ -202,7 +202,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 4; i++) {
-			Weight temp = heap.dequeue().getWeight();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.05)));
 	}
@@ -220,7 +220,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 5; i++) {
-			String temp = heap.dequeue().getObject();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getObject(), is("korv5"));
 	}
@@ -238,7 +238,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 5; i++) {
-			Weight temp = heap.dequeue().getWeight();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.06)));
 	}
@@ -256,7 +256,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 6; i++) {
-			String temp = heap.dequeue().getObject();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getObject(), is("korv6"));
 	}
@@ -274,7 +274,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 6; i++) {
-			Weight temp = heap.dequeue().getWeight();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.07)));
 	}
@@ -292,7 +292,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 7; i++) {
-			String temp = heap.dequeue().getObject();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getObject(), is("korv7"));
 	}
@@ -310,7 +310,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 7; i++) {
-			Weight temp = heap.dequeue().getWeight();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.08)));
 	}
@@ -328,7 +328,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 8; i++) {
-			String temp = heap.dequeue().getObject();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getObject(), is("korv8"));
 	}
@@ -346,7 +346,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 8; i++) {
-			Weight temp = heap.dequeue().getWeight();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.09)));
 	}
@@ -364,7 +364,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 9; i++) {
-			String temp = heap.dequeue().getObject();
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getObject(), is("korv9"));
 	}
@@ -382,8 +382,7 @@ public class BinaryHeapTest {
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
 		for (int i = 0; i < 9; i++) {
-			Weight temp = heap.dequeue().getWeight();
-System.out.println(temp);
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.1)));
 	}
@@ -493,8 +492,7 @@ System.out.println(temp);
 		heap.decreaseWeight("korv1", s.createWeight(0.002));
 		heap.decreaseWeight("korv0", s.createWeight(0.001));
 		for (int i = 0; i < 9; i++) {
-			String temp = heap.dequeue().getObject();
-System.out.println(temp);
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getObject(), is("korv9"));
 	}
@@ -522,9 +520,26 @@ System.out.println(temp);
 		heap.decreaseWeight("korv8", s.createWeight(0.009));
 		heap.decreaseWeight("korv9", s.createWeight(0.010));
 		for (int i = 0; i < 9; i++) {
-			Weight temp = heap.dequeue().getWeight();
-System.out.println(temp);
+			heap.dequeue();
 		}
 		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.01)));
+	}
+
+	@Test
+	public void shouldBeEmptyAfterEnqueueingAndDequeueingTenElements() {
+		heap.add("korv9", s.createWeight(0.10));
+		heap.add("korv8", s.createWeight(0.09));
+		heap.add("korv7", s.createWeight(0.08));
+		heap.add("korv6", s.createWeight(0.07));
+		heap.add("korv5", s.createWeight(0.06));
+		heap.add("korv4", s.createWeight(0.05));
+		heap.add("korv3", s.createWeight(0.04));
+		heap.add("korv2", s.createWeight(0.03));
+		heap.add("korv1", s.createWeight(0.02));
+		heap.add("korv0", s.createWeight(0.01));
+		for (int i = 0; i < 10; i++) {
+			heap.dequeue();
+		}
+		assertThat(heap.empty(), is(true));
 	}
 }

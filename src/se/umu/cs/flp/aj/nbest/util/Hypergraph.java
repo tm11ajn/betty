@@ -25,10 +25,6 @@ import java.util.Arrays;
 
 public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N>> {
 
-////	private HashMap<N, Node> sourceNodes;
-//	private HashMap<N, Node> nodes;
-//	private HashMap<E, Edge> edges;
-
 	private int nodeID;
 	private int edgeID;
 
@@ -36,30 +32,11 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 	private int edgeCount;
 
 	public Hypergraph() {
-////		this.sourceNodes = new HashMap<>();
-//		this.nodes = new HashMap<>();
-//		this.edges = new HashMap<>();
 		this.nodeID = 0;
 		this.edgeID = 0;
 		this.nodeCount = 0;
 		this.edgeCount = 0;
 	}
-
-//	public boolean hasNode(N node) {
-//		return nodes.containsKey(node);
-//	}
-
-//	public boolean hasEdge(E edge) {
-//		return edges.containsKey(edge);
-//	}
-
-//	public void addNode(N node) {
-//		if (!nodes.containsKey(node)) {
-//			Node newNode = new Node(node);
-//			nodes.put(node, newNode);
-////			sourceNodes.put(node, newNode);
-//		}
-//	}
 
 	public void addNode(N node) {
 		if (node.getID() == -1) {
@@ -85,44 +62,8 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 
 			node.setID(-1);
 			nodeCount--;
-
-//			if (sourceNodes.containsKey(node)) {
-//				sourceNodes.remove(node);
-//			}
-
-//			nodes.remove(node);
 		}
 	}
-
-//	public void removeNode(N node) {
-//
-//		if (nodes.containsKey(node)) {
-//			Node n = nodes.get(node);
-//			ArrayList<E> incoming = new ArrayList<>(n.getIncoming().keySet());
-//			ArrayList<E> outgoing = new ArrayList<>(n.getOutgoing().keySet());
-//
-//			for (E edge : incoming) {
-//				removeEdge(edge);
-//			}
-//
-//			for (E edge : outgoing) {
-//				removeEdge(edge);
-//			}
-//
-////			if (sourceNodes.containsKey(node)) {
-////				sourceNodes.remove(node);
-////			}
-//
-//			nodes.remove(node);
-//		}
-//	}
-
-//	/* Only for testing */
-//	protected void addEdge(E edge, N toNode,
-//			@SuppressWarnings("unchecked") N ... fromNodes)
-//			throws DuplicateRuleException {
-//		addEdge(edge, toNode, new ArrayList<N>(Arrays.asList(fromNodes)));
-//	}
 
 	/* Only for testing */
 	protected void addEdge(E edge, N toNode,
@@ -130,25 +71,9 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 		addEdge(edge, toNode, new ArrayList<N>(Arrays.asList(fromNodes)));
 	}
 
-//	public void addEdge(E edge, Weight weight, N toNode, ArrayList<N> fromNodes)
-//			throws DuplicateRuleException {
 	public void addEdge(E edge, N toNode, ArrayList<N> fromNodes) {
 
-		//		if (edges.containsKey(edge)) {
-		//			throw new DuplicateRuleException("Duplicate rule " + edge + "\n and " + edges.get(edge));
-		//		}
-
-
-		//		Edge e = new Edge(edge, weight);
-		//		Node to = nodes.get(toNode);
-
-		//		if (to == null) {
-		//			addNode(toNode);
-		//			to = nodes.get(toNode);
-		//		}
-
 		if (edge.getID() == -1) {
-
 			edge.setID(edgeID);
 			edgeID++;
 			edgeCount++;
@@ -157,27 +82,8 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 				addNode(toNode);
 			}
 
-			//		if (sourceNodes.containsKey(toNode)) {
-			//			sourceNodes.remove(toNode);
-			//		}
-
-			//		e.setTo(to);
-			//		to.addIncoming(e);
-
 			edge.setTo(toNode);
 			toNode.addIncoming(edge);
-
-			//		for (N from : fromNodes) {
-			//			Node n = nodes.get(from);
-			//
-			//			if (n == null) {
-			//				addNode(from);
-			//				n = nodes.get(from);
-			//			}
-			//
-			//			e.addFrom(n);
-			//			n.addOutgoing(e);
-			//		}
 
 			for (N from : fromNodes) {
 
@@ -189,35 +95,7 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 				from.addOutgoing(edge);
 			}
 		}
-//		edges.put(edge, e);
 	}
-
-//	public void addEdge(E edge, N toNode, ArrayList<N> fromNodes)
-//			throws DuplicateRuleException {
-//		addEdge(edge, null, toNode, fromNodes);
-//	}
-
-//	public void removeEdge(E edge) {
-//
-//		if (edges.containsKey(edge)) {
-//			Edge e = edges.get(edge);
-//			Node to = e.getTo();
-//			to.removeIncoming(e);
-//
-////		if (to.getIncoming().isEmpty() && !to.getOutgoing().isEmpty()) {
-////			sourceNodes.put(to.getElement(), to);
-////		}
-//
-//			for (Node from : e.getFrom()) {
-////if (from.getElement().toString().equals("DUMMY_SOURCE")) {
-////System.out.println("removing " + e + " from dummy source");
-////}
-//				from.removeOutgoing(e);
-//			}
-//
-//			edges.remove(edge);
-//		}
-//	}
 
 	public void removeEdge(E edge) {
 
@@ -242,67 +120,16 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 		return edgeCount;
 	}
 
-//	public ArrayList<N> getSourceNodes() {
-//		return new ArrayList<>(sourceNodes.keySet());
-//	}
-
-//	public ArrayList<E> getSourceEdges() {
-//		ArrayList<E> sourceEdges = new ArrayList<>();
-//
-//		for (Node n : sourceNodes.values()) {
-//			HashMap<E, Edge> edgeList = n.getOutgoing();
-//			sourceEdges.addAll(edgeList.keySet());
-//		}
-//
-//		return sourceEdges;
-//	}
-
-//	public ArrayList<N> getNodes() {
-//		return new ArrayList<>(nodes.keySet());
-//	}
-
-//	public ArrayList<E> getEdges() {
-//		return new ArrayList<>(edges.keySet());
-//	}
-
-//	public Weight getWeight(E edge) {
-//		return edges.get(edge).getWeight();
-//	}
-
-//	public ArrayList<E> getOutgoing(N node) {
-//		return new ArrayList<>(nodes.get(node).getOutgoing().keySet());
-//	}
-//
-//	public ArrayList<E> getIncoming(N node) {
-//		return new ArrayList<>(nodes.get(node).getIncoming().keySet());
-//	}
-
 	public static class Node<E> {
-//		private N element;
-//		private HashMap<E, Edge> in;
-//		private HashMap<E, Edge> out;
-
 		private int id;
 		private ArrayList<E> in;
 		private ArrayList<E> out;
-//		private HashMap<E, E> in;
-//		private HashMap<E, E> out;
 
-//		public Node(N element) {
 		public Node() {
-//			this.element = element;
-//			this.in = new HashMap<>();
-//			this.out = new HashMap<>();
 			this.id = -1;
 			this.in = new ArrayList<>();
 			this.out = new ArrayList<>();
-//			this.in = new HashMap<>();
-//			this.out = new HashMap<>();
 		}
-
-//		public Node() {
-//			this.id = -1;
-//		}
 
 		void setID(int id) {
 			this.id = id;
@@ -312,42 +139,28 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 			return id;
 		}
 
-//		public N getElement() {
-//			return element;
-//		}
-
 		public void addIncoming(E edge) {
-//			in.put(edge.getElement(), edge);
 			in.add(edge);
-//			in.put(edge, null);
 		}
 
 		public void addOutgoing(E edge) {
-//			out.put(edge.getElement(), edge);
 			out.add(edge);
-//			out.put(edge, null);
 		}
 
 		public void removeIncoming(E edge) {
-//			in.remove(edge.getElement());
 			in.remove(edge);
 		}
 
 		public void removeOutgoing(E edge) {
-//			out.remove(edge.getElement());
 			out.remove(edge);
 		}
 
-//		public HashMap<E, Edge> getIncoming() {
 		public ArrayList<E> getIncoming() {
 			return in;
-//			return new ArrayList<>(in.keySet());
 		}
 
-//		public HashMap<E, Edge> getOutgoing() {
 		public ArrayList<E> getOutgoing() {
 			return out;
-//			return new ArrayList<>(out.keySet());
 		}
 
 		@Override
@@ -355,41 +168,17 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 			return o instanceof Node &&
 					((Node<?>) o).id == id;
 		}
-
-//		@Override
-//		public boolean equals(Object arg0) {
-//			if (arg0 instanceof Hypergraph.Node) {
-//				return element.equals(((Hypergraph<?,?>.Node) arg0).element);
-//			}
-//			return super.equals(arg0);
-//		}
-//
-//		@Override
-//		public int hashCode() {
-//			return element.hashCode();
-//		}
-//
-//		@Override
-//		public String toString() {
-//			return element.toString();
-//		}
 	}
 
 	public static class Edge<N> {
-//		private E element;
-//		private Weight weight;
-
 		private int id;
 		private ArrayList<N> from;
 		N to;
 
-//		public Edge(E element) {
 		public Edge() {
-//			this.element = element;
 			this.id = -1;
 			this.from = new ArrayList<>();
 			this.to = null;
-//			this.weight = null;
 		}
 
 		void setID(int id) {
@@ -399,19 +188,6 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 		protected int getID() {
 			return id;
 		}
-
-//		public Edge(E element, Weight weight) {
-//			this(element);
-//			this.weight = weight;
-//		}
-
-//		public E getElement() {
-//			return element;
-//		}
-
-//		public Weight getWeight() {
-//			return weight;
-//		}
 
 		public void addFrom(N prev) {
 			this.from.add(prev);
@@ -434,23 +210,5 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 			return o instanceof Edge &&
 					((Edge<?>) o).id == id;
 		}
-
-//		@Override
-//		public boolean equals(Object arg0) {
-//			if (arg0 instanceof Hypergraph.Edge) {
-//				return element.equals(((Hypergraph<?,?>.Edge)arg0).element);
-//			}
-//			return false;
-//		}
-//
-//		@Override
-//		public int hashCode() {
-//			return element.hashCode();
-//		}
-//
-//		@Override
-//		public String toString() {
-//			return element.toString();
-//		}
 	}
 }

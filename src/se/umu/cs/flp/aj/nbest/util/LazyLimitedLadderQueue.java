@@ -28,8 +28,6 @@ import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 public class LazyLimitedLadderQueue<V extends Comparable<V>> {
-
-
 	private int rank;
 	private int limit;
 	private ArrayList<LinkedList<V>> elements;
@@ -41,12 +39,13 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 	private int nonEmptyListCounter;
 	private int dequeueCounter;
 	private boolean empty;
+	private boolean needsUpdate;
+	private Comparator<Configuration<V>> comparator;
 
 	public LazyLimitedLadderQueue(int rank, ArrayList<LinkedList<V>> elements,
 			ArrayList<Integer> elementIndices,
 			Comparator<Configuration<V>> comparator, int limit) {
 		this.rank = rank;
-//		this.elements = new ArrayList<>();
 		this.elements = elements;
 		this.elementIndices = elementIndices;
 		this.configQueue = new PriorityQueue<>(comparator);
@@ -54,16 +53,11 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		this.missingDataCounter = new HashMap<>();
 		this.pendingConfigs = new HashMap<>();
 		this.empty = true;
+		this.needsUpdate = false;
 		this.nonEmptyListCounter = 0;
 		this.limit = limit;
 		this.dequeueCounter = 0;
-
-//System.out.println("elements: " + elements);
-//System.out.println("element indices: " + elementIndices);
-
-//		for (int i = 0; i < rank; i++) {
-//			elements.add(new LinkedList<>());
-//		}
+		this.comparator = comparator;
 
 		if (rank == 0) {
 			Configuration<V> config = new Configuration<>();
@@ -127,14 +121,20 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 
 		@Override
 		public String toString() {
-			return indices.toString(); //+ "/" + values;
+			return indices.toString();
 		}
 	}
 
-
-
 	public boolean isEmpty() {
 		return empty;
+	}
+
+	public boolean needsUpdate() {
+		return needsUpdate;
+	}
+
+	public void hasUpdated() {
+		needsUpdate = false;
 	}
 
 	public boolean hasNext() {
@@ -151,11 +151,6 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 	}
 
 	public ArrayList<V> dequeue() {
-
-//		if (dequeueCounter >= limit) {
-//			return null;
-//		}
-
 		dequeueCounter++;
 		Configuration<V> config = configQueue.poll();
 		enqueueNewConfigs(config);
@@ -163,80 +158,72 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		return config.getValues();
 	}
 
-//	public void addLast(int rankIndex, V value) {
+	public ArrayList<V> peek() {
+		return configQueue.peek().getValues();
+	}
+
 	public void update(int rankIndex) {
+		Configuration<V> oldConfig = configQueue.peek();
+		boolean wasEmpty = isEmpty();
+		updateEmptyStatus(rankIndex);
 
-//		if (elements.get(rankIndex).size() < limit) {
-//System.out.println("IF");
-			boolean wasEmpty = isEmpty();
-			updateEmptyStatus(rankIndex);
-//			elements.get(rankIndex).add(value);
+		if (wasEmpty && !isEmpty()) {
+			Configuration<V> firstConfig = new Configuration<>();
+			firstConfig.setIndices(getZeroIndices());
+			firstConfig.setValues(extractValues(firstConfig.getIndices()));
+			configQueue.add(firstConfig);
+			usedConfigs.put(firstConfig, firstConfig);
+		}
 
-			if (wasEmpty && !isEmpty()) {
-				Configuration<V> firstConfig = new Configuration<>();
-				firstConfig.setIndices(getZeroIndices());
-				firstConfig.setValues(extractValues(firstConfig.getIndices()));
-				configQueue.add(firstConfig);
-				usedConfigs.put(firstConfig, firstConfig);
-			}
+		if (pendingConfigs.containsKey(rankIndex)) {
+			Iterator<Configuration<V>> iterator =
+					pendingConfigs.get(rankIndex).iterator();
 
-			if (pendingConfigs.containsKey(rankIndex)) {
-				Iterator<Configuration<V>> iterator =
-						pendingConfigs.get(rankIndex).iterator();
+			while (iterator.hasNext()) {
+				Configuration<V> pending = iterator.next();
+				decreaseMissingDataCounter(pending);
 
-				while (iterator.hasNext()) {
-					Configuration<V> pending = iterator.next();
-					decreaseMissingDataCounter(pending);
+				if (isReady(pending)) {
 
-					if (isReady(pending)) {
-
-						if (!usedConfigs.containsKey(pending)) {
-							pending.setValues(extractValues(
-									pending.getIndices()));
-							configQueue.add(pending);
-							usedConfigs.put(pending, pending);
-						}
-
-						iterator.remove();
+					if (!usedConfigs.containsKey(pending)) {
+						pending.setValues(extractValues(
+								pending.getIndices()));
+						configQueue.add(pending);
+						usedConfigs.put(pending, pending);
 					}
-				}
 
-//				/* Just added in case */
-//				if (pendingConfigs.get(rankIndex).isEmpty()) {
-//					pendingConfigs.remove(rankIndex);
-//				}
+					iterator.remove();
+				}
 			}
-//		} else {
-////System.out.println("ELSE");
-//		}
+		}
+
+		if (oldConfig != null &&
+				comparator.compare(configQueue.peek(), oldConfig) < 0) {
+			needsUpdate = true;
+		}
 	}
 
 	private void enqueueNewConfigs(Configuration<V> config) {
-
 		ArrayList<Integer> indexList;
 		Configuration<V> newConfig;
 
 		for (int i = 0; i < rank; i++) {
 			indexList = new ArrayList<>(config.getIndices());
 			int prevIndex = indexList.get(i);
-//			int nOfElements = elements.get(i).size();
 			int nOfElements = elements.get(elementIndices.get(i)).size();
 
 			indexList.set(i, prevIndex + 1);
 			newConfig = new Configuration<>();
 			newConfig.setIndices(indexList);
 
-			if (//nOfElements <= limit &&
-					nOfElements > prevIndex + 1) {
+			if (nOfElements > prevIndex + 1) {
 				newConfig.setValues(extractValues(indexList));
 
 				if (!usedConfigs.containsKey(newConfig)) {
 					configQueue.add(newConfig);
 					usedConfigs.put(newConfig, newConfig);
-//System.out.println("Adds config " + newConfig);
 				}
-			} else //if (nOfElements <= limit)
-			{
+			} else {
 
 				if (!pendingConfigs.containsKey(i)) {
 					pendingConfigs.put(i, new LinkedList<>());
@@ -291,10 +278,6 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 	}
 
 	private void updateEmptyStatus(int rankIndex) {
-//System.out.println("In updateEmptyStatus");
-//System.out.println("Elements: " + elements);
-//System.out.println("ElementIndices: " + elementIndices);
-//System.out.println("Rank index: " + rankIndex);
 
 		if (empty && elements.get(elementIndices.get(rankIndex)).size() == 1) {
 			nonEmptyListCounter++;
@@ -303,7 +286,6 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 				empty = false;
 			}
 		}
-//System.out.println("Done with updating empty status. It is now " + empty);
 	}
 
 }

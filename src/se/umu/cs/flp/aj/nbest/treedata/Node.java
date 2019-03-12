@@ -25,32 +25,27 @@ package se.umu.cs.flp.aj.nbest.treedata;
 
 import java.util.ArrayList;
 
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.NoFixedFacet;
-
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
 
 public class Node implements Comparable<Node> {
 
 	private Symbol label;
-//	private Node parent;
 	private ArrayList<Node> children = new ArrayList<>();
-//	private int nOfChildren;
-
 	private ArrayList<Node> leaves = new ArrayList<>();
 	private boolean validLeaves;
 
 	private String treeString;
+	private String treeRTGString;
 	private int size;
 	private int hash;
 	private boolean validString;
+	private boolean validRTGString;
 	private boolean validSize;
 	private boolean validHash;
 
 
 	public Node(Symbol label) {
 		this.label = label;
-//		nOfChildren = 0;
-//		parent = null;
 
 		treeString = "";
 		size = 1;
@@ -58,20 +53,10 @@ public class Node implements Comparable<Node> {
 
 		validLeaves = false;
 		validString = false;
+		validRTGString = false;
 		validSize = true;
 		validHash = false;
 	}
-
-//	public Node(Symbol label, ArrayList<Node> children) {
-//		this(label);
-//
-//		this.children = children;
-//		nOfChildren = children.size();
-//
-//		for (Node n : children) {
-//			n.setParent(this);
-//		}
-//	}
 
 	public Symbol getLabel() {
 		return label;
@@ -79,10 +64,9 @@ public class Node implements Comparable<Node> {
 
 	public Node addChild(Node child) {
 		children.add(child);
-//		child.setParent(this);
-//		nOfChildren++;
 		validLeaves = false;
 		validString = false;
+		validRTGString = false;
 		validSize = false;
 		this.invalidateHash();
 		return child;
@@ -93,20 +77,10 @@ public class Node implements Comparable<Node> {
 	}
 
 	public int getChildCount() {
-//		return nOfChildren;
 		return children.size();
 	}
 
-//	public void setParent(Node parent) {
-//		this.parent = parent;
-//	}
-//
-//	public Node getParent() {
-//		return parent;
-//	}
-
 	public boolean isLeaf() {
-//		return nOfChildren == 0;
 		return children.size() == 0;
 	}
 
@@ -154,69 +128,28 @@ public class Node implements Comparable<Node> {
 
 	private void invalidateHash() {
 		this.validHash = false;
-
-//		if (this.parent != null) {
-//			this.parent.invalidateHash();
-//		}
 	}
 
 	@Override
 	public int hashCode() {
 
 		if (validHash) {
-//System.out.println("Hashcode for " + this + " is " + hash);
 			return hash;
 		}
 
 		validHash = true;
 		hash = this.label.hashCode() + this.getSize();
 
-//		int counter = 3;
 		int counter = 1;
 
 		for (Node n : children) {
 			hash += counter * n.hashCode();
-//			counter += 2;
 		}
-
-//		hash = this.toString().hashCode();
-
-//System.out.println("Hashcode for " + this + " is " + hash);
 
 		return hash;
 	}
 
-//	@Override
-//	public String toString() {
-//
-//		if (validString) {
-//			return treeString;
-//		}
-//
-//		treeString = "" + label;
-//
-//		if (!this.isLeaf()) {
-//			treeString += "[";
-//
-//			int nOfChildren = children.size();
-//			for (int i = 0; i < nOfChildren; i++) {
-//				treeString += children.get(i);
-//
-//				if (i != nOfChildren - 1) {
-//					treeString += ", ";
-//				}
-//			}
-//
-//			treeString += "]";
-//		}
-//
-//		validString = true;
-//
-//		return treeString;
-//	}
-
-	@Override
-	public String toString() {
+	public String toWTAString() {
 
 		if (validString) {
 			return treeString;
@@ -225,23 +158,56 @@ public class Node implements Comparable<Node> {
 		treeString = "" + label;
 
 		if (!this.isLeaf()) {
-			treeString += "(";
+			treeString += "[";
 
 			int nOfChildren = children.size();
 			for (int i = 0; i < nOfChildren; i++) {
 				treeString += children.get(i);
 
 				if (i != nOfChildren - 1) {
-					treeString += " ";
+					treeString += ", ";
 				}
 			}
 
-			treeString += ")";
+			treeString += "]";
 		}
 
 		validString = true;
 
 		return treeString;
+	}
+
+	public String toRTGString() {
+
+		if (validRTGString) {
+			return treeRTGString;
+		}
+
+		treeRTGString = "" + label;
+
+		if (!this.isLeaf()) {
+			treeRTGString += "(";
+
+			int nOfChildren = children.size();
+			for (int i = 0; i < nOfChildren; i++) {
+				treeRTGString += children.get(i).toRTGString();
+
+				if (i != nOfChildren - 1) {
+					treeRTGString += " ";
+				}
+			}
+
+			treeRTGString += ")";
+		}
+
+		validRTGString = true;
+
+		return treeRTGString;
+	}
+
+	@Override
+	public String toString() {
+		return toWTAString();
 	}
 
 	@Override
@@ -281,14 +247,6 @@ public class Node implements Comparable<Node> {
 		} else if (o.children.size() > this.children.size()) {
 			return 1;
 		}
-//
-//		for (int i = 0; i < children.size(); i++) {
-//			int comparison = this.children.get(i).compareTo(o.children.get(i));
-//
-//			if (comparison != 0) {
-//				return comparison;
-//			}
-//		}
 
 		String thisString = this.toString();
 		String oString = o.toString();

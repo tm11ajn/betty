@@ -91,7 +91,6 @@ public class NodeTest {
 		leaves.add(lSN);
 		leaves.add(mSN);
 		ArrayList<Node> result = root.getLeaves();
-//System.out.println("RESULT: " + result);
 		assertEquals(leaves, result);
 	}
 
@@ -100,16 +99,11 @@ public class NodeTest {
 		wta = wtaParser.parseForBestTrees(wtaFile);
 		HashMap<String,State> states = wta.getStates();
 		State qe = states.get("qe");
-//		Rule rule = wta.getRulesByState(new State(new Symbol("qe", 0))).get(0);
-//System.out.println(qe.getOutgoing());
 		Rule rule = qe.getOutgoing().get(0);
 		ArrayList<Node> result = rule.getTree().getLeaves();
-
 		ArrayList<Node> leaves = new ArrayList<>();
 		leaves.add(new Node(new Symbol("qe", 0)));
 		leaves.add(new Node(new Symbol("qo", 0)));
-
-//System.out.println("RESULT: " + result);
 		assertEquals(leaves, result);
 	}
 
@@ -118,7 +112,6 @@ public class NodeTest {
 		wta = rtgParser.parseForBestTrees(rtgFile);
 		HashMap<String,State> states = wta.getStates();
 		State q = states.get("q");
-//		Rule rule = wta.getRulesByState(new State(new Symbol("q", 0))).get(0);
 		Rule rule = q.getOutgoing().get(0);
 		ArrayList<Node> result = rule.getTree().getLeaves();
 
@@ -128,7 +121,6 @@ public class NodeTest {
 		leaves.add(new Node(new Symbol("q", 0)));
 		leaves.add(new Node(new Symbol("q2", 0)));
 
-//System.out.println("RESULT: " + result);
 		assertEquals(leaves, result);
 	}
 
@@ -226,9 +218,6 @@ public class NodeTest {
 		b.addChild(new Node(new Symbol("b", 0)));
 		assertEquals(1, b.compareTo(a));
 	}
-
-	//ball[ball[b, b], ball[b, b]]
-	//ball[a, ball[b, b]]
 
 	@Test
 	public void shouldBeSmallerThanLargerTree2() throws Exception {

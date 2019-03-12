@@ -54,8 +54,6 @@ public class WTATest {
 		Node tree = new Node(symbol);
 		wta.addRule(new Rule(tree,
 				semiring.one(), resState));
-//		Rule rule = wta.getRulesByResultingState(state).get(0);
-//System.out.println(state.getIncoming());
 		Rule rule = resState.getIncoming().get(0);
 		assertEquals(aSymb, rule.getTree().getLabel());
 	}
@@ -68,10 +66,6 @@ public class WTATest {
 		Symbol symbol = wta.addSymbol("f", 2);
 		wta.addRule(new Rule(new Node(symbol), semiring.one(),
 				resState));
-//		Rule rule = wta.getTransitionFunction().getRulesBySymbol(fSymb).get(0);
-//		assertEquals(finalState, rule.getResultingState());
-//		assertEquals(finalState,
-//				wta.getRulesByResultingState(resState).get(0).getResultingState());
 		assertEquals(finalState,
 				resState.getIncoming().get(0).getResultingState());
 	}
@@ -79,27 +73,11 @@ public class WTATest {
 	@Test
 	public void shouldHaveTwoRulesByResultingState()
 			throws DuplicateRuleException {
-
 		wta.addRule(new Rule(new Node(fSymb), semiring.one(), state));
 		wta.addRule(new Rule(new Node(gSymb), semiring.one(), state));
 
-//		assertEquals(2, wta.getRulesByResultingState(state).size());
 		assertEquals(2, state.getIncoming().size());
 	}
-
-//	@Test
-//	public void shouldHaveTwoRulesBySymbol()
-//			throws SymbolUsageException, DuplicateRuleException {
-//
-//		wta.addSymbol("f", 2);
-//		wta.getTransitionFunction().addRule(new Rule(new Symbol("f", 2),
-//				semiring.one(), new State("q0")));
-//		wta.getTransitionFunction().addRule(new Rule(new Symbol("f", 2),
-//				semiring.one(), new State("q1")));
-//
-//		assertEquals(2, wta.getTransitionFunction().
-//				getRulesBySymbol(new Symbol("f", 2)).size());
-//	}
 
 	@Test
 	public void shouldGetFinalStates() throws Exception {

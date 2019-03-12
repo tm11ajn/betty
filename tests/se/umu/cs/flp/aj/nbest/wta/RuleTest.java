@@ -79,8 +79,8 @@ public class RuleTest {
 		fNode.addChild(eNode);
 
 		tklist = new ArrayList<>();
-		tklist.add(new TreeKeeper2(eNode, semiring.createWeight(1), q0));
-		tklist.add(new TreeKeeper2(cNode, semiring.createWeight(2), q1));
+		tklist.add(new TreeKeeper2(eNode, semiring.createWeight(1), q0, new ArrayList<>()));
+		tklist.add(new TreeKeeper2(cNode, semiring.createWeight(2), q1, new ArrayList<>()));
 	}
 
 	private void init2() {
@@ -90,8 +90,8 @@ public class RuleTest {
 		fNode.addChild(n1);
 
 		tklist = new ArrayList<>();
-		tklist.add(new TreeKeeper2(aNode, semiring.createWeight(1), q0));
-		tklist.add(new TreeKeeper2(aNode, semiring.createWeight(2), q1));
+		tklist.add(new TreeKeeper2(aNode, semiring.createWeight(1), q0, new ArrayList<>()));
+		tklist.add(new TreeKeeper2(aNode, semiring.createWeight(2), q1, new ArrayList<>()));
 	}
 
 	@Test

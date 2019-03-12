@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses( {
+	se.umu.cs.flp.aj.heap.BinaryHeapTest.class,
 	se.umu.cs.flp.aj.nbest.treedata.AllDataTests.class,
 	se.umu.cs.flp.aj.nbest.wta.AllWTATests.class,
 	se.umu.cs.flp.aj.nbest.wta.handlers.AllWTAHandlerTests.class,

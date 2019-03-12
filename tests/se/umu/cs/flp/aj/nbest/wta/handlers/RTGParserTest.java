@@ -108,15 +108,4 @@ public class RTGParserTest {
 		assertThat(state.getIncoming().size(), is(1));
 	}
 
-//	@Test
-//	public void shouldParseCorrectFile8() throws Exception {
-//		wta = rtgParser.parseForBestTrees(fileName);
-//		ArrayList<Rule> list = new ArrayList<>();
-//		list.add(new Rule(new Node(aSymb), w1, pb));
-//		list.add(new Rule(new Node(aSymb), w2, pa));
-//		list.add(new Rule(new Node(bSymb), w2, pb));
-//		list.add(new Rule(new Node(bSymb), w1, pa));
-//		assertThat(wta.getSourceRules().size(), is(4));
-//	}
-
 }

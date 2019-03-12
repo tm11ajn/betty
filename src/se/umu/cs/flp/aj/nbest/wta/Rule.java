@@ -31,25 +31,19 @@ import se.umu.cs.flp.aj.nbest.util.Hypergraph;
 
 public class Rule extends Hypergraph.Edge<State> {
 
-//	private Symbol symbol;
 	private Weight weight;
 	private int rank = 0;
 	private Node tree;
 
 	private ArrayList<State> states = new ArrayList<>();
-//	private HashMap<State, Integer> stateMap = new HashMap<>();
 	private HashMap<State, ArrayList<Integer>> stateMap = new HashMap<>();
 
 	private State resultingState;
-
-	private int hashCode;
-	private boolean validHash;
 
 	public Rule(Node tree, Weight weight,
 			State resultingState, State ... states) {
 		super();
 
-//		this.symbol = symbol;
 		this.tree = tree;
 		this.weight = weight;
 		this.resultingState = resultingState;
@@ -59,40 +53,7 @@ public class Rule extends Hypergraph.Edge<State> {
 			addToStateMap(state, rank);
 			rank++;
 		}
-
-		validHash = false;
 	}
-
-//	public Rule(Symbol symbol, Weight weight, State resultingState,
-//			State ... states) {
-//
-////		Rule(symbol, weight, resultingState, null, states);
-//
-//		this.symbol = symbol;
-//		this.weight = weight;
-//		this.tree = null;
-//		this.resultingState = resultingState;
-//
-//		for (State state : states) {
-//			this.states.add(state);
-//			addToStateMap(state, rank);
-//			rank++;
-//		}
-//	}
-
-//	public Rule(LabelType symbol, State resultingState, State ... states) {
-//
-//		this.symbol = symbol;
-//		weight = new TropicalWeight(0);
-//		this.resultingState = resultingState;
-//
-//		for (State state : states) {
-//			this.states.add(state);
-//			this.stateMap.put(state, state);
-//			rank++;
-//		}
-//
-//	}
 
 	public TreeKeeper2 apply(ArrayList<TreeKeeper2> tklist) {
 		Node t = tree;
@@ -102,7 +63,6 @@ public class Rule extends Hypergraph.Edge<State> {
 
 		for (TreeKeeper2 tk : tklist) {
 			treeWeight = treeWeight.mult(tk.getRunWeight());
-//			treeWeight = treeWeight.mult(tk.getOptWeight());
 
 			usedRules.addAll(tk.getUsedRules());
 		}
@@ -110,11 +70,6 @@ public class Rule extends Hypergraph.Edge<State> {
 		usedRules.add(this);
 
 		LinkedList<TreeKeeper2> copy = new LinkedList<>(tklist);
-
-//		for (TreeKeeper2 tk : tklist) {
-//			copy.addLast(tk);
-//		}
-
 		Node newTree = buildTree(t, copy);
 
 		return new TreeKeeper2(newTree, treeWeight, resultingState, usedRules);
@@ -148,7 +103,6 @@ public class Rule extends Hypergraph.Edge<State> {
 		this.states.add(state);
 		addToStateMap(state, rank);
 		rank++;
-		validHash = false;
 	}
 
 	private void addToStateMap(State state, int index) {
@@ -166,10 +120,6 @@ public class Rule extends Hypergraph.Edge<State> {
 	public Weight getWeight() {
 		return weight;
 	}
-
-//	public int getRank() {
-//		return rank;
-//	}
 
 	public int getNumberOfStates() {
 		return states.size();
@@ -200,26 +150,6 @@ public class Rule extends Hypergraph.Edge<State> {
 			if (this.getID() == rule.getID()) {
 				return true;
 			}
-
-//			if (rule.toString().equals(this.toString())) {
-//				return true;
-//			}
-
-//			if (rule.symbol.equals(this.symbol)
-//					&& rule.resultingState.equals(this.resultingState)
-//					&& rule.states.size() == this.states.size()) {
-//
-//				int statesSize = this.states.size();
-//
-//				for (int i = 0; i < statesSize; i++) {
-//
-//					if (!rule.states.get(i).equals(this.states.get(i))) {
-//						return false;
-//					}
-//				}
-//
-//				return true;
-//			}
 		}
 
 		return false;
@@ -227,72 +157,35 @@ public class Rule extends Hypergraph.Edge<State> {
 
 	@Override
 	public int hashCode() {
-
-//		if (!validHash) {
-//
-////		int hash = 7*tree.getLabel().hashCode() + 11*resultingState.hashCode();
-//			hashCode = 7*tree.hashCode() + 11*resultingState.hashCode();
-//
-//			for (State s : states) {
-//				hashCode += s.hashCode();
-//			}
-//
-//			// Added when using string for equal
-//			hashCode += weight.hashCode();
-//
-//			validHash = true;
-//		}
-//
-////System.out.println("Hash for " + this + " is " + hash);
-//
-//		return hashCode;
 		return this.getID();
 	}
 
+	public String toWTAString() {
 
-	@Override
-	public String toString() {
-
-//		String stateString = "";
 		String weightString = "";
-
-//		if (!states.isEmpty()) {
-//			stateString += "[";
-//
-//			int nOfStates = states.size();
-//			stateString += states.get(0).toString();
-//
-//			for (int i = 1; i < nOfStates; i++) {
-//				stateString += ", " + states.get(i);
-//			}
-//
-//			stateString += "]";
-//		}
 
 		if (!weight.isOne()) {
 			weightString = " # " + weight;
 		}
 
-		return resultingState + " -> " + tree + weightString;
-//		return tree + " -> " + resultingState + weightString;
+		return tree.toWTAString() + " -> " + resultingState + weightString;
 	}
 
-//	private class Application {
-//		Node tree;
-//		Weight weight;
-//
-//		public Application(Node tree, Weight weight) {
-//			this.tree = tree;
-//			this.weight = weight;
-//		}
-//
-//		public Node getTree() {
-//			return tree;
-//		}
-//
-//		public Weight getWeight() {
-//			return weight;
-//		}
-//	}
+	public String toRTGString() {
+
+		String weightString = "";
+
+		if (!weight.isOne()) {
+			weightString = " # " + weight;
+		}
+
+		return resultingState + " -> " + tree.toRTGString() + weightString;
+	}
+
+
+	@Override
+	public String toString() {
+		return toWTAString();
+	}
 
 }

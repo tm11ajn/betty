@@ -39,15 +39,21 @@ public class WTA {
 	private Semiring semiring;
 
 	private Hypergraph<State, Rule> transitionFunction;
-//	private Hypergraph transitionFunction;
 	private State source = new State(new Symbol("DUMMY_SOURCE", 0));
 
-	public WTA(Semiring semiring) {
+	private boolean isGrammar;
+
+	public WTA(Semiring semiring, boolean isGrammar) {
 		this.semiring = semiring;
+		this.isGrammar = isGrammar;
 		this.transitionFunction = new Hypergraph<>();
-//		this.transitionFunction = new Hypergraph();
 		this.transitionFunction.addNode(source);
 	}
+
+	public WTA(Semiring semiring) {
+		this(semiring, false);
+	}
+
 
 	public State addState(String label) throws SymbolUsageException {
 
@@ -101,53 +107,13 @@ public class WTA {
 		return semiring;
 	}
 
-//	public ArrayList<State> getSourceNodes() {
-//		return transitionFunction.getSourceNodes();
-//	}
-
-//	public ArrayList<Rule> getSourceRules() {
-//		return transitionFunction.getOutgoing(source);
-////		return transitionFunction.getSourceEdges();
-//	}
+	public boolean isGrammar() {
+		return isGrammar;
+	}
 
 	public ArrayList<Rule> getSourceRules() {
 		return source.getOutgoing();
-//		return transitionFunction.getOutgoing(source);
-//		return transitionFunction.getSourceEdges();
 	}
-
-//	public ArrayList<Rule> getRulesByResultingState(
-//			State resultingState) {
-//
-//		return resultingState.getIncoming();
-//
-////		ArrayList<Rule> rules = transitionFunction.getIncoming(
-////				resultingState);
-//		ArrayList<Rule> rules = resultingState.getIncoming());
-//
-//		if (rules == null) {
-//			return new ArrayList<>();
-//		}
-//
-//		return rules;
-//	}
-
-//	public ArrayList<Rule> getRulesByState(State state) {
-//
-////System.out.println("Get rules by state " + state);
-////		ArrayList<Rule> rules = transitionFunction.getOutgoing(state);
-//		ArrayList<Rule> rules = state.getOutgoing();
-//
-//		if (rules == null) {
-//			return new ArrayList<>();
-//		}
-//
-//		return rules;
-//	}
-
-//	public ArrayList<Rule> getRules() {
-//		return transitionFunction.getEdges();
-//	}
 
 	public void addRule(Rule rule) throws DuplicateRuleException {
 
@@ -164,8 +130,6 @@ public class WTA {
 			states = new ArrayList<>(nonDuplicateStates.keySet());
 		}
 
-//		transitionFunction.addEdge(rule, rule.getWeight(),
-//				rule.getResultingState(), states);
 		transitionFunction.addEdge(rule, rule.getResultingState(), states);
 	}
 

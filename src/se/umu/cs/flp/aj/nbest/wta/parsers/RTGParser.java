@@ -5,8 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -34,16 +32,12 @@ public class RTGParser implements Parser {
 
 	private WTA wta;
 
-	private HashMap<Symbol, Node> nodeMap;
-
 	public RTGParser(Semiring semiring) {
 		this.semiring = semiring;
 		this.hasFinalState = false;
 		this.ruleCounter = 0;
 		this.forDerivations = false;
-		nodeMap = new HashMap<>();
 		tempRules = new ArrayList<>();
-		wta = new WTA(semiring);
 	}
 
 	public WTA parseForBestTrees(String fileName) {
@@ -57,10 +51,8 @@ public class RTGParser implements Parser {
 	}
 
 	private WTA parse(String fileName) {
-
-		nodeMap = new HashMap<>();
 		tempRules = new ArrayList<>();
-		wta = new WTA(semiring);
+		wta = new WTA(semiring, true);
 		int rowCounter = 1;
 
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -71,23 +63,16 @@ public class RTGParser implements Parser {
 				rowCounter++;
 			}
 
-//System.out.println("Going through tempRules: ");
 			for (Rule r : tempRules) {
-//System.out.println("Current rule: " + r);
 				ArrayList<Node> leaves = r.getTree().getLeaves();
-//System.out.println("Leaves of current tree: " + leaves);
+
 				for (Node leaf : leaves) {
-//System.out.println("Current leaf: " + leaf);
 					if (leaf.getLabel().isNonterminal()) {
-//System.out.println("Put as nonterminal");
 						r.addState(wta.addState(leaf.getLabel().getLabel()));
 					}
 				}
 				wta.addRule(r);
 			}
-
-//System.out.println("wta:");
-//System.out.println(wta);
 
 		} catch (FileNotFoundException e) {
 			System.err.println("File " + fileName + " not found.");
@@ -170,28 +155,17 @@ public class RTGParser implements Parser {
 
 		if (!containsParsingCharacters(rhs)) {
 			String symbolString = rhs.trim();
+
 			if (forDerivations && nOfChildren > 0) {
 				symbolString += "//rule" + ruleCounter;
 			}
 
 			Symbol symbol = wta.addSymbol(symbolString, nOfChildren);
-
-//			Node tree;
-//
-//			if (nodeMap.containsKey(symbol)) {
-//				tree = nodeMap.get(symbol);
-//			} else {
-//				tree = new Node(symbol);
-//				nodeMap.put(symbol, tree);
-//			}
-
 			Node tree = new Node(symbol);
-//System.out.println("New node " + tree);
 
 			return tree;
 
 		} else {
-
 			int length = rhs.length();
 			Stack<Character> parStack = new Stack<>();
 			String currentString = "";
@@ -241,18 +215,6 @@ public class RTGParser implements Parser {
 			while (!children.isEmpty()) {
 				tree.addChild(children.pollFirst());
 			}
-
-//			Iterator<Node> it = children.iterator();
-//
-//			while (it.hasNext()) {
-//				tree.addChild(it.next());
-//				it.remove();
-//			}
-
-
-
-//System.out.println("RETURN TREE: " + tree);
-//System.out.println("TREE LEAVES: " + tree.getLeaves());
 
 			return tree;
 		}

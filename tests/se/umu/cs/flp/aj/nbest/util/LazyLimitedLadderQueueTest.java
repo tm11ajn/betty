@@ -25,6 +25,7 @@ import static org.hamcrest.CoreMatchers.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -61,167 +62,192 @@ public class LazyLimitedLadderQueueTest {
 	private LazyLimitedLadderQueue<Integer> lq;
 	private ArrayList<Integer> res;
 	private int limit = 10;
+	private ArrayList<LinkedList<Integer>> elements;
+	private ArrayList<Integer> elementIndices;
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	@Before
-	public void setUp() throws Exception {
-		lq = new LazyLimitedLadderQueue<Integer>(0, comp, limit);
-	}
+//	@Before
+//	public void setUp() throws Exception {
+//		lq = new LazyLimitedLadderQueue<Integer>(0, comp, limit);
+//	}
 
 	@After
 	public void tearDown() throws Exception {
 	}
 
-	private void initLadderQueue(int rank) {
-		this.lq = new LazyLimitedLadderQueue<>(rank, comp, limit);
+	private void init(int rank) {
+		elements = new ArrayList<>();
+		elementIndices = new ArrayList<>();
+		for (int i = 0; i < rank; i++) {
+			elements.add(new LinkedList<>());
+			elementIndices.add(i);
+		}
+		this.lq = new LazyLimitedLadderQueue<>(rank, elements, elementIndices,
+				comp, limit);
 	}
 
 	@Test
 	public void testIsNotEmptyRank0() {
-		initLadderQueue(0);
+		init(0);
 		assertFalse(lq.isEmpty());
 	}
 
 	@Test
 	public void testIsEmptyRank1() {
-		initLadderQueue(1);
+		init(1);
 		assertTrue(lq.isEmpty());
 	}
 
 	@Test
 	public void testIsNotEmptyRank1() {
-		initLadderQueue(1);
-		lq.addLast(0, 3);
+		init(1);
+		elements.get(0).add(3);
+		lq.update(0);
 		assertFalse(lq.isEmpty());
 	}
 
 	@Test
 	public void testIsEmptyRank2() {
-		initLadderQueue(2);
+		init(2);
 		assertTrue(lq.isEmpty());
 	}
 
 	@Test
 	public void test2IsEmptyRank2() {
-		initLadderQueue(2);
-		lq.addLast(1, 3);
+		init(2);
+		elements.get(1).add(3);
+		lq.update(1);
 		assertTrue(lq.isEmpty());
 	}
 
 	@Test
 	public void testIsNotEmptyRank2() {
-		initLadderQueue(2);
-		lq.addLast(0, 3);
-		lq.addLast(1, 3);
+		init(2);
+		elements.get(0).add(3);
+		lq.update(0);
+		elements.get(1).add(3);
+		lq.update(1);
 		assertFalse(lq.isEmpty());
 	}
 
 	@Test
 	public void testIsEmptyRank3() {
-		initLadderQueue(3);
+		init(3);
 		assertTrue(lq.isEmpty());
 	}
 
 	@Test
 	public void test2IsEmptyRank3() {
-		initLadderQueue(3);
-		lq.addLast(0, 3);
-		lq.addLast(0, 3);
+		init(3);
+		elements.get(0).add(3);
+		lq.update(0);
+		elements.get(0).add(3);
+		lq.update(0);
 		assertTrue(lq.isEmpty());
 	}
 
 	@Test
 	public void test3IsEmptyRank3() {
-		initLadderQueue(3);
-		lq.addLast(1, 3);
-		lq.addLast(2, 3);
-		lq.addLast(2, 3);
+		init(3);
+		elements.get(1).add(3);
+		lq.update(1);
+		elements.get(2).add(3);
+		lq.update(2);
+		elements.get(2).add(3);
+		lq.update(2);
 		assertTrue(lq.isEmpty());
 	}
 
 	@Test
 	public void testIsNotEmptyRank3() {
-		initLadderQueue(3);
-		lq.addLast(1, 3);
-		lq.addLast(2, 3);
-		lq.addLast(0, 3);
+		init(3);
+		elements.get(1).add(3);
+		lq.update(1);
+		elements.get(2).add(3);
+		lq.update(2);
+		elements.get(0).add(3);
+		lq.update(0);
 		assertFalse(lq.isEmpty());
 	}
 
 	@Test
 	public void testHasNextRank0() {
-		initLadderQueue(0);
+		init(0);
 		assertTrue(lq.hasNext());
 	}
 
 	@Test
 	public void testHasNextRank1() {
-		initLadderQueue(1);
-		lq.addLast(0, 4);
+		init(1);
+		elements.get(0).add(4);
+		lq.update(0);
 		assertTrue(lq.hasNext());
 	}
 
 	@Test
 	public void testHasNotNextRank1() {
-		initLadderQueue(1);
-		lq.addLast(0, 4);
+		init(1);
+		elements.get(0).add(4);
+		lq.update(0);
 		lq.dequeue();
 		assertFalse(lq.hasNext());
 	}
 
 	@Test
 	public void testHasNextRank2() {
-		initLadderQueue(2);
-		lq.addLast(0, 6);
-		lq.addLast(1, 4);
+		init(2);
+		elements.get(0).add(6);
+		lq.update(0);
+		elements.get(1).add(4);
+		lq.update(1);
 		assertTrue(lq.hasNext());
 	}
 
 	@Test
 	public void testHasNotNextRank2() {
-		initLadderQueue(2);
-		lq.addLast(1, 4);
-		lq.addLast(1, 5);
+		init(2);
+		elements.get(1).add(4);
+		lq.update(1);
+		elements.get(1).add(5);
+		lq.update(1);
 		assertFalse(lq.hasNext());
 	}
 
 	@Test
 	public void testHasNextRank3() {
-		initLadderQueue(3);
-		lq.addLast(1, 4);
-		lq.addLast(2, 5);
-		lq.addLast(0, 6);
+		init(3);
+		elements.get(1).add(4);
+		lq.update(1);
+		elements.get(2).add(5);
+		lq.update(2);
+		elements.get(0).add(6);
+		lq.update(0);
 		assertTrue(lq.hasNext());
 	}
 
 	@Test
 	public void testHasNotNextRank3() {
-		initLadderQueue(3);
-		lq.addLast(1, 4);
-		lq.addLast(2, 5);
-		lq.addLast(2, 8);
+		init(3);
+		elements.get(1).add(8);
+		lq.update(1);
+		elements.get(2).add(8);
+		lq.update(2);
+		elements.get(2).add(8);
+		lq.update(2);
 		assertFalse(lq.hasNext());
 	}
 
 	@Test
 	public void testDequeueRank0() {
-		initLadderQueue(0);
+		init(0);
 		res = new ArrayList<>();
 		assertThat(lq.dequeue(), is(res));
 	}
 
 	@Test
 	public void testDequeueRank1() {
-		initLadderQueue(1);
-		lq.addLast(0, 2);
+		init(1);
+		elements.get(0).add(2);
+		lq.update(0);
 		res = new ArrayList<>();
 		res.add(2);
 		assertThat(lq.dequeue(), is(res));
@@ -229,9 +255,11 @@ public class LazyLimitedLadderQueueTest {
 
 	@Test
 	public void testDequeueRank2() {
-		initLadderQueue(2);
-		lq.addLast(0, 1);
-		lq.addLast(1, 2);
+		init(2);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(1).add(2);
+		lq.update(1);
 		res = new ArrayList<>();
 		res.add(1);
 		res.add(2);
@@ -240,10 +268,13 @@ public class LazyLimitedLadderQueueTest {
 
 	@Test
 	public void testDequeueRank3() {
-		initLadderQueue(3);
-		lq.addLast(0, 1);
-		lq.addLast(1, 2);
-		lq.addLast(2, 3);
+		init(3);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(1).add(2);
+		lq.update(1);
+		elements.get(2).add(3);
+		lq.update(2);
 		res = new ArrayList<>();
 		res.add(1);
 		res.add(2);
@@ -253,46 +284,64 @@ public class LazyLimitedLadderQueueTest {
 
 	@Test
 	public void testHasNotNextAfterDequeueRank0() {
-		initLadderQueue(0);
+		init(0);
 		lq.dequeue();
 		assertFalse(lq.hasNext());
 	}
 
 	@Test
 	public void testHasNextAfterDequeueRank3() {
-		initLadderQueue(3);
-		lq.addLast(1, 4);
-		lq.addLast(2, 5);
-		lq.addLast(0, 6);
-		lq.addLast(1, 4);
-		lq.addLast(2, 5);
-		lq.addLast(0, 6);
+		init(3);
+		elements.get(1).add(4);
+		lq.update(1);
+		elements.get(2).add(5);
+		lq.update(2);
+		elements.get(0).add(6);
+		lq.update(0);
+		elements.get(1).add(4);
+		lq.update(1);
+		elements.get(2).add(5);
+		lq.update(2);
+		elements.get(0).add(6);
+		lq.update(0);
 		lq.dequeue();
 		assertTrue(lq.hasNext());
 	}
 
 	@Test
 	public void testHasNotNextAfterDequeueRank3() {
-		initLadderQueue(3);
-		lq.addLast(1, 4);
-		lq.addLast(2, 5);
-		lq.addLast(0, 6);
+		init(3);
+		elements.get(1).add(4);
+		lq.update(1);
+		elements.get(2).add(5);
+		lq.update(2);
+		elements.get(0).add(6);
+		lq.update(0);
 		lq.dequeue();
 		assertFalse(lq.hasNext());
 	}
 
 	@Test
 	public void testCorrectValue1() {
-		initLadderQueue(3);
-		lq.addLast(0, 1);
-		lq.addLast(0, 2);
-		lq.addLast(0, 3);
-		lq.addLast(1, 4);
-		lq.addLast(1, 5);
-		lq.addLast(1, 6);
-		lq.addLast(2, 7);
-		lq.addLast(2, 8);
-		lq.addLast(2, 9);
+		init(3);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(2);
+		lq.update(0);
+		elements.get(0).add(3);
+		lq.update(0);
+		elements.get(1).add(4);
+		lq.update(1);
+		elements.get(1).add(5);
+		lq.update(1);
+		elements.get(1).add(6);
+		lq.update(1);
+		elements.get(2).add(7);
+		lq.update(2);
+		elements.get(2).add(8);
+		lq.update(2);
+		elements.get(2).add(9);
+		lq.update(2);
 
 		res = new ArrayList<>();
 		res.add(1);
@@ -304,16 +353,26 @@ public class LazyLimitedLadderQueueTest {
 
 	@Test
 	public void testCorrectValue2() {
-		initLadderQueue(3);
-		lq.addLast(0, 1);
-		lq.addLast(0, 2);
-		lq.addLast(0, 3);
-		lq.addLast(1, 4);
-		lq.addLast(1, 5);
-		lq.addLast(1, 6);
-		lq.addLast(2, 7);
-		lq.addLast(2, 8);
-		lq.addLast(2, 9);
+		init(3);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(2);
+		lq.update(0);
+		elements.get(0).add(3);
+		lq.update(0);
+		elements.get(1).add(4);
+		lq.update(1);
+		elements.get(1).add(5);
+		lq.update(1);
+		elements.get(1).add(6);
+		lq.update(1);
+		elements.get(2).add(7);
+		lq.update(2);
+		elements.get(2).add(8);
+		lq.update(2);
+		elements.get(2).add(9);
+		lq.update(2);
+
 		lq.dequeue();
 
 		res = new ArrayList<>();
@@ -326,16 +385,26 @@ public class LazyLimitedLadderQueueTest {
 
 	@Test
 	public void testCorrectValue3() {
-		initLadderQueue(3);
-		lq.addLast(0, 1);
-		lq.addLast(0, 2);
-		lq.addLast(0, 3);
-		lq.addLast(1, 4);
-		lq.addLast(1, 5);
-		lq.addLast(1, 6);
-		lq.addLast(2, 7);
-		lq.addLast(2, 8);
-		lq.addLast(2, 9);
+		init(3);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(2);
+		lq.update(0);
+		elements.get(0).add(3);
+		lq.update(0);
+		elements.get(1).add(4);
+		lq.update(1);
+		elements.get(1).add(5);
+		lq.update(1);
+		elements.get(1).add(6);
+		lq.update(1);
+		elements.get(2).add(7);
+		lq.update(2);
+		elements.get(2).add(8);
+		lq.update(2);
+		elements.get(2).add(9);
+		lq.update(2);
+
 		lq.dequeue();
 		lq.dequeue();
 
@@ -349,16 +418,26 @@ public class LazyLimitedLadderQueueTest {
 
 	@Test
 	public void testCorrectValue4() {
-		initLadderQueue(3);
-		lq.addLast(0, 1);
-		lq.addLast(0, 2);
-		lq.addLast(0, 3);
-		lq.addLast(1, 4);
-		lq.addLast(1, 5);
-		lq.addLast(1, 6);
-		lq.addLast(2, 7);
-		lq.addLast(2, 8);
-		lq.addLast(2, 9);
+		init(3);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(2);
+		lq.update(0);
+		elements.get(0).add(3);
+		lq.update(0);
+		elements.get(1).add(4);
+		lq.update(1);
+		elements.get(1).add(5);
+		lq.update(1);
+		elements.get(1).add(6);
+		lq.update(1);
+		elements.get(2).add(7);
+		lq.update(2);
+		elements.get(2).add(8);
+		lq.update(2);
+		elements.get(2).add(9);
+		lq.update(2);
+
 		lq.dequeue();
 		lq.dequeue();
 		lq.dequeue();
@@ -373,16 +452,26 @@ public class LazyLimitedLadderQueueTest {
 
 	@Test
 	public void test2CorrectValue1() {
-		initLadderQueue(3);
-		lq.addLast(0, 1);
-		lq.addLast(0, 1);
-		lq.addLast(0, 11);
-		lq.addLast(1, 2);
-		lq.addLast(1, 2);
-		lq.addLast(1, 12);
-		lq.addLast(2, 3);
-		lq.addLast(2, 3);
-		lq.addLast(2, 13);
+		init(3);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(11);
+		lq.update(0);
+		elements.get(1).add(2);
+		lq.update(1);
+		elements.get(1).add(2);
+		lq.update(1);
+		elements.get(1).add(12);
+		lq.update(1);
+		elements.get(2).add(3);
+		lq.update(2);
+		elements.get(2).add(3);
+		lq.update(2);
+		elements.get(2).add(13);
+		lq.update(2);
+
 		lq.dequeue();
 		lq.dequeue();
 		lq.dequeue();
@@ -397,16 +486,26 @@ public class LazyLimitedLadderQueueTest {
 
 	@Test
 	public void test2CorrectValue2() {
-		initLadderQueue(3);
-		lq.addLast(0, 1);
-		lq.addLast(0, 1);
-		lq.addLast(0, 11);
-		lq.addLast(1, 2);
-		lq.addLast(1, 2);
-		lq.addLast(1, 12);
-		lq.addLast(2, 3);
-		lq.addLast(2, 3);
-		lq.addLast(2, 13);
+		init(3);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(11);
+		lq.update(0);
+		elements.get(1).add(2);
+		lq.update(1);
+		elements.get(1).add(2);
+		lq.update(1);
+		elements.get(1).add(12);
+		lq.update(1);
+		elements.get(2).add(3);
+		lq.update(2);
+		elements.get(2).add(3);
+		lq.update(2);
+		elements.get(2).add(13);
+		lq.update(2);
+
 		lq.dequeue();
 		lq.dequeue();
 		lq.dequeue();
@@ -421,16 +520,26 @@ public class LazyLimitedLadderQueueTest {
 
 	@Test
 	public void test2CorrectValue3() {
-		initLadderQueue(3);
-		lq.addLast(0, 1);
-		lq.addLast(0, 1);
-		lq.addLast(0, 11);
-		lq.addLast(1, 2);
-		lq.addLast(1, 2);
-		lq.addLast(1, 12);
-		lq.addLast(2, 3);
-		lq.addLast(2, 3);
-		lq.addLast(2, 13);
+		init(3);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(11);
+		lq.update(0);
+		elements.get(1).add(2);
+		lq.update(1);
+		elements.get(1).add(2);
+		lq.update(1);
+		elements.get(1).add(12);
+		lq.update(1);
+		elements.get(2).add(3);
+		lq.update(2);
+		elements.get(2).add(3);
+		lq.update(2);
+		elements.get(2).add(13);
+		lq.update(2);
+
 		lq.dequeue();
 		lq.dequeue();
 		lq.dequeue();
@@ -445,16 +554,26 @@ public class LazyLimitedLadderQueueTest {
 
 	@Test
 	public void test2CorrectValue4() {
-		initLadderQueue(3);
-		lq.addLast(0, 1);
-		lq.addLast(0, 1);
-		lq.addLast(0, 11);
-		lq.addLast(1, 2);
-		lq.addLast(1, 2);
-		lq.addLast(1, 12);
-		lq.addLast(2, 3);
-		lq.addLast(2, 3);
-		lq.addLast(2, 13);
+		init(3);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(11);
+		lq.update(0);
+		elements.get(1).add(2);
+		lq.update(1);
+		elements.get(1).add(2);
+		lq.update(1);
+		elements.get(1).add(12);
+		lq.update(1);
+		elements.get(2).add(3);
+		lq.update(2);
+		elements.get(2).add(3);
+		lq.update(2);
+		elements.get(2).add(13);
+		lq.update(2);
+
 		lq.dequeue();
 		lq.dequeue();
 		lq.dequeue();
@@ -469,16 +588,26 @@ public class LazyLimitedLadderQueueTest {
 
 	@Test
 	public void test2CorrectValue9() {
-		initLadderQueue(3);
-		lq.addLast(0, 1);
-		lq.addLast(0, 1);
-		lq.addLast(0, 30);
-		lq.addLast(1, 2);
-		lq.addLast(1, 2);
-		lq.addLast(1, 20);
-		lq.addLast(2, 3);
-		lq.addLast(2, 3);
-		lq.addLast(2, 10);
+		init(3);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(1);
+		lq.update(0);
+		elements.get(0).add(30);
+		lq.update(0);
+		elements.get(1).add(2);
+		lq.update(1);
+		elements.get(1).add(2);
+		lq.update(1);
+		elements.get(1).add(20);
+		lq.update(1);
+		elements.get(2).add(3);
+		lq.update(2);
+		elements.get(2).add(3);
+		lq.update(2);
+		elements.get(2).add(10);
+		lq.update(2);
+
 		lq.dequeue();
 		lq.dequeue();
 		lq.dequeue();

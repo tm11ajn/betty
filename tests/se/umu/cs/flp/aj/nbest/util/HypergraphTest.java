@@ -16,12 +16,6 @@ public class HypergraphTest {
 			this.string = string;
 		}
 
-//		@Override
-//		public boolean equals(Object o) {
-//			return o instanceof NodeString &&
-//					string.equals(((NodeString)o).string);
-//		}
-
 		@Override
 		public String toString() {
 			return string;
@@ -34,12 +28,6 @@ public class HypergraphTest {
 		EdgeString(String string) {
 			this.string = string;
 		}
-
-//		@Override
-//		public boolean equals(Object o) {
-//			return o instanceof EdgeString &&
-//					string.equals(((EdgeString)o).string);
-//		}
 
 		@Override
 		public String toString() {
@@ -172,7 +160,6 @@ public class HypergraphTest {
 		h.addEdge(edge, q0, source);
 		h.removeEdge(edge);
 		assertThat(source.getOutgoing().size(), is(0));
-//		assertThat(h.getSourceNodes().size(), is(2));
 	}
 
 	@Test
@@ -195,20 +182,6 @@ public class HypergraphTest {
 		h.removeNode(pa);
 		assertThat(source.getOutgoing().size(), is(0));
 	}
-
-//	@Test
-//	public void testRemoveNode2() throws DuplicateRuleException {
-//		h = createAutomataGraph();
-//		h.removeNode(pa);
-//		assertThat(h.getEdges().size(), is(1));
-//	}
-//
-//	@Test
-//	public void testRemoveNode3() throws DuplicateRuleException {
-//		h = createAutomataGraph();
-//		h.removeNode("pa");
-//		assertThat(h.getNodes().size(), is(2));
-//	}
 
 	@Test
 	public void testGetSourceEdges() throws DuplicateRuleException {

@@ -5,25 +5,25 @@ import java.util.HashMap;
 
 public class BinaryHeap<O, W extends Comparable<W>> {
 
-	private ArrayList<Node<O, W>> nodes;
+	private ArrayList<Node> nodes;
 	private HashMap<O, Integer> positions;
 	private boolean minHeap;
+	public static final int firstPosition = 1;
 
+	public class Node {
+		O object;
+		W weight;
 
-	public class Node<K, V> {
-		K object;
-		V weight;
-
-		public Node(K object, V weight) {
+		public Node(O object, W weight) {
 			this.object = object;
 			this.weight = weight;
 		}
 
-		public K getObject() {
+		public O getObject() {
 			return object;
 		}
 
-		public V getWeight() {
+		public W getWeight() {
 			return weight;
 		}
 	}
@@ -32,6 +32,9 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 		this.nodes = new ArrayList<>();
 		this.positions = new HashMap<>();
 		this.minHeap = isMinHeap;
+		for (int i = 0; i < firstPosition; i++) {
+			this.nodes.add(new Node(null, null));
+		}
 	}
 
 	public BinaryHeap() {
@@ -39,84 +42,99 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 	}
 
 	public int size () {
-		return nodes.size();
+		return nodes.size() - firstPosition;
 	}
 
 	public boolean empty() {
-		return nodes.size() == 0;
+		return this.size() == 0;
 	}
 
 	public boolean contains(O object) {
 		return positions.containsKey(object);
 	}
 
-	public O peek() {
-		Node<O, W> min = nodes.get(0);
-		return min.object;
-	}
-
-	public W getWeight(O object) {
-		Integer position = positions.get(object);
-
-		if (position == null) {
-			return null;
-		}
-
-		return nodes.get(position).weight;
+	public Node peek() {
+		Node min = nodes.get(firstPosition);
+		return min;
 	}
 
 	public void add(O object, W weight) {
-		Node<O, W> newNode = new Node<>(object, weight);
+		Node newNode = new Node(object, weight);
+		int addedIndex = getLastIndex() + 1;
 		nodes.add(newNode);
-
-		int size = nodes.size();
-		int currentIndex = size - 1;
-
-		positions.put(newNode.object, currentIndex);
-		heapifyUp(currentIndex);
+		positions.put(newNode.object, addedIndex);
+		heapifyUp(addedIndex);
 	}
 
 	public void decreaseWeight(O object, W newWeight) {
 		Integer currentIndex = positions.get(object);
-		Node<O, W> currentNode = nodes.get(currentIndex);
+		Node currentNode = nodes.get(currentIndex);
 		currentNode.weight = newWeight;
 		heapifyUp(currentIndex);
 	}
 
-	public Node<O, W> dequeue() {
-		int lastIndex = nodes.size() - 1;
-		Node<O, W> first = nodes.get(0);
-		Node<O, W> last = nodes.get(lastIndex);
-		Node<O, W> min = new Node<>(first.object, first.weight);
+	public Node dequeue() {
+		int lastIndex = getLastIndex();
+		Node first = nodes.get(firstPosition);
+		Node last = nodes.get(lastIndex);
 
-		first.object = last.object;
-		first.weight = last.weight;
-
-		positions.remove(min.object);
-		positions.put(first.object, 0);
+		positions.remove(first.object);
 		nodes.remove(lastIndex);
 
-		int currentIndex = 0;
-		heapifyDown(currentIndex);
+		if (lastIndex != firstPosition) {
+			nodes.set(firstPosition, last);
+			positions.put(last.object, firstPosition);
+			heapifyDown(firstPosition);
+		}
 
-		return min;
+		return first;
+	}
+
+	public void printHeap() {
+		for (BinaryHeap<O, W>.Node n : nodes) {
+			System.out.println(n.getObject() + " : " + n.getWeight());
+		}
+	}
+
+	private int getLastIndex() {
+		return nodes.size() - 1;
+	}
+
+	private int getParentIndexOf(int index) {
+		int parentIndex;
+
+		if (index%2 == 0) {
+			parentIndex = index/2;
+		} else {
+			parentIndex = (index - 1)/2;
+		}
+
+		return parentIndex;
+	}
+
+	private int getLeftChildIndexOf(int index) {
+		return index * 2;
+	}
+
+	private int getRightChildIndexOf(int index) {
+		return index * 2 + 1;
 	}
 
 	private void heapifyUp(int initialIndex) {
 		int currentIndex = initialIndex;
-		int parentIndex = (currentIndex - 1) / 2;
+		int parentIndex = getParentIndexOf(currentIndex);
 		boolean done = false;
 
-		while (parentIndex > -1 && !done) {
-			Node<O, W> parentNode = nodes.get(parentIndex);
-			Node<O, W> currentNode = nodes.get(currentIndex);
+		while ((parentIndex > firstPosition - 1) && !done) {
+			Node parentNode = nodes.get(parentIndex);
+			Node currentNode = nodes.get(currentIndex);
 
 			if (compare(currentNode.weight, parentNode.weight) < 0) {
 				swap(parentNode, currentNode);
-				updatePosition(nodes.get(parentIndex), parentIndex);
-				updatePosition(nodes.get(currentIndex), currentIndex);
+				updatePosition(parentNode, parentIndex);
+				updatePosition(currentNode, currentIndex);
 				currentIndex = parentIndex;
-				parentIndex = (parentIndex - 1) / 2;
+				parentIndex = getParentIndexOf(currentIndex);
 			} else {
 				done = true;
 			}
@@ -125,27 +143,27 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 
 	private void heapifyDown(int initialIndex) {
 		int currentIndex = initialIndex;
-		int size = nodes.size();
+		int lastIndex = getLastIndex();
 		boolean done = false;
 
 		while (!done) {
-			int leftIndex = 2 * currentIndex + 1;
-			int rightIndex = leftIndex + 1;
+			int leftIndex = getLeftChildIndexOf(currentIndex);
+			int rightIndex = getRightChildIndexOf(currentIndex);
 
-			if (leftIndex >= size) {
+			if (leftIndex > lastIndex) {
 				done = true;
 			} else {
 
-				if (rightIndex >= size) {
+				if (rightIndex > lastIndex) {
 					rightIndex = leftIndex;
 				}
 
-				Node<O, W> left = nodes.get(leftIndex);
-				Node<O, W> right = nodes.get(rightIndex);
-				Node<O, W> current = nodes.get(currentIndex);
+				Node left = nodes.get(leftIndex);
+				Node right = nodes.get(rightIndex);
+				Node current = nodes.get(currentIndex);
 
 				int smallerIndex;
-				Node<O, W> smaller;
+				Node smaller;
 
 				if (compare(left.weight, right.weight) <= 0) {
 					smallerIndex = leftIndex;
@@ -157,8 +175,9 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 
 				if (compare(smaller.weight, current.weight) < 0) {
 					swap(current, smaller);
-					updatePosition(nodes.get(currentIndex), currentIndex);
-					updatePosition(nodes.get(smallerIndex), smallerIndex);
+					updatePosition(current, currentIndex);
+					updatePosition(smaller, smallerIndex);
+					currentIndex = smallerIndex;
 				} else {
 					done = true;
 				}
@@ -166,11 +185,11 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 		}
 	}
 
-	private void updatePosition(Node<O, W> node, int index) {
+	private void updatePosition(Node node, int index) {
 		positions.put(node.object, index);
 	}
 
-	private void swap(Node<O, W> node1, Node<O, W> node2) {
+	private void swap(Node node1, Node node2) {
 		O object = node1.object;
 		W weight = node1.weight;
 
