@@ -147,7 +147,7 @@ public class RuleQueue {
 
 	public boolean isEmpty() {
 
-		if (queue.peek() == null) {
+		if (queue.empty()) {
 			return true;
 		}
 

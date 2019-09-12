@@ -28,9 +28,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 
 import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue.Configuration;
