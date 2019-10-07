@@ -58,20 +58,32 @@ public class RTGParser implements Parser {
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 			String line;
 
-			while ((line = br.readLine()) != null) {
-				parseLine(line);
-				rowCounter++;
-			}
+			try {
 
-			for (Rule r : tempRules) {
-				ArrayList<Node> leaves = r.getTree().getLeaves();
-
-				for (Node leaf : leaves) {
-					if (leaf.getLabel().isNonterminal()) {
-						r.addState(wta.addState(leaf.getLabel().getLabel()));
-					}
+				while ((line = br.readLine()) != null) {
+					parseLine(line);
+					rowCounter++;
 				}
-				wta.addRule(r);
+
+				for (Rule r : tempRules) {
+					ArrayList<Node> leaves = r.getTree().getLeaves();
+
+					for (Node leaf : leaves) {
+						if (leaf.getLabel().isNonterminal()) {
+							r.addState(wta.addState(leaf.getLabel().getLabel()));
+						}
+					}
+					wta.addRule(r);
+				}
+
+			} catch (SymbolUsageException e) {
+				System.err.println(e.getMessage());
+				System.exit(-1);
+			} catch (DuplicateRuleException e) {
+				System.err.println(e.getMessage());
+				System.exit(-1);
+			} finally {
+				br.close();
 			}
 
 		} catch (FileNotFoundException e) {
@@ -84,13 +96,8 @@ public class RTGParser implements Parser {
 			System.err.println("Error found in line " + rowCounter +
 					": " + e.getMessage());
 			System.exit(-1);
-		} catch (SymbolUsageException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
-		} catch (DuplicateRuleException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
 		}
+
 		return wta;
 	}
 

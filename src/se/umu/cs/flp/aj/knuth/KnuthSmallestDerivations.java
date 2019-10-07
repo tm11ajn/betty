@@ -23,23 +23,17 @@ public class KnuthSmallestDerivations {
 
 	public static HashMap<State, Weight> getSmallestDerivations(WTA wta) {
 		KnuthSmallestDerivations.wta = wta;
-		HashMap<State, Weight> temp = computeCheapestTrees();
-		return computeCheapestContexts(temp);
+		return computeCheapestContexts(computeCheapestTrees());
 	}
 
 	private static HashMap<State, Weight> computeCheapestTrees() {
 		queue = new BinaryHeap<>();
 		defined = new HashMap<>();
-		usableRules = new LinkedList<>();
 		totalWeight = new HashMap<>();
+		usableRules = new LinkedList<>(wta.getSourceRules());
+		int nOfStates = wta.getStateCount();
 		HashMap<Rule, Integer> missingIndices = new HashMap<>();
 		HashMap<Rule, HashMap<State, State>> seenStates = new HashMap<>();
-
-		for (Rule r : wta.getSourceRules()) {
-			usableRules.add(r);
-		}
-
-		int nOfStates = wta.getStateCount();
 
 		while (defined.size() < nOfStates) {
 			ListIterator<Rule> it = usableRules.listIterator();
@@ -72,9 +66,9 @@ public class KnuthSmallestDerivations {
 			State state = element.getObject();
 			Weight weight = element.getWeight();
 			defined.put(state, weight);
-//System.out.println("Defines treeweight " + weight + " for state " + state);
 
 			for (Rule r2 : state.getOutgoing()) {
+
 				if (missingIndices.get(r2) == null) {
 					missingIndices.put(r2, r2.getNumberOfStates());
 					seenStates.put(r2, new HashMap<>());
@@ -85,7 +79,7 @@ public class KnuthSmallestDerivations {
 							r2.getIndexOfState(state).size());
 
 					if (missingIndices.get(r2) == 0) {
-						usableRules.addLast(r2);
+						usableRules.add(r2);
 					}
 
 					seenStates.get(r2).put(state, state);
@@ -120,7 +114,6 @@ public class KnuthSmallestDerivations {
 
 		for (State s : wta.getFinalStates()) {
 			defined.put(s, wta.getSemiring().one());
-//System.out.println("Defines context weight " + wta.getSemiring().one() + " for state " + s);
 			totalWeight.put(s, wta.getSemiring().one());
 
 			for (Rule r : s.getIncoming()) {
@@ -173,7 +166,6 @@ public class KnuthSmallestDerivations {
 				State state = element.getObject();
 				Weight weight = element.getWeight();
 				defined.put(state, weight);
-//System.out.println("Defines context weight " + weight + " for state " + state);
 
 				for (Rule r : state.getIncoming()) {
 					usableRules.addLast(r);
@@ -181,7 +173,6 @@ public class KnuthSmallestDerivations {
 
 			} else {
 				done = true;
-
 				ArrayList<State> states = new ArrayList<>(cheapestTrees.keySet());
 
 				for (State s : states) {

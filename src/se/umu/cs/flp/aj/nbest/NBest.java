@@ -21,6 +21,7 @@
 package se.umu.cs.flp.aj.nbest;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -146,13 +147,16 @@ public class NBest {
 		long startTime;
 		long endTime;
 		long duration;
+		long accumulativeTime;
 
 		System.out.println("Pre-computing smallest completions...");
 		startTime = System.nanoTime();
 		HashMap<State, Weight> smallestCompletions =
 				KnuthSmallestDerivations.getSmallestDerivations(wta);
+		List<String> result = new LinkedList<>();
 		endTime = System.nanoTime();
 		duration = (endTime - startTime)/1000000;
+		accumulativeTime = duration;
 		System.out.println("Smallest completions done (took "
 				+ duration + " milliseconds).");
 
@@ -161,13 +165,14 @@ public class NBest {
 			BestTrees2.setSmallestCompletions(smallestCompletions);
 
 			startTime = System.nanoTime();
-			List<String> result = BestTrees2.run(wta, N);
+			result = BestTrees2.run(wta, N);
 			endTime = System.nanoTime();
 
 			printResult(result, derivations);
 
 			if (timer) {
 				duration = (endTime - startTime)/1000000;
+				accumulativeTime += duration;
 				System.out.println("BestTrees version 2 took " + duration +
 						" milliseconds");
 			}
@@ -178,16 +183,36 @@ public class NBest {
 			BestTrees.setSmallestCompletions(smallestCompletions);
 
 			startTime = System.nanoTime();
-			List<String> result = BestTrees.run(wta, N);
+			result = BestTrees.run(wta, N);
 			endTime = System.nanoTime();
 
 			printResult(result, derivations);
 
 			if (timer) {
 				duration = (endTime - startTime)/1000000;
+				accumulativeTime += duration;
 				System.out.println("BestTrees version 1 took " + duration +
 						" milliseconds");
 			}
+		}
+
+		if (result.size() < N) {
+			String outputType;
+
+			if (derivations) {
+				outputType = "runs";
+			} else {
+				outputType = "trees";
+			}
+
+			System.out.println("BestTrees only found " + result.size() +
+					" of the " + N + " requested " + outputType);
+		}
+
+		if (timer) {
+			System.out.println("Total time for BestTrees including "
+					+ "the preprocessing of smallest completions: " +
+					accumulativeTime + " ms");
 		}
 	}
 

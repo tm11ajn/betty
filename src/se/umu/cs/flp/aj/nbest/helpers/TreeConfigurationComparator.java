@@ -30,6 +30,7 @@ import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue.Configuration;
 public class TreeConfigurationComparator
 			implements Comparator<Configuration<TreeKeeper2>> {
 
+
 	@Override
 	public int compare(Configuration<TreeKeeper2> config1,
 			Configuration<TreeKeeper2> config2) {

@@ -88,9 +88,21 @@ public class WTAParser implements Parser {
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 			String line;
 
-			while ((line = br.readLine()) != null) {
-				parseLine(line);
-				rowCounter++;
+			try {
+
+				while ((line = br.readLine()) != null) {
+					parseLine(line);
+					rowCounter++;
+				}
+
+			} catch (SymbolUsageException e) {
+				System.err.println(e.getMessage());
+				System.exit(-1);
+			} catch (DuplicateRuleException e) {
+				System.err.println(e.getMessage());
+				System.exit(-1);
+			} finally {
+				br.close();
 			}
 
 		} catch (FileNotFoundException e) {
@@ -102,12 +114,6 @@ public class WTAParser implements Parser {
 		} catch (IllegalArgumentException e) {
 			System.err.println("Error found in line " + rowCounter +
 					": " + e.getMessage());
-			System.exit(-1);
-		} catch (SymbolUsageException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
-		} catch (DuplicateRuleException e) {
-			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
 

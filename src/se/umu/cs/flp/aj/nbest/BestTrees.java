@@ -78,8 +78,14 @@ public class BestTrees {
 			if (exploredTrees.contains(currentTree) && currentTree.getSmallestWeight().equals(currentTree.getDeltaWeight())) {
 
 				// output(t)
-				nBest.add(currentTree.getTree().toString() + " " +
-						currentTree.getDeltaWeight().toString());
+				String outputString = currentTree.getTree().toString() + " " +
+						currentTree.getDeltaWeight().toString();
+
+//				if (forDerivations) {
+//					outputString = outputString.replaceAll("//rule[0-9]*", "");
+//				}
+
+				nBest.add(outputString);
 
 				// i <- i + 1
 				counter++;
