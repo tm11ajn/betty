@@ -35,7 +35,8 @@ import se.umu.cs.flp.aj.nbest.wta.Symbol;
 
 public class TreeKeeper implements Comparable<TreeKeeper> {
 
-	private static HashMap<State, Weight> smallestCompletions;
+//	private static HashMap<State, Weight> smallestCompletions;
+	private static Weight[] smallestCompletions;
 
 	private Node tree;
 	private LinkedHashMap<State,State> optimalStates;
@@ -78,7 +79,8 @@ public class TreeKeeper implements Comparable<TreeKeeper> {
 
 	}
 
-	public static void init(HashMap<State, Weight> smallestCompletionWeights) {
+//	public static void init(HashMap<State, Weight> smallestCompletionWeights) {
+	public static void init(Weight[] smallestCompletionWeights) {
 		smallestCompletions = smallestCompletionWeights;
 	}
 
@@ -127,7 +129,8 @@ public class TreeKeeper implements Comparable<TreeKeeper> {
 	}
 
 	public Weight getDeltaWeight() {
-		return smallestWeight.mult(smallestCompletions.get(optimalState));
+//		return smallestWeight.mult(smallestCompletions.get(optimalState));
+		return smallestWeight.mult(smallestCompletions[optimalState.getID()]);
 	}
 
 	@Override

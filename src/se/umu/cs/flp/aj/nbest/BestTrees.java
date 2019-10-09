@@ -45,8 +45,9 @@ public class BestTrees {
 	private static PruneableQueue<TreeKeeper,Weight> treeQueue; // K
 
 
-	public static void setSmallestCompletions(
-			HashMap<State, Weight> smallestCompletions) {
+//	public static void setSmallestCompletions(
+//			HashMap<State, Weight> smallestCompletions) {
+	public static void setSmallestCompletions(Weight[] smallestCompletions) {
 		TreeKeeper.init(smallestCompletions);
 	}
 

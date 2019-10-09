@@ -25,26 +25,39 @@ import java.util.Arrays;
 
 public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N>> {
 
-	private int nodeID;
-	private int edgeID;
+	private static int nodeID = 0;
+	private static int edgeID = 0;
 
 	private int nodeCount;
 	private int edgeCount;
 
 	public Hypergraph() {
-		this.nodeID = 0;
-		this.edgeID = 0;
 		this.nodeCount = 0;
 		this.edgeCount = 0;
 	}
 
-	public void addNode(N node) {
-		if (node.getID() == -1) {
-			node.setID(nodeID);
-			nodeID++;
-			nodeCount++;
-		}
+	public static void resetClass() {
+		nodeID = 0;
+		edgeID = 0;
 	}
+
+	private static int getNodeID() {
+		return nodeID++;
+	}
+
+	private static int getEdgeID() {
+		return edgeID++;
+	}
+
+//	public void addNode(N node) {
+////		if (node.getID() == -1) {
+////			node.setID(nodeID);
+////			nodeID++;
+////			nodeCount++;
+////		}
+//
+//		nodeCount++;
+//	}
 
 	public void removeNode(N node) {
 
@@ -73,28 +86,49 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 
 	public void addEdge(E edge, N toNode, ArrayList<N> fromNodes) {
 
-		if (edge.getID() == -1) {
-			edge.setID(edgeID);
-			edgeID++;
-			edgeCount++;
+//		if (edge.getID() == -1) {
+//			edge.setID(edgeID);
+//			edgeID++;
+//			edgeCount++;
+//
+//			if (toNode.getID() == -1) {
+//				addNode(toNode);
+//			}
+//
+//			edge.setTo(toNode);
+//			toNode.addIncoming(edge);
+//
+//			for (N from : fromNodes) {
+//
+//				if (from.getID() == -1) {
+//					addNode(from);
+//				}
+//
+//				edge.addFrom(from);
+//				from.addOutgoing(edge);
+//			}
+//		}
 
-			if (toNode.getID() == -1) {
-				addNode(toNode);
-			}
-
-			edge.setTo(toNode);
-			toNode.addIncoming(edge);
-
-			for (N from : fromNodes) {
-
-				if (from.getID() == -1) {
-					addNode(from);
-				}
-
-				edge.addFrom(from);
-				from.addOutgoing(edge);
-			}
+		if (toNode.unused) {
+			toNode.unused = false;
+			nodeCount++;
 		}
+
+		edge.setTo(toNode);
+		toNode.addIncoming(edge);
+
+		for (N from : fromNodes) {
+
+			if (from.unused) {
+				from.unused = false;
+				nodeCount++;
+			}
+
+			edge.addFrom(from);
+			from.addOutgoing(edge);
+		}
+
+		edgeCount++;
 	}
 
 	public void removeEdge(E edge) {
@@ -124,9 +158,12 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 		private int id;
 		private ArrayList<E> in;
 		private ArrayList<E> out;
+		boolean unused;
 
 		public Node() {
-			this.id = -1;
+//			this.id = -1;
+			unused = true;
+			this.id = getNodeID();
 			this.in = new ArrayList<>();
 			this.out = new ArrayList<>();
 		}
@@ -135,7 +172,7 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 			this.id = id;
 		}
 
-		protected int getID() {
+		public int getID() {
 			return id;
 		}
 
@@ -176,7 +213,8 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 		N to;
 
 		public Edge() {
-			this.id = -1;
+//			this.id = -1;
+			this.id = getEdgeID();
 			this.from = new ArrayList<>();
 			this.to = null;
 		}
@@ -185,7 +223,7 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 			this.id = id;
 		}
 
-		protected int getID() {
+		public int getID() {
 			return id;
 		}
 

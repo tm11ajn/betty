@@ -20,7 +20,6 @@
 
 package se.umu.cs.flp.aj.nbest;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,7 +35,6 @@ import se.umu.cs.flp.aj.knuth.KnuthSmallestDerivations;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.SemiringFactory;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.parsers.Parser;
 import se.umu.cs.flp.aj.nbest.wta.parsers.RTGParser;
@@ -151,7 +149,7 @@ public class NBest {
 
 		System.out.println("Pre-computing smallest completions...");
 		startTime = System.nanoTime();
-		HashMap<State, Weight> smallestCompletions =
+		Weight[] smallestCompletions =
 				KnuthSmallestDerivations.getSmallestDerivations(wta);
 		List<String> result = new LinkedList<>();
 		endTime = System.nanoTime();

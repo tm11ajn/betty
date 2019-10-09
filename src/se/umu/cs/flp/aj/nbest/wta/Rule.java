@@ -49,9 +49,7 @@ public class Rule extends Hypergraph.Edge<State> {
 		this.resultingState = resultingState;
 
 		for (State state : states) {
-			this.states.add(state);
-			addToStateMap(state, rank);
-			rank++;
+			addState(state);
 		}
 	}
 

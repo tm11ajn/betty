@@ -1,0 +1,15 @@
+Pre-computing smallest completions...
+Smallest completions done (took 4 milliseconds).
+Running BestTrees version 2...
+ball[b, b] # 2.000000
+ball[a, a] # 2.000000
+ball[b, a] # 3.000000
+ball[a, b] # 3.000000
+ball[a, b] # 3.000000
+ball[b, a] # 3.000000
+ball[a, ball[ball[a, a], a]] # 4.000000
+ball[a, ball[a, ball[a, a]]] # 4.000000
+ball[b, b] # 4.000000
+ball[ball[ball[a, a], a], a] # 4.000000
+BestTrees version 2 took 19 milliseconds
+Total time for BestTrees including the preprocessing of smallest completions: 23 ms

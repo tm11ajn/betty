@@ -3,7 +3,6 @@ package se.umu.cs.flp.aj.nbest.wta;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.junit.Test;
 
@@ -41,7 +40,10 @@ public class RuleTest {
 	State q1 = new State(q1Sym);
 	State q2 = new State(q2Sym);
 	State q3 = new State(q3Sym);
-	HashMap<State, Weight> smallestCompletions = new HashMap<>();
+	Weight[] smallestCompletions = {
+			semiring.one(),
+			semiring.createWeight(2),
+			semiring.createWeight(1)};
 
 	Rule rule = new Rule(fNode, semiring.createWeight(0.5), resState, q0, q1);
 	ArrayList<TreeKeeper2> tklist = new ArrayList<>();
@@ -50,10 +52,6 @@ public class RuleTest {
 	Node n1 = new Node(q1Sym);
 
 	private void init() {
-
-		smallestCompletions.put(resState, semiring.one());
-		smallestCompletions.put(q0, semiring.createWeight(2));
-		smallestCompletions.put(q1, semiring.createWeight(1));
 
 		TreeKeeper2.init(smallestCompletions);
 

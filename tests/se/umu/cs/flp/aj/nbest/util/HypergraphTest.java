@@ -3,6 +3,7 @@ package se.umu.cs.flp.aj.nbest.util;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import se.umu.cs.flp.aj.nbest.wta.exceptions.DuplicateRuleException;
@@ -37,10 +38,10 @@ public class HypergraphTest {
 
 	private Hypergraph<NodeString, EdgeString> h = new Hypergraph<>();
 
-	NodeString source = new NodeString("source");
-	NodeString pa = new NodeString("pa");
-	NodeString qa = new NodeString("qa");
-	NodeString q0 = new NodeString("q0");
+	NodeString source = new NodeString("source"); 	// ID 0
+	NodeString pa = new NodeString("pa");			// ID 1
+	NodeString qa = new NodeString("qa");			// ID 2
+	NodeString q0 = new NodeString("q0");			// ID 3
 	EdgeString leafRule = new EdgeString("a -> pa");
 	EdgeString papaqa = new EdgeString("f[pa, pa] -> qa");
 	EdgeString qaqaqa = new EdgeString("f[qa, qa] -> qa");
@@ -53,9 +54,9 @@ public class HypergraphTest {
 			throws DuplicateRuleException {
 		Hypergraph<NodeString, EdgeString> h = new Hypergraph<>();
 
-		h.addNode(source);
-		h.addNode(pa);
-		h.addNode(qa);
+//		h.addNode(source);
+//		h.addNode(pa);
+//		h.addNode(qa);
 
 		/* Do not add same state several times */
 		h.addEdge(leafRule, pa, source);
@@ -65,6 +66,12 @@ public class HypergraphTest {
 		h.addEdge(paqapa, pa, pa, qa);
 
 		return h;
+	}
+
+	@Before
+	public void init() {
+		Hypergraph.resetClass();
+		h = new Hypergraph<>();
 	}
 
 	@Test
@@ -99,64 +106,64 @@ public class HypergraphTest {
 
 	@Test
 	public void testInsertion() throws DuplicateRuleException {
-		h.addNode(source);
-		h.addNode(q0);
+//		h.addNode(source);
+//		h.addNode(q0);
 		h.addEdge(edge, q0, source);
 		assertThat(source.getOutgoing().get(0), is(edge));
 	}
 
 	@Test
 	public void testInsertion2() throws DuplicateRuleException {
-		h.addNode(source);
-		h.addNode(q0);
+//		h.addNode(source);
+//		h.addNode(q0);
 		h.addEdge(edge, q0, source);
 		assertThat(source.getID(), is(0));
 	}
 
 	@Test
 	public void testInsertion3() throws DuplicateRuleException {
-		h.addNode(source);
-		h.addNode(q0);
+//		h.addNode(source);
+//		h.addNode(q0);
 		h.addEdge(edge, q0, source);
-		assertThat(q0.getID(), is(1));
+		assertThat(q0.getID(), is(3));
 	}
 
 	@Test
 	public void testAdd() throws DuplicateRuleException {
-		h.addNode(source);
-		h.addNode(q0);
+//		h.addNode(source);
+//		h.addNode(q0);
 		h.addEdge(edge, q0, source);
 		assertThat(source.getOutgoing().size(), is(1));
 	}
 
 	@Test
 	public void testAdd2() throws DuplicateRuleException {
-		h.addNode(source);
-		h.addNode(q0);
+//		h.addNode(source);
+//		h.addNode(q0);
 		h.addEdge(edge, q0, source);
 		assertThat(source.getOutgoing().get(0).toString(), is("edge"));
 	}
 
 	@Test
 	public void testAdd3() throws DuplicateRuleException {
-		h.addNode(source);
-		h.addNode(q0);
+//		h.addNode(source);
+//		h.addNode(q0);
 		h.addEdge(edge, q0, source);
 		assertThat(q0.getIncoming().size(), is(1));
 	}
 
 	@Test
 	public void testAdd4() throws DuplicateRuleException {
-		h.addNode(source);
-		h.addNode(q0);
+//		h.addNode(source);
+//		h.addNode(q0);
 		h.addEdge(edge, q0, source);
 		assertThat(q0.getIncoming().get(0).toString(), is("edge"));
 	}
 
 	@Test
 	public void testRemoveEdge() throws DuplicateRuleException {
-		h.addNode(source);
-		h.addNode(q0);
+//		h.addNode(source);
+//		h.addNode(q0);
 		h.addEdge(edge, q0, source);
 		h.removeEdge(edge);
 		assertThat(source.getOutgoing().size(), is(0));
@@ -185,12 +192,11 @@ public class HypergraphTest {
 
 	@Test
 	public void testGetSourceEdges() throws DuplicateRuleException {
-		h.addNode(source);
-		h.addNode(q0);
+//		h.addNode(source);
+//		h.addNode(q0);
 		h.addEdge(edge, q0, source);
 		h.addEdge(edge2, q0, source);
 		assertThat(source.getOutgoing().size(), is(2));
 	}
-
 
 }

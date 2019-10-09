@@ -29,7 +29,8 @@ import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 
-	private static HashMap<State, Weight> smallestCompletions;
+//	private static HashMap<State, Weight> smallestCompletions;
+	private static Weight[] smallestCompletions;
 	private static HashMap<Node, HashMap<State, Weight>> optWeights =
 			new HashMap<>();
 
@@ -53,7 +54,8 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		return usedRules;
 	}
 
-	public static void init(HashMap<State, Weight> smallestCompletionWeights) {
+//	public static void init(HashMap<State, Weight> smallestCompletionWeights) {
+	public static void init(Weight[] smallestCompletionWeights) {
 		smallestCompletions = smallestCompletionWeights;
 	}
 
@@ -83,7 +85,8 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 	}
 
 	public Weight getDeltaWeight() {
-		return runWeight.mult(smallestCompletions.get(resultingState));
+//		return runWeight.mult(smallestCompletions.get(resultingState));
+		return runWeight.mult(smallestCompletions[resultingState.getID()]);
 	}
 
 	@Override

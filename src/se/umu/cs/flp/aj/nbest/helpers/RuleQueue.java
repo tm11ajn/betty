@@ -36,18 +36,24 @@ public class RuleQueue {
 	private ArrayList<LinkedList<TreeKeeper2>> elements;
 	private HashMap<State, Integer> stateElementIndex;
 	private BinaryHeap<RuleKeeper, Weight> queue;
+	private ArrayList<BinaryHeap<RuleKeeper, Weight>.Node> queueElements;
 	private HashMap<Rule, RuleKeeper> ruleKeepers;
 	private int size;
 
 	private int limit;
 	private HashMap<State, Integer> stateUsage;
 
-	public RuleQueue(int limit, ArrayList<Rule> startRules) {
+	public RuleQueue(int limit, ArrayList<Rule> startRules, int nOfRules) {
 		this.elements = new ArrayList<>();
 		this.stateElementIndex = new HashMap<>();
 		this.queue = new BinaryHeap<>();
+		this.queueElements = new ArrayList<>();
 		this.ruleKeepers = new HashMap<>();
 		this.size = 0;
+
+		for (int i = 0; i < nOfRules; i++) {
+			queueElements.add(i, null);
+		}
 
 		for (Rule r : startRules) {
 			addRule(r);
@@ -71,7 +77,9 @@ public class RuleQueue {
 		ruleKeepers.put(rule, keeper);
 
 		if (!keeper.isPaused()) {
-			queue.add(keeper, keeper.getSmallestTree().getDeltaWeight());
+			BinaryHeap<RuleKeeper, Weight>.Node n =
+					queue.add(keeper, keeper.getSmallestTree().getDeltaWeight());
+			queueElements.set(keeper.getRule().getID(), n);
 			keeper.setQueued(true);
 		}
 
@@ -109,7 +117,7 @@ public class RuleQueue {
 
 					if (currentKeeper.isQueued() &&
 							currentKeeper.needsUpdate()) {
-						queue.decreaseWeight(currentKeeper,
+						queue.decreaseWeight(queueElements.get(currentKeeper.getRule().getID()),
 								currentKeeper.getSmallestTree().
 								getDeltaWeight());
 						currentKeeper.hasUpdated();
@@ -118,8 +126,9 @@ public class RuleQueue {
 
 				if (!currentKeeper.isQueued() && !currentKeeper.isPaused()) {
 					currentKeeper.next();
-					queue.add(currentKeeper,
+					BinaryHeap<RuleKeeper, Weight>.Node n = queue.add(currentKeeper,
 							currentKeeper.getSmallestTree().getDeltaWeight());
+					queueElements.set(currentKeeper.getRule().getID(), n);
 					currentKeeper.setQueued(true);
 				}
 			}

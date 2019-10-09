@@ -389,7 +389,8 @@ public class BinaryHeapTest {
 
 	@Test
 	public void shouldDequeueCorrectObjectForTenElementsAfterDecreasingOneWeight() {
-		heap.add("korv9", s.createWeight(0.10));
+		BinaryHeap<String,Weight>.Node n =
+				heap.add("korv9", s.createWeight(0.10));
 		heap.add("korv8", s.createWeight(0.09));
 		heap.add("korv7", s.createWeight(0.08));
 		heap.add("korv6", s.createWeight(0.07));
@@ -399,13 +400,14 @@ public class BinaryHeapTest {
 		heap.add("korv2", s.createWeight(0.03));
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
-		heap.decreaseWeight("korv9", s.createWeight(0.005));
+		heap.decreaseWeight(n, s.createWeight(0.005));
 		assertThat(heap.dequeue().getObject(), is("korv9"));
 	}
 
 	@Test
 	public void shouldDequeueCorrectWeightForTenElementsAfterDecreasingOneWeight() {
-		heap.add("korv9", s.createWeight(0.10));
+		BinaryHeap<String,Weight>.Node n =
+				heap.add("korv9", s.createWeight(0.10));
 		heap.add("korv8", s.createWeight(0.09));
 		heap.add("korv7", s.createWeight(0.08));
 		heap.add("korv6", s.createWeight(0.07));
@@ -415,82 +417,82 @@ public class BinaryHeapTest {
 		heap.add("korv2", s.createWeight(0.03));
 		heap.add("korv1", s.createWeight(0.02));
 		heap.add("korv0", s.createWeight(0.01));
-		heap.decreaseWeight("korv9", s.createWeight(0.005));
+		heap.decreaseWeight(n, s.createWeight(0.005));
 		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.005)));
 	}
 
 	@Test
 	public void shouldDequeueCorrectObjectForTenElementsAfterDecreasingAllWeights() {
-		heap.add("korv9", s.createWeight(0.10));
-		heap.add("korv8", s.createWeight(0.09));
-		heap.add("korv7", s.createWeight(0.08));
-		heap.add("korv6", s.createWeight(0.07));
-		heap.add("korv5", s.createWeight(0.06));
-		heap.add("korv4", s.createWeight(0.05));
-		heap.add("korv3", s.createWeight(0.04));
-		heap.add("korv2", s.createWeight(0.03));
-		heap.add("korv1", s.createWeight(0.02));
-		heap.add("korv0", s.createWeight(0.01));
-		heap.decreaseWeight("korv9", s.createWeight(0.010));
-		heap.decreaseWeight("korv8", s.createWeight(0.009));
-		heap.decreaseWeight("korv7", s.createWeight(0.008));
-		heap.decreaseWeight("korv6", s.createWeight(0.007));
-		heap.decreaseWeight("korv5", s.createWeight(0.006));
-		heap.decreaseWeight("korv4", s.createWeight(0.005));
-		heap.decreaseWeight("korv3", s.createWeight(0.004));
-		heap.decreaseWeight("korv2", s.createWeight(0.003));
-		heap.decreaseWeight("korv1", s.createWeight(0.002));
-		heap.decreaseWeight("korv0", s.createWeight(0.001));
+		BinaryHeap<String,Weight>.Node n9 = heap.add("korv9", s.createWeight(0.10));
+		BinaryHeap<String,Weight>.Node n8 = heap.add("korv8", s.createWeight(0.09));
+		BinaryHeap<String,Weight>.Node n7 = heap.add("korv7", s.createWeight(0.08));
+		BinaryHeap<String,Weight>.Node n6 = heap.add("korv6", s.createWeight(0.07));
+		BinaryHeap<String,Weight>.Node n5 = heap.add("korv5", s.createWeight(0.06));
+		BinaryHeap<String,Weight>.Node n4 = heap.add("korv4", s.createWeight(0.05));
+		BinaryHeap<String,Weight>.Node n3 = heap.add("korv3", s.createWeight(0.04));
+		BinaryHeap<String,Weight>.Node n2 = heap.add("korv2", s.createWeight(0.03));
+		BinaryHeap<String,Weight>.Node n1 = heap.add("korv1", s.createWeight(0.02));
+		BinaryHeap<String,Weight>.Node n0 = heap.add("korv0", s.createWeight(0.01));
+		heap.decreaseWeight(n9, s.createWeight(0.010));
+		heap.decreaseWeight(n8, s.createWeight(0.009));
+		heap.decreaseWeight(n7, s.createWeight(0.008));
+		heap.decreaseWeight(n6, s.createWeight(0.007));
+		heap.decreaseWeight(n5, s.createWeight(0.006));
+		heap.decreaseWeight(n4, s.createWeight(0.005));
+		heap.decreaseWeight(n3, s.createWeight(0.004));
+		heap.decreaseWeight(n2, s.createWeight(0.003));
+		heap.decreaseWeight(n1, s.createWeight(0.002));
+		heap.decreaseWeight(n0, s.createWeight(0.001));
 		assertThat(heap.dequeue().getObject(), is("korv0"));
 	}
 
 	@Test
 	public void shouldDequeueCorrectWeightForTenElementsAfterDecreasingAllWeights() {
-		heap.add("korv9", s.createWeight(0.10));
-		heap.add("korv8", s.createWeight(0.09));
-		heap.add("korv7", s.createWeight(0.08));
-		heap.add("korv6", s.createWeight(0.07));
-		heap.add("korv5", s.createWeight(0.06));
-		heap.add("korv4", s.createWeight(0.05));
-		heap.add("korv3", s.createWeight(0.04));
-		heap.add("korv2", s.createWeight(0.03));
-		heap.add("korv1", s.createWeight(0.02));
-		heap.add("korv0", s.createWeight(0.01));
-		heap.decreaseWeight("korv0", s.createWeight(0.001));
-		heap.decreaseWeight("korv1", s.createWeight(0.002));
-		heap.decreaseWeight("korv2", s.createWeight(0.003));
-		heap.decreaseWeight("korv3", s.createWeight(0.004));
-		heap.decreaseWeight("korv4", s.createWeight(0.005));
-		heap.decreaseWeight("korv5", s.createWeight(0.006));
-		heap.decreaseWeight("korv6", s.createWeight(0.007));
-		heap.decreaseWeight("korv7", s.createWeight(0.008));
-		heap.decreaseWeight("korv8", s.createWeight(0.009));
-		heap.decreaseWeight("korv9", s.createWeight(0.010));
+		BinaryHeap<String,Weight>.Node n9 = heap.add("korv9", s.createWeight(0.10));
+		BinaryHeap<String,Weight>.Node n8 = heap.add("korv8", s.createWeight(0.09));
+		BinaryHeap<String,Weight>.Node n7 = heap.add("korv7", s.createWeight(0.08));
+		BinaryHeap<String,Weight>.Node n6 = heap.add("korv6", s.createWeight(0.07));
+		BinaryHeap<String,Weight>.Node n5 = heap.add("korv5", s.createWeight(0.06));
+		BinaryHeap<String,Weight>.Node n4 = heap.add("korv4", s.createWeight(0.05));
+		BinaryHeap<String,Weight>.Node n3 = heap.add("korv3", s.createWeight(0.04));
+		BinaryHeap<String,Weight>.Node n2 = heap.add("korv2", s.createWeight(0.03));
+		BinaryHeap<String,Weight>.Node n1 = heap.add("korv1", s.createWeight(0.02));
+		BinaryHeap<String,Weight>.Node n0 = heap.add("korv0", s.createWeight(0.01));
+		heap.decreaseWeight(n0, s.createWeight(0.001));
+		heap.decreaseWeight(n1, s.createWeight(0.002));
+		heap.decreaseWeight(n2, s.createWeight(0.003));
+		heap.decreaseWeight(n3, s.createWeight(0.004));
+		heap.decreaseWeight(n4, s.createWeight(0.005));
+		heap.decreaseWeight(n5, s.createWeight(0.006));
+		heap.decreaseWeight(n6, s.createWeight(0.007));
+		heap.decreaseWeight(n7, s.createWeight(0.008));
+		heap.decreaseWeight(n8, s.createWeight(0.009));
+		heap.decreaseWeight(n9, s.createWeight(0.010));
 		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.001)));
 	}
 
 	@Test
 	public void shouldDequeueCorrectLastObjectForTenElementsAfterDecreasingAllWeights() {
-		heap.add("korv9", s.createWeight(0.10));
-		heap.add("korv8", s.createWeight(0.09));
-		heap.add("korv7", s.createWeight(0.08));
-		heap.add("korv6", s.createWeight(0.07));
-		heap.add("korv5", s.createWeight(0.06));
-		heap.add("korv4", s.createWeight(0.05));
-		heap.add("korv3", s.createWeight(0.04));
-		heap.add("korv2", s.createWeight(0.03));
-		heap.add("korv1", s.createWeight(0.02));
-		heap.add("korv0", s.createWeight(0.01));
-		heap.decreaseWeight("korv9", s.createWeight(0.010));
-		heap.decreaseWeight("korv8", s.createWeight(0.009));
-		heap.decreaseWeight("korv7", s.createWeight(0.008));
-		heap.decreaseWeight("korv6", s.createWeight(0.007));
-		heap.decreaseWeight("korv5", s.createWeight(0.006));
-		heap.decreaseWeight("korv4", s.createWeight(0.005));
-		heap.decreaseWeight("korv3", s.createWeight(0.004));
-		heap.decreaseWeight("korv2", s.createWeight(0.003));
-		heap.decreaseWeight("korv1", s.createWeight(0.002));
-		heap.decreaseWeight("korv0", s.createWeight(0.001));
+		BinaryHeap<String,Weight>.Node n9 = heap.add("korv9", s.createWeight(0.10));
+		BinaryHeap<String,Weight>.Node n8 = heap.add("korv8", s.createWeight(0.09));
+		BinaryHeap<String,Weight>.Node n7 = heap.add("korv7", s.createWeight(0.08));
+		BinaryHeap<String,Weight>.Node n6 = heap.add("korv6", s.createWeight(0.07));
+		BinaryHeap<String,Weight>.Node n5 = heap.add("korv5", s.createWeight(0.06));
+		BinaryHeap<String,Weight>.Node n4 = heap.add("korv4", s.createWeight(0.05));
+		BinaryHeap<String,Weight>.Node n3 = heap.add("korv3", s.createWeight(0.04));
+		BinaryHeap<String,Weight>.Node n2 = heap.add("korv2", s.createWeight(0.03));
+		BinaryHeap<String,Weight>.Node n1 = heap.add("korv1", s.createWeight(0.02));
+		BinaryHeap<String,Weight>.Node n0 = heap.add("korv0", s.createWeight(0.01));
+		heap.decreaseWeight(n9, s.createWeight(0.010));
+		heap.decreaseWeight(n8, s.createWeight(0.009));
+		heap.decreaseWeight(n7, s.createWeight(0.008));
+		heap.decreaseWeight(n6, s.createWeight(0.007));
+		heap.decreaseWeight(n5, s.createWeight(0.006));
+		heap.decreaseWeight(n4, s.createWeight(0.005));
+		heap.decreaseWeight(n3, s.createWeight(0.004));
+		heap.decreaseWeight(n2, s.createWeight(0.003));
+		heap.decreaseWeight(n1, s.createWeight(0.002));
+		heap.decreaseWeight(n0, s.createWeight(0.001));
 		for (int i = 0; i < 9; i++) {
 			heap.dequeue();
 		}
@@ -499,26 +501,26 @@ public class BinaryHeapTest {
 
 	@Test
 	public void shouldDequeueCorrectLastWeightForTenElementsAfterDecreasingAllWeights() {
-		heap.add("korv9", s.createWeight(0.10));
-		heap.add("korv8", s.createWeight(0.09));
-		heap.add("korv7", s.createWeight(0.08));
-		heap.add("korv6", s.createWeight(0.07));
-		heap.add("korv5", s.createWeight(0.06));
-		heap.add("korv4", s.createWeight(0.05));
-		heap.add("korv3", s.createWeight(0.04));
-		heap.add("korv2", s.createWeight(0.03));
-		heap.add("korv1", s.createWeight(0.02));
-		heap.add("korv0", s.createWeight(0.01));
-		heap.decreaseWeight("korv0", s.createWeight(0.001));
-		heap.decreaseWeight("korv1", s.createWeight(0.002));
-		heap.decreaseWeight("korv2", s.createWeight(0.003));
-		heap.decreaseWeight("korv3", s.createWeight(0.004));
-		heap.decreaseWeight("korv4", s.createWeight(0.005));
-		heap.decreaseWeight("korv5", s.createWeight(0.006));
-		heap.decreaseWeight("korv6", s.createWeight(0.007));
-		heap.decreaseWeight("korv7", s.createWeight(0.008));
-		heap.decreaseWeight("korv8", s.createWeight(0.009));
-		heap.decreaseWeight("korv9", s.createWeight(0.010));
+		BinaryHeap<String,Weight>.Node n9 = heap.add("korv9", s.createWeight(0.10));
+		BinaryHeap<String,Weight>.Node n8 = heap.add("korv8", s.createWeight(0.09));
+		BinaryHeap<String,Weight>.Node n7 = heap.add("korv7", s.createWeight(0.08));
+		BinaryHeap<String,Weight>.Node n6 = heap.add("korv6", s.createWeight(0.07));
+		BinaryHeap<String,Weight>.Node n5 = heap.add("korv5", s.createWeight(0.06));
+		BinaryHeap<String,Weight>.Node n4 = heap.add("korv4", s.createWeight(0.05));
+		BinaryHeap<String,Weight>.Node n3 = heap.add("korv3", s.createWeight(0.04));
+		BinaryHeap<String,Weight>.Node n2 = heap.add("korv2", s.createWeight(0.03));
+		BinaryHeap<String,Weight>.Node n1 = heap.add("korv1", s.createWeight(0.02));
+		BinaryHeap<String,Weight>.Node n0 = heap.add("korv0", s.createWeight(0.01));
+		heap.decreaseWeight(n0, s.createWeight(0.001));
+		heap.decreaseWeight(n1, s.createWeight(0.002));
+		heap.decreaseWeight(n2, s.createWeight(0.003));
+		heap.decreaseWeight(n3, s.createWeight(0.004));
+		heap.decreaseWeight(n4, s.createWeight(0.005));
+		heap.decreaseWeight(n5, s.createWeight(0.006));
+		heap.decreaseWeight(n6, s.createWeight(0.007));
+		heap.decreaseWeight(n7, s.createWeight(0.008));
+		heap.decreaseWeight(n8, s.createWeight(0.009));
+		heap.decreaseWeight(n9, s.createWeight(0.010));
 		for (int i = 0; i < 9; i++) {
 			heap.dequeue();
 		}

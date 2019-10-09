@@ -184,7 +184,6 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 				decreaseMissingDataCounter(pending);
 
 				if (isReady(pending)) {
-
 					if (!usedConfigs.containsKey(pending)) {
 						pending.setValues(extractValues(
 								pending.getIndices()));

@@ -1,88 +1,89 @@
 package se.umu.cs.flp.aj.knuth;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.ListIterator;
 
 import se.umu.cs.flp.aj.heap.BinaryHeap;
+import se.umu.cs.flp.aj.heap.BinaryHeap.Node;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class KnuthSmallestDerivations {
-
 	private static WTA wta;
 	private static BinaryHeap<State, Weight> queue;
-	private static HashMap<State, Weight> defined;
-	private static LinkedList<Rule> usableRules;
-	private static HashMap<State, Weight> totalWeight;
+	private static BinaryHeap<State, Weight>.Node[] qElems;
+	private static Weight[] defined;
+	private static ArrayList<Rule> usableRules;
 
-	private static HashMap<State, Rule> bestRules = new HashMap<>();
-
-	public static HashMap<State, Weight> getSmallestDerivations(WTA wta) {
+	public static Weight[] getSmallestDerivations(WTA wta) {
 		KnuthSmallestDerivations.wta = wta;
 		return computeCheapestContexts(computeCheapestTrees());
 	}
 
-	private static HashMap<State, Weight> computeCheapestTrees() {
-		queue = new BinaryHeap<>();
-		defined = new HashMap<>();
-		totalWeight = new HashMap<>();
-		usableRules = new LinkedList<>(wta.getSourceRules());
+	@SuppressWarnings("unchecked")
+	private static Weight[] computeCheapestTrees() {
 		int nOfStates = wta.getStateCount();
-		HashMap<Rule, Integer> missingIndices = new HashMap<>();
-		HashMap<Rule, HashMap<State, State>> seenStates = new HashMap<>();
+		int nOfRules = wta.getRuleCount();
+		queue = new BinaryHeap<>();
+		qElems = new Node[nOfStates + 1];
+		defined = new Weight[nOfStates + 1];
+		usableRules = new ArrayList<>(nOfRules);
+		Integer[] missingIndices = new Integer[nOfRules];
+		int nOfDefined = 0;
+		int usableStart = 0;
+		int usableSize = 0;
 
-		while (defined.size() < nOfStates) {
-			ListIterator<Rule> it = usableRules.listIterator();
+		for (Rule r : wta.getSourceRules()) {
+			usableRules.add(r);
+			usableSize++;
+		}
 
-			while (it.hasNext()) {
-				Rule r = it.next();
+		while (nOfDefined < nOfStates) {
+
+			for (int i = usableStart; i < usableSize; i++) {
+				Rule r = usableRules.get(i);
 				State resState = r.getResultingState();
-				Weight oldWeight = totalWeight.get(resState);
+				Weight oldWeight = null;
 				Weight newWeight = getWeight(r);
+				BinaryHeap<State, Weight>.Node element =
+						qElems[resState.getID()];
 
-				if (oldWeight == null ||
-						newWeight.compareTo(oldWeight) < 0) {
 
-					if (!queue.contains(resState)) {
-						queue.add(resState, newWeight);
-					} else {
-						queue.decreaseWeight(resState, newWeight);
-					}
-
-					totalWeight.put(resState, newWeight);
-					bestRules.put(resState, r);
+				if (element != null) {
+					oldWeight = element.getWeight();
 				}
 
-				it.remove();
+				if (oldWeight == null) {
+					element = queue.add(resState, newWeight);
+					qElems[resState.getID()] = element;
+				} else if (newWeight.compareTo(oldWeight) < 0) {
+					queue.decreaseWeight(qElems[resState.getID()],
+							newWeight);
+				}
+
+				usableStart++;
 			}
 
-			BinaryHeap<State, Weight>.Node element =
-					queue.dequeue();
-
+			BinaryHeap<State, Weight>.Node element = queue.dequeue();
 			State state = element.getObject();
 			Weight weight = element.getWeight();
-			defined.put(state, weight);
+			defined[state.getID()] = weight;
+			nOfDefined++;
 
 			for (Rule r2 : state.getOutgoing()) {
-
-				if (missingIndices.get(r2) == null) {
-					missingIndices.put(r2, r2.getNumberOfStates());
-					seenStates.put(r2, new HashMap<>());
+				if (missingIndices[r2.getID()] == null) {
+					missingIndices[r2.getID()] = r2.getNumberOfStates();
 				}
 
-				if (!seenStates.get(r2).containsKey(state)) {
-					missingIndices.put(r2, missingIndices.get(r2) -
-							r2.getIndexOfState(state).size());
+				if (defined[state.getID()] != null) {
+					missingIndices[r2.getID()] = missingIndices[r2.getID()] -
+							r2.getIndexOfState(state).size();
 
-					if (missingIndices.get(r2) == 0) {
+					if (missingIndices[r2.getID()] == 0) {
 						usableRules.add(r2);
+						usableSize++;
 					}
-
-					seenStates.get(r2).put(state, state);
 				}
 			}
 		}
@@ -99,86 +100,92 @@ public class KnuthSmallestDerivations {
 		}
 
 		for (State s : rule.getStates()) {
-			result = result.mult(defined.get(s));
+			result = result.mult(defined[s.getID()]);
 		}
 
 		return result;
 	}
 
-	private static HashMap<State, Weight> computeCheapestContexts(
-			HashMap<State, Weight> cheapestTrees) {
+	@SuppressWarnings("unchecked")
+	private static Weight[] computeCheapestContexts(Weight[] cheapestTrees) {
+		int nOfStates = wta.getStateCount();
 		queue = new BinaryHeap<>();
-		defined = new HashMap<>();
-		usableRules = new LinkedList<>();
-		totalWeight = new HashMap<>();
+		defined = new Weight[nOfStates + 1];
+		qElems = new Node[nOfStates + 1];
+		usableRules = new ArrayList<>();
+
+		int nOfDefined = 0;
+		boolean done = false;
+		int usableStart = 0;
+		int usableSize = 0;
 
 		for (State s : wta.getFinalStates()) {
-			defined.put(s, wta.getSemiring().one());
-			totalWeight.put(s, wta.getSemiring().one());
+			defined[s.getID()] = wta.getSemiring().one();
 
 			for (Rule r : s.getIncoming()) {
 				usableRules.add(r);
+				usableSize++;
 			}
 		}
 
-		int nOfStates = wta.getStateCount();
-		boolean done = false;
-
-		while (!done && defined.size() < nOfStates) {
-			ListIterator<Rule> it = usableRules.listIterator();
-
-			while (it.hasNext()) {
-				Rule r = it.next();
+		while (!done && nOfDefined < nOfStates) {
+			for (int k = usableStart; k < usableSize; k++) {
+				Rule r = usableRules.get(k);
 				State resState = r.getResultingState();
 				ArrayList<State> stateList = r.getStates();
 				int listSize = stateList.size();
 
 				for (int i = 0; i < listSize; i++) {
 					State s = stateList.get(i);
-					Weight newWeight = r.getWeight().mult(defined.get(resState));
-					Weight oldWeight = totalWeight.get(s);
+					Weight newWeight = r.getWeight().mult(
+							defined[resState.getID()]);
+					Weight oldWeight = null;
+					BinaryHeap<State, Weight>.Node element = qElems[s.getID()];
+
+					if (element != null) {
+						oldWeight = element.getWeight();
+					}
 
 					for (int j = 0; j < listSize; j++) {
 						State s2 = stateList.get(j);
 						if (i != j) {
-							newWeight = newWeight.mult(cheapestTrees.get(s2));
+							newWeight = newWeight.mult(
+									cheapestTrees[s2.getID()]);
 						}
 					}
 
-					if (oldWeight == null ||
-							newWeight.compareTo(oldWeight) < 0) {
+					if (oldWeight == null) {
+						element = queue.add(s, newWeight);
+						qElems[s.getID()] = element;
 
-						if (!queue.contains(s)) {
-							queue.add(s, newWeight);
-						} else {
-							queue.decreaseWeight(s, newWeight);
-						}
+					} else if (newWeight.compareTo(oldWeight) < 0) {
+						queue.decreaseWeight(qElems[s.getID()],
+								newWeight);
 
-						totalWeight.put(s, newWeight);
 					}
 				}
 
-				it.remove();
+				usableStart++;
 			}
 
 			if (!queue.empty()) {
 				BinaryHeap<State, Weight>.Node element = queue.dequeue();
 				State state = element.getObject();
 				Weight weight = element.getWeight();
-				defined.put(state, weight);
+				defined[state.getID()] = weight;
+				nOfDefined++;
 
 				for (Rule r : state.getIncoming()) {
-					usableRules.addLast(r);
+					usableRules.add(r);
+					usableSize++;
 				}
 
 			} else {
 				done = true;
-				ArrayList<State> states = new ArrayList<>(cheapestTrees.keySet());
 
-				for (State s : states) {
-					if (!defined.containsKey(s)) {
-//						wta.removeState(s); // too expensive
-						defined.put(s, wta.getSemiring().zero());
+				for (int i = 1; i < nOfStates + 1; i++) {
+					if (defined[i] == null) {
+						defined[i] = wta.getSemiring().zero();
 					}
 				}
 			}

@@ -61,7 +61,8 @@ public class State extends Hypergraph.Node<Rule> implements Comparable<State> {
 
 	@Override
 	public int hashCode() {
-		return label.hashCode();
+//		return label.hashCode();
+		return this.getID();
 	}
 
 	@Override

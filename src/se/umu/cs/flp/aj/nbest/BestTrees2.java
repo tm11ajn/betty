@@ -39,8 +39,9 @@ public class BestTrees2 {
 	private static HashMap<State, HashMap<Node, Node>> seenTrees;
 	private static RuleQueue ruleQueue;
 
-	public static void setSmallestCompletions(
-			HashMap<State, Weight> smallestCompletions) {
+//	public static void setSmallestCompletions(
+//			HashMap<State, Weight> smallestCompletions) {
+	public static void setSmallestCompletions(Weight[] smallestCompletions) {
 		TreeKeeper2.init(smallestCompletions);
 	}
 
@@ -53,7 +54,7 @@ public class BestTrees2 {
 		// T <- empty. K <- empty
 		outputtedTrees = new HashMap<>();
 		seenTrees = new HashMap<>();
-		ruleQueue = new RuleQueue(N, wta.getSourceRules());
+		ruleQueue = new RuleQueue(N, wta.getSourceRules(), wta.getRuleCount());
 
 		// i <- 0
 		int foundTrees = 0;
