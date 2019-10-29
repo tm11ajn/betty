@@ -22,7 +22,6 @@ package se.umu.cs.flp.aj.nbest.wta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
@@ -56,32 +55,25 @@ public class Rule extends Hypergraph.Edge<State> {
 	public TreeKeeper2 apply(ArrayList<TreeKeeper2> tklist) {
 		Node t = tree;
 		Weight treeWeight = this.weight;
+		Node newTree = buildTree(t, tklist, 0);
 
-		ArrayList<Rule> usedRules = new ArrayList<>();
-
-		for (TreeKeeper2 tk : tklist) {
-			treeWeight = treeWeight.mult(tk.getRunWeight());
-
-			usedRules.addAll(tk.getUsedRules());
+		for (int i = 0; i < rank; i++) {
+			treeWeight = treeWeight.mult(tklist.get(i).getRunWeight());
 		}
 
-		usedRules.add(this);
-
-		LinkedList<TreeKeeper2> copy = new LinkedList<>(tklist);
-		Node newTree = buildTree(t, copy);
-
-		return new TreeKeeper2(newTree, treeWeight, resultingState, usedRules);
+		return new TreeKeeper2(newTree, treeWeight, resultingState);
 	}
 
-	private Node buildTree(Node t, LinkedList<TreeKeeper2> tklist) {
+	private Node buildTree(Node t, ArrayList<TreeKeeper2> tklist,
+			int nonTermIndex) {
 
 		if (t.getChildCount() == 0) {
 			Node node;
 
 			if (t.getLabel().isNonterminal()) {
-				node = tklist.poll().getTree();
+				node = tklist.get(nonTermIndex).getTree();
 			} else {
-				node = new Node(t.getLabel());
+				node = t;
 			}
 
 			return node;
@@ -90,7 +82,10 @@ public class Rule extends Hypergraph.Edge<State> {
 		Node newTree = new Node(t.getLabel());
 
 		for (int i = 0; i < t.getChildCount(); i++) {
-			Node tempTree = buildTree(t.getChildAt(i), tklist);
+			Node tempTree = buildTree(t.getChildAt(i), tklist, nonTermIndex);
+			if (t.getChildAt(i).getLabel().isNonterminal()) {
+				nonTermIndex++;
+			}
 			newTree.addChild(tempTree);
 		}
 
@@ -120,7 +115,8 @@ public class Rule extends Hypergraph.Edge<State> {
 	}
 
 	public int getNumberOfStates() {
-		return states.size();
+//		return states.size();
+		return rank;
 	}
 
 	public boolean hasState(State state) {

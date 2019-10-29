@@ -25,9 +25,9 @@ import static org.hamcrest.CoreMatchers.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedList;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue.Configuration;
@@ -39,7 +39,9 @@ public class LazyLimitedLadderQueueTest {
 			new Comparator<Configuration<Integer>>() {
 
 		@Override
-		public int compare(Configuration<Integer> arg0, Configuration<Integer> arg1) {
+		public int compare(
+				Configuration<Integer> arg0,
+				Configuration<Integer> arg1) {
 
 			Integer sum0 = 0;
 			Integer sum1 = 0;
@@ -59,27 +61,32 @@ public class LazyLimitedLadderQueueTest {
 	private LazyLimitedLadderQueue<Integer> lq;
 	private ArrayList<Integer> res;
 	private int limit = 10;
-	private ArrayList<LinkedList<Integer>> elements;
-	private ArrayList<Integer> elementIndices;
+	private Integer[][] elements;
+	private int[] elementCount;
+	private int[] elementIndices;
 
-//	@Before
-//	public void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 //		lq = new LazyLimitedLadderQueue<Integer>(0, comp, limit);
-//	}
+		LazyLimitedLadderQueue.init(10, limit);
+	}
 
 	@After
 	public void tearDown() throws Exception {
 	}
 
 	private void init(int rank) {
-		elements = new ArrayList<>();
-		elementIndices = new ArrayList<>();
+		LazyLimitedLadderQueue.init(10, limit);
+		elements = new Integer[rank][limit];
+		elementIndices = new int[rank];
+		elementCount = new int[rank];
 		for (int i = 0; i < rank; i++) {
-			elements.add(new LinkedList<>());
-			elementIndices.add(i);
+//			elements.add(new LinkedList<>());
+			elementIndices[i] = i;
+			elementCount[i] = 0;
 		}
-		this.lq = new LazyLimitedLadderQueue<>(rank, elements, elementIndices,
-				comp, limit);
+		this.lq = new LazyLimitedLadderQueue<Integer>(rank, elements,
+				elementCount, elementIndices, comp, limit);
 	}
 
 	@Test
@@ -97,7 +104,8 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testIsNotEmptyRank1() {
 		init(1);
-		elements.get(0).add(3);
+		elements[0][0] = 3;
+		elementCount[0] += 1;
 		lq.update(0);
 		assertFalse(lq.isEmpty());
 	}
@@ -111,7 +119,8 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void test2IsEmptyRank2() {
 		init(2);
-		elements.get(1).add(3);
+		elements[1][0] = 3;
+		elementCount[1] += 1;
 		lq.update(1);
 		assertTrue(lq.isEmpty());
 	}
@@ -119,9 +128,11 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testIsNotEmptyRank2() {
 		init(2);
-		elements.get(0).add(3);
+		elements[0][0] = 3;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(3);
+		elements[1][0] = 3;
+		elementCount[1] += 1;
 		lq.update(1);
 		assertFalse(lq.isEmpty());
 	}
@@ -135,9 +146,11 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void test2IsEmptyRank3() {
 		init(3);
-		elements.get(0).add(3);
+		elements[0][0] = 3;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(3);
+		elements[0][1] = 3;
+		elementCount[0] += 1;
 		lq.update(0);
 		assertTrue(lq.isEmpty());
 	}
@@ -145,11 +158,14 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void test3IsEmptyRank3() {
 		init(3);
-		elements.get(1).add(3);
+		elements[1][0] = 3;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(3);
+		elements[2][0] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(3);
+		elements[2][1] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
 		assertTrue(lq.isEmpty());
 	}
@@ -157,11 +173,14 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testIsNotEmptyRank3() {
 		init(3);
-		elements.get(1).add(3);
+		elements[1][0] = 3;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(3);
+		elements[2][0] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(0).add(3);
+		elements[0][0] = 3;
+		elementCount[0] += 1;
 		lq.update(0);
 		assertFalse(lq.isEmpty());
 	}
@@ -175,7 +194,8 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testHasNextRank1() {
 		init(1);
-		elements.get(0).add(4);
+		elements[0][0] = 4;
+		elementCount[0] += 1;
 		lq.update(0);
 		assertTrue(lq.hasNext());
 	}
@@ -183,7 +203,8 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testHasNotNextRank1() {
 		init(1);
-		elements.get(0).add(4);
+		elements[0][0] = 4;
+		elementCount[0] += 1;
 		lq.update(0);
 		lq.dequeue();
 		assertFalse(lq.hasNext());
@@ -192,9 +213,11 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testHasNextRank2() {
 		init(2);
-		elements.get(0).add(6);
+		elements[0][0] = 6;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(4);
+		elements[1][0] = 4;
+		elementCount[1] += 1;
 		lq.update(1);
 		assertTrue(lq.hasNext());
 	}
@@ -202,9 +225,11 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testHasNotNextRank2() {
 		init(2);
-		elements.get(1).add(4);
+		elements[1][0] = 4;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(5);
+		elements[1][1] = 5;
+		elementCount[1] += 1;
 		lq.update(1);
 		assertFalse(lq.hasNext());
 	}
@@ -212,11 +237,14 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testHasNextRank3() {
 		init(3);
-		elements.get(1).add(4);
+		elements[1][0] = 4;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(5);
+		elements[2][0] = 5;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(0).add(6);
+		elements[0][0] = 6;
+		elementCount[0] += 1;
 		lq.update(0);
 		assertTrue(lq.hasNext());
 	}
@@ -224,11 +252,14 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testHasNotNextRank3() {
 		init(3);
-		elements.get(1).add(8);
+		elements[1][0] = 8;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(8);
+		elements[2][0] = 8;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(8);
+		elements[2][1] = 8;
+		elementCount[2] += 1;
 		lq.update(2);
 		assertFalse(lq.hasNext());
 	}
@@ -243,7 +274,8 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testDequeueRank1() {
 		init(1);
-		elements.get(0).add(2);
+		elements[0][0] = 2;
+		elementCount[0] += 1;
 		lq.update(0);
 		res = new ArrayList<>();
 		res.add(2);
@@ -253,9 +285,11 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testDequeueRank2() {
 		init(2);
-		elements.get(0).add(1);
+		elements[0][0] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(2);
+		elements[1][0] = 2;
+		elementCount[1] += 1;
 		lq.update(1);
 		res = new ArrayList<>();
 		res.add(1);
@@ -266,11 +300,14 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testDequeueRank3() {
 		init(3);
-		elements.get(0).add(1);
+		elements[0][0] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(2);
+		elements[1][0] = 2;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(3);
+		elements[2][0] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
 		res = new ArrayList<>();
 		res.add(1);
@@ -289,17 +326,23 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testHasNextAfterDequeueRank3() {
 		init(3);
-		elements.get(1).add(4);
+		elements[1][0] = 4;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(5);
+		elements[2][0] = 5;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(0).add(6);
+		elements[0][0] = 6;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(4);
+		elements[1][1] = 4;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(5);
+		elements[2][1] = 5;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(0).add(6);
+		elements[0][1] = 6;
+		elementCount[0] += 1;
 		lq.update(0);
 		lq.dequeue();
 		assertTrue(lq.hasNext());
@@ -308,11 +351,14 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testHasNotNextAfterDequeueRank3() {
 		init(3);
-		elements.get(1).add(4);
+		elements[1][0] = 4;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(5);
+		elements[2][0] = 5;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(0).add(6);
+		elements[0][0] = 6;
+		elementCount[0] += 1;
 		lq.update(0);
 		lq.dequeue();
 		assertFalse(lq.hasNext());
@@ -321,23 +367,32 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testCorrectValue1() {
 		init(3);
-		elements.get(0).add(1);
+		elements[0][0] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(2);
+		elements[0][1] = 2;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(3);
+		elements[0][2] = 3;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(4);
+		elements[1][0] = 4;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(5);
+		elements[1][1] = 5;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(6);
+		elements[1][2] = 6;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(7);
+		elements[2][0] = 7;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(8);
+		elements[2][1] = 8;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(9);
+		elements[2][2] = 9;
+		elementCount[2] += 1;
 		lq.update(2);
 
 		res = new ArrayList<>();
@@ -351,23 +406,32 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testCorrectValue2() {
 		init(3);
-		elements.get(0).add(1);
+		elements[0][0] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(2);
+		elements[0][1] = 2;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(3);
+		elements[0][2] = 3;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(4);
+		elements[1][0] = 4;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(5);
+		elements[1][1] = 5;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(6);
+		elements[1][2] = 6;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(7);
+		elements[2][0] = 7;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(8);
+		elements[2][1] = 8;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(9);
+		elements[2][2] = 9;
+		elementCount[2] += 1;
 		lq.update(2);
 
 		lq.dequeue();
@@ -383,23 +447,32 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testCorrectValue3() {
 		init(3);
-		elements.get(0).add(1);
+		elements[0][0] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(2);
+		elements[0][1] = 2;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(3);
+		elements[0][2] = 3;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(4);
+		elements[1][0] = 4;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(5);
+		elements[1][1] = 5;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(6);
+		elements[1][2] = 6;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(7);
+		elements[2][0] = 7;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(8);
+		elements[2][1] = 8;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(9);
+		elements[2][2] = 9;
+		elementCount[2] += 1;
 		lq.update(2);
 
 		lq.dequeue();
@@ -416,23 +489,32 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void testCorrectValue4() {
 		init(3);
-		elements.get(0).add(1);
+		elements[0][0] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(2);
+		elements[0][1] = 2;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(3);
+		elements[0][2] = 3;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(4);
+		elements[1][0] = 4;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(5);
+		elements[1][1] = 5;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(6);
+		elements[1][2] = 6;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(7);
+		elements[2][0] = 7;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(8);
+		elements[2][1] = 8;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(9);
+		elements[2][2] = 9;
+		elementCount[2] += 1;
 		lq.update(2);
 
 		lq.dequeue();
@@ -450,23 +532,32 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void test2CorrectValue1() {
 		init(3);
-		elements.get(0).add(1);
+		elements[0][0] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(1);
+		elements[0][1] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(11);
+		elements[0][2] = 11;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(2);
+		elements[1][0] = 2;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(2);
+		elements[1][1] = 2;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(12);
+		elements[1][2] = 12;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(3);
+		elements[2][0] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(3);
+		elements[2][1] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(13);
+		elements[2][2] = 13;
+		elementCount[2] += 1;
 		lq.update(2);
 
 		lq.dequeue();
@@ -484,23 +575,32 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void test2CorrectValue2() {
 		init(3);
-		elements.get(0).add(1);
+		elements[0][0] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(1);
+		elements[0][1] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(11);
+		elements[0][2] = 11;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(2);
+		elements[1][0] = 2;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(2);
+		elements[1][1] = 2;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(12);
+		elements[1][2] = 12;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(3);
+		elements[2][0] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(3);
+		elements[2][1] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(13);
+		elements[2][2] = 13;
+		elementCount[2] += 1;
 		lq.update(2);
 
 		lq.dequeue();
@@ -518,23 +618,32 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void test2CorrectValue3() {
 		init(3);
-		elements.get(0).add(1);
+		elements[0][0] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(1);
+		elements[0][1] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(11);
+		elements[0][2] = 11;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(2);
+		elements[1][0] = 2;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(2);
+		elements[1][1] = 2;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(12);
+		elements[1][2] = 12;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(3);
+		elements[2][0] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(3);
+		elements[2][1] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(13);
+		elements[2][2] = 13;
+		elementCount[2] += 1;
 		lq.update(2);
 
 		lq.dequeue();
@@ -552,23 +661,32 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void test2CorrectValue4() {
 		init(3);
-		elements.get(0).add(1);
+		elements[0][0] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(1);
+		elements[0][1] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(11);
+		elements[0][2] = 11;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(2);
+		elements[1][0] = 2;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(2);
+		elements[1][1] = 2;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(12);
+		elements[1][2] = 12;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(3);
+		elements[2][0] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(3);
+		elements[2][1] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(13);
+		elements[2][2] = 13;
+		elementCount[2] += 1;
 		lq.update(2);
 
 		lq.dequeue();
@@ -586,23 +704,32 @@ public class LazyLimitedLadderQueueTest {
 	@Test
 	public void test2CorrectValue9() {
 		init(3);
-		elements.get(0).add(1);
+		elements[0][0] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(1);
+		elements[0][1] = 1;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(0).add(30);
+		elements[0][2] = 30;
+		elementCount[0] += 1;
 		lq.update(0);
-		elements.get(1).add(2);
+		elements[1][0] = 2;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(2);
+		elements[1][1] = 2;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(1).add(20);
+		elements[1][2] = 20;
+		elementCount[1] += 1;
 		lq.update(1);
-		elements.get(2).add(3);
+		elements[2][0] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(3);
+		elements[2][1] = 3;
+		elementCount[2] += 1;
 		lq.update(2);
-		elements.get(2).add(10);
+		elements[2][2] = 10;
+		elementCount[2] += 1;
 		lq.update(2);
 
 		lq.dequeue();

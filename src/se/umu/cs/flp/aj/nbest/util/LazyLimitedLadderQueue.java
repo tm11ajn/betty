@@ -23,35 +23,50 @@ package se.umu.cs.flp.aj.nbest.util;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.PriorityQueue;
 
 public class LazyLimitedLadderQueue<V extends Comparable<V>> {
+
+//	static private Hypergraph<Configuration<?>, Pair> graph;
+	static private Pair[][] pairs;
+	static private boolean initialised = false;
+
+	public static void init (int nOfStates, int N) {
+		pairs = new Pair[nOfStates][N];
+		initialised = true;
+	}
+
 	private int rank;
 	private int limit;
-	private ArrayList<LinkedList<V>> elements;
-	private ArrayList<Integer> elementIndices;
+	private V[][] elements;
+	private int[] elementCount;
+	private int[] elementIndices;
 	private PriorityQueue<Configuration<V>> configQueue;
 	private HashMap<Configuration<V>, Configuration<V>> usedConfigs;
-	private HashMap<Configuration<V>, Integer> missingDataCounter;
-	private HashMap<Integer, LinkedList<Configuration<V>>> pendingConfigs;
+//	private HashMap<Configuration<V>, Integer> missingDataCounter;
+//	private HashMap<Integer, LinkedList<Configuration<V>>> pendingConfigs;
 	private int nonEmptyListCounter;
 	private int dequeueCounter;
 	private boolean empty;
 	private boolean needsUpdate;
 	private Comparator<Configuration<V>> comparator;
 
-	public LazyLimitedLadderQueue(int rank, ArrayList<LinkedList<V>> elements,
-			ArrayList<Integer> elementIndices,
-			Comparator<Configuration<V>> comparator, int limit) {
+	public LazyLimitedLadderQueue(int rank, V[][] elements, int[] elementCount,
+			int[] elementIndices, Comparator<Configuration<V>> comparator,
+			int limit) {
+		if (!initialised) {
+			throw new IllegalStateException("Class not initialised before use.");
+		}
+
 		this.rank = rank;
 		this.elements = elements;
+		this.elementCount = elementCount;
 		this.elementIndices = elementIndices;
 		this.configQueue = new PriorityQueue<>(comparator);
 		this.usedConfigs = new HashMap<>();
-		this.missingDataCounter = new HashMap<>();
-		this.pendingConfigs = new HashMap<>();
+//		this.missingDataCounter = new HashMap<>();
+//		this.pendingConfigs = new HashMap<>();
 		this.empty = true;
 		this.needsUpdate = false;
 		this.nonEmptyListCounter = 0;
@@ -60,20 +75,49 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		this.comparator = comparator;
 
 		if (rank == 0) {
-			Configuration<V> config = new Configuration<>();
-			config.setValues(new ArrayList<>());
+			Configuration<V> config = new Configuration<>(new int[0], rank);
 			configQueue.add(config);
 			empty = false;
 		}
 	}
 
-	public static class Configuration<T> {
-		private ArrayList<T> values;
-		private ArrayList<Integer> indices;
-		private int hash;
+	static private class Pair extends Hypergraph.Edge<Configuration<?>> {
+		private int left;
+		private int right;
 
-		public Configuration() {
-			hash = 0;
+		Pair(int left, int right) {
+			this.left = left;
+			this.right = right;
+		}
+
+		public int getLeft() {
+			return left;
+		}
+
+		public int getRight() {
+			return right;
+		}
+	}
+
+	static public class Configuration<T> extends Hypergraph.Node<Pair> {
+		private ArrayList<T> values;
+		private int[] indices;
+		private int size;
+		private int hash;
+		private int leftToValues;
+
+		public Configuration(int[] indices, int size) {
+			setIndices(indices, size);
+			values = new ArrayList<>();
+			leftToValues = size;
+		}
+
+		public int getLeftToValues() {
+			return this.leftToValues;
+		}
+
+		public void decreaseLeftToValuesBy(int dec) {
+			this.leftToValues -= dec;
 		}
 
 		public void setValues(ArrayList<T> values) {
@@ -84,22 +128,32 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 			return values;
 		}
 
-		public void setIndices(ArrayList<Integer> indices) {
+		private void setIndices(int[] indices, int size) {
 			hash = 0;
 			this.indices = indices;
+			this.size = size;
 		}
 
-		public ArrayList<Integer> getIndices() {
+		public int[] getIndices() {
 			return indices;
+		}
+
+		public int getSize() {
+			return size;
 		}
 
 		@Override
 		public int hashCode() {
 
 			if (hash == 0) {
-				hash = indices.hashCode();
+//				hash = indices.hashCode();
+
+				for (int i = 0; i < size; i++) {
+					hash = (hash + indices[i]) << 1;
+				}
 			}
 
+System.out.println("hashcode=" + hash + " for " + this.toString());
 			return hash;
 		}
 
@@ -116,12 +170,27 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 
 			Configuration<?> c = (Configuration<?>) o;
 
-			return this.indices.equals(c.indices);
+			for (int i = 0; i < size; i++) {
+				if (this.indices[i] != c.indices[i]) {
+					return false;
+				}
+			}
+
+//			return this.indices.equals(c.indices);
+			return true;
 		}
 
 		@Override
 		public String toString() {
-			return indices.toString();
+			String s = "[";
+
+			for (int i = 0; i < size; i++) {
+				s += indices[i] + " ";
+			}
+
+			s += "]";
+
+			return s;
 		}
 	}
 
@@ -153,6 +222,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 	public ArrayList<V> dequeue() {
 		dequeueCounter++;
 		Configuration<V> config = configQueue.poll();
+System.out.println("Config dequeued: " + config);
 		enqueueNewConfigs(config);
 
 		return config.getValues();
@@ -166,89 +236,152 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		Configuration<V> oldConfig = configQueue.peek();
 		boolean wasEmpty = isEmpty();
 		updateEmptyStatus(rankIndex);
+		int stateIndex = elementIndices[rankIndex];
+		int filledIndex = elementCount[stateIndex] - 1;
+System.out.println(stateIndex);
+System.out.println(filledIndex);
+
+		if (filledIndex == -1) {
+			filledIndex = 0;
+		}
+
+		if (pairs[stateIndex][filledIndex] == null) {
+			pairs[stateIndex][filledIndex] = new Pair(stateIndex, filledIndex);
+		}
+
+		Pair currentPair = pairs[stateIndex][filledIndex];
+
+System.out.println(wasEmpty);
+System.out.println(isEmpty());
 
 		if (wasEmpty && !isEmpty()) {
-			Configuration<V> firstConfig = new Configuration<>();
-			firstConfig.setIndices(getZeroIndices());
+			Configuration<V> firstConfig = new Configuration<>(
+					getZeroIndices(), rank);
 			firstConfig.setValues(extractValues(firstConfig.getIndices()));
 			configQueue.add(firstConfig);
+System.out.println("add " + firstConfig.getValues());
+System.out.println("and " + firstConfig.getIndices());
+System.out.println(firstConfig);
+System.out.println("hash: " + firstConfig.hashCode());
 			usedConfigs.put(firstConfig, firstConfig);
 		}
 
-		if (pendingConfigs.containsKey(rankIndex)) {
-			Iterator<Configuration<V>> iterator =
-					pendingConfigs.get(rankIndex).iterator();
+		ListIterator<Configuration<?>> it = currentPair.getFrom().listIterator();
 
-			while (iterator.hasNext()) {
-				Configuration<V> pending = iterator.next();
-				decreaseMissingDataCounter(pending);
+		while (it.hasNext()) {
+			Configuration<V> pending = (Configuration<V>) it.next();
+System.out.println("pending=" + pending);
+			pending.decreaseLeftToValuesBy(1);
 
-				if (isReady(pending)) {
-					if (!usedConfigs.containsKey(pending)) {
-						pending.setValues(extractValues(
-								pending.getIndices()));
-						configQueue.add(pending);
-						usedConfigs.put(pending, pending);
-					}
-
-					iterator.remove();
+			if (pending.getLeftToValues() == 0) {
+				if (!usedConfigs.containsKey(pending)) {
+					pending.setValues(extractValues(pending.getIndices()));
+					configQueue.add(pending);
+					usedConfigs.put(pending, pending);
+System.out.println("add " + pending);
 				}
 			}
+
+			it.remove();
 		}
+
+//			if (pendingConfigs.containsKey(rankIndex)) {
+//				Iterator<Configuration<V>> iterator =
+//						pendingConfigs.get(rankIndex).iterator();
+//
+//				while (iterator.hasNext()) {
+//					Configuration<V> pending = iterator.next();
+//					decreaseMissingDataCounter(pending);
+//
+//					if (isReady(pending)) {
+//						if (!usedConfigs.containsKey(pending)) {
+//							pending.setValues(extractValues(
+//									pending.getIndices()));
+//							configQueue.add(pending);
+//							usedConfigs.put(pending, pending);
+//						}
+//
+//						iterator.remove();
+//					}
+//				}
+//			}
 
 		if (oldConfig != null &&
 				comparator.compare(configQueue.peek(), oldConfig) < 0) {
 			needsUpdate = true;
 		}
+
 	}
 
 	private void enqueueNewConfigs(Configuration<V> config) {
-		ArrayList<Integer> indexList;
+		int[] newIndices;
+		int[] indices = config.getIndices();
 		Configuration<V> newConfig;
 
 		for (int i = 0; i < rank; i++) {
-			indexList = new ArrayList<>(config.getIndices());
-			int prevIndex = indexList.get(i);
-			int nOfElements = elements.get(elementIndices.get(i)).size();
+			newIndices = new int[rank];
+			int nOfElements = elementCount[elementIndices[i]];
 
-			indexList.set(i, prevIndex + 1);
-			newConfig = new Configuration<>();
-			newConfig.setIndices(indexList);
+			for(int j = 0; j < rank; j++) {
+				if (i == j) {
+					newIndices[j] = indices[j] + 1;
+				} else {
+					newIndices[j] = indices[j];
+				}
+			}
 
-			if (nOfElements > prevIndex + 1) {
-				newConfig.setValues(extractValues(indexList));
+			newConfig = new Configuration<>(newIndices, rank);
+
+			if (nOfElements > newIndices[i]) {
+				newConfig.setValues(extractValues(newIndices));
 
 				if (!usedConfigs.containsKey(newConfig)) {
 					configQueue.add(newConfig);
 					usedConfigs.put(newConfig, newConfig);
+System.out.println("enqueue " + newConfig);
 				}
 			} else {
 
-				if (!pendingConfigs.containsKey(i)) {
-					pendingConfigs.put(i, new LinkedList<>());
+				Pair currentPair = pairs[elementIndices[i]][newIndices[i]];
+
+				if (currentPair == null) {
+					currentPair = new Pair(elementIndices[i], newIndices[i]);
+					pairs[elementIndices[i]][newIndices[i]] = currentPair;
 				}
 
-				pendingConfigs.get(i).add(newConfig);
-				missingDataCounter.put(newConfig,
-						countMissingElements(newConfig));
+				currentPair.addFrom(newConfig);
+				newConfig.leftToValues = countMissingElements(newConfig);
+
+				for (int k = 0; k < rank; k++) {
+					Pair pair = pairs[elementIndices[k]][newIndices[k]];
+					pair.addFrom(newConfig);
+				}
+
+//				if (!pendingConfigs.containsKey(i)) {
+//					pendingConfigs.put(i, new LinkedList<>());
+//				}
+//
+//				pendingConfigs.get(i).add(newConfig);
+//				missingDataCounter.put(newConfig,
+//						countMissingElements(newConfig));
 			}
 		}
 	}
 
-	private boolean isReady(Configuration<V> config) {
-		return missingDataCounter.get(config) == 0;
-	}
+//	private boolean isReady(Configuration<V> config) {
+//		return missingDataCounter.get(config) == 0;
+//	}
 
-	private void decreaseMissingDataCounter(Configuration<V> config) {
-		missingDataCounter.put(config, missingDataCounter.get(config) - 1);
-	}
+//	private void decreaseMissingDataCounter(Configuration<V> config) {
+//		missingDataCounter.put(config, missingDataCounter.get(config) - 1);
+//	}
 
 	private int countMissingElements(Configuration<V> config) {
-		ArrayList<Integer> indices = config.getIndices();
+		int[] indices = config.getIndices();
 		int missingElements = 0;
 
 		for (int i = 0; i < rank; i++) {
-			if (indices.get(i) >= elements.get(elementIndices.get(i)).size()) {
+			if (indices[i] >= elementCount[elementIndices[i]]) {
 				missingElements++;
 			}
 		}
@@ -256,21 +389,21 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		return missingElements;
 	}
 
-	private ArrayList<V> extractValues(ArrayList<Integer> indexList) {
-		ArrayList<V> values = new ArrayList<>();
+	private ArrayList<V> extractValues(int[] indexList) {
+		ArrayList<V> values = new ArrayList<>(rank);
 
 		for (int i = 0; i < rank; i++) {
-			values.add(elements.get(elementIndices.get(i)).get(indexList.get(i)));
+			values.add(elements[elementIndices[i]][indexList[i]]);
 		}
 
 		return values;
 	}
 
-	private ArrayList<Integer> getZeroIndices() {
-		ArrayList<Integer> indexList = new ArrayList<>();
+	private int[] getZeroIndices() {
+		int[] indexList = new int[rank];
 
 		for (int i = 0; i < rank; i++) {
-			indexList.add(0);
+			indexList[i] = 0;
 		}
 
 		return indexList;
@@ -278,7 +411,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 
 	private void updateEmptyStatus(int rankIndex) {
 
-		if (empty && elements.get(elementIndices.get(rankIndex)).size() == 1) {
+		if (empty && elementCount[elementIndices[rankIndex]] == 1) {
 			nonEmptyListCounter++;
 
 			if (nonEmptyListCounter >= rank) {

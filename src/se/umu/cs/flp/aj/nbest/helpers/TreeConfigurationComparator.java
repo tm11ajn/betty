@@ -32,7 +32,8 @@ public class TreeConfigurationComparator
 
 
 	@Override
-	public int compare(Configuration<TreeKeeper2> config1,
+	public int compare(
+			Configuration<TreeKeeper2> config1,
 			Configuration<TreeKeeper2> config2) {
 
 		Weight weight1 = null;
@@ -40,8 +41,8 @@ public class TreeConfigurationComparator
 
 		ArrayList<TreeKeeper2> list1 = config1.getValues();
 		ArrayList<TreeKeeper2> list2 = config2.getValues();
-		int size1 = list1.size();
-		int size2 = list2.size();
+		int size1 = config1.getSize();
+		int size2 = config2.getSize();
 
 		if (size1 < size2) {
 			return -1;
@@ -68,7 +69,7 @@ public class TreeConfigurationComparator
 			return comparison;
 		}
 
-		for (int i = 0; i < list1.size(); i++) {
+		for (int i = 0; i < size1; i++) {
 			TreeKeeper2 t1 = list1.get(i);
 			TreeKeeper2 t2 = list2.get(i);
 			int compare = t1.compareTo(t2);

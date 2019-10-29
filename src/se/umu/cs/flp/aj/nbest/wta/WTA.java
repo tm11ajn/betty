@@ -22,6 +22,7 @@ package se.umu.cs.flp.aj.nbest.wta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.util.Hypergraph;
@@ -111,7 +112,7 @@ public class WTA {
 		return isGrammar;
 	}
 
-	public ArrayList<Rule> getSourceRules() {
+	public LinkedList<Rule> getSourceRules() {
 		return source.getOutgoing();
 	}
 
@@ -133,14 +134,14 @@ public class WTA {
 		transitionFunction.addEdge(rule, rule.getResultingState(), states);
 	}
 
-	public void removeRule(Rule rule) {
-		transitionFunction.removeEdge(rule);
-	}
-
-	public void removeState(State state) {
-		transitionFunction.removeNode(state);
-		states.remove(state.toString());
-	}
+//	public void removeRule(Rule rule) {
+//		transitionFunction.removeEdge(rule);
+//	}
+//
+//	public void removeState(State state) {
+//		transitionFunction.removeNode(state);
+//		states.remove(state.toString());
+//	}
 
 	public int getStateCount() {
 		return transitionFunction.getNodeCount() - 1;

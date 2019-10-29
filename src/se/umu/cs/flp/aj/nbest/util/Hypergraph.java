@@ -22,11 +22,12 @@ package se.umu.cs.flp.aj.nbest.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N>> {
 
-	private static int nodeID = 0;
-	private static int edgeID = 0;
+//	private static int nodeID = 0;
+//	private static int edgeID = 0;
 
 	private int nodeCount;
 	private int edgeCount;
@@ -36,18 +37,18 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 		this.edgeCount = 0;
 	}
 
-	public static void resetClass() {
-		nodeID = 0;
-		edgeID = 0;
-	}
+//	public static void resetClass() {
+//		nodeID = 0;
+//		edgeID = 0;
+//	}
 
-	private static int getNodeID() {
-		return nodeID++;
-	}
-
-	private static int getEdgeID() {
-		return edgeID++;
-	}
+//	private static int getNodeID() {
+//		return nodeID++;
+//	}
+//
+//	private static int getEdgeID() {
+//		return edgeID++;
+//	}
 
 //	public void addNode(N node) {
 ////		if (node.getID() == -1) {
@@ -59,24 +60,24 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 //		nodeCount++;
 //	}
 
-	public void removeNode(N node) {
-
-		if (node.getID() != -1) {
-			ArrayList<E> incoming = new ArrayList<>(node.getIncoming());
-			ArrayList<E> outgoing = new ArrayList<>(node.getOutgoing());
-
-			for (E edge : incoming) {
-				removeEdge(edge);
-			}
-
-			for (E edge : outgoing) {
-				removeEdge(edge);
-			}
-
-			node.setID(-1);
-			nodeCount--;
-		}
-	}
+//	public void removeNode(N node) {
+//
+//		if (node.getID() != -1) {
+//			ArrayList<E> incoming = new ArrayList<>(node.getIncoming());
+//			ArrayList<E> outgoing = new ArrayList<>(node.getOutgoing());
+//
+//			for (E edge : incoming) {
+//				removeEdge(edge);
+//			}
+//
+//			for (E edge : outgoing) {
+//				removeEdge(edge);
+//			}
+//
+//			node.setID(-1);
+//			nodeCount--;
+//		}
+//	}
 
 	/* Only for testing */
 	protected void addEdge(E edge, N toNode,
@@ -111,6 +112,7 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 
 		if (toNode.unused) {
 			toNode.unused = false;
+			toNode.setID(nodeCount);
 			nodeCount++;
 		}
 
@@ -121,6 +123,7 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 
 			if (from.unused) {
 				from.unused = false;
+				from.setID(nodeCount);
 				nodeCount++;
 			}
 
@@ -128,23 +131,24 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 			from.addOutgoing(edge);
 		}
 
+		edge.setID(edgeCount);
 		edgeCount++;
 	}
 
-	public void removeEdge(E edge) {
-
-		if (edge.getID() != -1) {
-			N to = edge.getTo();
-			to.removeIncoming(edge);
-
-			for (N from : edge.getFrom()) {
-				from.removeOutgoing(edge);
-			}
-
-			edge.setID(-1);
-			edgeCount--;
-		}
-	}
+//	public void removeEdge(E edge) {
+//
+//		if (edge.getID() != -1) {
+//			N to = edge.getTo();
+//			to.removeIncoming(edge);
+//
+//			for (N from : edge.getFrom()) {
+//				from.removeOutgoing(edge);
+//			}
+//
+//			edge.setID(-1);
+//			edgeCount--;
+//		}
+//	}
 
 	public int getNodeCount() {
 		return nodeCount;
@@ -156,16 +160,16 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 
 	public static class Node<E> {
 		private int id;
-		private ArrayList<E> in;
-		private ArrayList<E> out;
+		private LinkedList<E> in;
+		private LinkedList<E> out;
 		boolean unused;
 
 		public Node() {
-//			this.id = -1;
+			this.id = -1;
 			unused = true;
-			this.id = getNodeID();
-			this.in = new ArrayList<>();
-			this.out = new ArrayList<>();
+//			this.id = getNodeID();
+			this.in = new LinkedList<>();
+			this.out = new LinkedList<>();
 		}
 
 		void setID(int id) {
@@ -192,11 +196,11 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 			out.remove(edge);
 		}
 
-		public ArrayList<E> getIncoming() {
+		public LinkedList<E> getIncoming() {
 			return in;
 		}
 
-		public ArrayList<E> getOutgoing() {
+		public LinkedList<E> getOutgoing() {
 			return out;
 		}
 
@@ -209,13 +213,13 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 
 	public static class Edge<N> {
 		private int id;
-		private ArrayList<N> from;
+		private LinkedList<N> from;
 		N to;
 
 		public Edge() {
-//			this.id = -1;
-			this.id = getEdgeID();
-			this.from = new ArrayList<>();
+			this.id = -1;
+//			this.id = getEdgeID();
+			this.from = new LinkedList<>();
 			this.to = null;
 		}
 
@@ -239,7 +243,7 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 			return to;
 		}
 
-		public ArrayList<N> getFrom() {
+		public LinkedList<N> getFrom() {
 			return from;
 		}
 

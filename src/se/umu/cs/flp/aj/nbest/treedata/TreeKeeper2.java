@@ -20,16 +20,13 @@
 
 package se.umu.cs.flp.aj.nbest.treedata;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 
-//	private static HashMap<State, Weight> smallestCompletions;
 	private static Weight[] smallestCompletions;
 	private static HashMap<Node, HashMap<State, Weight>> optWeights =
 			new HashMap<>();
@@ -38,23 +35,13 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 	private Weight runWeight;
 	private State resultingState;
 
-	/* For testing */
-	private ArrayList<Rule> usedRules;
-
-	public TreeKeeper2(Node tree, Weight treeWeight,
-			State resultingState, ArrayList<Rule> usedRules) {
+	public TreeKeeper2(Node tree, Weight treeWeight, State resultingState) {
 		this.tree = tree;
 		this.runWeight = treeWeight.duplicate();
 		this.resultingState = resultingState;
 		addStateWeight(resultingState, treeWeight);
-		this.usedRules = usedRules;
 	}
 
-	public ArrayList<Rule> getUsedRules() {
-		return usedRules;
-	}
-
-//	public static void init(HashMap<State, Weight> smallestCompletionWeights) {
 	public static void init(Weight[] smallestCompletionWeights) {
 		smallestCompletions = smallestCompletionWeights;
 	}

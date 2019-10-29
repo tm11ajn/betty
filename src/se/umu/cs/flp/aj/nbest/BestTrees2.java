@@ -54,7 +54,8 @@ public class BestTrees2 {
 		// T <- empty. K <- empty
 		outputtedTrees = new HashMap<>();
 		seenTrees = new HashMap<>();
-		ruleQueue = new RuleQueue(N, wta.getSourceRules(), wta.getRuleCount());
+//		ruleQueue = new RuleQueue(N, wta.getSourceRules(), wta.getRuleCount());
+		ruleQueue = new RuleQueue(N, wta);
 
 		// i <- 0
 		int foundTrees = 0;

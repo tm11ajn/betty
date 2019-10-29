@@ -55,7 +55,7 @@ public class EppsteinRunner {
 		ArrayList<LinkedHashMap<Node,TreeKeeper>>
 				kBestTreesForEachQRule = new ArrayList<>();
 //		ArrayList<Rule> rules = wta.getRulesByResultingState(q);
-		ArrayList<Rule> rules = q.getIncoming();
+		LinkedList<Rule> rules = q.getIncoming();
 
 		for (Rule r : rules) {
 			Graph<Node> graph = new Graph<>(wta.getSemiring());

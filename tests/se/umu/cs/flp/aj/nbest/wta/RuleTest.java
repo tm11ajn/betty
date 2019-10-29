@@ -46,7 +46,8 @@ public class RuleTest {
 			semiring.createWeight(1)};
 
 	Rule rule = new Rule(fNode, semiring.createWeight(0.5), resState, q0, q1);
-	ArrayList<TreeKeeper2> tklist = new ArrayList<>();
+	Rule rule2 = new Rule(fNode, semiring.createWeight(0.5), resState);
+	ArrayList<TreeKeeper2> tklist = new ArrayList<>(rule.getNumberOfStates());
 
 	Node n0 = new Node(q0Sym);
 	Node n1 = new Node(q1Sym);
@@ -76,9 +77,9 @@ public class RuleTest {
 		fNode.addChild(n1);
 		fNode.addChild(eNode);
 
-		tklist = new ArrayList<>();
-		tklist.add(new TreeKeeper2(eNode, semiring.createWeight(1), q0, new ArrayList<>()));
-		tklist.add(new TreeKeeper2(cNode, semiring.createWeight(2), q1, new ArrayList<>()));
+		tklist = new ArrayList<>(rule.getNumberOfStates());
+		tklist.add(new TreeKeeper2(eNode, semiring.createWeight(1), q0));
+		tklist.add(new TreeKeeper2(cNode, semiring.createWeight(2), q1));
 	}
 
 	private void init2() {
@@ -87,9 +88,20 @@ public class RuleTest {
 		fNode.addChild(n0);
 		fNode.addChild(n1);
 
-		tklist = new ArrayList<>();
-		tklist.add(new TreeKeeper2(aNode, semiring.createWeight(1), q0, new ArrayList<>()));
-		tklist.add(new TreeKeeper2(aNode, semiring.createWeight(2), q1, new ArrayList<>()));
+		tklist = new ArrayList<>(rule.getNumberOfStates());
+		tklist.add(new TreeKeeper2(aNode, semiring.createWeight(1), q0));
+		tklist.add(new TreeKeeper2(aNode, semiring.createWeight(2), q1));
+	}
+
+	private void init3() {
+		init();
+
+		fNode.addChild(n0);
+		fNode.addChild(n1);
+
+		tklist = new ArrayList<>(rule2.getNumberOfStates());
+		tklist.add(new TreeKeeper2(aNode, semiring.createWeight(1), q0));
+		tklist.add(new TreeKeeper2(bNode, semiring.createWeight(2), q1));
 	}
 
 	@Test
@@ -101,11 +113,19 @@ public class RuleTest {
 	}
 
 	@Test
-	public void testRuleApplication2() {
+	public void testRuleApplication2a() {
 		init2();
 		TreeKeeper2 result = rule.apply(tklist);
 		String resString = result.getTree().toString();
 		assertEquals("f[a, a]", resString);
+	}
+
+	@Test
+	public void testRuleApplication2b() {
+		init3();
+		TreeKeeper2 result = rule.apply(tklist);
+		String resString = result.getTree().toString();
+		assertEquals("f[a, b]", resString);
 	}
 
 	@Test
@@ -118,8 +138,15 @@ public class RuleTest {
 
 	@Test
 	public void testFinalState() {
-		init();
+		init1();
 		TreeKeeper2 result = rule.apply(tklist);
+		assertEquals(resState, result.getResultingState());
+	}
+
+	@Test
+	public void testFinalState2() {
+		init();
+		TreeKeeper2 result = rule2.apply(tklist);
 		assertEquals(resState, result.getResultingState());
 	}
 
