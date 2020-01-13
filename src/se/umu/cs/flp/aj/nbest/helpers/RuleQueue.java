@@ -21,13 +21,14 @@
 package se.umu.cs.flp.aj.nbest.helpers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import se.umu.cs.flp.aj.heap.BinaryHeap;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 import se.umu.cs.flp.aj.nbest.treedata.RuleKeeper;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue;
+import se.umu.cs.flp.aj.nbest.util.ResultConnector;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
@@ -35,40 +36,53 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 public class RuleQueue {
 
 //	private ArrayList<LinkedList<TreeKeeper2>> elements;
-	private TreeKeeper2[][] elements;
-	private int[] nOfElements;
+//	private TreeKeeper2[][] elements;
+//	private int[] nOfElements;
 //	private HashMap<State, Integer> stateElementIndex;
+	private ResultConnector resultConnector; // Måste innehålla rätt index också, antingen en post per index eller en lista per post
 	private BinaryHeap<RuleKeeper, Weight> queue;
 	private ArrayList<BinaryHeap<RuleKeeper, Weight>.Node> queueElements;
-	private HashMap<Rule, RuleKeeper> ruleKeepers;
+//	private HashMap<Rule, RuleKeeper> ruleKeepers;
 	private int size;
 
 	private int limit;
-	private HashMap<State, Integer> stateUsage;
+//	private HashMap<State, Integer> stateUsage;
 
 //	public RuleQueue(int limit, ArrayList<Rule> startRules, int nOfRules) {
 	public RuleQueue(int limit, WTA wta) {
 //		this.elements = new ArrayList<>();
-		this.elements = new TreeKeeper2[wta.getStateCount() + 1][limit];
-		this.nOfElements = new int[wta.getStateCount() + 1];
+//		this.elements = new TreeKeeper2[wta.getStateCount() + 1][limit];
+//		this.nOfElements = new int[wta.getStateCount() + 1];
 //		this.stateElementIndex = new HashMap<>();
 		this.queue = new BinaryHeap<>();
-		this.queueElements = new ArrayList<>();
-		this.ruleKeepers = new HashMap<>();
+		this.queueElements = new ArrayList<>(wta.getRuleCount());
+//		this.ruleKeepers = new HashMap<>();
 		this.size = 0;
 
-		LazyLimitedLadderQueue.init(wta.getStateCount(), limit);
+//		LazyLimitedLadderQueue.init(wta.getStateCount(), limit);
 
+		this.limit = limit;
+//		this.stateUsage = new HashMap<>();
+		this.resultConnector = new ResultConnector(wta.getStateCount(), 
+				limit, wta.getRules());
+		
 		for (int i = 0; i < wta.getRuleCount(); i++) {
 			queueElements.add(i, null);
 		}
 
 		for (Rule r : wta.getSourceRules()) {
-			addRule(r);
+//			addRule(r);
+			RuleKeeper keeper = new RuleKeeper(r, r.getNumberOfStates());
+			LazyLimitedLadderQueue<TreeKeeper2> ladder = keeper.getLadderQueue();
+			Configuration<TreeKeeper2> startConfig = ladder.getStartConfig();
+			Weight weight = r.getWeight();
+			startConfig.setValues(new ArrayList<TreeKeeper2>());
+			startConfig.setWeight(weight);
+			ladder.insert(startConfig);
+			BinaryHeap<RuleKeeper, Weight>.Node n = queue.add(keeper, weight);
+			queueElements.add(r.getID(), n);
+			keeper.setSmallestTree(r.apply(ladder.peek().getValues()));
 		}
-
-		this.limit = limit;
-		this.stateUsage = new HashMap<>();
 	}
 
 	private void addRule(Rule rule) {
@@ -85,9 +99,8 @@ public class RuleQueue {
 			counter++;
 		}
 
-		RuleKeeper keeper = new RuleKeeper(rule, limit, elements,
-				elementIndices, nOfElements);
-		ruleKeepers.put(rule, keeper);
+		RuleKeeper keeper = new RuleKeeper(rule, limit);
+//		ruleKeepers.put(rule, keeper);
 
 		if (!keeper.isPaused()) {
 			BinaryHeap<RuleKeeper, Weight>.Node n =
@@ -108,75 +121,118 @@ public class RuleQueue {
 
 	public void expandWith(TreeKeeper2 newTree) {
 		State state = newTree.getResultingState();
+		resultConnector.addResult(state.getID(), newTree);
 
-		if (!stateUsage.containsKey(state)) {
-			stateUsage.put(state, 0);
-		}
+//		int size = nOfElements[state.getID()];
+//		elements[state.getID()][size] = newTree;
+//		nOfElements[state.getID()] = size + 1;
 
-//		controlInitState(state);
-//		elements.get(stateElementIndex.get(state)).add(newTree);
-		int size = nOfElements[state.getID()];
-		elements[state.getID()][size] = newTree;
-		nOfElements[state.getID()] = size + 1;
-
-		if (stateUsage.get(state) < limit) {
-			for (Rule rule : state.getOutgoing()) {
-				if (!ruleKeepers.containsKey(rule)) {
-					addRule(rule);
-				}
-
-				RuleKeeper currentKeeper = ruleKeepers.get(rule);
-				ArrayList<Integer> stateIndices = rule.getIndexOfState(state);
-
-				for (Integer index : stateIndices) {
-					currentKeeper.updateForStateIndex(index);
-
-					if (currentKeeper.isQueued() &&
-							currentKeeper.needsUpdate()) {
-						queue.decreaseWeight(queueElements.get(currentKeeper.getRule().getID()),
-								currentKeeper.getSmallestTree().
-								getDeltaWeight());
-						currentKeeper.hasUpdated();
-					}
-				}
-
-				if (!currentKeeper.isQueued() && !currentKeeper.isPaused()) {
-					currentKeeper.next();
-					BinaryHeap<RuleKeeper, Weight>.Node n = queue.add(currentKeeper,
-							currentKeeper.getSmallestTree().getDeltaWeight());
-					queueElements.set(currentKeeper.getRule().getID(), n);
-					currentKeeper.setQueued(true);
-				}
-			}
-
-			stateUsage.put(state, stateUsage.get(state) + 1);
-		}
+//		if (stateUsage.get(state) < limit) {
+//			for (Rule rule : state.getOutgoing()) {
+////				if (!ruleKeepers.containsKey(rule)) {
+////					addRule(rule);
+////				}
+//
+////				RuleKeeper currentKeeper = ruleKeepers.get(rule);
+//				ArrayList<Integer> stateIndices = rule.getIndexOfState(state);
+//
+//				for (Integer index : stateIndices) {
+//					currentKeeper.updateForStateIndex(index);
+//
+//					if (currentKeeper.isQueued() &&
+//							currentKeeper.needsUpdate()) {
+//						queue.decreaseWeight(queueElements.get(currentKeeper.getRule().getID()),
+//								currentKeeper.getSmallestTree().
+//								getDeltaWeight());
+//						currentKeeper.hasUpdated();
+//					}
+//				}
+//
+//				if (!currentKeeper.isQueued() && !currentKeeper.isPaused()) {
+//					currentKeeper.next();
+//					BinaryHeap<RuleKeeper, Weight>.Node n = queue.add(currentKeeper,
+//							currentKeeper.getSmallestTree().getDeltaWeight());
+//					queueElements.set(currentKeeper.getRule().getID(), n);
+//					currentKeeper.setQueued(true);
+//				}
+//			}
+//
+//			stateUsage.put(state, stateUsage.get(state) + 1);
+//		}
 
 	}
 
 	public TreeKeeper2 nextTree() {
+//		RuleKeeper ruleKeeper = queue.dequeue().getObject();
+//		ruleKeeper.hasBeenDequeued();
+//		TreeKeeper2 nextTree = ruleKeeper.getSmallestTree();
+//		ruleKeeper.setQueued(false);
+//		ruleKeeper.next();
+//
+//		if (!ruleKeeper.isPaused()) {
+//			queue.add(ruleKeeper,
+//					ruleKeeper.getSmallestTree().getDeltaWeight());
+//			ruleKeeper.setQueued(true);
+//		}
+//
+//		return nextTree;
+		
+		// Dequeue next tree.
 		RuleKeeper ruleKeeper = queue.dequeue().getObject();
-		ruleKeeper.hasBeenDequeued();
 		TreeKeeper2 nextTree = ruleKeeper.getSmallestTree();
-		ruleKeeper.setQueued(false);
-		ruleKeeper.next();
-
-		if (!ruleKeeper.isPaused()) {
-			queue.add(ruleKeeper,
-					ruleKeeper.getSmallestTree().getDeltaWeight());
-			ruleKeeper.setQueued(true);
+		LazyLimitedLadderQueue<TreeKeeper2> ladder = ruleKeeper.getLadderQueue();
+		Configuration<TreeKeeper2> config = ladder.dequeue();
+		ArrayList<Configuration<TreeKeeper2>> nextConfigs = 
+				ladder.getNextConfigs(config);
+		
+		// Add the new configs to the process.
+		for (Configuration<TreeKeeper2> next : nextConfigs) {
+			resultConnector.makeConnections(next);
 		}
+		
+		// Re-queue the rulekeeper if it has another element in its ladder.
+		if (ladder.hasNext()) {
+			Configuration<TreeKeeper2> t = ruleKeeper.getLadderQueue().peek();
+			TreeKeeper2 newSmallest = ruleKeeper.getRule().apply(t.getValues());
+			ruleKeeper.setSmallestTree(newSmallest);
+			queue.add(ruleKeeper, newSmallest.getDeltaWeight());
+		}
+		
+		/* Next: create rulekeepers for the rules that we have not yet seen
+		 * and add them to the queue as well.
+		 * TODO: Perhaps in expandWith instead??? In that case: before the
+		 * new tree is actually added to the results? (Could change the check
+		 * to see if element 1 is null.)
+		 */
+		
+		Rule rule = ruleKeeper.getRule();
+		State resState = rule.getResultingState();
+		
+		if (resultConnector.getResult(resState.getID(), 0) == null) {
+			for (Rule r : resState.getOutgoing()) {
+				if (queueElements.get(r.getID()) == null) {
+					RuleKeeper keeper = new RuleKeeper(r, r.getNumberOfStates());
+					LazyLimitedLadderQueue<TreeKeeper2> lq = keeper.getLadderQueue();
+					Configuration<TreeKeeper2> startConfig = lq.getStartConfig();
+					resultConnector.makeConnections(startConfig);
+					BinaryHeap<RuleKeeper, Weight>.Node n = queue.add(keeper, null);
+					queueElements.add(r.getID(), n);
+					keeper.setSmallestTree(r.apply(lq.peek().getValues()));
 
+					if (lq.hasNext()) {
+						Configuration<TreeKeeper2> elem = lq.peek();
+						keeper.setSmallestTree(r.apply(elem.getValues()));
+						queue.add(keeper, keeper.getSmallestTree().getDeltaWeight());
+					}
+				}
+			}
+		}
+		
 		return nextTree;
 	}
 
 	public boolean isEmpty() {
-
-		if (queue.empty()) {
-			return true;
-		}
-
-		return false;
+		return queue.empty();
 	}
 
 	public int size() {

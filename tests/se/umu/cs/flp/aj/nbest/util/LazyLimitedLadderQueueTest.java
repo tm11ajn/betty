@@ -30,7 +30,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue.Configuration;
+import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 
 
 public class LazyLimitedLadderQueueTest {

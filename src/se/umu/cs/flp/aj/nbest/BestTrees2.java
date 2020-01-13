@@ -76,7 +76,6 @@ public class BestTrees2 {
 			if (!outputtedTrees.containsKey(currentTree.getTree())) {
 
 				if (currentTree.getResultingState().isFinal()) {
-
 					String outputString = "";
 
 					if (wta.isGrammar()) {

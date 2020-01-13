@@ -25,7 +25,7 @@ import java.util.Comparator;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
-import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue.Configuration;
+import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 
 public class TreeConfigurationComparator
 			implements Comparator<Configuration<TreeKeeper2>> {
@@ -49,19 +49,9 @@ public class TreeConfigurationComparator
 		} else if (size1 > size2) {
 			return 1;
 		}
-
-		for (int i = 0; i < size1; i++) {
-			TreeKeeper2 t1 = list1.get(i);
-			TreeKeeper2 t2 = list2.get(i);
-
-			if (i == 0) {
-				weight1 = t1.getRunWeight();
-				weight2 = t2.getRunWeight();
-			} else {
-				weight1 = weight1.mult(t1.getRunWeight());
-				weight2 = weight2.mult(t2.getRunWeight());
-			}
-		}
+		
+		weight1 = config1.getWeight();
+		weight2 = config2.getWeight();
 
 		int comparison = weight1.compareTo(weight2);
 

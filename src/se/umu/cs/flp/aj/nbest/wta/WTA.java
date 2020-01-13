@@ -39,6 +39,7 @@ public class WTA {
 	private RankedAlphabet rankedAlphabet = new RankedAlphabet();
 	private Semiring semiring;
 
+	private ArrayList<Rule> rules;
 	private Hypergraph<State, Rule> transitionFunction;
 	private State source = new State(new Symbol("DUMMY_SOURCE", 0));
 
@@ -118,6 +119,7 @@ public class WTA {
 
 	public void addRule(Rule rule) throws DuplicateRuleException {
 
+		rules.add(rule);
 		ArrayList<State> states = rule.getStates();
 		HashMap<State, State> nonDuplicateStates = new HashMap<>();
 
@@ -149,6 +151,10 @@ public class WTA {
 
 	public int getRuleCount() {
 		return transitionFunction.getEdgeCount();
+	}
+	
+	public ArrayList<Rule> getRules() {
+		return rules;
 	}
 
 	@Override

@@ -20,9 +20,6 @@
 
 package se.umu.cs.flp.aj.nbest.treedata;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-
 import se.umu.cs.flp.aj.nbest.helpers.TreeConfigurationComparator;
 import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
@@ -34,71 +31,89 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 	private TreeKeeper2 smallestTree;
 	private boolean paused;
 	private boolean queued;
-	private boolean needsUpdate;
+//	private boolean needsUpdate;
 
-	public RuleKeeper(Rule rule, int limit, TreeKeeper2[][] elements,
-			int[] elementIndices, int[] nOfElements) {
+	public RuleKeeper(Rule rule, int limit) {
 		this.rule = rule;
-		this.ladder = new LazyLimitedLadderQueue<>(rule.getNumberOfStates(),
-				elements, elementIndices, nOfElements, new TreeConfigurationComparator(),
-				limit);
+		this.ladder = new LazyLimitedLadderQueue<>(rule.getID(), 
+				rule.getNumberOfStates(), 
+				new TreeConfigurationComparator(), limit);
 		this.smallestTree = null;
 		this.paused = true;
-		this.needsUpdate = false;
+//		this.needsUpdate = false;
 
-		if (rule.getNumberOfStates() == 0) {
-			this.paused = false;
-			this.smallestTree = new TreeKeeper2(rule.getTree(),
-					rule.getWeight(), rule.getResultingState());
-		}
+//		if (rule.getNumberOfStates() == 0) {
+//			this.paused = false;
+//			this.smallestTree = new TreeKeeper2(rule.getTree(),
+//					rule.getWeight(), rule.getResultingState());
+//		}
 	}
 
+//	public TreeKeeper2 getSmallestTree() {
+//	
+//		if (smallestTree == null) {
+//			next();
+//		}
+//	
+//		return smallestTree;
+//	}
+
+//	public TreeKeeper2 getSmallestTree() {
+////		if (smallestTree == null) {
+////			next();
+////		}
+//		return smallestTree;
+//	}
+	
 	public TreeKeeper2 getSmallestTree() {
-
-		if (smallestTree == null) {
-			next();
-		}
-
 		return smallestTree;
 	}
-
-	public void updateForStateIndex(int stateIndex) {
-		ladder.update(stateIndex);
-
-		if (ladder.needsUpdate()) {
-			this.needsUpdate = true;
-			this.smallestTree = rule.apply(ladder.peek());
-		}
-
-		if (ladder.hasNext()) {
-			paused = false;
-		} else {
-			paused = true;
-		}
+	
+	public void setSmallestTree(TreeKeeper2 smallestTree) {
+		this.smallestTree = smallestTree;
 	}
+	
+	public LazyLimitedLadderQueue<TreeKeeper2> getLadderQueue() {
+		return ladder;
+	} 
 
-	public void hasUpdated() {
-		this.needsUpdate = false;
-		ladder.hasUpdated();
-	}
+//	public void updateForStateIndex(int stateIndex) {
+////		ladder.update(stateIndex);
+//
+//		if (ladder.needsUpdate()) {
+//			this.needsUpdate = true;
+//			this.smallestTree = rule.apply(ladder.peek());
+//		}
+//
+//		if (ladder.hasNext()) {
+//			paused = false;
+//		} else {
+//			paused = true;
+//		}
+//	}
 
-	public boolean needsUpdate() {
-		return needsUpdate;
-	}
+//	public void hasUpdated() {
+//		this.needsUpdate = false;
+//		ladder.hasUpdated();
+//	}
 
-	public void hasBeenDequeued() {
-		ladder.dequeue();
-	}
+//	public boolean needsUpdate() {
+//		return needsUpdate;
+//	}
 
-	public void next() {
-		if (ladder.hasNext()) {
-			ArrayList<TreeKeeper2> temp = ladder.peek();
-			smallestTree = rule.apply(temp);
-			paused = false;
-		} else {
-			paused = true;
-		}
-	}
+//	public void hasBeenDequeued() {
+//		ladder.dequeue();
+//	}
+
+//	public void next() {
+//		if (ladder.hasNext()) {
+//			ArrayList<TreeKeeper2> temp = ladder.peek();
+//			smallestTree = rule.apply(temp);
+//			paused = false;
+//		} else {
+//			paused = true;
+//		}
+//	}
 
 	public boolean isPaused() {
 		return paused;
