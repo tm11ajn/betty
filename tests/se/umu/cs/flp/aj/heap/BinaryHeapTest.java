@@ -526,6 +526,35 @@ public class BinaryHeapTest {
 		}
 		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.01)));
 	}
+	
+	@Test
+	public void shouldDequeueCorrectLastWeightForTenElementsAfterDecreasingAllWeightsUsingSecondCreationOption() {
+		BinaryHeap<String,Weight>.Node n9 = heap.insert(heap.createNode("korv9"), s.createWeight(0.10));
+		BinaryHeap<String,Weight>.Node n8 = heap.insert(heap.createNode("korv8"), s.createWeight(0.09));
+		BinaryHeap<String,Weight>.Node n7 = heap.insert(heap.createNode("korv7"), s.createWeight(0.08));
+		BinaryHeap<String,Weight>.Node n6 = heap.insert(heap.createNode("korv6"), s.createWeight(0.07));
+		BinaryHeap<String,Weight>.Node n5 = heap.insert(heap.createNode("korv5"), s.createWeight(0.06));
+		BinaryHeap<String,Weight>.Node n4 = heap.insert(heap.createNode("korv4"), s.createWeight(0.05));
+		BinaryHeap<String,Weight>.Node n3 = heap.insert(heap.createNode("korv3"), s.createWeight(0.04));
+		BinaryHeap<String,Weight>.Node n2 = heap.insert(heap.createNode("korv2"), s.createWeight(0.03));
+		BinaryHeap<String,Weight>.Node n1 = heap.insert(heap.createNode("korv1"), s.createWeight(0.02));
+		BinaryHeap<String,Weight>.Node n0 = heap.insert(heap.createNode("korv§"), s.createWeight(0.01));
+		
+		heap.decreaseWeight(n0, s.createWeight(0.001));
+		heap.decreaseWeight(n1, s.createWeight(0.002));
+		heap.decreaseWeight(n2, s.createWeight(0.003));
+		heap.decreaseWeight(n3, s.createWeight(0.004));
+		heap.decreaseWeight(n4, s.createWeight(0.005));
+		heap.decreaseWeight(n5, s.createWeight(0.006));
+		heap.decreaseWeight(n6, s.createWeight(0.007));
+		heap.decreaseWeight(n7, s.createWeight(0.008));
+		heap.decreaseWeight(n8, s.createWeight(0.009));
+		heap.decreaseWeight(n9, s.createWeight(0.010));
+		for (int i = 0; i < 9; i++) {
+			heap.dequeue();
+		}
+		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.01)));
+	}
 
 	@Test
 	public void shouldBeEmptyAfterEnqueueingAndDequeueingTenElements() {

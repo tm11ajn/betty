@@ -48,7 +48,7 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 		this(true);
 	}
 
-	public int size () {
+	public int size() {
 		return nodes.size() - firstPosition;
 	}
 
@@ -68,6 +68,20 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 		newNode.index = addedIndex;
 		heapifyUp(addedIndex);
 		return newNode;
+	}
+	
+	public Node createNode(O object) {
+		Node newNode = new Node(object, null);
+		return newNode;
+	}
+	
+	public Node insert(Node node, W weight) {
+		node.weight = weight;
+		int addedIndex = getLastIndex() + 1;
+		nodes.add(node);
+		node.index = addedIndex;
+		heapifyUp(addedIndex);
+		return node;
 	}
 
 	public void decreaseWeight(Node node, W newWeight) {
@@ -92,7 +106,7 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 
 	public void printHeap() {
 		for (BinaryHeap<O, W>.Node n : nodes) {
-			System.out.println(n.getObject() + " : " + n.getWeight());
+			System.out.println(n.getObject()+  " : "+ n.index + " : " + n.getWeight());
 		}
 	}
 

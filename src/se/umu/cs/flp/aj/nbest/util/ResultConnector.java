@@ -46,12 +46,9 @@ public class ResultConnector {
 		configLists.add(new ArrayList<>()); // Start from 1
 		this.rules = rules;
 	}
-	
-	public void step() {
-		
-	}
 
 	public void makeConnections(Configuration<TreeKeeper2> config) {
+System.out.println("ResultConnector: makeConnections");
 		int[] indices = config.getIndices();
 		int size = indices.length;
 		int missingElements = 0;
@@ -60,20 +57,25 @@ public class ResultConnector {
 		for (int i = 0; i < size; i++) {
 			int currentState = rule.getStates().get(i).getID();
 
+System.out.println("indices[i]=" + indices[i]);
+System.out.println("resCount[currentState]=" + resCount[currentState]);
 			if (indices[i] >= resCount[currentState]) {
 				int configIndex = connections[currentState][indices[i]];
+				
 				if (configIndex == 0) {
 					configIndex = configLists.size();
 					connections[currentState][indices[i]] = configIndex;
 					configLists.add(new ArrayList<>());
 				}
-				configLists.get(currentState).add(
+				
+				configLists.get(configIndex).add(
 						new ConfigStateIndexPair(config, i));
 				missingElements++;
 			}
 		}
+System.out.println("missing elements = " + missingElements);
 
-		config.decreaseLeftToValuesBy(size - missingElements);
+		config.decreaseLeftToValuesBy(missingElements);
 		activateConfigIfReady(config);
 	}
 
@@ -81,31 +83,45 @@ public class ResultConnector {
 	 * TODO: Return a list of ID's of rules that need updates in 
 	 * the rule queue after this?
 	 */
-	public void addResult(int stateIndex, TreeKeeper2 result) {
+	public ArrayList<Integer> addResult(int stateIndex, TreeKeeper2 result) {
+System.out.println("ResultConnector: addResult");
 		int resultIndex = resCount[stateIndex];
 		results[stateIndex][resultIndex] = result;
+System.out.println("New result for state " + stateIndex + "; " + result.getResultingState().getID() + " is " + results[stateIndex] + " for indices " + stateIndex + " and " + resultIndex);
 		resCount[stateIndex] += 1;
 		int configIndex = connections[stateIndex][resultIndex];
+		ArrayList<Integer> needUpdate = new ArrayList<Integer>();
 
 		for (ConfigStateIndexPair csi : configLists.get(configIndex)) {
 			Configuration<TreeKeeper2> config = csi.getConfig();
-			if (config.getLeftToValues() != 0) {
+//			if (config.getLeftToValues() != 0) {
 				config.decreaseLeftToValuesBy(1);
-				activateConfigIfReady(config);
-			}
+				if (activateConfigIfReady(config)) {
+					needUpdate.add(config.getOrigin().getID());
+				}
+//			}
 		}
+		
+		return needUpdate;
 	}
 	
-	/* TODO: Return true if the input config triggers an update? */
-	private void activateConfigIfReady(Configuration<TreeKeeper2> config) {
+	/* Checks if the config is ready, that is, if all its required data is 
+	 * in the results. Returns true if the input config triggers an update. */
+	private boolean activateConfigIfReady(Configuration<TreeKeeper2> config) {
+System.out.println("ResultConnector: activateConfigIfReady");
+		boolean triggersUpdate = false;
+System.out.println("Config: " + config);
+System.out.println("Haslefttovalues? " + config.getLeftToValues());
 		
 		if (config.getLeftToValues() == 0) {
+System.out.println("Activated");
 			ArrayList<TreeKeeper2> result = extractResult(config);
 			int size = config.getSize();
-			Weight weight = null;
+			Weight weight = config.getWeight();
 			
 			for (int i = 0; i < size; i++) {
 				TreeKeeper2 t1 = result.get(i);
+System.out.println("t1=" + t1);
 
 				if (i == 0) {
 					weight = t1.getRunWeight();
@@ -116,17 +132,22 @@ public class ResultConnector {
 			
 			/* It can happen that a better config arrives late to the party. 
 			 * This piece of code takes care of that. */
-			if (config.getOrigin().peek().getWeight().compareTo(weight) > 0) {
-				config.getOrigin().setNeedsUpdate(true);
+			if (!config.getOrigin().isEmpty() && 
+					config.getOrigin().peek().getWeight().compareTo(weight) > 0) {
+//				config.getOrigin().setNeedsUpdate(true);
+				triggersUpdate = true;
 			}
 			
 			config.setValues(result);
 			config.setWeight(weight);
 			config.getOrigin().insert(config);
 		}
+		
+		return triggersUpdate;
 	}
 
 	private ArrayList<TreeKeeper2> extractResult(Configuration<TreeKeeper2> config) {
+System.out.println("ResultConnector: extractResult");
 		int[] indexList = config.getIndices();
 		int ruleIndex = config.getOrigin().getID();
 		Rule rule = rules.get(ruleIndex);

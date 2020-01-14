@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.util.Hypergraph;
@@ -52,15 +53,24 @@ public class Rule extends Hypergraph.Edge<State> {
 		}
 	}
 
-	public TreeKeeper2 apply(ArrayList<TreeKeeper2> tklist) {
+//	public TreeKeeper2 apply(ArrayList<TreeKeeper2> tklist) {
+//		Node t = tree;
+//		Weight treeWeight = this.weight;
+//		Node newTree = buildTree(t, tklist, 0);
+//
+//		for (int i = 0; i < rank; i++) {
+//			treeWeight = treeWeight.mult(tklist.get(i).getRunWeight());
+//		}
+//
+//		return new TreeKeeper2(newTree, treeWeight, resultingState);
+//	}
+	
+	public TreeKeeper2 apply(Configuration<TreeKeeper2> config) {
 		Node t = tree;
 		Weight treeWeight = this.weight;
+		ArrayList<TreeKeeper2> tklist = config.getValues();
 		Node newTree = buildTree(t, tklist, 0);
-
-		for (int i = 0; i < rank; i++) {
-			treeWeight = treeWeight.mult(tklist.get(i).getRunWeight());
-		}
-
+		treeWeight = treeWeight.mult(config.getWeight());
 		return new TreeKeeper2(newTree, treeWeight, resultingState);
 	}
 

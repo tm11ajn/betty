@@ -49,6 +49,7 @@ public class WTA {
 		this.semiring = semiring;
 		this.isGrammar = isGrammar;
 		this.transitionFunction = new Hypergraph<>();
+		this.rules = new ArrayList<>();
 //		this.transitionFunction.addNode(source);
 	}
 

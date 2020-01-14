@@ -137,20 +137,20 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 //	}
 
 	public boolean isEmpty() {
-		return empty;
+		return configQueue.size() == 0;
 	}
 
-	public boolean needsUpdate() {
-		return needsUpdate;
-	}
+//	public boolean needsUpdate() {
+//		return needsUpdate;
+//	}
 
 //	public void hasUpdated() {
 //		needsUpdate = false;
 //	}
 	
-	public void setNeedsUpdate(boolean needsUpdate) {
-		this.needsUpdate = needsUpdate;
-	}
+//	public void setNeedsUpdate(boolean needsUpdate) {
+//		this.needsUpdate = needsUpdate;
+//	}
 
 	public boolean hasNext() {
 
@@ -158,7 +158,8 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 			return false;
 		}
 
-		if (configQueue.isEmpty()) {
+//		if (configQueue.isEmpty()) {
+		if (configQueue.size() == 0) {
 			return false;
 		}
 
