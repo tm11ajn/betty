@@ -387,6 +387,14 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		return configQueue.size();
 	}
 
+	public boolean hasReachedLimit() {
+		return dequeueCounter >= limit;
+	}
+	
+	public boolean hasNotDequeuedYet() {
+		return dequeueCounter == 0;
+	}
+
 //	public void updateEmptyStatus(boolean empty) {
 //		this.empty = empty;
 //	}

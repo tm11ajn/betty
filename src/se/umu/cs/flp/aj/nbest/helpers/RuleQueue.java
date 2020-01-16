@@ -142,17 +142,12 @@ System.out.println("newTree=" + newTree);
 		State resState = newTree.getResultingState();
 		boolean unseenState = (resultConnector.getResult(resState.getID(),  0) == null);
 		
-		/* Have the result connector propagate the result to the correct configs,
-		 * and get info on which rulekeepers should be updated based on this 
-		 * propagation. */
-		ArrayList<Integer> toUpdate = 
-				resultConnector.addResult(resState.getID(), newTree);
-		
 		/* Create rulekeepers for the rules that we have not yet seen
 		 * and add them to the queue as well. */
 		if (unseenState) {
+System.out.println("Based on state " + resState + " ... ");
 			for (Rule r : resState.getOutgoing()) {
-System.out.println("Current rule: " + r);
+System.out.println("Activate rule: " + r);
 				if (queueElements.get(r.getID()) == null) {
 					activateRule(r);
 //					RuleKeeper keeper = new RuleKeeper(r, r.getNumberOfStates());
@@ -173,6 +168,12 @@ System.out.println("Current rule: " + r);
 			}
 		}
 		
+		/* Have the result connector propagate the result to the correct configs,
+		 * and get info on which rulekeepers should be updated based on this 
+		 * propagation. */
+		ArrayList<Integer> toUpdate = 
+				resultConnector.addResult(resState.getID(), newTree);
+		
 		/* Then update the corresponding rulekeepers. */
 		for (Integer index : toUpdate) {
 			BinaryHeap<RuleKeeper, Weight>.Node elem = queueElements.get(index);
@@ -180,7 +181,14 @@ System.out.println("Current rule: " + r);
 			LazyLimitedLadderQueue<TreeKeeper2> ladder = rk.getLadderQueue();
 			TreeKeeper2 newSmallest = rk.getRule().apply(ladder.peek());
 			rk.setSmallestTree(newSmallest);
-			queue.decreaseWeight(elem, newSmallest.getDeltaWeight());
+			
+			if (elem.isEnqueued()) {
+				queue.decreaseWeight(elem, newSmallest.getDeltaWeight());
+			} else {
+				queue.insert(elem, newSmallest.getDeltaWeight());
+			}
+System.out.println("UPDATE TRIGGERED for index=" + index);
+System.out.println("Resulted in tree: " + newSmallest);
 		}
 
 //		int size = nOfElements[state.getID()];
@@ -252,9 +260,11 @@ System.out.println("Next tree: " + nextTree);
 				ladder.getNextConfigs(config);
 		
 		// Add the new configs to the process.
+		if (!ladder.hasReachedLimit()) {
 		for (Configuration<TreeKeeper2> next : nextConfigs) {
 System.out.println("Next config: " + next);
 			resultConnector.makeConnections(next);
+		}
 		}
 		
 System.out.println("The rulekeeper should be re-enqueued? " + (ladder.peek() != null));

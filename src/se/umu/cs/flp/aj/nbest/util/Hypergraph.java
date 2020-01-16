@@ -84,6 +84,12 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 			@SuppressWarnings("unchecked") N ... fromNodes) {
 		addEdge(edge, toNode, new ArrayList<N>(Arrays.asList(fromNodes)));
 	}
+	
+	public void addNode(N node) {
+		node.unused = false;
+		node.setID(nodeCount);
+		nodeCount++;
+	}
 
 	public void addEdge(E edge, N toNode, ArrayList<N> fromNodes) {
 
@@ -111,9 +117,7 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 //		}
 
 		if (toNode.unused) {
-			toNode.unused = false;
-			toNode.setID(nodeCount);
-			nodeCount++;
+			addNode(toNode);
 		}
 
 		edge.setTo(toNode);
@@ -122,9 +126,7 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 		for (N from : fromNodes) {
 
 			if (from.unused) {
-				from.unused = false;
-				from.setID(nodeCount);
-				nodeCount++;
+				addNode(from);
 			}
 
 			edge.addFrom(from);

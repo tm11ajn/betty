@@ -77,9 +77,20 @@ public class KnuthSmallestDerivations {
 				}
 
 				if (defined[state.getID()] != null) {
+					
+//					// TODO: unnecessary and inefficient
+//					int duplicateCounter = 0;
+//					for (State s : r2.getStates()) {
+//						if (s.getID() == state.getID()) {
+//							duplicateCounter++;
+//						}
+//					}
+//					missingIndices[r2.getID()] = missingIndices[r2.getID()] -
+//							duplicateCounter;
+					
 					missingIndices[r2.getID()] = missingIndices[r2.getID()] -
 							r2.getIndexOfState(state).size();
-
+					
 					if (missingIndices[r2.getID()] == 0) {
 						usableRules.add(r2);
 						usableSize++;
@@ -121,7 +132,8 @@ public class KnuthSmallestDerivations {
 
 		for (State s : wta.getFinalStates()) {
 			defined[s.getID()] = wta.getSemiring().one();
-
+			nOfDefined++;
+			
 			for (Rule r : s.getIncoming()) {
 				usableRules.add(r);
 				usableSize++;

@@ -10,11 +10,13 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 
 	public class Node {
 		private int index;
+		private boolean enqueued;
 		O object;
 		W weight;
 
 		public Node(O object, W weight) {
 			this.index = -1;
+			this.enqueued = false;
 			this.object = object;
 			this.weight = weight;
 		}
@@ -25,6 +27,10 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 
 		public W getWeight() {
 			return weight;
+		}
+		
+		public boolean isEnqueued() {
+			return enqueued;
 		}
 
 		@Override
@@ -66,6 +72,7 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 		int addedIndex = getLastIndex() + 1;
 		nodes.add(newNode);
 		newNode.index = addedIndex;
+		newNode.enqueued = true;
 		heapifyUp(addedIndex);
 		return newNode;
 	}
@@ -80,6 +87,7 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 		int addedIndex = getLastIndex() + 1;
 		nodes.add(node);
 		node.index = addedIndex;
+		node.enqueued = true;
 		heapifyUp(addedIndex);
 		return node;
 	}
@@ -101,6 +109,7 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 			heapifyDown(firstPosition);
 		}
 
+		first.enqueued = false;
 		return first;
 	}
 

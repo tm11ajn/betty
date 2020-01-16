@@ -41,12 +41,14 @@ public class BestTrees2 {
 
 //	public static void setSmallestCompletions(
 //			HashMap<State, Weight> smallestCompletions) {
-	public static void setSmallestCompletions(Weight[] smallestCompletions) {
+//	public static void setSmallestCompletions(Weight[] smallestCompletions) {
+//		TreeKeeper2.init(smallestCompletions);
+//	}
+
+
+	public static List<String> run(WTA wta, int N, 
+			Weight[] smallestCompletions) {
 		TreeKeeper2.init(smallestCompletions);
-	}
-
-
-	public static List<String> run(WTA wta, int N) {
 
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();
@@ -60,11 +62,14 @@ public class BestTrees2 {
 		// i <- 0
 		int foundTrees = 0;
 
+System.out.println("Main: START OF MAIN LOOP");
 		// while i < N and K nonempty do
 		while (foundTrees < N && !ruleQueue.isEmpty()) {
-
+			
+			
 			// t <- dequeue(K)
 			TreeKeeper2 currentTree = ruleQueue.nextTree();
+System.out.println("Main: Current tree: " + currentTree);
 
 			// If there are no more derivations with a non-infinity weight,
 			// we end the search.
@@ -76,6 +81,7 @@ public class BestTrees2 {
 			if (!outputtedTrees.containsKey(currentTree.getTree())) {
 
 				if (currentTree.getResultingState().isFinal()) {
+System.out.println("Main: resState final");
 					String outputString = "";
 
 					if (wta.isGrammar()) {
@@ -112,6 +118,7 @@ public class BestTrees2 {
 
 				// expand
 				if (foundTrees < N) {
+System.out.println("Main: expand with: " + currentTree);
 					ruleQueue.expandWith(currentTree);
 				}
 

@@ -35,6 +35,7 @@ import se.umu.cs.flp.aj.knuth.KnuthSmallestDerivations;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.SemiringFactory;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.parsers.Parser;
 import se.umu.cs.flp.aj.nbest.wta.parsers.RTGParser;
@@ -157,13 +158,20 @@ public class NBest {
 		accumulativeTime = duration;
 		System.out.println("Smallest completions done (took "
 				+ duration + " milliseconds).");
+		
+//System.out.println("Smallest completions: ");
+//for (State s : wta.getStates().values()) {
+//System.out.println(s + " " + smallestCompletions[s.getID()]);
+//}
+//System.exit(1);
+
 
 		if (version.equals(RULE_QUEUE_ARG) || version.equals(ALL_ARG)) {
 			System.out.println("Running BestTrees version 2...");
-			BestTrees2.setSmallestCompletions(smallestCompletions);
+//			BestTrees2.setSmallestCompletions(smallestCompletions);
 
 			startTime = System.nanoTime();
-			result = BestTrees2.run(wta, N);
+			result = BestTrees2.run(wta, N, smallestCompletions);
 			endTime = System.nanoTime();
 
 			printResult(result, derivations);

@@ -75,7 +75,7 @@ System.out.println("resCount[currentState]=" + resCount[currentState]);
 		}
 System.out.println("missing elements = " + missingElements);
 
-		config.decreaseLeftToValuesBy(missingElements);
+		config.decreaseLeftToValuesBy(size - missingElements);
 		activateConfigIfReady(config);
 	}
 
@@ -94,7 +94,9 @@ System.out.println("New result for state " + stateIndex + "; " + result.getResul
 
 		for (ConfigStateIndexPair csi : configLists.get(configIndex)) {
 			Configuration<TreeKeeper2> config = csi.getConfig();
+System.out.println("Current config");
 //			if (config.getLeftToValues() != 0) {
+System.out.println("DecreaseLeftToValuesBy1");
 				config.decreaseLeftToValuesBy(1);
 				if (activateConfigIfReady(config)) {
 					needUpdate.add(config.getOrigin().getID());
@@ -132,11 +134,15 @@ System.out.println("t1=" + t1);
 			
 			/* It can happen that a better config arrives late to the party. 
 			 * This piece of code takes care of that. */
-			if (!config.getOrigin().isEmpty() && 
-					config.getOrigin().peek().getWeight().compareTo(weight) > 0) {
-//				config.getOrigin().setNeedsUpdate(true);
-				triggersUpdate = true;
-			}
+////			if ((config.getOrigin().hasNotDequeuedYet() && config.getOrigin().isEmpty()) || 
+////					(!config.getOrigin().isEmpty() &&
+////					config.getOrigin().peek().getWeight().compareTo(weight) > 0)) {
+//			if (!config.getOrigin().isEmpty() && 
+//					config.getOrigin().peek().getWeight().compareTo(weight) > 0) {
+////				config.getOrigin().setNeedsUpdate(true);
+//				triggersUpdate = true;
+//System.out.println("Triggers update (late to party)");
+//			}
 			
 			config.setValues(result);
 			config.setWeight(weight);

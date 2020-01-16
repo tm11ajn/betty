@@ -22,6 +22,7 @@ package se.umu.cs.flp.aj.nbest.wta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
@@ -114,6 +115,13 @@ public class Rule extends Hypergraph.Edge<State> {
 		}
 
 		this.stateMap.get(state).add(index);
+		
+		if (state.getID() == 157) {
+//System.out.println("WOOOOOOOOOW");
+//System.out.println(index);
+//System.out.println(this.stateMap.get(state));
+//System.exit(1);
+		}
 	}
 
 	public Node getTree() {
