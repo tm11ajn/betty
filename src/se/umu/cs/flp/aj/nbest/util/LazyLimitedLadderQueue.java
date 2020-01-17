@@ -267,6 +267,12 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 //	}
 
 	public ArrayList<Configuration<V>> getNextConfigs(Configuration<V> config) {
+		
+		/* Return an empty list if we have already dequeued all we are allowed*/
+		if (dequeueCounter >= limit) {
+			return new ArrayList<>();
+		}
+		
 		int[] newIndices;
 		int[] indices = config.getIndices();
 		Configuration<V> newConfig;
@@ -387,9 +393,9 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		return configQueue.size();
 	}
 
-	public boolean hasReachedLimit() {
-		return dequeueCounter >= limit;
-	}
+//	public boolean hasReachedLimit() {
+//		return dequeueCounter >= limit;
+//	}
 	
 	public boolean hasNotDequeuedYet() {
 		return dequeueCounter == 0;

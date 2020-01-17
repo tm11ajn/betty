@@ -101,6 +101,7 @@ System.out.println("Main: resState final");
 					nBest.add(outputString);
 //					nBest.add(currentTree);
 
+System.out.println("OUTPUT " + currentTree);
 					outputtedTrees.put(currentTree.getTree(), null);
 					foundTrees++;
 				}

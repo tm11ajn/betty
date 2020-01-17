@@ -67,6 +67,9 @@ public class Rule extends Hypergraph.Edge<State> {
 //	}
 	
 	public TreeKeeper2 apply(Configuration<TreeKeeper2> config) {
+System.out.println("Rule: apply");
+System.out.println(config);
+System.out.println(config.getValues());
 		Node t = tree;
 		Weight treeWeight = this.weight;
 		ArrayList<TreeKeeper2> tklist = config.getValues();

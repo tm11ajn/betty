@@ -134,16 +134,17 @@ System.out.println("t1=" + t1);
 			
 			/* It can happen that a better config arrives late to the party. 
 			 * This piece of code takes care of that. */
-////			if ((config.getOrigin().hasNotDequeuedYet() && config.getOrigin().isEmpty()) || 
-////					(!config.getOrigin().isEmpty() &&
-////					config.getOrigin().peek().getWeight().compareTo(weight) > 0)) {
-//			if (!config.getOrigin().isEmpty() && 
-//					config.getOrigin().peek().getWeight().compareTo(weight) > 0) {
+//			if ((config.getOrigin().isEmpty()) || 
+//					(!config.getOrigin().isEmpty() &&
+//					config.getOrigin().peek().getWeight().compareTo(weight) > 0)) {
+////			if (!config.getOrigin().isEmpty() && 
+////					config.getOrigin().peek().getWeight().compareTo(weight) > 0) {
 ////				config.getOrigin().setNeedsUpdate(true);
 //				triggersUpdate = true;
 //System.out.println("Triggers update (late to party)");
 //			}
 			
+			triggersUpdate = true;
 			config.setValues(result);
 			config.setWeight(weight);
 			config.getOrigin().insert(config);
