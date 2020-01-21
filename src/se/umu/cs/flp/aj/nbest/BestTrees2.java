@@ -62,14 +62,14 @@ public class BestTrees2 {
 		// i <- 0
 		int foundTrees = 0;
 
-System.out.println("Main: START OF MAIN LOOP");
+//System.out.println("Main: START OF MAIN LOOP");
 		// while i < N and K nonempty do
 		while (foundTrees < N && !ruleQueue.isEmpty()) {
 			
 			
 			// t <- dequeue(K)
 			TreeKeeper2 currentTree = ruleQueue.nextTree();
-System.out.println("Main: Current tree: " + currentTree);
+//System.out.println("Main: Current tree: " + currentTree);
 
 			// If there are no more derivations with a non-infinity weight,
 			// we end the search.
@@ -81,7 +81,7 @@ System.out.println("Main: Current tree: " + currentTree);
 			if (!outputtedTrees.containsKey(currentTree.getTree())) {
 
 				if (currentTree.getResultingState().isFinal()) {
-System.out.println("Main: resState final");
+//System.out.println("Main: resState final");
 					String outputString = "";
 
 					if (wta.isGrammar()) {
@@ -101,7 +101,7 @@ System.out.println("Main: resState final");
 					nBest.add(outputString);
 //					nBest.add(currentTree);
 
-System.out.println("OUTPUT " + currentTree);
+//System.out.println("OUTPUT " + currentTree);
 					outputtedTrees.put(currentTree.getTree(), null);
 					foundTrees++;
 				}
@@ -120,7 +120,11 @@ System.out.println("OUTPUT " + currentTree);
 				// expand
 				if (foundTrees < N) {
 System.out.println("Main: expand with: " + currentTree);
+System.out.println("Found trees: " + foundTrees);
+System.out.println("ruleQueue size before: " + ruleQueue.size());
 					ruleQueue.expandWith(currentTree);
+System.out.println("ruleQueue size after: " + ruleQueue.size()); 
+// TODO: same as before for Main: expand with: Tree: \$.[.] RunWeight: .065691 Delta weight: 78.086873 Resulting state: .[21,21]_._\$., debug
 				}
 
 				temp.put(currentTree.getTree(), null);

@@ -40,7 +40,6 @@ public class KnuthSmallestDerivations {
 		}
 
 		while (nOfDefined < nOfStates) {
-
 			for (int i = usableStart; i < usableSize; i++) {
 				Rule r = usableRules.get(i);
 				State resState = r.getResultingState();
@@ -48,7 +47,6 @@ public class KnuthSmallestDerivations {
 				Weight newWeight = getWeight(r);
 				BinaryHeap<State, Weight>.Node element =
 						qElems[resState.getID()];
-
 
 				if (element != null) {
 					oldWeight = element.getWeight();
@@ -78,16 +76,7 @@ public class KnuthSmallestDerivations {
 
 				if (defined[state.getID()] != null) {
 					
-//					// TODO: unnecessary and inefficient
-//					int duplicateCounter = 0;
-//					for (State s : r2.getStates()) {
-//						if (s.getID() == state.getID()) {
-//							duplicateCounter++;
-//						}
-//					}
-//					missingIndices[r2.getID()] = missingIndices[r2.getID()] -
-//							duplicateCounter;
-					
+					// TODO: unnecessary and inefficient
 					missingIndices[r2.getID()] = missingIndices[r2.getID()] -
 							r2.getIndexOfState(state).size();
 					
@@ -173,7 +162,6 @@ public class KnuthSmallestDerivations {
 					} else if (newWeight.compareTo(oldWeight) < 0) {
 						queue.decreaseWeight(qElems[s.getID()],
 								newWeight);
-
 					}
 				}
 

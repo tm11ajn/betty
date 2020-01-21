@@ -119,7 +119,7 @@ public class WTA {
 	}
 
 	public void addRule(Rule rule) throws DuplicateRuleException {
-
+//System.out.println("Adding rule " + rule);
 		rules.add(rule);
 		ArrayList<State> states = rule.getStates();
 		HashMap<State, State> nonDuplicateStates = new HashMap<>();
@@ -135,6 +135,7 @@ public class WTA {
 		}
 
 		transitionFunction.addEdge(rule, rule.getResultingState(), states);
+//System.out.println("Rule count: " + this.getRuleCount());
 	}
 
 //	public void removeRule(Rule rule) {

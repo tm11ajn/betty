@@ -72,7 +72,8 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 //		this.elementIndices = elementIndices;
 		this.configQueue = new PriorityQueue<>(comparator);
 //		this.usedConfigs = new HashMap<>();
-		this.seenConfigurations = new Object[rank];
+//		this.seenConfigurations = new Object[rank];
+		this.seenConfigurations = new Object[limit];
 //		this.missingDataCounter = new HashMap<>();
 //		this.pendingConfigs = new HashMap<>();
 		this.empty = true;
@@ -93,13 +94,20 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		boolean answer = true;
 		int[] indices = config.getIndices();
 		Object[] currentList = seenConfigurations;
+//System.out.println("indices=");
+//for (int i = 0; i < indices.length; i++) {
+//System.out.println(indices[i]);
+//}
 		
+//System.out.println("Rank=" + rank);
 		for (int i = 0; i < rank; i++) {
+//System.out.println("indices[i]=" + indices[i]);
 			Object currentObject = currentList[indices[i]];
 			
 			if (currentObject == null) {
 				answer = false;
-				Object[] newList = new Object[rank];
+//				Object[] newList = new Object[rank];
+				Object[] newList = new Object[limit];
 				currentList[indices[i]] = newList;
 				currentList = newList;
 			} else {
