@@ -57,6 +57,8 @@ public class BestTrees2 {
 		outputtedTrees = new HashMap<>();
 		seenTrees = new HashMap<>();
 //		ruleQueue = new RuleQueue(N, wta.getSourceRules(), wta.getRuleCount());
+		
+		// Initialise by enqueuing rules without states
 		ruleQueue = new RuleQueue(N, wta);
 
 		// i <- 0
@@ -66,10 +68,9 @@ public class BestTrees2 {
 		// while i < N and K nonempty do
 		while (foundTrees < N && !ruleQueue.isEmpty()) {
 			
-			
 			// t <- dequeue(K)
 			TreeKeeper2 currentTree = ruleQueue.nextTree();
-//System.out.println("Main: Current tree: " + currentTree);
+System.out.println("Main: Current tree: " + currentTree);
 
 			// If there are no more derivations with a non-infinity weight,
 			// we end the search.
@@ -101,7 +102,7 @@ public class BestTrees2 {
 					nBest.add(outputString);
 //					nBest.add(currentTree);
 
-//System.out.println("OUTPUT " + currentTree);
+System.out.println("OUTPUT " + currentTree);
 					outputtedTrees.put(currentTree.getTree(), null);
 					foundTrees++;
 				}
@@ -117,7 +118,7 @@ public class BestTrees2 {
 
 			if (!temp.containsKey(currentTree.getTree())) {
 
-				// expand
+				// Expand search space with current tree
 				if (foundTrees < N) {
 System.out.println("Main: expand with: " + currentTree);
 System.out.println("Found trees: " + foundTrees);

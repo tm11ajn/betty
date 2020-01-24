@@ -1,12 +1,10 @@
 package se.umu.cs.flp.aj.nbest.treedata;
 
-import java.util.ArrayList;
-
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue;
 
 public class Configuration<T extends Comparable<T>> {
-	private ArrayList<T> values;
+	private T[] values;
 	private Weight weight;
 	private int[] indices;
 	private int size;
@@ -17,7 +15,6 @@ public class Configuration<T extends Comparable<T>> {
 	public Configuration(int[] indices, int size,
 			LazyLimitedLadderQueue<T> origin) {
 		setIndices(indices, size);
-		values = new ArrayList<>();
 		leftToValues = size;
 		this.origin = origin;
 	}
@@ -30,11 +27,11 @@ public class Configuration<T extends Comparable<T>> {
 		this.leftToValues -= dec;
 	}
 
-	public void setValues(ArrayList<T> values) {
+	public void setValues(T[] values) {
 		this.values = values;
 	}
 
-	public ArrayList<T> getValues() {
+	public T[] getValues() {
 		return values;
 	}
 	

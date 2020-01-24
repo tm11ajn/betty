@@ -56,23 +56,27 @@ public class RuleQueue {
 			queueElements.add(i, null);
 //System.out.println("Current index: " + i);
 		}
-
-		for (Rule r : wta.getSourceRules()) {
+		
+		for (Rule r : wta.getRules()) {
 			initialiseRuleElement(r);
-
-//			addRule(r);
-
-//			RuleKeeper keeper = new RuleKeeper(r, r.getNumberOfStates());
-//			LazyLimitedLadderQueue<TreeKeeper2> ladder = keeper.getLadderQueue();
-//			Configuration<TreeKeeper2> startConfig = ladder.getStartConfig();
-//			Weight weight = r.getWeight();
-//			startConfig.setValues(new ArrayList<TreeKeeper2>());
-//			startConfig.setWeight(weight);
-//			ladder.insert(startConfig);
-//			BinaryHeap<RuleKeeper, Weight>.Node n = queue.add(keeper, weight);
-//			queueElements.add(r.getID(), n);
-//			keeper.setSmallestTree(r.apply(ladder.peek()));
 		}
+
+//		for (Rule r : wta.getSourceRules()) {
+//			initialiseRuleElement(r);
+//
+////			addRule(r);
+//
+////			RuleKeeper keeper = new RuleKeeper(r, r.getNumberOfStates());
+////			LazyLimitedLadderQueue<TreeKeeper2> ladder = keeper.getLadderQueue();
+////			Configuration<TreeKeeper2> startConfig = ladder.getStartConfig();
+////			Weight weight = r.getWeight();
+////			startConfig.setValues(new ArrayList<TreeKeeper2>());
+////			startConfig.setWeight(weight);
+////			ladder.insert(startConfig);
+////			BinaryHeap<RuleKeeper, Weight>.Node n = queue.add(keeper, weight);
+////			queueElements.add(r.getID(), n);
+////			keeper.setSmallestTree(r.apply(ladder.peek()));
+//		}
 		
 //System.out.println("Queue after init: ");
 //queue.printHeap();
@@ -92,7 +96,7 @@ public class RuleQueue {
 			startConfig.setWeight(r.getWeight().one());
 		}
 
-		resultConnector.makeConnections(startConfig);
+		boolean activated = resultConnector.makeConnections(startConfig);
 		BinaryHeap<RuleKeeper, Weight>.Node elem = queue.createNode(keeper);
 		queueElements.set(r.getID(), elem);
 
@@ -100,7 +104,8 @@ public class RuleQueue {
 		
 //System.out.println("Should have next? " + (ladder.peek() != null));
 
-		if (ladder.hasNext()) {
+		if (activated) {
+//		if (ladder.hasNext()) {
 //System.out.println("Has next");
 //System.out.println("Adding rule to rule queue: " + r);
 			Configuration<TreeKeeper2> config = ladder.peek();
@@ -160,7 +165,7 @@ int activateCount = 0;
 //System.out.println("Activate rule: " + r);
 //System.out.println(queueElements.get(r.getID()));
 				if (queueElements.get(r.getID()) == null) {
-					initialiseRuleElement(r);
+//					initialiseRuleElement(r);
 activateCount++;
 				} 
 			}

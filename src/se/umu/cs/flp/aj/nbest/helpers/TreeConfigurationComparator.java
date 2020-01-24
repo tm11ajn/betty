@@ -20,7 +20,6 @@
 
 package se.umu.cs.flp.aj.nbest.helpers;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -30,7 +29,6 @@ import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 public class TreeConfigurationComparator
 			implements Comparator<Configuration<TreeKeeper2>> {
 
-
 	@Override
 	public int compare(
 			Configuration<TreeKeeper2> config1,
@@ -39,8 +37,8 @@ public class TreeConfigurationComparator
 		Weight weight1 = null;
 		Weight weight2 = null;
 
-		ArrayList<TreeKeeper2> list1 = config1.getValues();
-		ArrayList<TreeKeeper2> list2 = config2.getValues();
+		TreeKeeper2[] list1 = config1.getValues();
+		TreeKeeper2[] list2 = config2.getValues();
 		int size1 = config1.getSize();
 		int size2 = config2.getSize();
 
@@ -60,8 +58,8 @@ public class TreeConfigurationComparator
 		}
 
 		for (int i = 0; i < size1; i++) {
-			TreeKeeper2 t1 = list1.get(i);
-			TreeKeeper2 t2 = list2.get(i);
+			TreeKeeper2 t1 = list1[i];
+			TreeKeeper2 t2 = list2[i];
 			int compare = t1.compareTo(t2);
 			if (compare != 0) {
 				return compare;

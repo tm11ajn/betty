@@ -22,7 +22,6 @@ package se.umu.cs.flp.aj.nbest.wta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
@@ -72,20 +71,20 @@ public class Rule extends Hypergraph.Edge<State> {
 //System.out.println(config.getValues());
 		Node t = tree;
 		Weight treeWeight = this.weight;
-		ArrayList<TreeKeeper2> tklist = config.getValues();
+		TreeKeeper2[] tklist = config.getValues();
 		Node newTree = buildTree(t, tklist, 0);
 		treeWeight = treeWeight.mult(config.getWeight());
 		return new TreeKeeper2(newTree, treeWeight, resultingState);
 	}
 
-	private Node buildTree(Node t, ArrayList<TreeKeeper2> tklist,
+	private Node buildTree(Node t, TreeKeeper2[] tklist,
 			int nonTermIndex) {
 
 		if (t.getChildCount() == 0) {
 			Node node;
 
 			if (t.getLabel().isNonterminal()) {
-				node = tklist.get(nonTermIndex).getTree();
+				node = tklist[nonTermIndex].getTree();
 			} else {
 				node = t;
 			}

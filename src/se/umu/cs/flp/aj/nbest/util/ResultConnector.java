@@ -49,7 +49,7 @@ public class ResultConnector {
 //		this.maxResults = maxResults;
 	}
 
-	public void makeConnections(Configuration<TreeKeeper2> config) {
+	public boolean makeConnections(Configuration<TreeKeeper2> config) {
 //System.out.println("ResultConnector: makeConnections");
 		int[] indices = config.getIndices();
 		int size = indices.length;
@@ -78,7 +78,8 @@ public class ResultConnector {
 //System.out.println("missing elements = " + missingElements);
 
 		config.decreaseLeftToValuesBy(size - missingElements);
-		activateConfigIfReady(config);
+		boolean activated = activateConfigIfReady(config);
+		return activated;
 	}
 
 	/*
@@ -103,7 +104,8 @@ System.out.println("New result for state " + stateIndex + "; " + result.getResul
 //			if (config.getLeftToValues() != 0) {
 //System.out.println("DecreaseLeftToValuesBy1");
 				config.decreaseLeftToValuesBy(1);
-				if (activateConfigIfReady(config)) {
+				boolean wasReady = activateConfigIfReady(config);
+				if (wasReady) {
 					needUpdate.add(config.getOrigin().getID());
 				}
 //			}
@@ -123,12 +125,12 @@ System.out.println("Need update count: " + needUpdate.size());
 		
 		if (config.getLeftToValues() == 0) {
 //System.out.println("Activated");
-			ArrayList<TreeKeeper2> result = extractResult(config);
+			TreeKeeper2[] result = extractResult(config);
 			int size = config.getSize();
 			Weight weight = config.getWeight(); // Set if leaf, else null
 			
 			for (int i = 0; i < size; i++) {
-				TreeKeeper2 t1 = result.get(i);
+				TreeKeeper2 t1 = result[i];
 //System.out.println("t1=" + t1);
 
 				if (i == 0) {
@@ -159,16 +161,16 @@ System.out.println("Need update count: " + needUpdate.size());
 		return triggersUpdate;
 	}
 
-	private ArrayList<TreeKeeper2> extractResult(Configuration<TreeKeeper2> config) {
+	private TreeKeeper2[] extractResult(Configuration<TreeKeeper2> config) {
 //System.out.println("ResultConnector: extractResult");
 		int[] indexList = config.getIndices();
 		int ruleIndex = config.getOrigin().getID();
 		Rule rule = rules.get(ruleIndex);
 		int size = indexList.length;
-		ArrayList<TreeKeeper2> result = new ArrayList<>(size);
+		TreeKeeper2[] result = new TreeKeeper2[size];
 
 		for (int i = 0; i < size; i++) {
-			result.add(results[rule.getStates().get(i).getID()][indexList[i]]);
+			result[i] = results[rule.getStates().get(i).getID()][indexList[i]];
 		}
 
 		return result;
