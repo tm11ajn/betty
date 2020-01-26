@@ -115,6 +115,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 			}
 		}
 		
+//System.out.println("isSeen " + config + "?" + answer);
 		return answer;
 	}
 
@@ -299,7 +300,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 
 			newConfig = new Configuration<>(newIndices, rank, this);
 
-			if (!isSeen(config)) {
+			if (!isSeen(newConfig)) {
 				newConfigs.add(newConfig);
 			}
 		}
