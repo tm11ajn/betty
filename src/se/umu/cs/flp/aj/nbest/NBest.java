@@ -35,7 +35,6 @@ import se.umu.cs.flp.aj.knuth.KnuthSmallestDerivations;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.SemiringFactory;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.parsers.Parser;
 import se.umu.cs.flp.aj.nbest.wta.parsers.RTGParser;

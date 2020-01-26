@@ -44,18 +44,20 @@ public class LazyLimitedLadderQueueTest {
 				Configuration<Integer> arg0,
 				Configuration<Integer> arg1) {
 
-			Integer sum0 = 0;
-			Integer sum1 = 0;
+//			Integer sum0 = 0;
+//			Integer sum1 = 0;
+//
+//			for (int val : arg0.getValues()) {
+//				sum0 += val;
+//			}
+//
+//			for (int val : arg1.getValues()) {
+//				sum1 += val;
+//			}
 
-			for (int val : arg0.getValues()) {
-				sum0 += val;
-			}
-
-			for (int val : arg1.getValues()) {
-				sum1 += val;
-			}
-
-			return sum0.compareTo(sum1);
+//			return sum0.compareTo(sum1);
+			
+			return arg0.getWeight().compareTo(arg1.getWeight());
 		}
 	};
 
@@ -146,18 +148,98 @@ public class LazyLimitedLadderQueueTest {
 	
 	@Test
 	public void shouldReturnTheCorrectNextConfigsOfRank3GivenTheStartConfig() {
-		init(3);
+		int currentRank = 3;
+		init(currentRank);
 		Configuration<Integer> startConfig = lq.getStartConfig();
 		startConfig.setWeight(new TropicalSemiring().createWeight(2));
 		lq.insert(startConfig);
 		startConfig = lq.dequeue();
 		ArrayList<Configuration<Integer>> nextConfigs = lq.getNextConfigs(startConfig);
-		int[][] indices = new int[3][3];
+		int[][] indices = new int[currentRank][currentRank];
 		int[][] result = new int[][]{{1,0,0},{0,1,0},{0,0,1}};
 		
-System.out.println(nextConfigs);
+		for (int i = 0; i < currentRank; i++) {
+			indices[i] = nextConfigs.get(i).getIndices();
+		}
+		
+		assertThat(indices, is(result));
+	}
+	
+	@Test
+	public void shouldReturnTheCorrectNextConfigsOfRank4GivenTheStartConfig() {
+		int currentRank = 4;
+		init(currentRank);
+		Configuration<Integer> startConfig = lq.getStartConfig();
+		startConfig.setWeight(new TropicalSemiring().createWeight(2));
+		lq.insert(startConfig);
+		startConfig = lq.dequeue();
+		ArrayList<Configuration<Integer>> nextConfigs = lq.getNextConfigs(startConfig);
+		int[][] indices = new int[currentRank][currentRank];
+		int[][] result = new int[][]{{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
+		
+		for (int i = 0; i < currentRank; i++) {
+			indices[i] = nextConfigs.get(i).getIndices();
+		}
+		
+		assertThat(indices, is(result));
+	}
+	
+	@Test
+	public void shouldReturnTheCorrectNextConfigsOfRank3GivenPossibilitiesForDuplicates() {
+		int currentRank = 3;
+		init(currentRank);
+		Configuration<Integer> startConfig = lq.getStartConfig();
+		startConfig.setWeight(new TropicalSemiring().createWeight(2));
+		lq.insert(startConfig);
+		Configuration<Integer> currentConfig = null;
+		ArrayList<Configuration<Integer>> nextConfigs = null;
+		int[][] indices = new int[currentRank - 1][currentRank];
+		int[][] result = new int[][]{{0,2,0},{0,1,1}};
+		double d = 0;
+		
+		for (int i = 0; i < currentRank; i++) {
+			currentConfig = lq.dequeue();
+			nextConfigs = lq.getNextConfigs(currentConfig);
+			
+			for (Configuration<Integer> next : nextConfigs) {
+				next.setWeight(new TropicalSemiring().createWeight(d));
+				lq.insert(next);
+				d++;
+			}
+		}
+		
+		for (int i = 0; i < currentRank - 1; i++) {
+			indices[i] = nextConfigs.get(i).getIndices();
+		}
+		
+		assertThat(indices, is(result));
+	}
+	
+	@Test
+	public void shouldReturnTheCorrectNextConfigsOfRank4GivenPossibilitiesForDuplicates() {
+		int currentRank = 4;
+		init(currentRank);
+		Configuration<Integer> startConfig = lq.getStartConfig();
+		startConfig.setWeight(new TropicalSemiring().createWeight(2));
+		lq.insert(startConfig);
+		Configuration<Integer> currentConfig = null;
+		ArrayList<Configuration<Integer>> nextConfigs = null;
+		int[][] indices = new int[currentRank - 1][currentRank];
+		int[][] result = new int[][]{{0,2,0,0},{0,1,1,0},{0,1,0,1}};
+		double d = 0;
 		
 		for (int i = 0; i < 3; i++) {
+			currentConfig = lq.dequeue();
+			nextConfigs = lq.getNextConfigs(currentConfig);
+			
+			for (Configuration<Integer> next : nextConfigs) {
+				next.setWeight(new TropicalSemiring().createWeight(d));
+				lq.insert(next);
+				d++;
+			}
+		}
+		
+		for (int i = 0; i < currentRank - 1; i++) {
 			indices[i] = nextConfigs.get(i).getIndices();
 		}
 		
