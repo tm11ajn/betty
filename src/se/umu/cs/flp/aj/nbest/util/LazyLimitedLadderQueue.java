@@ -115,7 +115,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 			}
 		}
 		
-//System.out.println("isSeen " + config + "?" + answer);
+System.out.println("isSeen " + config + "?" + answer);
 		return answer;
 	}
 
