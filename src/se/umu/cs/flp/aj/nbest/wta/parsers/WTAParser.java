@@ -24,7 +24,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
 
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -56,7 +55,6 @@ public class WTAParser implements Parser {
 			"\\s*((\\]\\s*->)|#|\\[|,)\\s*";
 
 	private Semiring semiring;
-	private HashMap<State, State> finalStates;
 
 	private boolean forDerivations;
 	private int ruleCounter;
@@ -65,7 +63,6 @@ public class WTAParser implements Parser {
 
 	public WTAParser(Semiring semiring) {
 		this.semiring = semiring;
-		this.finalStates = new HashMap<>();
 		this.ruleCounter = 0;
 		this.forDerivations = false;
 	}
@@ -144,9 +141,7 @@ public class WTAParser implements Parser {
 		int size = finals.length;
 
 		for (int i = 1; i < size; i++) {
-			if (!finalStates.containsKey(finals[i])) {
-				wta.setFinalState(finals[i]);
-			}
+			wta.setFinalState(finals[i]);
 		}
 	}
 

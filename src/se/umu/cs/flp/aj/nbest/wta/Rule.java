@@ -39,6 +39,8 @@ public class Rule extends Hypergraph.Edge<State> {
 	private HashMap<State, ArrayList<Integer>> stateMap = new HashMap<>();
 
 	private State resultingState;
+	
+	private int nonTermIndex = 0;
 
 	public Rule(Node tree, Weight weight,
 			State resultingState, State ... states) {
@@ -66,19 +68,18 @@ public class Rule extends Hypergraph.Edge<State> {
 //	}
 	
 	public TreeKeeper2 apply(Configuration<TreeKeeper2> config) {
-//System.out.println("Rule: apply");
-//System.out.println(config);
-//System.out.println(config.getValues());
+		TreeKeeper2 result = null; 
 		Node t = tree;
 		Weight treeWeight = this.weight;
 		TreeKeeper2[] tklist = config.getValues();
-		Node newTree = buildTree(t, tklist, 0);
+		nonTermIndex = 0;
+		Node newTree = buildTree(t, tklist);
 		treeWeight = treeWeight.mult(config.getWeight());
-		return new TreeKeeper2(newTree, treeWeight, resultingState);
+		result = new TreeKeeper2(newTree, treeWeight, resultingState);
+		return result;
 	}
 
-	private Node buildTree(Node t, TreeKeeper2[] tklist,
-			int nonTermIndex) {
+	private Node buildTree(Node t, TreeKeeper2[] tklist) {
 
 		if (t.getChildCount() == 0) {
 			Node node;
@@ -95,7 +96,7 @@ public class Rule extends Hypergraph.Edge<State> {
 		Node newTree = new Node(t.getLabel());
 
 		for (int i = 0; i < t.getChildCount(); i++) {
-			Node tempTree = buildTree(t.getChildAt(i), tklist, nonTermIndex);
+			Node tempTree = buildTree(t.getChildAt(i), tklist);
 			if (t.getChildAt(i).getLabel().isNonterminal()) {
 				nonTermIndex++;
 			}
@@ -117,13 +118,6 @@ public class Rule extends Hypergraph.Edge<State> {
 		}
 
 		this.stateMap.get(state).add(index);
-		
-		if (state.getID() == 157) {
-//System.out.println("WOOOOOOOOOW");
-//System.out.println(index);
-//System.out.println(this.stateMap.get(state));
-//System.exit(1);
-		}
 	}
 
 	public Node getTree() {
@@ -199,7 +193,8 @@ public class Rule extends Hypergraph.Edge<State> {
 
 	@Override
 	public String toString() {
-		return toWTAString();
+//		return toWTAString();
+		return toRTGString();
 	}
 
 }

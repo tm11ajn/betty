@@ -26,9 +26,6 @@ import java.util.LinkedList;
 
 public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N>> {
 
-//	private static int nodeID = 0;
-//	private static int edgeID = 0;
-
 	private int nodeCount;
 	private int edgeCount;
 
@@ -36,29 +33,6 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 		this.nodeCount = 0;
 		this.edgeCount = 0;
 	}
-
-//	public static void resetClass() {
-//		nodeID = 0;
-//		edgeID = 0;
-//	}
-
-//	private static int getNodeID() {
-//		return nodeID++;
-//	}
-//
-//	private static int getEdgeID() {
-//		return edgeID++;
-//	}
-
-//	public void addNode(N node) {
-////		if (node.getID() == -1) {
-////			node.setID(nodeID);
-////			nodeID++;
-////			nodeCount++;
-////		}
-//
-//		nodeCount++;
-//	}
 
 //	public void removeNode(N node) {
 //
@@ -169,7 +143,6 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 		public Node() {
 			this.id = -1;
 			unused = true;
-//			this.id = getNodeID();
 			this.in = new LinkedList<>();
 			this.out = new LinkedList<>();
 		}
@@ -220,7 +193,6 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 
 		public Edge() {
 			this.id = -1;
-//			this.id = getEdgeID();
 			this.from = new LinkedList<>();
 			this.to = null;
 		}

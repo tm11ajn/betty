@@ -31,7 +31,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import se.umu.cs.flp.aj.knuth.KnuthSmallestDerivations;
+import se.umu.cs.flp.aj.knuth.KnuthBestDerivations;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.SemiringFactory;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -150,7 +150,7 @@ public class NBest {
 		System.out.println("Pre-computing smallest completions...");
 		startTime = System.nanoTime();
 		Weight[] smallestCompletions =
-				KnuthSmallestDerivations.getSmallestDerivations(wta);
+				KnuthBestDerivations.getBestDerivations(wta);
 		List<String> result = new LinkedList<>();
 		endTime = System.nanoTime();
 		duration = (endTime - startTime)/1000000;

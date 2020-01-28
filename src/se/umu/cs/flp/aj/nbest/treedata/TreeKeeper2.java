@@ -112,6 +112,12 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		if (weightComparison != 0) {
 			return weightComparison;
 		}
+		
+		int runWeightComparison = this.getRunWeight().compareTo(o.getRunWeight());
+		
+		if (runWeightComparison != 0) {
+			return runWeightComparison;
+		}
 
 		int treeComparison = this.tree.compareTo(o.tree);
 

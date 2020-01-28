@@ -2,6 +2,7 @@ package se.umu.cs.flp.aj.heap;
 
 import java.util.ArrayList;
 
+
 public class BinaryHeap<O, W extends Comparable<W>> {
 
 	private ArrayList<Node> nodes;

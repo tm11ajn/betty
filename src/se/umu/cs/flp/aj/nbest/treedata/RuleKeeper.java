@@ -28,104 +28,27 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 
 	private Rule rule;
 	private LazyLimitedLadderQueue<TreeKeeper2> ladder;
-	private TreeKeeper2 smallestTree;
-	private boolean paused;
-	private boolean queued;
-//	private boolean needsUpdate;
+	private TreeKeeper2 bestTree;
 
 	public RuleKeeper(Rule rule, int limit) {
 		this.rule = rule;
 		this.ladder = new LazyLimitedLadderQueue<>(rule.getID(), 
 				rule.getNumberOfStates(), 
 				new TreeConfigurationComparator(), limit);
-		this.smallestTree = null;
-		this.paused = true;
-//		this.needsUpdate = false;
-
-//		if (rule.getNumberOfStates() == 0) {
-//			this.paused = false;
-//			this.smallestTree = new TreeKeeper2(rule.getTree(),
-//					rule.getWeight(), rule.getResultingState());
-//		}
-	}
-
-//	public TreeKeeper2 getSmallestTree() {
-//	
-//		if (smallestTree == null) {
-//			next();
-//		}
-//	
-//		return smallestTree;
-//	}
-
-//	public TreeKeeper2 getSmallestTree() {
-////		if (smallestTree == null) {
-////			next();
-////		}
-//		return smallestTree;
-//	}
-	
-	public TreeKeeper2 getSmallestTree() {
-		return smallestTree;
+		this.bestTree = null;
 	}
 	
-	public void setSmallestTree(TreeKeeper2 smallestTree) {
-		this.smallestTree = smallestTree;
+	public TreeKeeper2 getBestTree() {
+		return bestTree;
+	}
+	
+	public void setBestTree(TreeKeeper2 smallestTree) {
+		this.bestTree = smallestTree;
 	}
 	
 	public LazyLimitedLadderQueue<TreeKeeper2> getLadderQueue() {
 		return ladder;
 	} 
-
-//	public void updateForStateIndex(int stateIndex) {
-////		ladder.update(stateIndex);
-//
-//		if (ladder.needsUpdate()) {
-//			this.needsUpdate = true;
-//			this.smallestTree = rule.apply(ladder.peek());
-//		}
-//
-//		if (ladder.hasNext()) {
-//			paused = false;
-//		} else {
-//			paused = true;
-//		}
-//	}
-
-//	public void hasUpdated() {
-//		this.needsUpdate = false;
-//		ladder.hasUpdated();
-//	}
-
-//	public boolean needsUpdate() {
-//		return needsUpdate;
-//	}
-
-//	public void hasBeenDequeued() {
-//		ladder.dequeue();
-//	}
-
-//	public void next() {
-//		if (ladder.hasNext()) {
-//			ArrayList<TreeKeeper2> temp = ladder.peek();
-//			smallestTree = rule.apply(temp);
-//			paused = false;
-//		} else {
-//			paused = true;
-//		}
-//	}
-
-	public boolean isPaused() {
-		return paused;
-	}
-
-	public void setQueued(boolean queued) {
-		this.queued = queued;
-	}
-
-	public boolean isQueued() {
-		return queued;
-	}
 
 	public Rule getRule() {
 		return rule;
@@ -144,12 +67,12 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 
 	@Override
 	public int compareTo(RuleKeeper ruleKeeper) {
-		return getSmallestTree().compareTo(ruleKeeper.getSmallestTree());
+		return getBestTree().compareTo(ruleKeeper.getBestTree());
 	}
 
 	@Override
 	public String toString() {
-		return "Rule: " + rule + " smallest tree: " + smallestTree;
+		return "Rule: " + rule + " smallest tree: " + bestTree;
 	}
 
 }

@@ -70,7 +70,7 @@ public class BestTrees2 {
 			
 			// t <- dequeue(K)
 			TreeKeeper2 currentTree = ruleQueue.nextTree();
-System.out.println("Main: Current tree: " + currentTree);
+//System.out.println("Main: Current tree: " + currentTree);
 
 			// If there are no more derivations with a non-infinity weight,
 			// we end the search.
@@ -102,7 +102,7 @@ System.out.println("Main: Current tree: " + currentTree);
 					nBest.add(outputString);
 //					nBest.add(currentTree);
 
-System.out.println("OUTPUT " + currentTree);
+//System.out.println("OUTPUT " + currentTree);
 					outputtedTrees.put(currentTree.getTree(), null);
 					foundTrees++;
 				}
@@ -120,11 +120,11 @@ System.out.println("OUTPUT " + currentTree);
 
 				// Expand search space with current tree
 				if (foundTrees < N) {
-System.out.println("Main: expand with: " + currentTree);
-System.out.println("Found trees: " + foundTrees);
-System.out.println("ruleQueue size before: " + ruleQueue.size());
+//System.out.println("Main: expand with: " + currentTree);
+//System.out.println("Found trees: " + foundTrees);
+//System.out.println("ruleQueue size before: " + ruleQueue.size());
 					ruleQueue.expandWith(currentTree);
-System.out.println("ruleQueue size after: " + ruleQueue.size()); 
+//System.out.println("ruleQueue size after: " + ruleQueue.size()); 
 // TODO: same as before for Main: expand with: Tree: \$.[.] RunWeight: .065691 Delta weight: 78.086873 Resulting state: .[21,21]_._\$., debug
 				}
 

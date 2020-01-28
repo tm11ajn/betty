@@ -66,7 +66,6 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 			}
 		}
 		
-//System.out.println("isSeen " + config + "?" + answer);
 		return answer;
 	}
 
@@ -88,8 +87,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 			return false;
 		}
 
-//		if (configQueue.isEmpty()) {
-		if (configQueue.size() == 0) {
+		if (configQueue.isEmpty()) {
 			return false;
 		}
 
@@ -147,9 +145,9 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		return configQueue.size();
 	}
 
-//	public boolean hasReachedLimit() {
-//		return dequeueCounter >= limit;
-//	}
+	public boolean hasReachedLimit() {
+		return dequeueCounter >= limit;
+	}
 	
 	public boolean hasNotDequeuedYet() {
 		return dequeueCounter == 0;

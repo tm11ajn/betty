@@ -67,7 +67,7 @@ public class RuleTest {
 		n1 = new Node(q1Sym);
 	}
 
-	private void init1() {
+	private void init1a() {
 		init();
 
 		eNode.addChild(aNode);
@@ -77,6 +77,25 @@ public class RuleTest {
 		fNode.addChild(cNode);
 		fNode.addChild(n1);
 		fNode.addChild(eNode);
+
+		tklist = new TreeKeeper2[rule.getNumberOfStates()];
+		tklist[0] = new TreeKeeper2(eNode, semiring.createWeight(1), q0);
+		tklist[1] = new TreeKeeper2(cNode, semiring.createWeight(2), q1);
+		config = new Configuration<>(new int[tklist.length], tklist.length, null);
+		config.setWeight(semiring.createWeight(3));
+		config.setValues(tklist);
+	}
+	
+	private void init1b() {
+		init();
+
+		eNode.addChild(aNode);
+
+		fNode.addChild(aNode);
+		fNode.addChild(n0);
+		fNode.addChild(cNode);
+		fNode.addChild(eNode);
+		fNode.addChild(n1);
 
 		tklist = new TreeKeeper2[rule.getNumberOfStates()];
 		tklist[0] = new TreeKeeper2(eNode, semiring.createWeight(1), q0);
@@ -113,11 +132,19 @@ public class RuleTest {
 	}
 
 	@Test
-	public void testRuleApplication1() {
-		init1();
+	public void testRuleApplication1a() {
+		init1a();
 		TreeKeeper2 result = rule.apply(config);
 		String resString = result.getTree().toString();
 		assertEquals("f[a, e[a], c, c, e[a]]", resString);
+	}
+	
+	@Test
+	public void testRuleApplication1b() {
+		init1b();
+		TreeKeeper2 result = rule.apply(config);
+		String resString = result.getTree().toString();
+		assertEquals("f[a, e[a], c, e[a], c]", resString);
 	}
 
 	@Test
@@ -138,7 +165,7 @@ public class RuleTest {
 
 	@Test
 	public void testApplicationWeight() {
-		init1();
+		init1a();
 		TreeKeeper2 result = rule.apply(config);
 		Weight resWeight = semiring.createWeight(3.5);
 		assertEquals(resWeight, result.getRunWeight());
@@ -146,7 +173,7 @@ public class RuleTest {
 
 	@Test
 	public void testFinalState() {
-		init1();
+		init1a();
 		TreeKeeper2 result = rule.apply(config);
 		assertEquals(resState, result.getResultingState());
 	}
