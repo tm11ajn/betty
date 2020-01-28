@@ -35,20 +35,17 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class RuleQueue {
 	
-	private ResultConnector resultConnector; // Måste innehålla rätt index också, antingen en post per index eller en lista per post
+	private ResultConnector resultConnector;
 	private BinaryHeap<RuleKeeper, Weight> queue;
-//	private ArrayList<BinaryHeap<RuleKeeper, Weight>.Node> queueElements;
 	private BinaryHeap<RuleKeeper, Weight>.Node[] queueElems;
 	int limit;
 
 	@SuppressWarnings("unchecked")
 	public RuleQueue(int limit, WTA wta) {
 		this.queue = new BinaryHeap<>();
-//		this.queueElements = new ArrayList<>(wta.getRuleCount());
 		this.queueElems = new BinaryHeap.Node[wta.getRuleCount()];
 		this.limit = limit;
-		this.resultConnector = new ResultConnector(wta.getStateCount(), 
-				limit, wta.getRules());
+		this.resultConnector = new ResultConnector(wta, limit);
 
 		for (Rule r : wta.getSourceRules()) {
 			initialiseRuleElement(r);
@@ -61,7 +58,6 @@ public class RuleQueue {
 		Configuration<TreeKeeper2> startConfig = ladder.getStartConfig();
 		resultConnector.makeConnections(startConfig);
 		BinaryHeap<RuleKeeper, Weight>.Node elem = queue.createNode(keeper);
-//		queueElements.set(r.getID(), elem);
 		queueElems[r.getID()] = elem;
 
 		if (ladder.hasNext()) {
@@ -80,7 +76,6 @@ public class RuleQueue {
 		 * and add them to the queue as well. */
 		if (unseenState) {
 			for (Rule r : resState.getOutgoing()) {
-//				if (queueElements.get(r.getID()) == null) {
 				if (queueElems[r.getID()] == null) {
 					initialiseRuleElement(r);
 				} 
@@ -95,7 +90,6 @@ public class RuleQueue {
 		
 		/* Then update the corresponding rulekeepers. */
 		for (Integer index : toUpdate) {
-//			BinaryHeap<RuleKeeper, Weight>.Node elem = queueElements.get(index);
 			BinaryHeap<RuleKeeper, Weight>.Node elem = queueElems[index];
 			RuleKeeper rk = elem.getObject();
 			Rule rule = rk.getRule();

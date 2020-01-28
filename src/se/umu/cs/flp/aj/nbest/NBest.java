@@ -150,7 +150,7 @@ public class NBest {
 		System.out.println("Pre-computing smallest completions...");
 		startTime = System.nanoTime();
 		Weight[] smallestCompletions =
-				KnuthBestDerivations.getBestDerivations(wta);
+				KnuthBestDerivations.getBestContexts(wta);
 		List<String> result = new LinkedList<>();
 		endTime = System.nanoTime();
 		duration = (endTime - startTime)/1000000;

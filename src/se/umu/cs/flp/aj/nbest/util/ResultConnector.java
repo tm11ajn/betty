@@ -6,46 +6,25 @@ import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
+import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class ResultConnector {
 	private TreeKeeper2[][] results;
 	private int[] resCount;
 	private int[][] connections;
-	private ArrayList<ArrayList<ConfigStateIndexPair>> configLists;
+	private ArrayList<ArrayList<Configuration<TreeKeeper2>>> configLists;
 	private ArrayList<Rule> rules;
-	
-	/*
-	 * TODO: Enqueue only configurations if it turns out that the 
-	 * state index is never needed.
-	 */
-	private class ConfigStateIndexPair {
-		Configuration<TreeKeeper2> config;
-		int state;
-		
-		public ConfigStateIndexPair(Configuration<TreeKeeper2> config, 
-				int state) {
-			this.config = config;
-			this.state = state;
-		}
-		
-		public Configuration<TreeKeeper2> getConfig() {
-			return config;
-		}
-		
-		public int getStateIndex() {
-			return state;
-		}	
-	}
+	private WTA wta;
 
-	public ResultConnector(int stateCount, int maxResults, 
-			ArrayList<Rule> rules) {
+	public ResultConnector(WTA wta, int maxResults) {
+		int stateCount = wta.getStateCount();
 		results = new TreeKeeper2[stateCount + 1][maxResults];
 		resCount = new int[stateCount + 1];
 		connections = new int[stateCount + 1][maxResults];
 		configLists = new ArrayList<>();
 		configLists.add(new ArrayList<>()); // Start from 1
-		this.rules = rules;
-//		this.maxResults = maxResults;
+		rules = wta.getRules();
+		this.wta = wta;
 	}
 
 	public boolean makeConnections(Configuration<TreeKeeper2> config) {
@@ -66,8 +45,7 @@ public class ResultConnector {
 					configLists.add(new ArrayList<>());
 				}
 				
-				configLists.get(configIndex).add(
-						new ConfigStateIndexPair(config, i));
+				configLists.get(configIndex).add(config);
 				missingElements++;
 			}
 		}
@@ -77,22 +55,16 @@ public class ResultConnector {
 		return activated;
 	}
 
-	/*
-	 * TODO: Return a list of ID's of rules that need updates in 
-	 * the rule queue after this?
-	 */
+	/* Adds and propagates a result, and returns a list of ID's of rules 
+	 * that have updated as a result of the propagation. */
 	public ArrayList<Integer> addResult(int stateIndex, TreeKeeper2 result) {
 		int resultIndex = resCount[stateIndex];
-//		if (resultIndex >= maxResults) {
-//			return new ArrayList<>();
-//		}
 		results[stateIndex][resultIndex] = result;
 		resCount[stateIndex] += 1;
 		int configIndex = connections[stateIndex][resultIndex];
 		ArrayList<Integer> needUpdate = new ArrayList<Integer>();
 
-		for (ConfigStateIndexPair csi : configLists.get(configIndex)) {
-			Configuration<TreeKeeper2> config = csi.getConfig();
+		for (Configuration<TreeKeeper2> config : configLists.get(configIndex)) {
 			config.decreaseLeftToValuesBy(1);
 			boolean wasReady = activateConfigIfReady(config);
 			if (wasReady) {
@@ -111,7 +83,7 @@ public class ResultConnector {
 		if (config.getLeftToValues() == 0) {
 			TreeKeeper2[] result = extractResult(config);
 			int size = config.getSize();
-			Weight weight = rules.get(config.getOrigin().getID()).getWeight().one(); // Default value for leaf rules
+			Weight weight = wta.getSemiring().one(); // Default value for leaf rules
 			
 			for (int i = 0; i < size; i++) {
 				TreeKeeper2 t1 = result[i];
