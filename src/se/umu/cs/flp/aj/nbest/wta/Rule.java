@@ -55,13 +55,13 @@ public class Rule extends Hypergraph.Edge<State> {
 		}
 	}
 
-//	public TreeKeeper2 apply(ArrayList<TreeKeeper2> tklist) {
+//	public TreeKeeper2 apply(TreeKeeper2[] tklist) {
 //		Node t = tree;
 //		Weight treeWeight = this.weight;
-//		Node newTree = buildTree(t, tklist, 0);
+//		Node newTree = buildTree(t, tklist);
 //
 //		for (int i = 0; i < rank; i++) {
-//			treeWeight = treeWeight.mult(tklist.get(i).getRunWeight());
+//			treeWeight = treeWeight.mult(tklist[i].getRunWeight());
 //		}
 //
 //		return new TreeKeeper2(newTree, treeWeight, resultingState);

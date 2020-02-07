@@ -30,6 +30,10 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 			return weight;
 		}
 		
+		public void setWeight(W weight) {
+			this.weight = weight;
+		}
+		
 		public boolean isEnqueued() {
 			return enqueued;
 		}
@@ -78,9 +82,27 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 		return newNode;
 	}
 	
+	public Node addUnordered(O object, W weight) {
+		Node newNode = new Node(object, weight);
+		int addedIndex = getLastIndex() + 1;
+		nodes.add(newNode);
+		newNode.index = addedIndex;
+		newNode.enqueued = true;
+		return newNode;
+	}
+	
 	public Node createNode(O object) {
 		Node newNode = new Node(object, null);
 		return newNode;
+	}
+	
+	public Node insertUnordered(Node node, W weight) {
+		node.weight = weight;
+		int addedIndex = getLastIndex() + 1;
+		nodes.add(node);
+		node.index = addedIndex;
+		node.enqueued = true;
+		return node;
 	}
 	
 	public Node insert(Node node, W weight) {
@@ -91,6 +113,12 @@ public class BinaryHeap<O, W extends Comparable<W>> {
 		node.enqueued = true;
 		heapifyUp(addedIndex);
 		return node;
+	}
+	
+	public void makeHeap() {
+		for (int i = getParentIndexOf(getLastIndex()); i >= firstPosition; i--) {
+			heapifyDown(i);
+		}
 	}
 
 	public void decreaseWeight(Node node, W newWeight) {

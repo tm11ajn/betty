@@ -36,10 +36,23 @@ public class KnuthBestDerivations {
 		int usableSize = 0;
 
 		for (Rule r : wta.getSourceRules()) {
-			usableRules.add(r);
 			ruleWeights[r.getID()] = r.getWeight();
-			usableSize++;
+			State resState = r.getResultingState();
+			BinaryHeap<State, Weight>.Node element = qElems[resState.getID()];
+			
+			if (element == null) {
+				element = queue.createNode(resState);
+				qElems[resState.getID()] = element;
+			}
+			
+			if (!element.isEnqueued()) {
+				queue.insertUnordered(element, r.getWeight());
+			} else if (element.getWeight().compareTo(r.getWeight()) > 0) {
+				element.setWeight(r.getWeight());
+			}
 		}
+		
+		queue.makeHeap();
 
 		while (nOfDefined < nOfStates) {
 			for (int i = usableStart; i < usableSize; i++) {

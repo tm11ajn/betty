@@ -21,6 +21,7 @@
 package se.umu.cs.flp.aj.nbest.helpers;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import se.umu.cs.flp.aj.heap.BinaryHeap;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -46,10 +47,28 @@ public class RuleQueue {
 		this.queueElems = new BinaryHeap.Node[wta.getRuleCount()];
 		this.limit = limit;
 		this.resultConnector = new ResultConnector(wta, limit);
+		initialiseLeafRuleElements(wta.getSourceRules());
 
-		for (Rule r : wta.getSourceRules()) {
-			initialiseRuleElement(r);
+//		for (Rule r : wta.getSourceRules()) {
+//			initialiseRuleElement(r);
+//		}
+	}
+	
+	private void initialiseLeafRuleElements(LinkedList<Rule> leafRules) {
+		
+		for (Rule r : leafRules) {
+			RuleKeeper keeper = new RuleKeeper(r, limit);
+			LazyLimitedLadderQueue<TreeKeeper2> ladder = keeper.getLadderQueue();
+			Configuration<TreeKeeper2> startConfig = ladder.getStartConfig();
+			resultConnector.makeConnections(startConfig);
+			BinaryHeap<RuleKeeper, Weight>.Node elem = queue.createNode(keeper);
+			queueElems[r.getID()] = elem;
+			Configuration<TreeKeeper2> config = ladder.peek();
+			keeper.setBestTree(r.apply(config));
+			queue.insertUnordered(elem, keeper.getBestTree().getDeltaWeight());
 		}
+		
+		queue.makeHeap();
 	}
 	
 	private void initialiseRuleElement(Rule r) {
@@ -69,8 +88,7 @@ public class RuleQueue {
 
 	public void expandWith(TreeKeeper2 newTree) {
 		State resState = newTree.getResultingState();
-		boolean unseenState = 
-				(resultConnector.getResult(resState.getID(),  0) == null);
+		boolean unseenState = resultConnector.isUnseen(resState.getID());
 		
 		/* Create rulekeepers for the rules that we have not yet seen
 		 * and add them to the queue as well. */

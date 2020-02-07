@@ -32,6 +32,22 @@ public class BinaryHeapTest {
 		heap.add("korv", s.createWeight(0.02));
 		assertThat(heap.dequeue().getWeight(), is(s.createWeight(0.02)));
 	}
+	
+	@Test
+	public void shouldDequeueCorrectObjectForTenUnorderedElementsAfterMakeHeap() {
+		heap.addUnordered("korv9", s.createWeight(0.10));
+		heap.addUnordered("korv7", s.createWeight(0.08));
+		heap.addUnordered("korv6", s.createWeight(0.07));
+		heap.addUnordered("korv4", s.createWeight(0.05));
+		heap.addUnordered("korv3", s.createWeight(0.04));
+		heap.addUnordered("korv2", s.createWeight(0.03));
+		heap.addUnordered("korv1", s.createWeight(0.02));
+		heap.addUnordered("korv0", s.createWeight(0.01));
+		heap.addUnordered("korv5", s.createWeight(0.06));
+		heap.addUnordered("korv8", s.createWeight(0.09));
+		heap.makeHeap();
+		assertThat(heap.dequeue().getObject(), is("korv0"));
+	}
 
 	@Test
 	public void shouldDequeueCorrectObjectForTenElements() {

@@ -9,18 +9,19 @@ import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class ResultConnector {
-	private TreeKeeper2[][] results;
+	private ArrayList<TreeKeeper2>[] results;
 	private int[] resCount;
-	private int[][] connections;
+	private int[] connections;
 	private ArrayList<ArrayList<Configuration<TreeKeeper2>>> configLists;
 	private ArrayList<Rule> rules;
 	private WTA wta;
 
+	@SuppressWarnings("unchecked")
 	public ResultConnector(WTA wta, int maxResults) {
 		int stateCount = wta.getStateCount();
-		results = new TreeKeeper2[stateCount + 1][maxResults];
+		results = new ArrayList[stateCount + 1];
 		resCount = new int[stateCount + 1];
-		connections = new int[stateCount + 1][maxResults];
+		connections = new int[stateCount + 1];
 		configLists = new ArrayList<>();
 		configLists.add(new ArrayList<>()); // Start from 1
 		rules = wta.getRules();
@@ -37,13 +38,19 @@ public class ResultConnector {
 			int currentState = rule.getStates().get(i).getID();
 
 			if (indices[i] >= resCount[currentState]) {
-				int configIndex = connections[currentState][indices[i]];
+//				int configIndex = connections[currentState][indices[i]];
+				int configIndex = connections[currentState];
 				
 				if (configIndex == 0) {
 					configIndex = configLists.size();
-					connections[currentState][indices[i]] = configIndex;
+//					connections[currentState][indices[i]] = configIndex;
+					connections[currentState] = configIndex;
 					configLists.add(new ArrayList<>());
-				}
+				} 
+				
+//				if (configLists.get(configIndex) == null) {
+//					configLists.set(configIndex, new ArrayList<>());
+//				}
 				
 				configLists.get(configIndex).add(config);
 				missingElements++;
@@ -58,10 +65,17 @@ public class ResultConnector {
 	/* Adds and propagates a result, and returns a list of ID's of rules 
 	 * that have updated as a result of the propagation. */
 	public ArrayList<Integer> addResult(int stateIndex, TreeKeeper2 result) {
-		int resultIndex = resCount[stateIndex];
-		results[stateIndex][resultIndex] = result;
+//		int resultIndex = resCount[stateIndex];
+//		results[stateIndex][resultIndex] = result;
+		
+		if (results[stateIndex] == null) {
+			results[stateIndex] = new ArrayList<>();
+		}
+		results[stateIndex].add(result);
+		
 		resCount[stateIndex] += 1;
-		int configIndex = connections[stateIndex][resultIndex];
+//		int configIndex = connections[stateIndex][resultIndex];
+		int configIndex = connections[stateIndex];
 		ArrayList<Integer> needUpdate = new ArrayList<Integer>();
 
 		for (Configuration<TreeKeeper2> config : configLists.get(configIndex)) {
@@ -72,6 +86,7 @@ public class ResultConnector {
 			}
 		}
 		
+		configLists.set(configIndex, new ArrayList<>());
 		return needUpdate;
 	}
 	
@@ -107,7 +122,7 @@ public class ResultConnector {
 		TreeKeeper2[] result = new TreeKeeper2[size];
 
 		for (int i = 0; i < size; i++) {
-			result[i] = results[rule.getStates().get(i).getID()][indexList[i]];
+			result[i] = results[rule.getStates().get(i).getID()].get(indexList[i]);
 		}
 
 		return result;
@@ -115,7 +130,11 @@ public class ResultConnector {
 
 
 	public TreeKeeper2 getResult(int stateIndex, int resultIndex) {
-		return results[stateIndex][resultIndex];
+		return results[stateIndex].get(resultIndex);
+	}
+	
+	public boolean isUnseen(int stateIndex) {
+		return results[stateIndex] == null;
 	}
 	
 }

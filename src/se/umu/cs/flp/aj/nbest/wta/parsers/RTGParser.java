@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -28,7 +29,8 @@ public class RTGParser implements Parser {
 
 	private boolean forDerivations;
 	private int ruleCounter;
-	private ArrayList<Rule> tempRules;
+//	private ArrayList<Rule> tempRules;
+	private HashMap<State, ArrayList<Rule>> tempRules;
 
 	private WTA wta;
 
@@ -37,7 +39,8 @@ public class RTGParser implements Parser {
 		this.hasFinalState = false;
 		this.ruleCounter = 0;
 		this.forDerivations = false;
-		tempRules = new ArrayList<>();
+//		tempRules = new ArrayList<>();
+		tempRules = new HashMap<>();
 	}
 
 	public WTA parseForBestTrees(String fileName) {
@@ -51,7 +54,8 @@ public class RTGParser implements Parser {
 	}
 
 	private WTA parse(String fileName) {
-		tempRules = new ArrayList<>();
+//		tempRules = new ArrayList<>();
+		tempRules = new HashMap<>();
 		wta = new WTA(semiring, true);
 		int rowCounter = 1;
 
@@ -59,21 +63,38 @@ public class RTGParser implements Parser {
 			String line;
 
 			try {
+				
+				// TODO: change this so that we only collect nonterminals the first round and save
+				// the lines in a hashmap in which the key is the resulting state, and then 
+				// we traverse them and create the elements the second time around
 
 				while ((line = br.readLine()) != null) {
 					parseLine(line);
 					rowCounter++;
 				}
 
-				for (Rule r : tempRules) {
-					ArrayList<Node> leaves = r.getTree().getLeaves();
+//				for (Rule r : tempRules) {
+//					ArrayList<Node> leaves = r.getTree().getLeaves();
+//
+//					for (Node leaf : leaves) {
+//						if (leaf.getLabel().isNonterminal()) {
+//							r.addState(wta.addState(leaf.getLabel().getLabel()));
+//						}
+//					}
+//					wta.addRule(r);
+//				}
+				
+				for (ArrayList<Rule> list : tempRules.values()) {
+					for (Rule r : list) {
+						ArrayList<Node> leaves = r.getTree().getLeaves();
 
-					for (Node leaf : leaves) {
-						if (leaf.getLabel().isNonterminal()) {
-							r.addState(wta.addState(leaf.getLabel().getLabel()));
+						for (Node leaf : leaves) {
+							if (leaf.getLabel().isNonterminal()) {
+								r.addState(wta.addState(leaf.getLabel().getLabel()));
+							}
 						}
+						wta.addRule(r);
 					}
-					wta.addRule(r);
 				}
 
 			} catch (SymbolUsageException e) {
@@ -152,7 +173,15 @@ public class RTGParser implements Parser {
 			Rule newRule = new Rule(tree, weight,
 					resultingState);
 
-			tempRules.add(newRule);
+			
+//			tempRules.add(newRule);
+			
+			if (tempRules.get(resultingState) == null) {
+				tempRules.put(resultingState, new ArrayList<>());
+			}
+			
+			tempRules.get(resultingState).add(newRule);
+			
 			ruleCounter++;
 		}
 	}
