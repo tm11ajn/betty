@@ -39,13 +39,6 @@ public class BestTrees2 {
 	private static HashMap<State, HashMap<Node, Node>> seenTrees;
 	private static RuleQueue ruleQueue;
 
-//	public static void setSmallestCompletions(
-//			HashMap<State, Weight> smallestCompletions) {
-//	public static void setSmallestCompletions(Weight[] smallestCompletions) {
-//		TreeKeeper2.init(smallestCompletions);
-//	}
-
-
 	public static List<String> run(WTA wta, int N, 
 			Weight[] smallestCompletions) {
 		TreeKeeper2.init(smallestCompletions);
@@ -53,27 +46,25 @@ public class BestTrees2 {
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();
 
-		// T <- empty. K <- empty
+		// T <- empty. 
 		outputtedTrees = new HashMap<>();
 		seenTrees = new HashMap<>();
-//		ruleQueue = new RuleQueue(N, wta.getSourceRules(), wta.getRuleCount());
 		
-		// Initialise by enqueuing rules without states
+		// K <- empty
+		/* Initialises implicitly by enqueuing rules without states. */
 		ruleQueue = new RuleQueue(N, wta);
 
 		// i <- 0
 		int foundTrees = 0;
 
-//System.out.println("Main: START OF MAIN LOOP");
 		// while i < N and K nonempty do
 		while (foundTrees < N && !ruleQueue.isEmpty()) {
 			
 			// t <- dequeue(K)
 			TreeKeeper2 currentTree = ruleQueue.nextTree();
-//System.out.println("Main: Current tree: " + currentTree);
 
-			// If there are no more derivations with a non-infinity weight,
-			// we end the search.
+			/* If there are no more derivations with a non-infinity weight,
+			 * we end the search. */
 			if (currentTree.getDeltaWeight().compareTo(
 					wta.getSemiring().zero()) >= 0) {
 				break;
@@ -82,7 +73,6 @@ public class BestTrees2 {
 			if (!outputtedTrees.containsKey(currentTree.getTree())) {
 
 				if (currentTree.getResultingState().isFinal()) {
-//System.out.println("Main: resState final");
 					String outputString = "";
 
 					if (wta.isGrammar()) {
@@ -91,18 +81,11 @@ public class BestTrees2 {
 						outputString = currentTree.getTree().toWTAString();
 					}
 
-//					if (forDerivations) {
-//						outputString = outputString.replaceAll("//rule[0-9]*", "");
-//					}
-
 					outputString += (" # " +
 								currentTree.getRunWeight().toString());
 
 					// output(t)
 					nBest.add(outputString);
-//					nBest.add(currentTree);
-
-//System.out.println("OUTPUT " + currentTree);
 					outputtedTrees.put(currentTree.getTree(), null);
 					foundTrees++;
 				}
@@ -120,12 +103,7 @@ public class BestTrees2 {
 
 				// Expand search space with current tree
 				if (foundTrees < N) {
-//System.out.println("Main: expand with: " + currentTree);
-//System.out.println("Found trees: " + foundTrees);
-//System.out.println("ruleQueue size before: " + ruleQueue.size());
 					ruleQueue.expandWith(currentTree);
-//System.out.println("ruleQueue size after: " + ruleQueue.size()); 
-// TODO: same as before for Main: expand with: Tree: \$.[.] RunWeight: .065691 Delta weight: 78.086873 Resulting state: .[21,21]_._\$., debug
 				}
 
 				temp.put(currentTree.getTree(), null);

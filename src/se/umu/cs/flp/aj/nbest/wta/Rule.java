@@ -21,8 +21,6 @@
 package se.umu.cs.flp.aj.nbest.wta;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
@@ -30,16 +28,12 @@ import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.util.Hypergraph;
 
 public class Rule extends Hypergraph.Edge<State> {
-
+	
 	private Weight weight;
 	private int rank = 0;
 	private Node tree;
-
 	private ArrayList<State> states = new ArrayList<>();
-	private HashMap<State, ArrayList<Integer>> stateMap = new HashMap<>();
-
 	private State resultingState;
-	
 	private int nonTermIndex = 0;
 
 	public Rule(Node tree, Weight weight,
@@ -54,19 +48,8 @@ public class Rule extends Hypergraph.Edge<State> {
 			addState(state);
 		}
 	}
-
-//	public TreeKeeper2 apply(TreeKeeper2[] tklist) {
-//		Node t = tree;
-//		Weight treeWeight = this.weight;
-//		Node newTree = buildTree(t, tklist);
-//
-//		for (int i = 0; i < rank; i++) {
-//			treeWeight = treeWeight.mult(tklist[i].getRunWeight());
-//		}
-//
-//		return new TreeKeeper2(newTree, treeWeight, resultingState);
-//	}
 	
+	/* Applies this rule to the input list of trees. */
 	public TreeKeeper2 apply(Configuration<TreeKeeper2> config) {
 		TreeKeeper2 result = null; 
 		Node t = tree;
@@ -79,6 +62,9 @@ public class Rule extends Hypergraph.Edge<State> {
 		return result;
 	}
 
+	/* Recursively builds the tree by combining the input list of trees
+	 * in the by this rule specified manner. 
+	 * Requires nonTermIndex to be set to zero beforehand. */
 	private Node buildTree(Node t, TreeKeeper2[] tklist) {
 
 		if (t.getChildCount() == 0) {
@@ -108,16 +94,7 @@ public class Rule extends Hypergraph.Edge<State> {
 
 	public void addState(State state) {
 		this.states.add(state);
-		addToStateMap(state, rank);
 		rank++;
-	}
-
-	private void addToStateMap(State state, int index) {
-		if (!this.stateMap.containsKey(state)) {
-			this.stateMap.put(state, new ArrayList<>());
-		}
-
-		this.stateMap.get(state).add(index);
 	}
 
 	public Node getTree() {
@@ -129,12 +106,7 @@ public class Rule extends Hypergraph.Edge<State> {
 	}
 
 	public int getNumberOfStates() {
-//		return states.size();
 		return rank;
-	}
-
-	public boolean hasState(State state) {
-		return stateMap.containsKey(state);
 	}
 
 	public State getResultingState() {
@@ -143,10 +115,6 @@ public class Rule extends Hypergraph.Edge<State> {
 
 	public ArrayList<State> getStates() {
 		return states;
-	}
-
-	public ArrayList<Integer> getIndexOfState(State state) {
-		return stateMap.get(state);
 	}
 
 	@Override
@@ -193,8 +161,7 @@ public class Rule extends Hypergraph.Edge<State> {
 
 	@Override
 	public String toString() {
-//		return toWTAString();
-		return toRTGString();
+		return toWTAString();
 	}
 
 }

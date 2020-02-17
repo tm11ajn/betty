@@ -26,10 +26,7 @@ import java.util.PriorityQueue;
 
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 
-/*
- * TODO: Rename to LimitedLadderQueue or just LadderQueue
- */
-public class LazyLimitedLadderQueue<V extends Comparable<V>> {
+public class LadderQueue<V extends Comparable<V>> {
 	
 	private int id;
 	private int rank;
@@ -38,7 +35,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 	private Object[] seenConfigurations;
 	private int dequeueCounter;
 
-	public LazyLimitedLadderQueue(int id, int rank,
+	public LadderQueue(int id, int rank,
 			Comparator<Configuration<V>> comparator,
 			int limit) {
 		this.id = id;
@@ -49,6 +46,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		this.dequeueCounter = 0;
 	}
 	
+	/* Uses a tree structure to check if a config has already been seen. */
 	private boolean isSeen(Configuration<V> config) {
 		boolean answer = true;
 		int[] indices = config.getIndices();
@@ -104,6 +102,8 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		return configQueue.peek();
 	}
 
+	/* 'Counts up' the input config to achieve the configs that can follow 
+	 * this one.  */
 	public ArrayList<Configuration<V>> getNextConfigs(Configuration<V> config) {
 		
 		/* Return an empty list if we have already dequeued all we are allowed*/
@@ -137,6 +137,7 @@ public class LazyLimitedLadderQueue<V extends Comparable<V>> {
 		return newConfigs;
 	}
 	
+	/* The starting config is always a zero valued array. */
 	public Configuration<V> getStartConfig() {
 		return new Configuration<>(new int[rank], rank, this); 
 	}

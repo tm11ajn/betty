@@ -28,7 +28,7 @@ import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 import se.umu.cs.flp.aj.nbest.treedata.RuleKeeper;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
-import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue;
+import se.umu.cs.flp.aj.nbest.util.LadderQueue;
 import se.umu.cs.flp.aj.nbest.util.ResultConnector;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
@@ -48,17 +48,15 @@ public class RuleQueue {
 		this.limit = limit;
 		this.resultConnector = new ResultConnector(wta, limit);
 		initialiseLeafRuleElements(wta.getSourceRules());
-
-//		for (Rule r : wta.getSourceRules()) {
-//			initialiseRuleElement(r);
-//		}
 	}
 	
+	/* Method that initialises the rule queue. It is only a separate method
+	 * so that we can use makeheap to get a linear performance of the 
+	 * initialisation instead of a n log n one. */
 	private void initialiseLeafRuleElements(LinkedList<Rule> leafRules) {
-		
 		for (Rule r : leafRules) {
 			RuleKeeper keeper = new RuleKeeper(r, limit);
-			LazyLimitedLadderQueue<TreeKeeper2> ladder = keeper.getLadderQueue();
+			LadderQueue<TreeKeeper2> ladder = keeper.getLadderQueue();
 			Configuration<TreeKeeper2> startConfig = ladder.getStartConfig();
 			resultConnector.makeConnections(startConfig);
 			BinaryHeap<RuleKeeper, Weight>.Node elem = queue.createNode(keeper);
@@ -71,9 +69,11 @@ public class RuleQueue {
 		queue.makeHeap();
 	}
 	
+	/* Initialises a never before seen rule: gives it a queue element etc. 
+	 * Finally adds it to the queue if it has a next config. */ 
 	private void initialiseRuleElement(Rule r) {
 		RuleKeeper keeper = new RuleKeeper(r, limit);
-		LazyLimitedLadderQueue<TreeKeeper2> ladder = keeper.getLadderQueue();
+		LadderQueue<TreeKeeper2> ladder = keeper.getLadderQueue();
 		Configuration<TreeKeeper2> startConfig = ladder.getStartConfig();
 		resultConnector.makeConnections(startConfig);
 		BinaryHeap<RuleKeeper, Weight>.Node elem = queue.createNode(keeper);
@@ -112,7 +112,7 @@ public class RuleQueue {
 			RuleKeeper rk = elem.getObject();
 			Rule rule = rk.getRule();
 			TreeKeeper2 currentBest = rk.getBestTree();
-			LazyLimitedLadderQueue<TreeKeeper2> ladder = rk.getLadderQueue();
+			LadderQueue<TreeKeeper2> ladder = rk.getLadderQueue();
 			Configuration<TreeKeeper2> config = ladder.peek();
 			
 			if (elem.isEnqueued()) {
@@ -131,7 +131,10 @@ public class RuleQueue {
 			}
 		}
 	}
-
+	
+	/* Returns the next tree in the queue. The configuration corresponding to
+	 * the dequeued tree is used as a base for finding the next possible 
+	 * configurations for that particular rule. */
 	public TreeKeeper2 nextTree() {
 		
 		/* Dequeue the next tree. */
@@ -139,7 +142,7 @@ public class RuleQueue {
 		RuleKeeper ruleKeeper = elem.getObject();
 		TreeKeeper2 nextTree = ruleKeeper.getBestTree();
 		ruleKeeper.setBestTree(null);
-		LazyLimitedLadderQueue<TreeKeeper2> ladder = ruleKeeper.getLadderQueue();
+		LadderQueue<TreeKeeper2> ladder = ruleKeeper.getLadderQueue();
 		Configuration<TreeKeeper2> config = ladder.dequeue();
 		
 		/* Add the new configs to the process. */

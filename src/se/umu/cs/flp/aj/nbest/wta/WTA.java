@@ -119,7 +119,6 @@ public class WTA {
 	}
 
 	public void addRule(Rule rule) throws DuplicateRuleException {
-//System.out.println("Adding rule " + rule);
 		rules.add(rule);
 		ArrayList<State> states = rule.getStates();
 		HashMap<State, State> nonDuplicateStates = new HashMap<>();
@@ -135,17 +134,7 @@ public class WTA {
 		}
 
 		transitionFunction.addEdge(rule, rule.getResultingState(), states);
-//System.out.println("Rule count: " + this.getRuleCount());
 	}
-
-//	public void removeRule(Rule rule) {
-//		transitionFunction.removeEdge(rule);
-//	}
-//
-//	public void removeState(State state) {
-//		transitionFunction.removeNode(state);
-//		states.remove(state.toString());
-//	}
 
 	public int getStateCount() {
 		return transitionFunction.getNodeCount() - 1;
@@ -169,7 +158,7 @@ public class WTA {
 
 		string += "\n";
 		string += "Ranked alphabet: " + rankedAlphabet + "\n";
-		string += "Transition function: \n"; //+ printTransitionFunction();
+		string += "Transition function: \n" + printTransitionFunction();
 		string += "Final states: ";
 
 		for (State s : finalStates) {
@@ -179,14 +168,14 @@ public class WTA {
 		return string;
 	}
 
-//	public String printTransitionFunction() {
-//		ArrayList<Rule> rules = getRules();
-//		String string = "";
-//
-//		for (Rule r : rules) {
-//			string += r + "\n";
-//		}
-//
-//		return string;
-//	}
+	public String printTransitionFunction() {
+		ArrayList<Rule> rules = getRules();
+		String string = "";
+
+		for (Rule r : rules) {
+			string += r + "\n";
+		}
+
+		return string;
+	}
 }

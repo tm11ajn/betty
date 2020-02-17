@@ -1,19 +1,18 @@
 package se.umu.cs.flp.aj.nbest.treedata;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue;
+import se.umu.cs.flp.aj.nbest.util.LadderQueue;
 
 public class Configuration<T extends Comparable<T>> {
 	private T[] values;
 	private Weight weight;
 	private int[] indices;
 	private int size;
-	private int hash;
 	private int leftToValues;
-	private LazyLimitedLadderQueue<T> origin;
+	private LadderQueue<T> origin;
 
 	public Configuration(int[] indices, int size,
-			LazyLimitedLadderQueue<T> origin) {
+			LadderQueue<T> origin) {
 		setIndices(indices, size);
 		leftToValues = size;
 		this.origin = origin;
@@ -44,7 +43,6 @@ public class Configuration<T extends Comparable<T>> {
 	}
 
 	private void setIndices(int[] indices, int size) {
-		hash = 0;
 		this.indices = indices;
 		this.size = size;
 	}
@@ -57,46 +55,8 @@ public class Configuration<T extends Comparable<T>> {
 		return size;
 	}
 
-	public LazyLimitedLadderQueue<T> getOrigin() {
+	public LadderQueue<T> getOrigin() {
 		return origin;
-	}
-
-	@Override
-	public int hashCode() {
-
-		if (hash == 0) {
-//			hash = indices.hashCode();
-
-			for (int i = 0; i < size; i++) {
-				hash = (hash + indices[i]) << 1;
-			}
-		}
-
-//System.out.println("hashcode=" + hash + " for " + this.toString());
-		return hash;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-
-		if (!(o instanceof Configuration<?>)) {
-			return false;
-		}
-
-		if (this.hash != o.hashCode()) {
-			return false;
-		}
-
-		Configuration<?> c = (Configuration<?>) o;
-
-		for (int i = 0; i < size; i++) {
-			if (this.indices[i] != c.indices[i]) {
-				return false;
-			}
-		}
-
-//		return this.indices.equals(c.indices);
-		return true;
 	}
 
 	@Override

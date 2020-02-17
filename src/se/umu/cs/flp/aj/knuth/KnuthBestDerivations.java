@@ -21,6 +21,7 @@ public class KnuthBestDerivations {
 		return computeBestContextForEachState(computeBestTreeForEachState());
 	}
 	
+	/* Compute the tree with the best weight that can reach each state. */
 	@SuppressWarnings("unchecked")
 	private static Weight[] computeBestTreeForEachState() {
 		int nOfStates = wta.getStateCount();
@@ -106,6 +107,8 @@ public class KnuthBestDerivations {
 		return defined;
 	}
 
+	/* Search and combine the previously computed trees to achieve the contexts
+	 * of best weights. */
 	@SuppressWarnings("unchecked")
 	private static Weight[] computeBestContextForEachState(Weight[] bestTreeForState) {
 		int nOfStates = wta.getStateCount();

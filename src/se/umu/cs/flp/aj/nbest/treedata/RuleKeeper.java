@@ -21,18 +21,18 @@
 package se.umu.cs.flp.aj.nbest.treedata;
 
 import se.umu.cs.flp.aj.nbest.helpers.TreeConfigurationComparator;
-import se.umu.cs.flp.aj.nbest.util.LazyLimitedLadderQueue;
+import se.umu.cs.flp.aj.nbest.util.LadderQueue;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 
 public class RuleKeeper implements Comparable<RuleKeeper> {
 
 	private Rule rule;
-	private LazyLimitedLadderQueue<TreeKeeper2> ladder;
+	private LadderQueue<TreeKeeper2> ladder;
 	private TreeKeeper2 bestTree;
 
 	public RuleKeeper(Rule rule, int limit) {
 		this.rule = rule;
-		this.ladder = new LazyLimitedLadderQueue<>(rule.getID(), 
+		this.ladder = new LadderQueue<>(rule.getID(), 
 				rule.getNumberOfStates(), 
 				new TreeConfigurationComparator(), limit);
 		this.bestTree = null;
@@ -46,7 +46,7 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 		this.bestTree = smallestTree;
 	}
 	
-	public LazyLimitedLadderQueue<TreeKeeper2> getLadderQueue() {
+	public LadderQueue<TreeKeeper2> getLadderQueue() {
 		return ladder;
 	} 
 

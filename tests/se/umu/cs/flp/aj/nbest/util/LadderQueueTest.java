@@ -34,7 +34,7 @@ import se.umu.cs.flp.aj.nbest.semiring.TropicalSemiring;
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 
 
-public class LazyLimitedLadderQueueTest {
+public class LadderQueueTest {
 
 	private static Comparator<Configuration<Integer>> comp =
 			new Comparator<Configuration<Integer>>() {
@@ -61,7 +61,7 @@ public class LazyLimitedLadderQueueTest {
 		}
 	};
 
-	private LazyLimitedLadderQueue<Integer> lq;
+	private LadderQueue<Integer> lq;
 	private int limit = 10;
 	private int defaultID = 0;
 
@@ -75,7 +75,7 @@ public class LazyLimitedLadderQueueTest {
 	}
 
 	private void init(int rank) {
-		this.lq = new LazyLimitedLadderQueue<Integer>(defaultID, rank, comp, limit);
+		this.lq = new LadderQueue<Integer>(defaultID, rank, comp, limit);
 	}
 	
 	@Test 

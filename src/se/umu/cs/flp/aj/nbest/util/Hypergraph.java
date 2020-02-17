@@ -34,25 +34,6 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 		this.edgeCount = 0;
 	}
 
-//	public void removeNode(N node) {
-//
-//		if (node.getID() != -1) {
-//			ArrayList<E> incoming = new ArrayList<>(node.getIncoming());
-//			ArrayList<E> outgoing = new ArrayList<>(node.getOutgoing());
-//
-//			for (E edge : incoming) {
-//				removeEdge(edge);
-//			}
-//
-//			for (E edge : outgoing) {
-//				removeEdge(edge);
-//			}
-//
-//			node.setID(-1);
-//			nodeCount--;
-//		}
-//	}
-
 	/* Only for testing */
 	protected void addEdge(E edge, N toNode,
 			@SuppressWarnings("unchecked") N ... fromNodes) {
@@ -66,29 +47,6 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 	}
 
 	public void addEdge(E edge, N toNode, ArrayList<N> fromNodes) {
-
-//		if (edge.getID() == -1) {
-//			edge.setID(edgeID);
-//			edgeID++;
-//			edgeCount++;
-//
-//			if (toNode.getID() == -1) {
-//				addNode(toNode);
-//			}
-//
-//			edge.setTo(toNode);
-//			toNode.addIncoming(edge);
-//
-//			for (N from : fromNodes) {
-//
-//				if (from.getID() == -1) {
-//					addNode(from);
-//				}
-//
-//				edge.addFrom(from);
-//				from.addOutgoing(edge);
-//			}
-//		}
 
 		if (toNode.unused) {
 			addNode(toNode);
@@ -110,21 +68,6 @@ public class Hypergraph<N extends Hypergraph.Node<E>,E extends Hypergraph.Edge<N
 		edge.setID(edgeCount);
 		edgeCount++;
 	}
-
-//	public void removeEdge(E edge) {
-//
-//		if (edge.getID() != -1) {
-//			N to = edge.getTo();
-//			to.removeIncoming(edge);
-//
-//			for (N from : edge.getFrom()) {
-//				from.removeOutgoing(edge);
-//			}
-//
-//			edge.setID(-1);
-//			edgeCount--;
-//		}
-//	}
 
 	public int getNodeCount() {
 		return nodeCount;

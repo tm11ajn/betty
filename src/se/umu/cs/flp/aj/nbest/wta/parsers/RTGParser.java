@@ -23,14 +23,15 @@ public class RTGParser implements Parser {
 
 	public static final String EMPTY_LINE_REGEX = "^\\s*$";
 	public static final String COMMENT_LINE_REGEX = "^//.*|^%.*";
+	public static final String SPLIT_REGEX = "(->)|[^\\\\]#";
 
 	private Semiring semiring;
 	private boolean hasFinalState;
 
 	private boolean forDerivations;
 	private int ruleCounter;
-//	private ArrayList<Rule> tempRules;
-	private HashMap<State, ArrayList<Rule>> tempRules;
+	private HashMap<String, ArrayList<String>> sortedInput;
+	private ArrayList<String> stateNames;
 
 	private WTA wta;
 
@@ -39,8 +40,8 @@ public class RTGParser implements Parser {
 		this.hasFinalState = false;
 		this.ruleCounter = 0;
 		this.forDerivations = false;
-//		tempRules = new ArrayList<>();
-		tempRules = new HashMap<>();
+		this.sortedInput = new HashMap<>();
+		this.stateNames = new ArrayList<>();
 	}
 
 	public WTA parseForBestTrees(String fileName) {
@@ -54,8 +55,6 @@ public class RTGParser implements Parser {
 	}
 
 	private WTA parse(String fileName) {
-//		tempRules = new ArrayList<>();
-		tempRules = new HashMap<>();
 		wta = new WTA(semiring, true);
 		int rowCounter = 1;
 
@@ -64,36 +63,27 @@ public class RTGParser implements Parser {
 
 			try {
 				
-				// TODO: change this so that we only collect nonterminals the first round and save
-				// the lines in a hashmap in which the key is the resulting state, and then 
-				// we traverse them and create the elements the second time around
-
+				/* Read and preprocess the file, saving the data in a hashmap
+				 * for another round of processing. The preprocessing checks
+				 * which of the strings occur in the left-hand-side and that 
+				 * are thereby states; here we also check for all errors that
+				 * can occur in the input wrt format. */
 				while ((line = br.readLine()) != null) {
-					parseLine(line);
+					preprocessLine(line);
 					rowCounter++;
 				}
-
-//				for (Rule r : tempRules) {
-//					ArrayList<Node> leaves = r.getTree().getLeaves();
-//
-//					for (Node leaf : leaves) {
-//						if (leaf.getLabel().isNonterminal()) {
-//							r.addState(wta.addState(leaf.getLabel().getLabel()));
-//						}
-//					}
-//					wta.addRule(r);
-//				}
 				
-				for (ArrayList<Rule> list : tempRules.values()) {
-					for (Rule r : list) {
-						ArrayList<Node> leaves = r.getTree().getLeaves();
-
-						for (Node leaf : leaves) {
-							if (leaf.getLabel().isNonterminal()) {
-								r.addState(wta.addState(leaf.getLabel().getLabel()));
-							}
-						}
-						wta.addRule(r);
+				/* Add the final state to the wta. */
+				String stateLabel = stateNames.get(0);
+				Symbol stateSymb = wta.addSymbol(stateLabel, 0);
+				stateSymb.setNonterminal(true);
+				wta.addState(stateLabel);
+				wta.setFinalState(stateLabel);
+				
+				/* Re-process the lines of the file and create wta. */
+				for (String stateName : stateNames) {
+					for (String inputLine : sortedInput.get(stateName)) {
+						parseLine(inputLine);
 					}
 				}
 
@@ -121,10 +111,9 @@ public class RTGParser implements Parser {
 
 		return wta;
 	}
-
-
-
-	public void parseLine(String line)
+	
+	/* Find which strings correspond to states. Moreover: catches errors. */
+	public void preprocessLine(String line)
 			throws IllegalArgumentException, SymbolUsageException,
 			DuplicateRuleException {
 
@@ -132,7 +121,6 @@ public class RTGParser implements Parser {
 				line.matches(COMMENT_LINE_REGEX)) {
 			// Ignore empty lines and comments.
 		} else if (!hasFinalState) {
-
 			if (containsParsingCharacters(line)) {
 				throw new IllegalArgumentException("Line " + line +
 						" should specify the final state but contains "
@@ -140,52 +128,64 @@ public class RTGParser implements Parser {
 			}
 
 			String stateLabel = line.trim();
-			Symbol stateSymb = wta.addSymbol(stateLabel, 0);
-			stateSymb.setNonterminal(true);
-			wta.addState(stateLabel);
-			wta.setFinalState(stateLabel);
 			hasFinalState = true;
-
+			stateNames.add(stateLabel);
+			sortedInput.put(stateLabel, new ArrayList<>());
 		} else {
-			String[] sides = line.trim().split("(->)|[^\\\\]#");
-			Weight weight = semiring.one();
-
+			String s = line.trim();
+			String[] sides = s.split(SPLIT_REGEX);
+			
 			if (sides.length < 2 || sides.length > 3) {
 				throw new IllegalArgumentException("Line " + line +
 						" contains too many or too few -> and/or #." );
-			} else if (sides.length == 3) {
-				double value = Double.parseDouble(sides[2]);
-				weight = semiring.createWeight(value);
 			}
 
 			String lhs = sides[0].trim();
-			String rhs = sides[1].trim();
 
 			if (containsParsingCharacters(lhs)) {
 				throw new IllegalArgumentException("Line " + line +
 						" has parentheses in its left-hand side.");
 			}
-
-			Node tree = buildTree(rhs, 0);
-			State resultingState = wta.addState(lhs);
-			resultingState.getLabel().setNonterminal(true);
-
-			Rule newRule = new Rule(tree, weight,
-					resultingState);
-
 			
-//			tempRules.add(newRule);
-			
-			if (tempRules.get(resultingState) == null) {
-				tempRules.put(resultingState, new ArrayList<>());
+			if (!sortedInput.containsKey(lhs)) {
+				sortedInput.put(lhs, new ArrayList<>());
+				stateNames.add(lhs);
 			}
 			
-			tempRules.get(resultingState).add(newRule);
-			
-			ruleCounter++;
+			sortedInput.get(lhs).add(line);
 		}
 	}
 
+	public void parseLine(String line)
+			throws IllegalArgumentException, SymbolUsageException,
+			DuplicateRuleException {
+		String[] sides = line.split(SPLIT_REGEX);
+		Weight weight = semiring.one();
+		double value = Double.parseDouble(sides[2]);
+		weight = semiring.createWeight(value);
+		String lhs = sides[0].trim();
+		String rhs = sides[1].trim();
+		Node tree = buildTree(rhs, 0);
+		State resultingState = wta.addState(lhs);
+		resultingState.getLabel().setNonterminal(true);
+		Rule newRule = new Rule(tree, weight, resultingState);
+		ArrayList<Node> leaves = tree.getLeaves();
+		
+		for (Node leaf : leaves) {
+			String label = leaf.getLabel().getLabel();
+			if (sortedInput.containsKey(label)) {
+				leaf.getLabel().setNonterminal(true);
+				newRule.addState(wta.addState(label));
+			}
+		}
+		
+		wta.addRule(newRule);
+		ruleCounter++;
+	}
+
+	/* Given a right-hand side, build the tree that the string represents. 
+	 * This process is done recursively, which is why we need the children
+	 * counter. */
 	private Node buildTree(String rhs, int nOfChildren)
 			throws SymbolUsageException {
 
@@ -256,6 +256,9 @@ public class RTGParser implements Parser {
 		}
 	}
 
+	/* Checks if the line contains illegal charachters, in this case
+	 * the right-hand side should not contain any characters related
+	 * to parsing. */
 	private boolean containsParsingCharacters(String line) {
 
 		if (line.matches(".*\\(.*|.*\\).*|.*[^\\\\]#.*|.*->.*")) {

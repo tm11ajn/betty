@@ -142,41 +142,29 @@ public class NBest {
 			wta = parser.parseForBestTrees(fileName);
 		}
 
-		long startTime;
-		long endTime;
 		long duration;
 		long accumulativeTime;
+		
+		Timer threadTimer = new Timer();
 
 		System.out.println("Pre-computing smallest completions...");
-		startTime = System.nanoTime();
+		threadTimer.start();
 		Weight[] smallestCompletions =
 				KnuthBestDerivations.getBestContexts(wta);
 		List<String> result = new LinkedList<>();
-		endTime = System.nanoTime();
-		duration = (endTime - startTime)/1000000;
+		duration = threadTimer.elapsed();
 		accumulativeTime = duration;
 		System.out.println("Smallest completions done (took "
 				+ duration + " milliseconds).");
-		
-//System.out.println("Smallest completions: ");
-//for (State s : wta.getStates().values()) {
-//System.out.println(s + " " + smallestCompletions[s.getID()]);
-//}
-//System.exit(1);
-
 
 		if (version.equals(RULE_QUEUE_ARG) || version.equals(ALL_ARG)) {
 			System.out.println("Running BestTrees version 2...");
-//			BestTrees2.setSmallestCompletions(smallestCompletions);
-
-			startTime = System.nanoTime();
+			threadTimer.start();
 			result = BestTrees2.run(wta, N, smallestCompletions);
-			endTime = System.nanoTime();
-
+			duration = threadTimer.elapsed();
 			printResult(result, derivations);
 
 			if (timer) {
-				duration = (endTime - startTime)/1000000;
 				accumulativeTime += duration;
 				System.out.println("BestTrees version 2 took " + duration +
 						" milliseconds");
@@ -187,14 +175,13 @@ public class NBest {
 			System.out.println("Running BestTrees version 1...");
 			BestTrees.setSmallestCompletions(smallestCompletions);
 
-			startTime = System.nanoTime();
+			threadTimer.start();
 			result = BestTrees.run(wta, N);
-			endTime = System.nanoTime();
+			duration = threadTimer.elapsed();
 
 			printResult(result, derivations);
 
 			if (timer) {
-				duration = (endTime - startTime)/1000000;
 				accumulativeTime += duration;
 				System.out.println("BestTrees version 1 took " + duration +
 						" milliseconds");

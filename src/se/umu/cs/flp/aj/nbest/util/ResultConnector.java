@@ -28,6 +28,8 @@ public class ResultConnector {
 		this.wta = wta;
 	}
 
+	/* Connects a config to the elements that it is waiting for. Activates
+	 * the config if it is not waiting for any elements. */
 	public boolean makeConnections(Configuration<TreeKeeper2> config) {
 		int[] indices = config.getIndices();
 		int size = indices.length;
@@ -38,19 +40,13 @@ public class ResultConnector {
 			int currentState = rule.getStates().get(i).getID();
 
 			if (indices[i] >= resCount[currentState]) {
-//				int configIndex = connections[currentState][indices[i]];
 				int configIndex = connections[currentState];
 				
 				if (configIndex == 0) {
 					configIndex = configLists.size();
-//					connections[currentState][indices[i]] = configIndex;
 					connections[currentState] = configIndex;
 					configLists.add(new ArrayList<>());
-				} 
-				
-//				if (configLists.get(configIndex) == null) {
-//					configLists.set(configIndex, new ArrayList<>());
-//				}
+				}
 				
 				configLists.get(configIndex).add(config);
 				missingElements++;
@@ -65,16 +61,13 @@ public class ResultConnector {
 	/* Adds and propagates a result, and returns a list of ID's of rules 
 	 * that have updated as a result of the propagation. */
 	public ArrayList<Integer> addResult(int stateIndex, TreeKeeper2 result) {
-//		int resultIndex = resCount[stateIndex];
-//		results[stateIndex][resultIndex] = result;
 		
 		if (results[stateIndex] == null) {
 			results[stateIndex] = new ArrayList<>();
 		}
+
 		results[stateIndex].add(result);
-		
 		resCount[stateIndex] += 1;
-//		int configIndex = connections[stateIndex][resultIndex];
 		int configIndex = connections[stateIndex];
 		ArrayList<Integer> needUpdate = new ArrayList<Integer>();
 
@@ -114,6 +107,7 @@ public class ResultConnector {
 		return triggersUpdate;
 	}
 
+	/* Returns the tree that corresponds to the input configuration. */
 	private TreeKeeper2[] extractResult(Configuration<TreeKeeper2> config) {
 		int[] indexList = config.getIndices();
 		int ruleIndex = config.getOrigin().getID();

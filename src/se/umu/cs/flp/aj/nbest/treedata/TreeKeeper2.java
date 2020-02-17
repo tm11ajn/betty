@@ -72,8 +72,6 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 	}
 
 	public Weight getDeltaWeight() {
-//		return runWeight.mult(smallestCompletions.get(resultingState));
-//System.out.println("Smallest completion for " + resultingState + " is " + smallestCompletions[resultingState.getID()]);
 		return runWeight.mult(smallestCompletions[resultingState.getID()]);
 	}
 
