@@ -97,7 +97,7 @@ public class BestTrees2 {
 						int resSizeForState = ruleQueue.outputForStateSize(state);
 						int coveredTrees = (int) Math.pow(resSizeForState, stateUsageCount);
 						
-						if (coveredTrees >= N) {
+						if (coveredTrees > N) {
 							state.markAsSaturated(); 
 						}
 					}
