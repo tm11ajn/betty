@@ -127,6 +127,15 @@ public class ResultConnector {
 		return results[stateIndex].get(resultIndex);
 	}
 	
+	public int getResultSize(int stateIndex) {
+		
+		if (results[stateIndex] == null) {
+			return 0;
+		}
+		
+		return results[stateIndex].size();
+	}
+	
 	public boolean isUnseen(int stateIndex) {
 		return results[stateIndex] == null;
 	}

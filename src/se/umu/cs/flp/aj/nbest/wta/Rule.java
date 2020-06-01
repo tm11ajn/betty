@@ -21,6 +21,9 @@
 package se.umu.cs.flp.aj.nbest.wta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
@@ -59,6 +62,7 @@ public class Rule extends Hypergraph.Edge<State> {
 		Node newTree = buildTree(t, tklist);
 		treeWeight = treeWeight.mult(config.getWeight());
 		result = new TreeKeeper2(newTree, treeWeight, resultingState);
+		result.setStateUsage(computeStateUsage(tklist));
 		return result;
 	}
 
@@ -90,6 +94,29 @@ public class Rule extends Hypergraph.Edge<State> {
 		}
 
 		return newTree;
+	}
+	
+	private HashMap<State, Integer> computeStateUsage(TreeKeeper2[] tklist) {
+		HashMap<State, Integer> stateUsage = new HashMap<State, Integer>();
+		
+		for (TreeKeeper2 tk: tklist) {
+			HashMap<State, Integer> currentSU = tk.getStateUsage();
+			for (Entry<State, Integer> entry : currentSU.entrySet()) {
+				if (stateUsage.containsKey(entry.getKey())) {
+					int oldValue = stateUsage.get(entry.getKey());
+					int newValue = oldValue + entry.getValue();
+					stateUsage.put(entry.getKey(), newValue);
+				} else {
+					stateUsage.put(entry.getKey(), entry.getValue());
+				}
+			}
+		}
+		
+		if (!stateUsage.containsKey(resultingState)) {
+			stateUsage.put(resultingState, 1);
+		}
+		
+		return stateUsage;
 	}
 
 	public void addState(State state) {

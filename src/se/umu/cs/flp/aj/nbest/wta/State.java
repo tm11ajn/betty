@@ -26,11 +26,13 @@ public class State extends Hypergraph.Node<Rule> implements Comparable<State> {
 
 	private Symbol label;
 	private boolean isFinal;
+	private boolean saturated;
 
 	public State(Symbol label) {
 		super();
 		this.label = label;
 		isFinal = false;
+		saturated = false;
 	}
 
 	public Symbol getLabel() {
@@ -43,6 +45,14 @@ public class State extends Hypergraph.Node<Rule> implements Comparable<State> {
 
 	public boolean isFinal() {
 		return isFinal;
+	}
+	
+	public void markAsSaturated() {
+		this.saturated = true;
+	}
+	
+	public boolean isSaturated() {
+		return saturated;
 	}
 
 	@Override

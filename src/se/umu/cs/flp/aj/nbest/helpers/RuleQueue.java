@@ -90,6 +90,11 @@ public class RuleQueue {
 		State resState = newTree.getResultingState();
 		boolean unseenState = resultConnector.isUnseen(resState.getID());
 		
+//		if (resState.isSaturated()) {
+//System.out.println("NOT EXPANDED BC OF SATURATION");
+//			return;
+//		}
+		
 		/* Create rulekeepers for the rules that we have not yet seen
 		 * and add them to the queue as well. */
 		if (unseenState) {
@@ -152,15 +157,25 @@ public class RuleQueue {
 			resultConnector.makeConnections(next);
 		}
 		
+//		State resState = ruleKeeper.getRule().getResultingState();
+//		if (resState.isSaturated()) {
+//System.out.println("SATURATEEEEEEEEEEEEED");			
+//		}
+		
 		/* Re-queue the rulekeeper if it has another element in its ladder. */
-		if (ladder.hasNext()) {
-			Configuration<TreeKeeper2> c = ruleKeeper.getLadderQueue().peek();
-			TreeKeeper2 newBest = ruleKeeper.getRule().apply(c);
-			ruleKeeper.setBestTree(newBest);
-			queue.insert(elem, newBest.getDeltaWeight());
+		if (//!resState.isSaturated() && 
+				ladder.hasNext()) {
+				Configuration<TreeKeeper2> c = ruleKeeper.getLadderQueue().peek();
+				TreeKeeper2 newBest = ruleKeeper.getRule().apply(c);				
+				ruleKeeper.setBestTree(newBest);
+				queue.insert(elem, newBest.getDeltaWeight());
 		}
 		
 		return nextTree;
+	}
+	
+	public int outputForStateSize(State state) {
+		return resultConnector.getResultSize(state.getID());
 	}
 
 	public boolean isEmpty() {

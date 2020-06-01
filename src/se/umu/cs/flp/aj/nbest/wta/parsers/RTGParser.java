@@ -161,8 +161,10 @@ public class RTGParser implements Parser {
 			DuplicateRuleException {
 		String[] sides = line.split(SPLIT_REGEX);
 		Weight weight = semiring.one();
-		double value = Double.parseDouble(sides[2]);
-		weight = semiring.createWeight(value);
+		if (sides.length > 2) {
+			double value = Double.parseDouble(sides[2]);
+			weight = semiring.createWeight(value);
+		}
 		String lhs = sides[0].trim();
 		String rhs = sides[1].trim();
 		Node tree = buildTree(rhs, 0);
