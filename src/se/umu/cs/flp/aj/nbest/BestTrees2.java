@@ -23,7 +23,6 @@ package se.umu.cs.flp.aj.nbest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import se.umu.cs.flp.aj.nbest.helpers.RuleQueue;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -87,20 +86,9 @@ public class BestTrees2 {
 
 					// output(t)
 					nBest.add(outputString);
+					currentTree.markAsOutputted();
 					outputtedTrees.put(currentTree.getTree(), null);
 					foundTrees++;
-					
-					
-					for (Entry<State, Integer> entry : currentTree.getStateUsage().entrySet()) {
-						int stateUsageCount = entry.getValue();
-						State state = entry.getKey();
-						int resSizeForState = ruleQueue.outputForStateSize(state);
-						int coveredTrees = (int) Math.pow(resSizeForState, stateUsageCount);
-						
-						if (coveredTrees > N) {
-							state.markAsSaturated(); 
-						}
-					}
 				}
 			}
 

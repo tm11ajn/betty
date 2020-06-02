@@ -62,14 +62,20 @@ public class ResultConnector {
 	 * that have updated as a result of the propagation. */
 	public ArrayList<Integer> addResult(int stateIndex, TreeKeeper2 result) {
 		
+
+		ArrayList<Integer> needUpdate = new ArrayList<Integer>();
+		
+//		if (!result.getResultingState().isSaturated()) {
+		
 		if (results[stateIndex] == null) {
 			results[stateIndex] = new ArrayList<>();
 		}
 
 		results[stateIndex].add(result);
 		resCount[stateIndex] += 1;
+
+//		}
 		int configIndex = connections[stateIndex];
-		ArrayList<Integer> needUpdate = new ArrayList<Integer>();
 
 		for (Configuration<TreeKeeper2> config : configLists.get(configIndex)) {
 			config.decreaseLeftToValuesBy(1);

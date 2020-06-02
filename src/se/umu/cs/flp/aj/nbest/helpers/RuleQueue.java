@@ -22,6 +22,7 @@ package se.umu.cs.flp.aj.nbest.helpers;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 
 import se.umu.cs.flp.aj.heap.BinaryHeap;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -94,6 +95,19 @@ public class RuleQueue {
 //System.out.println("NOT EXPANDED BC OF SATURATION");
 //			return;
 //		}
+		
+		if (newTree.hasBeenOutputted()) {
+			for (Entry<State, Integer> entry : newTree.getStateUsage().entrySet()) {
+				int stateUsageCount = entry.getValue();
+				State state = entry.getKey();
+				int resSizeForState = resultConnector.getResultSize(state.getID());
+				int coveredTrees = (int) Math.pow(resSizeForState, stateUsageCount);
+				
+				if (coveredTrees > limit) {
+					state.markAsSaturated(); 
+				}
+			}
+		}
 		
 		/* Create rulekeepers for the rules that we have not yet seen
 		 * and add them to the queue as well. */
@@ -172,10 +186,6 @@ public class RuleQueue {
 		}
 		
 		return nextTree;
-	}
-	
-	public int outputForStateSize(State state) {
-		return resultConnector.getResultSize(state.getID());
 	}
 
 	public boolean isEmpty() {
