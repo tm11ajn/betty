@@ -129,18 +129,19 @@ public class NBest {
 
 		Parser parser = null;
 		WTA wta = null;
-
+		
 		if (fileType.equals("wta")) {
 			parser = new WTAParser(semiring);
 		} else if (fileType.equals("rtg")) {
 			parser = new RTGParser(semiring);
 		}
-
-		if (derivations) {
-			wta = parser.parseForBestDerivations(fileName);
-		} else {
+		
+		// TOOD: fix so that derivations still works for the old version, or not?
+//		if (derivations) {
+//			wta = parser.parseForBestDerivations(fileName);
+//		} else {
 			wta = parser.parseForBestTrees(fileName);
-		}
+//		}
 
 		long duration;
 		long accumulativeTime;
@@ -160,7 +161,7 @@ public class NBest {
 		if (version.equals(RULE_QUEUE_ARG) || version.equals(ALL_ARG)) {
 			System.out.println("Running BestTrees version 2...");
 			threadTimer.start();
-			result = BestTrees2.run(wta, N, smallestCompletions);
+			result = BestTrees2.run(wta, N, smallestCompletions, derivations);
 			duration = threadTimer.elapsed();
 			printResult(result, derivations);
 
@@ -174,7 +175,7 @@ public class NBest {
 		if (version.equals(TREE_QUEUE_ARG) || version.equals(ALL_ARG)) {
 			System.out.println("Running BestTrees version 1...");
 			BestTrees.setSmallestCompletions(smallestCompletions);
-
+			
 			threadTimer.start();
 			result = BestTrees.run(wta, N);
 			duration = threadTimer.elapsed();

@@ -40,7 +40,7 @@ public class BestTrees2 {
 	private static RuleQueue ruleQueue;
 
 	public static List<String> run(WTA wta, int N, 
-			Weight[] smallestCompletions) {
+			Weight[] smallestCompletions, boolean derivations) {
 		TreeKeeper2.init(smallestCompletions);
 
 		/* For result. */
@@ -70,7 +70,7 @@ public class BestTrees2 {
 				break;
 			}
 
-			if (!outputtedTrees.containsKey(currentTree.getTree())) {
+			if (derivations || !outputtedTrees.containsKey(currentTree.getTree())) {
 
 				if (currentTree.getResultingState().isFinal()) {
 					String outputString = "";
@@ -99,7 +99,7 @@ public class BestTrees2 {
 				 seenTrees.put(currentTree.getResultingState(), temp);
 			 }
 
-			if (!temp.containsKey(currentTree.getTree())) {
+			if (derivations || !temp.containsKey(currentTree.getTree())) {
 
 				// Expand search space with current tree
 				if (foundTrees < N //&& !currentTree.getResultingState().isSaturated()
