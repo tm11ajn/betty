@@ -87,17 +87,22 @@ public class BestTrees2 {
 					// output(t)
 					nBest.add(outputString);
 					currentTree.markAsOutputted();
-					outputtedTrees.put(currentTree.getTree(), null);
+					if (!derivations) {
+						outputtedTrees.put(currentTree.getTree(), null);
+					}
 					foundTrees++;
 				}
 			}
 
-			 HashMap<Node, Node> temp = seenTrees.get(currentTree.getResultingState());
+			HashMap<Node, Node> temp = null;
+			if (!derivations) {
+				temp = seenTrees.get(currentTree.getResultingState());
 
-			 if (temp == null) {
-				 temp = new HashMap<>();
-				 seenTrees.put(currentTree.getResultingState(), temp);
-			 }
+				if (temp == null) {
+					temp = new HashMap<>();
+					seenTrees.put(currentTree.getResultingState(), temp);
+				}
+			}
 
 			if (derivations || !temp.containsKey(currentTree.getTree())) {
 
@@ -107,7 +112,9 @@ public class BestTrees2 {
 					ruleQueue.expandWith(currentTree);
 				}
 
+				if (!derivations) {
 				temp.put(currentTree.getTree(), null);
+				}
 			}
 		}
 
