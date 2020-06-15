@@ -22,7 +22,6 @@ package se.umu.cs.flp.aj.nbest.helpers;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 
 import se.umu.cs.flp.aj.heap.BinaryHeap;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;

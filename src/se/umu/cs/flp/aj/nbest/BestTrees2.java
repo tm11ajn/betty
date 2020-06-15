@@ -113,7 +113,7 @@ public class BestTrees2 {
 				}
 
 				if (!derivations) {
-				temp.put(currentTree.getTree(), null);
+					temp.put(currentTree.getTree(), null);
 				}
 			}
 		}

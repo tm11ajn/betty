@@ -35,13 +35,13 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 	private Weight runWeight;
 	private State resultingState;
 	private HashMap<State, Integer> stateUsage;
-	private boolean outputted;
+//	private boolean outputted;
 
 	public TreeKeeper2(Node tree, Weight treeWeight, State resultingState) {
 		this.tree = tree;
 		this.runWeight = treeWeight.duplicate();
 		this.resultingState = resultingState;
-		this.outputted = false;
+//		this.outputted = false;
 //		this.stateUsage = new HashMap<State, Integer>();
 		addStateWeight(resultingState, treeWeight);
 	}

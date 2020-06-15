@@ -137,10 +137,12 @@ public class NBest {
 		}
 		
 		// TOOD: fix so that derivations still works for the old version, or not?
+		wta = parser.parseForBestTrees(fileName);
+		
 //		if (derivations) {
 //			wta = parser.parseForBestDerivations(fileName);
 //		} else {
-			wta = parser.parseForBestTrees(fileName);
+//			wta = parser.parseForBestTrees(fileName);
 //		}
 
 		long duration;
@@ -162,6 +164,7 @@ public class NBest {
 			System.out.println("Running BestTrees version 2...");
 			threadTimer.start();
 			result = BestTrees2.run(wta, N, smallestCompletions, derivations);
+//			result = BestTrees2.run(wta, N, smallestCompletions, false);
 			duration = threadTimer.elapsed();
 			printResult(result, derivations);
 
@@ -262,9 +265,9 @@ public class NBest {
 
 		for (String treeString : result) {
 
-			if (derivations) {
-				treeString = treeString.replaceAll("//rule[0-9]*", "");
-			}
+//			if (derivations) {
+//				treeString = treeString.replaceAll("//rule[0-9]*", "");
+//			}
 
 			System.out.println(treeString);
 		}
