@@ -70,13 +70,13 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		this.stateUsage = stateUsage;
 	}
 	
-	public void markAsOutputted() {
-		this.outputted = true;
-	}
+//	public void markAsOutputted() {
+//		this.outputted = true;
+//	}
 	
-	public boolean hasBeenOutputted() {
-		return this.outputted;
-	}
+//	public boolean hasBeenOutputted() {
+//		return this.outputted;
+//	}
 
 	private void addStateWeight(State s, Weight w) {
 

@@ -141,6 +141,10 @@ public class KnuthBestDerivations {
 				for (int i = 0; i < listSize; i++) {
 					State s = stateList.get(i);
 					BinaryHeap<State, Weight>.Node element = qElems[s.getID()];
+
+					if (s.isFinal()) {
+						continue;
+					}
 					
 					if (element == null) {
 						element = queue.createNode(s);

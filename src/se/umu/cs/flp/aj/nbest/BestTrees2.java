@@ -86,7 +86,7 @@ public class BestTrees2 {
 
 					// output(t)
 					nBest.add(outputString);
-					currentTree.markAsOutputted();
+//					currentTree.markAsOutputted();
 					if (!derivations) {
 						outputtedTrees.put(currentTree.getTree(), null);
 					}

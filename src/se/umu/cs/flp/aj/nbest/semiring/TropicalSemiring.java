@@ -56,7 +56,7 @@ public class TropicalSemiring extends Semiring {
 					(value == NINF && w.value == zero)) {
 				return null;
 			}
-
+			
 			if (value == zero || w.value == zero) {
 				return new TropicalWeight(zero);
 			} else if (value == NINF || w.value == NINF) {

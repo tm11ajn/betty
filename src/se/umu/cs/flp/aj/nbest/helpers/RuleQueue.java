@@ -96,18 +96,18 @@ public class RuleQueue {
 //			return;
 //		}
 		
-		if (newTree.hasBeenOutputted()) {
-			for (Entry<State, Integer> entry : newTree.getStateUsage().entrySet()) {
-				int stateUsageCount = entry.getValue();
-				State state = entry.getKey();
-				int resSizeForState = resultConnector.getResultSize(state.getID());
-				int coveredTrees = (int) Math.pow(resSizeForState, stateUsageCount);
-				
-				if (coveredTrees > limit) {
-					state.markAsSaturated(); 
-				}
-			}
-		}
+//		if (newTree.hasBeenOutputted()) {
+//			for (Entry<State, Integer> entry : newTree.getStateUsage().entrySet()) {
+//				int stateUsageCount = entry.getValue();
+//				State state = entry.getKey();
+//				int resSizeForState = resultConnector.getResultSize(state.getID());
+//				int coveredTrees = (int) Math.pow(resSizeForState, stateUsageCount);
+//				
+//				if (coveredTrees > limit) {
+//					state.markAsSaturated(); 
+//				}
+//			}
+//		}
 		
 		/* Create rulekeepers for the rules that we have not yet seen
 		 * and add them to the queue as well. */
