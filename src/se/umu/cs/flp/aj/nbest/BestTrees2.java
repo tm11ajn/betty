@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import se.umu.cs.flp.aj.nbest.helpers.RuleQueue;
-import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.wta.State;
@@ -40,7 +40,7 @@ public class BestTrees2 {
 	private static RuleQueue ruleQueue;
 
 	public static List<String> run(WTA wta, int N, 
-			Weight[] smallestCompletions, boolean derivations) {
+			Context[] smallestCompletions, boolean derivations) {
 		TreeKeeper2.init(smallestCompletions);
 
 		/* For result. */

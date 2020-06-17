@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import se.umu.cs.flp.aj.eppstein_k_best.runner.EppsteinRunner;
 import se.umu.cs.flp.aj.nbest.helpers.SortedListMerger;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
 import se.umu.cs.flp.aj.nbest.treedata.TreePruner;
@@ -47,7 +48,7 @@ public class BestTrees {
 
 //	public static void setSmallestCompletions(
 //			HashMap<State, Weight> smallestCompletions) {
-	public static void setSmallestCompletions(Weight[] smallestCompletions) {
+	public static void setSmallestCompletions(Context[] smallestCompletions) {
 		TreeKeeper.init(smallestCompletions);
 	}
 

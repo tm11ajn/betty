@@ -8,6 +8,7 @@ import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.SemiringFactory;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
+import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 
@@ -39,10 +40,10 @@ public class RuleTest {
 	State q1 = new State(q1Sym);
 	State q2 = new State(q2Sym);
 	State q3 = new State(q3Sym);
-	Weight[] smallestCompletions = {
-			semiring.one(),
-			semiring.createWeight(2),
-			semiring.createWeight(1)};
+	Context[] smallestCompletions = {
+			new Context(semiring.one()),
+			new Context(semiring.createWeight(2)),
+			new Context(semiring.createWeight(1))};
 
 	Rule rule = new Rule(fNode, semiring.createWeight(0.5), resState, q0, q1);
 	Rule rule2 = new Rule(fNode, semiring.createWeight(0.5), resState);

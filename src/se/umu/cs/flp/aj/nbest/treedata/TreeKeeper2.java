@@ -27,14 +27,14 @@ import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 
-	private static Weight[] smallestCompletions;
+	private static Context[] smallestCompletions;
 	private static HashMap<Node, HashMap<State, Weight>> optWeights =
 			new HashMap<>();
 
 	private Node tree;
 	private Weight runWeight;
 	private State resultingState;
-	private HashMap<State, Integer> stateUsage;
+//	private HashMap<State, Integer> stateUsage;
 //	private boolean outputted;
 
 	public TreeKeeper2(Node tree, Weight treeWeight, State resultingState) {
@@ -46,8 +46,8 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		addStateWeight(resultingState, treeWeight);
 	}
 
-	public static void init(Weight[] smallestCompletionWeights) {
-		smallestCompletions = smallestCompletionWeights;
+	public static void init(Context[] smallestCompletions2) {
+		smallestCompletions = smallestCompletions2;
 	}
 
 	public Node getTree() {
@@ -62,13 +62,13 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		return resultingState;
 	}
 	
-	public HashMap<State, Integer> getStateUsage() {
-		return stateUsage;
-	}
-	
-	public void setStateUsage(HashMap<State, Integer> stateUsage) {
-		this.stateUsage = stateUsage;
-	}
+//	public HashMap<State, Integer> getStateUsage() {
+//		return stateUsage;
+//	}
+//	
+//	public void setStateUsage(HashMap<State, Integer> stateUsage) {
+//		this.stateUsage = stateUsage;
+//	}
 	
 //	public void markAsOutputted() {
 //		this.outputted = true;
@@ -92,7 +92,7 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 	}
 
 	public Weight getDeltaWeight() {
-		return runWeight.mult(smallestCompletions[resultingState.getID()]);
+		return runWeight.mult(smallestCompletions[resultingState.getID()].getWeight());
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import se.umu.cs.flp.aj.heap.BinaryHeap;
 import se.umu.cs.flp.aj.heap.BinaryHeap.Node;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
@@ -13,22 +14,22 @@ public class KnuthBestDerivations {
 	private static WTA wta;
 	private static BinaryHeap<State, Weight> queue;
 	private static BinaryHeap<State, Weight>.Node[] qElems;
-	private static Weight[] defined;
+	private static Context[] defined;
 	private static ArrayList<Rule> usableRules;
 
-	public static Weight[] getBestContexts(WTA wta) {
+	public static Context[] getBestContexts(WTA wta) {
 		KnuthBestDerivations.wta = wta;
 		return computeBestContextForEachState(computeBestTreeForEachState());
 	}
 	
 	/* Compute the tree with the best weight that can reach each state. */
 	@SuppressWarnings("unchecked")
-	private static Weight[] computeBestTreeForEachState() {
+	private static Context[] computeBestTreeForEachState() {
 		int nOfStates = wta.getStateCount();
 		int nOfRules = wta.getRuleCount();
 		queue = new BinaryHeap<>();
 		qElems = new Node[nOfStates + 1];
-		defined = new Weight[nOfStates + 1];
+		defined = new Context[nOfStates + 1];
 		usableRules = new ArrayList<>(nOfRules);
 		Weight[] ruleWeights = new Weight[nOfRules];
 		Integer[] missingIndices = new Integer[nOfRules];
@@ -80,7 +81,9 @@ public class KnuthBestDerivations {
 
 			BinaryHeap<State, Weight>.Node element = queue.dequeue();
 			State state = element.getObject();
-			defined[state.getID()] = element.getWeight();
+			Context newContext = new Context(element.getWeight());
+			defined[state.getID()] = newContext;
+//			defined[state.getID()] = element.getWeight();
 			nOfDefined++;
 
 			for (Rule r2 : state.getOutgoing()) {
@@ -93,7 +96,7 @@ public class KnuthBestDerivations {
 					if (s.getID() == state.getID()) {
 						missingIndices[r2.getID()]--;
 						ruleWeights[r2.getID()] = ruleWeights[r2.getID()].mult(
-								defined[s.getID()]);
+								defined[s.getID()].getWeight());
 					}
 				}
 
@@ -110,10 +113,10 @@ public class KnuthBestDerivations {
 	/* Search and combine the previously computed trees to achieve the contexts
 	 * of best weights. */
 	@SuppressWarnings("unchecked")
-	private static Weight[] computeBestContextForEachState(Weight[] bestTreeForState) {
+	private static Context[] computeBestContextForEachState(Context[] bestTreeForState) {
 		int nOfStates = wta.getStateCount();
 		queue = new BinaryHeap<>();
-		defined = new Weight[nOfStates + 1];
+		defined = new Context[nOfStates + 1];
 		qElems = new Node[nOfStates + 1];
 		usableRules = new ArrayList<>();
 		int nOfDefined = 0;
@@ -122,7 +125,8 @@ public class KnuthBestDerivations {
 		int usableSize = 0;
 
 		for (State s : wta.getFinalStates()) {
-			defined[s.getID()] = wta.getSemiring().one();
+			Context newContext = new Context(wta.getSemiring().one());
+			defined[s.getID()] = newContext;
 			nOfDefined++;
 			
 			for (Rule r : s.getIncoming()) {
@@ -152,14 +156,14 @@ public class KnuthBestDerivations {
 					}
 
 					Weight newWeight = r.getWeight().mult(
-							defined[resState.getID()]);
+							defined[resState.getID()].getWeight());
 					Weight oldWeight = element.getWeight();
 
 					for (int j = 0; j < listSize; j++) {
 						State s2 = stateList.get(j);
 						if (i != j) {
 							newWeight = newWeight.mult(
-									bestTreeForState[s2.getID()]);
+									bestTreeForState[s2.getID()].getWeight());
 						}
 					}
 
@@ -177,7 +181,8 @@ public class KnuthBestDerivations {
 				BinaryHeap<State, Weight>.Node element = queue.dequeue();
 				State state = element.getObject();
 				Weight weight = element.getWeight();
-				defined[state.getID()] = weight;
+				Context newContext = new Context(weight);
+				defined[state.getID()] = newContext;
 				nOfDefined++;
 
 				for (Rule r : state.getIncoming()) {
@@ -188,7 +193,7 @@ public class KnuthBestDerivations {
 			} else {
 				for (int i = 1; i < nOfStates + 1; i++) {
 					if (defined[i] == null) {
-						defined[i] = wta.getSemiring().zero();
+						defined[i] = new Context(wta.getSemiring().zero());
 					}
 				}
 
