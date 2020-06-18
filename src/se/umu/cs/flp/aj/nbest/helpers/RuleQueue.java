@@ -91,13 +91,8 @@ public class RuleQueue {
 		State resState = newTree.getResultingState();
 		boolean unseenState = resultConnector.isUnseen(resState.getID());
 		
-		if (resState.isSaturated()) {
-System.out.println("NOT EXPANDED BC OF SATURATION");
-			return;
-		}
-		
+		/* START TRICK */
 		if (newTree.hasBeenOutputted()) {
-			
 			for (Entry<State, Integer> entry : newTree.getBestContext().getStateOccurrences().entrySet()) {
 				State state = entry.getKey();
 				int stateUsageCount = entry.getValue();
@@ -105,19 +100,12 @@ System.out.println("NOT EXPANDED BC OF SATURATION");
 				int coveredTrees = 1 + (resSizeForState - 1) * stateUsageCount;
 
 				if (coveredTrees > limit) {
-					resState.markAsSaturated(); 
+					resState.markAsSaturated();
+System.out.println("Tricket används");
 				}
 			}
-//			for (Entry<State, Integer> entry : newTree.getStateUsage().entrySet()) {
-//				int stateUsageCount = entry.getValue();
-//				State state = entry.getKey();
-//				int coveredTrees = (int) Math.pow(resSizeForState, stateUsageCount);
-//				
-//				if (coveredTrees > limit) {
-//					state.markAsSaturated(); 
-//				}
-//			}
 		}
+		/* SLUT TRICK */
 		
 		/* Create rulekeepers for the rules that we have not yet seen
 		 * and add them to the queue as well. */
@@ -181,19 +169,21 @@ System.out.println("NOT EXPANDED BC OF SATURATION");
 			resultConnector.makeConnections(next);
 		}
 		
-//		State resState = ruleKeeper.getRule().getResultingState();
+		/* START lite TRICK, använder isSaturated för att kolla om vi faktiskt behöver 
+		 * köa på nästa träd för denna regel igen */
+		State resState = ruleKeeper.getRule().getResultingState();
 //		if (resState.isSaturated()) {
 //System.out.println("SATURATEEEEEEEEEEEEED");			
 //		}
 		
 		/* Re-queue the rulekeeper if it has another element in its ladder. */
-		if (//!resState.isSaturated() && 
-				ladder.hasNext()) {
+		if (!resState.isSaturated() && ladder.hasNext()) {
 				Configuration<TreeKeeper2> c = ruleKeeper.getLadderQueue().peek();
 				TreeKeeper2 newBest = ruleKeeper.getRule().apply(c);				
 				ruleKeeper.setBestTree(newBest);
 				queue.insert(elem, newBest.getDeltaWeight());
 		}
+		/* SLUT lite TRICK */
 		
 		return nextTree;
 	}

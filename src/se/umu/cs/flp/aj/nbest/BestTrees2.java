@@ -70,6 +70,8 @@ public class BestTrees2 {
 				break;
 			}
 
+			/* Blocks duplicates unless we are solving the N best derivations/runs 
+			 * problem */
 			if (derivations || !outputtedTrees.containsKey(currentTree.getTree())) {
 
 				if (currentTree.getResultingState().isFinal()) {
@@ -104,7 +106,12 @@ public class BestTrees2 {
 				}
 			}
 
+			/* Blocks duplicates from being added to the state result lists 
+			 * unless we are solving the best derivations/runs */
 			if (derivations || !temp.containsKey(currentTree.getTree())) {
+				if (currentTree.getResultingState().isSaturated()) {
+System.out.println("TRICKET ANVÄNDS");
+				}
 
 				// Expand search space with current tree
 				if (foundTrees < N && !currentTree.getResultingState().isSaturated()
