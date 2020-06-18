@@ -22,6 +22,7 @@ package se.umu.cs.flp.aj.nbest.helpers;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 
 import se.umu.cs.flp.aj.heap.BinaryHeap;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -90,23 +91,33 @@ public class RuleQueue {
 		State resState = newTree.getResultingState();
 		boolean unseenState = resultConnector.isUnseen(resState.getID());
 		
-//		if (resState.isSaturated()) {
-//System.out.println("NOT EXPANDED BC OF SATURATION");
-//			return;
-//		}
+		if (resState.isSaturated()) {
+System.out.println("NOT EXPANDED BC OF SATURATION");
+			return;
+		}
 		
-//		if (newTree.hasBeenOutputted()) {
+		if (newTree.hasBeenOutputted()) {
+			
+			for (Entry<State, Integer> entry : newTree.getBestContext().getStateOccurrences().entrySet()) {
+				State state = entry.getKey();
+				int stateUsageCount = entry.getValue();
+				int resSizeForState = resultConnector.getResultSize(state.getID());
+				int coveredTrees = 1 + (resSizeForState - 1) * stateUsageCount;
+
+				if (coveredTrees > limit) {
+					resState.markAsSaturated(); 
+				}
+			}
 //			for (Entry<State, Integer> entry : newTree.getStateUsage().entrySet()) {
 //				int stateUsageCount = entry.getValue();
 //				State state = entry.getKey();
-//				int resSizeForState = resultConnector.getResultSize(state.getID());
 //				int coveredTrees = (int) Math.pow(resSizeForState, stateUsageCount);
 //				
 //				if (coveredTrees > limit) {
 //					state.markAsSaturated(); 
 //				}
 //			}
-//		}
+		}
 		
 		/* Create rulekeepers for the rules that we have not yet seen
 		 * and add them to the queue as well. */

@@ -86,7 +86,7 @@ public class BestTrees2 {
 
 					// output(t)
 					nBest.add(outputString);
-//					currentTree.markAsOutputted();
+					currentTree.markAsOutputted();
 					if (!derivations) {
 						outputtedTrees.put(currentTree.getTree(), null);
 					}
@@ -107,7 +107,7 @@ public class BestTrees2 {
 			if (derivations || !temp.containsKey(currentTree.getTree())) {
 
 				// Expand search space with current tree
-				if (foundTrees < N //&& !currentTree.getResultingState().isSaturated()
+				if (foundTrees < N && !currentTree.getResultingState().isSaturated()
 						) {
 					ruleQueue.expandWith(currentTree);
 				}
