@@ -37,7 +37,7 @@ public class ResultConnector {
 		Rule rule = rules.get(config.getOrigin().getID());
 
 		for (int i = 0; i < size; i++) {
-			int currentState = rule.getStates().get(i).getID();
+			int currentState = rule.getStates().get(i).getID(); 
 
 			if (indices[i] >= resCount[currentState]) {
 				int configIndex = connections[currentState];
@@ -47,7 +47,7 @@ public class ResultConnector {
 					connections[currentState] = configIndex;
 					configLists.add(new ArrayList<>());
 				}
-				
+
 				configLists.get(configIndex).add(config);
 				missingElements++;
 			}
@@ -61,11 +61,7 @@ public class ResultConnector {
 	/* Adds and propagates a result, and returns a list of ID's of rules 
 	 * that have updated as a result of the propagation. */
 	public ArrayList<Integer> addResult(int stateIndex, TreeKeeper2 result) {
-		
-
 		ArrayList<Integer> needUpdate = new ArrayList<Integer>();
-		
-//		if (!result.getResultingState().isSaturated()) {
 		
 		if (results[stateIndex] == null) {
 			results[stateIndex] = new ArrayList<>();
@@ -74,7 +70,6 @@ public class ResultConnector {
 		results[stateIndex].add(result);
 		resCount[stateIndex] += 1;
 
-//		}
 		int configIndex = connections[stateIndex];
 
 		for (Configuration<TreeKeeper2> config : configLists.get(configIndex)) {

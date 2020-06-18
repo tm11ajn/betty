@@ -140,7 +140,7 @@ System.out.println("Tricket används");
 					TreeKeeper2 newBest = rule.apply(config);
 					rk.setBestTree(newBest);
 					queue.decreaseWeight(elem, newBest.getDeltaWeight());
-				}
+				} 
 			} else {
 				TreeKeeper2 newBest = rule.apply(config);
 				rk.setBestTree(newBest);
@@ -183,6 +183,7 @@ System.out.println("Tricket används");
 				ruleKeeper.setBestTree(newBest);
 				queue.insert(elem, newBest.getDeltaWeight());
 		}
+		
 		/* SLUT lite TRICK */
 		
 		return nextTree;

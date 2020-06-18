@@ -122,7 +122,7 @@ System.out.println("TRICKET ANVÄNDS");
 				if (!derivations) {
 					temp.put(currentTree.getTree(), null);
 				}
-			}
+			}			
 		}
 
 		return nBest;

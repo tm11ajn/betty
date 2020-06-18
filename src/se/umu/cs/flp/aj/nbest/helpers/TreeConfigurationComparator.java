@@ -56,7 +56,21 @@ public class TreeConfigurationComparator
 		if (comparison !=  0) {
 			return comparison;
 		}
-
+		
+		int sum1 = 0;
+		int sum2 = 0;
+		
+		for (int i = 0; i < size1; i++) {
+			sum1 += config1.getIndices()[i];
+			sum2 += config2.getIndices()[i];
+		}
+		
+		if (sum1 < sum2) {
+			return -1;
+		} else if (sum1 > sum2) {
+			return 1;
+		}
+		
 		for (int i = 0; i < size1; i++) {
 			TreeKeeper2 t1 = list1[i];
 			TreeKeeper2 t2 = list2[i];
