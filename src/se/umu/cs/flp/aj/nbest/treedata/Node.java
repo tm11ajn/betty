@@ -170,7 +170,7 @@ public class Node implements Comparable<Node> {
 
 		for (Node n : children) {
 			hash += counter * n.hashCode();
-			counter++;
+//			counter++;
 		}
 
 		return hash;
@@ -299,7 +299,7 @@ public class Node implements Comparable<Node> {
 			return 0;
 		} 
 		else {
-			return -1;
+			return 1;
 		}
 
 //		int comparison = thisString.compareTo(oString);
