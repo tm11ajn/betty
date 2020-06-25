@@ -37,10 +37,12 @@ public class Node implements Comparable<Node> {
 	private String treeString;
 	private String treeRTGString;
 	private int size;
+	private int depth;
 	private int hash;
 	private boolean validString;
 	private boolean validRTGString;
 	private boolean validSize;
+	private boolean validDepth;
 	private boolean validHash;
 
 
@@ -49,12 +51,14 @@ public class Node implements Comparable<Node> {
 
 		treeString = "";
 		size = 1;
+		depth = 0;
 		hash = 0;
 
 		validLeaves = false;
 		validString = false;
 		validRTGString = false;
 		validSize = true;
+		validDepth = true;
 		validHash = false;
 	}
 
@@ -68,6 +72,7 @@ public class Node implements Comparable<Node> {
 		validString = false;
 		validRTGString = false;
 		validSize = false;
+		validDepth = false;
 		this.invalidateHash();
 		return child;
 	}
@@ -124,6 +129,27 @@ public class Node implements Comparable<Node> {
 		}
 
 		return size;
+	}
+	
+	public int getDepth() {
+
+		if (validDepth) {
+			return depth;
+		}
+
+		validDepth = true;
+		int maxDepth = 0;
+
+		for (Node child : children) {
+			
+			if (child.getDepth() > maxDepth) {
+				maxDepth = child.getDepth();
+			}
+		}
+		
+		depth = 1 + maxDepth;
+
+		return depth;
 	}
 
 	private void invalidateHash() {
@@ -224,13 +250,9 @@ public class Node implements Comparable<Node> {
 				return false;
 			}
 			
-			if (this.label.getLabel() == n.label.getLabel()) {
+			if (this.toString() == n.toString()) {
 				return true;
 			}
-
-//			if (this.compareTo(n) == 0) {
-//				return true;
-//			}
 		}
 
 		return false;
@@ -238,6 +260,15 @@ public class Node implements Comparable<Node> {
 
 	@Override
 	public int compareTo(Node o) {
+		
+		int thisDepth = this.getDepth();
+		int oDepth = o.getDepth();
+		
+		if (thisDepth < oDepth) {
+			return -1;
+		} else if (thisDepth > oDepth) {
+			return 1;
+		}
 
 		int thisSize = this.getSize();
 		int oSize = o.getSize();
@@ -257,20 +288,20 @@ public class Node implements Comparable<Node> {
 		String thisString = this.toString();
 		String oString = o.toString();
 		
+		if (thisString.length() < oString.length()) {
+			return -1;
+		} else if (thisString.length() > oString.length()) {
+			return 1;
+		}
+		
 		if (thisString == oString) {
 			return 0;
-		}
+		} 
+//		else {
+//			return -1;
+//		}
 
 		int comparison = thisString.compareTo(oString);
-		
-//System.err.println("COMPARES STRING");
-
-		if (comparison > 0) {
-			return 1;
-		} else if (comparison < 0) {
-			return -1;
-		}
-
-		return 0;
+		return comparison;
 	}
 }

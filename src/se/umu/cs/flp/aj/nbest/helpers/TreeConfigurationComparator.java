@@ -78,6 +78,10 @@ public class TreeConfigurationComparator
 			if (compare != 0) {
 				return compare;
 			}
+//			boolean equals = t1.getTree().equals(t2.getTree());
+//			if (!equals) {
+//				return 1;
+//			}
 		}
 
 		return 0;

@@ -123,12 +123,28 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		}
 
 		TreeKeeper2 o = (TreeKeeper2) obj;
+		
+		int weightComparison = this.getDeltaWeight().compareTo(o.getDeltaWeight());
 
-		if (this.compareTo(o) == 0) {
-			return true;
+		if (weightComparison != 0) {
+			return false;
+		}
+		
+		int runWeightComparison = this.getRunWeight().compareTo(o.getRunWeight());
+		
+		if (runWeightComparison != 0) {
+			return false;
+		}
+		
+		if (!this.getTree().equals(o.getTree())) {
+			return false;
 		}
 
-		return false;
+//		if (this.compareTo(o) == 0) {
+//			return true;
+//		}
+
+		return true;
 	}
 
 	@Override
@@ -145,19 +161,17 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 			return runWeightComparison;
 		}
 
-//		int treeComparison = this.tree.compareTo(o.tree);
-//
-//		if (treeComparison != 0) {
-//			return treeComparison;
-//		}
-		
-		if (this.tree.equals(o.tree)) {
-			return 0;
+		int treeComparison = this.tree.compareTo(o.tree);
+
+		if (treeComparison != 0) {
+			return treeComparison;
 		}
+		
+		return treeComparison;
 
-		int stateComparison = this.resultingState.compareTo(o.resultingState);
+//		int stateComparison = this.resultingState.compareTo(o.resultingState);
 
-		return stateComparison;
+//		return stateComparison;
 	}
 }
 
