@@ -170,7 +170,7 @@ public class Node implements Comparable<Node> {
 
 		for (Node n : children) {
 			hash += counter * n.hashCode();
-//			counter++;
+			counter += 2;
 		}
 
 		return hash;
