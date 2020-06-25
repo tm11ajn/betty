@@ -69,6 +69,10 @@ public class BestTrees2 {
 					wta.getSemiring().zero()) >= 0) {
 				break;
 			}
+			
+			if (outputtedTrees.containsKey(currentTree.getTree())) {
+//System.err.println("Dubblett upptäckt och kastad: " + currentTree);
+			}
 
 			/* Blocks duplicates unless we are solving the N best derivations/runs 
 			 * problem */

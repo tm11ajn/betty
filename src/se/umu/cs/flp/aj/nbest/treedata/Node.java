@@ -171,7 +171,8 @@ public class Node implements Comparable<Node> {
 
 			treeString += "]";
 		}
-
+		
+		treeString = treeString.intern();
 		validString = true;
 
 		return treeString;
@@ -200,6 +201,7 @@ public class Node implements Comparable<Node> {
 			treeRTGString += ")";
 		}
 
+		treeString = treeString.intern();
 		validRTGString = true;
 
 		return treeRTGString;
@@ -221,10 +223,14 @@ public class Node implements Comparable<Node> {
 			if (this.hashCode() != obj.hashCode()) {
 				return false;
 			}
-
-			if (this.compareTo(n) == 0) {
+			
+			if (this.label.getLabel() == n.label.getLabel()) {
 				return true;
 			}
+
+//			if (this.compareTo(n) == 0) {
+//				return true;
+//			}
 		}
 
 		return false;
@@ -250,8 +256,14 @@ public class Node implements Comparable<Node> {
 
 		String thisString = this.toString();
 		String oString = o.toString();
+		
+		if (thisString == oString) {
+			return 0;
+		}
 
 		int comparison = thisString.compareTo(oString);
+		
+//System.err.println("COMPARES STRING");
 
 		if (comparison > 0) {
 			return 1;
