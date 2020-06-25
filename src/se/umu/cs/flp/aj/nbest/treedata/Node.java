@@ -298,11 +298,11 @@ public class Node implements Comparable<Node> {
 		if (thisString == oString) {
 			return 0;
 		} 
-		else {
-			return 1;
-		}
+//		else {
+//			return 1;
+//		}
 
-//		int comparison = thisString.compareTo(oString);
-//		return comparison;
+		int comparison = thisString.compareTo(oString);
+		return comparison;
 	}
 }
