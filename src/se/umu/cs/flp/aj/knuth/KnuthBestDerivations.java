@@ -53,11 +53,11 @@ public class KnuthBestDerivations {
 			
 			if (!element.isEnqueued()) {
 				Context context = new Context(r.getWeight());
-				context.setStateOccurrence(resState, 1);
+//				context.setStateOccurrence(resState, 1);
 				queue.insertUnordered(element, context);
 			} else if (element.getWeight().getWeight().compareTo(r.getWeight()) > 0) {
 				Context context = new Context(r.getWeight());
-				context.setStateOccurrence(resState, 1);
+//				context.setStateOccurrence(resState, 1);
 				element.setWeight(context);
 			}
 		}
@@ -104,7 +104,7 @@ public class KnuthBestDerivations {
 				if (missingIndices[r2.getID()] == null) {
 					missingIndices[r2.getID()] = r2.getNumberOfStates();
 					Context newContext = new Context(r2.getWeight());
-					newContext.addStateOccurrence(r2.getResultingState(), 1);
+//					newContext.addStateOccurrence(r2.getResultingState(), 1);
 					ruleContexts[r2.getID()] = newContext;
 				}
 				
@@ -117,9 +117,9 @@ public class KnuthBestDerivations {
 						context.setWeight(newWeight);
 						Context defContext = defined[s.getID()];
 						
-						for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
-							context.addStateOccurrence(entry.getKey(), entry.getValue());
-						}
+//						for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
+//							context.addStateOccurrence(entry.getKey(), entry.getValue());
+//						}
 					}
 				}
 
@@ -203,13 +203,13 @@ public class KnuthBestDerivations {
 						if (i != j) {
 							Context cTemp = bestTreeForState[s2.getID()];
 							newWeight = newWeight.mult(cTemp.getWeight());
-							int newStateOccurence = cTemp.getStateOccurrence(s) - 
-									cTemp.getStateOccurrence(s2);
-							newContext.addStateOccurrence(s2, newStateOccurence);
+//							int newStateOccurence = cTemp.getStateOccurrence(s) - 
+//									cTemp.getStateOccurrence(s2);
+//							newContext.addStateOccurrence(s2, newStateOccurence);
 						}
 					}
 					
-					newContext.addStateOccurrence(resState, 1);
+//					newContext.addStateOccurrence(resState, 1);
 					newContext.setWeight(newWeight);
 
 					if (oldContext == null) {

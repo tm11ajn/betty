@@ -91,9 +91,9 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		}
 	}
 	
-	public int getStateUsageInBestContext(State s) {
-		return smallestCompletions[resultingState.getID()].getStateOccurrence(s);
-	}
+//	public int getStateUsageInBestContext(State s) {
+//		return smallestCompletions[resultingState.getID()].getStateOccurrence(s);
+//	}
 	
 	public Context getBestContext() {
 		return smallestCompletions[resultingState.getID()];

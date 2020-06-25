@@ -92,19 +92,19 @@ public class RuleQueue {
 		boolean unseenState = resultConnector.isUnseen(resState.getID());
 		
 		/* START TRICK */
-		if (newTree.hasBeenOutputted()) {
-			for (Entry<State, Integer> entry : newTree.getBestContext().getStateOccurrences().entrySet()) {
-				State state = entry.getKey();
-				int stateUsageCount = entry.getValue();
-				int resSizeForState = resultConnector.getResultSize(state.getID());
-				int coveredTrees = 1 + (resSizeForState - 1) * stateUsageCount;
-
-				if (coveredTrees > limit) {
-					resState.markAsSaturated();
-System.out.println("Tricket används");
-				}
-			}
-		}
+//		if (newTree.hasBeenOutputted()) {
+//			for (Entry<State, Integer> entry : newTree.getBestContext().getStateOccurrences().entrySet()) {
+//				State state = entry.getKey();
+//				int stateUsageCount = entry.getValue();
+//				int resSizeForState = resultConnector.getResultSize(state.getID());
+//				int coveredTrees = 1 + (resSizeForState - 1) * stateUsageCount;
+//
+//				if (coveredTrees > limit) {
+//					resState.markAsSaturated();
+//System.out.println("Tricket används");
+//				}
+//			}
+//		}
 		/* SLUT TRICK */
 		
 		/* Create rulekeepers for the rules that we have not yet seen
