@@ -92,7 +92,7 @@ public class RuleQueue {
 		boolean unseenState = resultConnector.isUnseen(resState.getID());
 		
 		/* START TRICK */
-		if (newTree.hasBeenOutputted()) {
+		if (newTree.hasBeenOutputted() && newTree.getBestContext() != null) {
 			for (Entry<State, Integer> entry : newTree.getBestContext().getStateOccurrences().entrySet()) {
 				State state = entry.getKey();
 				int stateUsageCount = entry.getValue();

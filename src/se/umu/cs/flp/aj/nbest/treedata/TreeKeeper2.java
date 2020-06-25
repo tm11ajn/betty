@@ -95,12 +95,14 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 	
 	public Context getBestContext() {
 		return resultingState.getBestContext();
-//		return smallestCompletions[resultingState.getID()];
 	}
 
-	public Weight getDeltaWeight() {
+	public Weight getDeltaWeight() {		
+		if (resultingState.getBestContext() == null) {
+			return runWeight.zero();
+		}
+		
 		return runWeight.mult(resultingState.getBestContext().getWeight());
-//		return runWeight.mult(smallestCompletions[resultingState.getID()].getWeight());
 	}
 
 	@Override
@@ -159,6 +161,12 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		
 		if (runWeightComparison != 0) {
 			return runWeightComparison;
+		}
+		
+		int stateDepthComparison = resultingState.getBestContext().getDepth();
+		
+		if (stateDepthComparison != 0) {
+			return stateDepthComparison;
 		}
 
 		int treeComparison = this.tree.compareTo(o.tree);

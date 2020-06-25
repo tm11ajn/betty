@@ -15,7 +15,6 @@ public class KnuthBestDerivations {
 	private static WTA wta;
 	private static BinaryHeap<State, Context> queue;
 	private static BinaryHeap<State, Context>.Node[] qElems;
-//	private static Context[] defined;
 	private static ArrayList<Rule> usableRules;
 
 	public static void computeBestContexts(WTA wta) {
@@ -31,7 +30,6 @@ public class KnuthBestDerivations {
 		int nOfRules = wta.getRuleCount();
 		queue = new BinaryHeap<>();
 		qElems = new Node[nOfStates + 1];
-//		defined = new Context[nOfStates + 1];
 		usableRules = new ArrayList<>(nOfRules);
 		Context[] ruleContexts = new Context[nOfRules];
 		Integer[] missingIndices = new Integer[nOfRules];
@@ -55,12 +53,10 @@ public class KnuthBestDerivations {
 			if (!element.isEnqueued()) {
 				Context context = new Context(r.getWeight());
 				context.setStateOccurrence(resState, 1);
-				context.addToDepthOfState(resState, r.getTree().getDepth());
 				queue.insertUnordered(element, context);
 			} else if (element.getWeight().getWeight().compareTo(r.getWeight()) > 0) {
 				Context context = new Context(r.getWeight());
 				context.setStateOccurrence(resState, 1);
-				context.addToDepthOfState(resState, r.getTree().getDepth());
 				element.setWeight(context);
 			}
 		}
@@ -100,8 +96,9 @@ public class KnuthBestDerivations {
 			BinaryHeap<State, Context>.Node element = queue.dequeue();
 			State state = element.getObject();
 			state.setBestContext(element.getWeight());
-//			defined[state.getID()] = element.getWeight();
 			nOfDefined++;
+			
+System.out.println("state=" + state);
 
 			/* Find new rules that can be used. */
 			for (Rule r2 : state.getOutgoing()) {
@@ -112,21 +109,23 @@ public class KnuthBestDerivations {
 					ruleContexts[r2.getID()] = newContext;
 				}
 				
+System.out.println("r2=" + r2);
+				Context context = ruleContexts[r2.getID()];
+				Context defContext = state.getBestContext();
+				
 				for (State s : r2.getStates()) {
+System.out.println("s=" + s);
+
+
 					if (s.getID() == state.getID()) {
+						for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
+System.out.println("Occurrence for state " + entry.getKey() + " is " + entry.getValue());
+							context.addStateOccurrence(entry.getKey(), entry.getValue());
+						}
 						missingIndices[r2.getID()]--;
-						Context context = ruleContexts[r2.getID()];
 						Weight currentWeight = context.getWeight();
 						Weight newWeight = currentWeight.mult(s.getBestContext().getWeight());
-//						Weight newWeight = currentWeight.mult(defined[s.getID()].getWeight());
 						context.setWeight(newWeight);
-						Context defContext = s.getBestContext();
-//						Context defContext = defined[s.getID()];
-						
-						for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
-							context.addStateOccurrence(entry.getKey(), entry.getValue());
-//							context.addToDepthOfState(entry.getKey(), s.getBestContext().getDepthOfState(entry.getKey()) + r2.getDepthOf(s));
-						}
 					}
 				}
 
@@ -139,16 +138,15 @@ public class KnuthBestDerivations {
 			}
 		}
 		
-		/*Print cheapest trees*/
-//		for (int i = 1; i < nOfStates + 1; i++) {
-//			Context c = defined[i];
-//System.out.println(i + " : " + c.getWeight());
-//			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
-//System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
-//			}
-//		}
-
-//		return defined;
+		/*Print cheapest context-trees*/
+		for (State s : wta.getStates().values()) {
+			Context c = s.getBestContext();
+System.out.println(s + " : " + c.getWeight());
+System.out.println("Depth: " + c.getDepth());
+			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
+System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+			}
+		}
 	}
 
 	/* Search and combine the previously computed trees to achieve the contexts
@@ -169,8 +167,8 @@ public class KnuthBestDerivations {
 		 * and to have weight one (according to semiring). */
 		for (State s : wta.getFinalStates()) {
 			Context newContext = new Context(wta.getSemiring().one());
+			newContext.setDepth(0);
 			s.setBestContext(newContext);
-//			defined[s.getID()] = newContext;
 			nOfDefined++;
 			
 			for (Rule r : s.getIncoming()) {
@@ -209,24 +207,37 @@ public class KnuthBestDerivations {
 
 					for (int j = 0; j < listSize; j++) {
 						State s2 = stateList.get(j);
+						Context cTemp = s2.getBestContext();
+						
 						if (i != j) {
-//							Context cTemp = bestTreeForState[s2.getID()];
-							Context cTemp = s2.getBestContext();
 							newWeight = newWeight.mult(cTemp.getWeight());
 							int newStateOccurence = cTemp.getStateOccurrence(s) - 
-									cTemp.getStateOccurrence(s2);
+									cTemp.getStateOccurrence(s2) + 1; // TODO
 							newContext.addStateOccurrence(s2, newStateOccurence);
 						}
 					}
 					
 					newContext.addStateOccurrence(resState, 1);
+					newContext.setDepth(resState.getBestContext().getDepth() + 1);
 					newContext.setWeight(newWeight);
 
 					if (oldContext == null) {
 						queue.insert(element, newContext);
 					} else if (newWeight.compareTo(oldContext.getWeight()) < 0) {
 						queue.decreaseWeight(element, newContext);
-					}
+					} //else {
+//						for (int j = 0; j < listSize; j++) {
+//							State s2 = stateList.get(j);
+//							if (i != j) {
+//								Context cTemp = s2.getBestContext();
+//								int newStateOccurence = cTemp.getStateOccurrence(s) - 
+//										cTemp.getStateOccurrence(s2);
+//								oldContext.addStateOccurrence(s2, newStateOccurence);
+//							}
+//						}
+//						oldContext.addStateOccurrence(resState, 1);
+//						oldContext.setDepth(resState.getBestContext().getDepth() + 1);
+//					}
 				}
 
 				usableStart++;
@@ -257,24 +268,25 @@ public class KnuthBestDerivations {
 //					}
 //				}
 				
-				for (State s : wta.getStates().values()) {
-					if (s.getBestContext() == null) {
-						s.setBestContext(new Context(wta.getSemiring().zero()));
-					}
-				}
+//				for (State s : wta.getStates().values()) {
+//					if (s.getBestContext() == null) {
+//						s.setBestContext(new Context(wta.getSemiring().zero()));
+//					}
+//				}
 
 				done = true;
 			}
 		}
 		
 		/*Print cheapest contexts*/
-//		for (int i = 1; i < nOfStates + 1; i++) {
-//			Context c = defined[i];
-//System.out.println(i + " : " + c.getWeight());
-//			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
-//System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
-//			}
-//		}
+		for (State s : wta.getStates().values()) {
+			Context c = s.getBestContext();
+System.out.println(s + " : " + c.getWeight());
+System.out.println("Depth: " + c.getDepth());
+			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
+System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+			}
+		}
 
 //		return defined;
 	}

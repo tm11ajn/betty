@@ -131,32 +131,26 @@ public class Node implements Comparable<Node> {
 		return size;
 	}
 	
-	public int getDepth() {
-
-		if (validDepth) {
-			return depth;
-		}
-
-		validDepth = true;
-		int maxDepth = 0;
-
-		for (Node child : children) {
-			
-			if (child.getDepth() > maxDepth) {
-				maxDepth = child.getDepth();
-			}
-		}
-		
-		depth = 1 + maxDepth;
-
-		return depth;
-	}
-	
-	public int getDepthOf(Symbol label) {
-		int depth = 0;
-		
-		return depth;
-	}
+//	public int getDepth() {
+//
+//		if (validDepth) {
+//			return depth;
+//		}
+//
+//		validDepth = true;
+//		int maxDepth = 0;
+//
+//		for (Node child : children) {
+//			
+//			if (child.getDepth() > maxDepth) {
+//				maxDepth = child.getDepth();
+//			}
+//		}
+//		
+//		depth = 1 + maxDepth;
+//
+//		return depth;
+//	}
 
 	private void invalidateHash() {
 		this.validHash = false;
@@ -268,14 +262,14 @@ public class Node implements Comparable<Node> {
 	@Override
 	public int compareTo(Node o) {
 		
-		int thisDepth = this.getDepth();
-		int oDepth = o.getDepth();
-		
-		if (thisDepth < oDepth) {
-			return -1;
-		} else if (thisDepth > oDepth) {
-			return 1;
-		}
+//		int thisDepth = this.getDepth();
+//		int oDepth = o.getDepth();
+//		
+//		if (thisDepth < oDepth) {
+//			return -1;
+//		} else if (thisDepth > oDepth) {
+//			return 1;
+//		}
 
 		int thisSize = this.getSize();
 		int oSize = o.getSize();
