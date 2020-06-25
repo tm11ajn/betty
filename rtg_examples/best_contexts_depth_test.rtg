@@ -1,0 +1,6 @@
+qf
+qf -> f(qf, qf)
+qf -> f(qh, qh)
+qh -> h(qg)
+qg -> g(qa)
+qa -> a
