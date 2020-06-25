@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import se.umu.cs.flp.aj.nbest.helpers.RuleQueue;
-import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.wta.State;
@@ -39,9 +38,8 @@ public class BestTrees2 {
 	private static HashMap<State, HashMap<Node, Node>> seenTrees;
 	private static RuleQueue ruleQueue;
 
-	public static List<String> run(WTA wta, int N, 
-			Context[] smallestCompletions, boolean derivations) {
-		TreeKeeper2.init(smallestCompletions);
+	public static List<String> run(WTA wta, int N, boolean derivations) {
+//		TreeKeeper2.init(smallestCompletions);
 
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();

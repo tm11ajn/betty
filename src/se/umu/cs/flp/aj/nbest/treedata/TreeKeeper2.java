@@ -20,16 +20,14 @@
 
 package se.umu.cs.flp.aj.nbest.treedata;
 
-import java.util.HashMap;
-
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 
-	private static Context[] smallestCompletions;
-	private static HashMap<Node, HashMap<State, Weight>> optWeights =
-			new HashMap<>();
+//	private static Context[] smallestCompletions;
+//	private static HashMap<Node, HashMap<State, Weight>> optWeights =
+//			new HashMap<>();
 
 	private Node tree;
 	private Weight runWeight;
@@ -43,12 +41,12 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		this.resultingState = resultingState;
 		this.outputted = false;
 //		this.stateUsage = new HashMap<State, Integer>();
-		addStateWeight(resultingState, treeWeight);
+//		addStateWeight(resultingState, treeWeight);
 	}
 
-	public static void init(Context[] smallestCompletions2) {
-		smallestCompletions = smallestCompletions2;
-	}
+//	public static void init(Context[] smallestCompletions2) {
+//		smallestCompletions = smallestCompletions2;
+//	}
 
 	public Node getTree() {
 		return tree;
@@ -78,29 +76,31 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		return this.outputted;
 	}
 
-	private void addStateWeight(State s, Weight w) {
-
-		if (!optWeights.containsKey(tree)) {
-			optWeights.put(tree, new HashMap<>());
-		}
-
-		HashMap<State, Weight> treeWeights = optWeights.get(tree);
-
-		if (!treeWeights.containsKey(s) || treeWeights.get(s).compareTo(w) > 0) {
-			treeWeights.put(s, w);
-		}
-	}
+//	private void addStateWeight(State s, Weight w) {
+//
+//		if (!optWeights.containsKey(tree)) {
+//			optWeights.put(tree, new HashMap<>());
+//		}
+//
+//		HashMap<State, Weight> treeWeights = optWeights.get(tree);
+//
+//		if (!treeWeights.containsKey(s) || treeWeights.get(s).compareTo(w) > 0) {
+//			treeWeights.put(s, w);
+//		}
+//	}
 	
 //	public int getStateUsageInBestContext(State s) {
 //		return smallestCompletions[resultingState.getID()].getStateOccurrence(s);
 //	}
 	
 	public Context getBestContext() {
-		return smallestCompletions[resultingState.getID()];
+		return resultingState.getBestContext();
+//		return smallestCompletions[resultingState.getID()];
 	}
 
 	public Weight getDeltaWeight() {
-		return runWeight.mult(smallestCompletions[resultingState.getID()].getWeight());
+		return runWeight.mult(resultingState.getBestContext().getWeight());
+//		return runWeight.mult(smallestCompletions[resultingState.getID()].getWeight());
 	}
 
 	@Override

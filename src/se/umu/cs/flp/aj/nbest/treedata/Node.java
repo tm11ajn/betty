@@ -44,7 +44,7 @@ public class Node implements Comparable<Node> {
 	private boolean validSize;
 	private boolean validDepth;
 	private boolean validHash;
-
+	
 
 	public Node(Symbol label) {
 		this.label = label;
@@ -131,26 +131,32 @@ public class Node implements Comparable<Node> {
 		return size;
 	}
 	
-//	public int getDepth() {
-//
-//		if (validDepth) {
-//			return depth;
-//		}
-//
-//		validDepth = true;
-//		int maxDepth = 0;
-//
-//		for (Node child : children) {
-//			
-//			if (child.getDepth() > maxDepth) {
-//				maxDepth = child.getDepth();
-//			}
-//		}
-//		
-//		depth = 1 + maxDepth;
-//
-//		return depth;
-//	}
+	public int getDepth() {
+
+		if (validDepth) {
+			return depth;
+		}
+
+		validDepth = true;
+		int maxDepth = 0;
+
+		for (Node child : children) {
+			
+			if (child.getDepth() > maxDepth) {
+				maxDepth = child.getDepth();
+			}
+		}
+		
+		depth = 1 + maxDepth;
+
+		return depth;
+	}
+	
+	public int getDepthOf(Symbol label) {
+		int depth = 0;
+		
+		return depth;
+	}
 
 	private void invalidateHash() {
 		this.validHash = false;

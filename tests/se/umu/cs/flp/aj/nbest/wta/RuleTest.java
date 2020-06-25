@@ -40,10 +40,10 @@ public class RuleTest {
 	State q1 = new State(q1Sym);
 	State q2 = new State(q2Sym);
 	State q3 = new State(q3Sym);
-	Context[] smallestCompletions = {
-			new Context(semiring.one()),
-			new Context(semiring.createWeight(2)),
-			new Context(semiring.createWeight(1))};
+//	Context[] smallestCompletions = {
+//			new Context(semiring.one()),
+//			new Context(semiring.createWeight(2)),
+//			new Context(semiring.createWeight(1))};
 
 	Rule rule = new Rule(fNode, semiring.createWeight(0.5), resState, q0, q1);
 	Rule rule2 = new Rule(fNode, semiring.createWeight(0.5), resState);
@@ -55,8 +55,11 @@ public class RuleTest {
 	Configuration<TreeKeeper2> config;
 
 	private void init() {
+		q0.setBestContext(new Context(semiring.one()));
+		q1.setBestContext(new Context(semiring.createWeight(2)));
+		q2.setBestContext(new Context(semiring.createWeight(1)));
 
-		TreeKeeper2.init(smallestCompletions);
+//		TreeKeeper2.init(smallestCompletions);
 
 		q0Sym.setNonterminal(true);
 		q1Sym.setNonterminal(true);
