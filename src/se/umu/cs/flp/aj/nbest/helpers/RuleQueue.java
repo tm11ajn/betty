@@ -92,30 +92,30 @@ public class RuleQueue {
 		boolean unseenState = resultConnector.isUnseen(resState.getID());
 		
 		/* START TRICK */
-		if (newTree.hasBeenOutputted() && newTree.getBestContext() != null) {
-			for (Entry<State, Integer> entry : newTree.getBestContext().getStateOccurrences().entrySet()) {
-				State state = entry.getKey();
-				int stateUsageCount = entry.getValue();
-				int resSizeForState = resultConnector.getResultSize(state.getID());
-				int coveredTrees = 1 + (resSizeForState - 1) * stateUsageCount;
-
-				if (coveredTrees > limit) {
-					resState.markAsSaturated();
-System.out.println("Tricket används");
-				}
-			}
-		}
+//		for (Entry<State, Integer> entry : newTree.getBestContext().getStateOccurrences().entrySet()) {
+//			State state = entry.getKey();
+//			int stateUsageCount = entry.getValue();
+//			int resSizeForState = resultConnector.getResultSize(state.getID());
+//			int coveredTrees = 1 + (resSizeForState - 1) * stateUsageCount;
+//
+//			if (coveredTrees > limit) {
+////				state.markAsSaturated();
+////System.out.println("Tricket används");
+//			}
+//		}
 		/* SLUT TRICK */
 		
 		/* Create rulekeepers for the rules that we have not yet seen
 		 * and add them to the queue as well. */
-		if (unseenState) {
+		if (unseenState && !resState.isSaturated()) {
 			for (Rule r : resState.getOutgoing()) {
 				if (queueElems[r.getID()] == null) {
 					initialiseRuleElement(r);
 				} 
 			}
 		}
+		
+		if (!resState.isSaturated()) {
 				
 		/* Have the result connector propagate the result to the connected 
 		 * configs, and get info on which rulekeepers should be updated 
@@ -147,17 +147,24 @@ System.out.println("Tricket används");
 				queue.insert(elem, newBest.getDeltaWeight());
 			}
 		}
+		}
 	}
 	
 	/* Returns the next tree in the queue. The configuration corresponding to
 	 * the dequeued tree is used as a base for finding the next possible 
 	 * configurations for that particular rule. */
 	public TreeKeeper2 nextTree() {
+		BinaryHeap<RuleKeeper, Weight>.Node elem;
+		RuleKeeper ruleKeeper;
+		TreeKeeper2 nextTree;
 		
 		/* Dequeue the next tree. */
-		BinaryHeap<RuleKeeper, Weight>.Node elem = queue.dequeue();
-		RuleKeeper ruleKeeper = elem.getObject();
-		TreeKeeper2 nextTree = ruleKeeper.getBestTree();
+//		do {
+		elem = queue.dequeue();
+		ruleKeeper = elem.getObject();
+		nextTree = ruleKeeper.getBestTree();
+//		} while (nextTree.getResultingState().isSaturated());
+		
 		ruleKeeper.setBestTree(null);
 		LadderQueue<TreeKeeper2> ladder = ruleKeeper.getLadderQueue();
 		Configuration<TreeKeeper2> config = ladder.dequeue();
@@ -177,7 +184,8 @@ System.out.println("Tricket används");
 //		}
 		
 		/* Re-queue the rulekeeper if it has another element in its ladder. */
-		if (!resState.isSaturated() && ladder.hasNext()) {
+		if (!resState.isSaturated() && 
+				ladder.hasNext()) {
 				Configuration<TreeKeeper2> c = ruleKeeper.getLadderQueue().peek();
 				TreeKeeper2 newBest = ruleKeeper.getRule().apply(c);				
 				ruleKeeper.setBestTree(newBest);
@@ -185,6 +193,7 @@ System.out.println("Tricket används");
 		}
 		
 		/* SLUT lite TRICK */
+		
 		
 		return nextTree;
 	}

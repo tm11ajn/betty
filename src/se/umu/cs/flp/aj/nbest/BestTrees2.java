@@ -113,9 +113,9 @@ public class BestTrees2 {
 			/* Blocks duplicates from being added to the state result lists 
 			 * unless we are solving the best derivations/runs */
 			if (derivations || !temp.containsKey(currentTree.getTree())) {
-				if (currentTree.getResultingState().isSaturated()) {
-System.out.println("TRICKET ANVÄNDS");
-				}
+//				if (currentTree.getResultingState().isSaturated()) {
+//System.out.println("TRICKET ANVÄNDS");
+//				}
 
 				// Expand search space with current tree
 				if (foundTrees < N && !currentTree.getResultingState().isSaturated()

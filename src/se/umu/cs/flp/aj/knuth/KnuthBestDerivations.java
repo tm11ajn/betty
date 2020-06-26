@@ -97,8 +97,6 @@ public class KnuthBestDerivations {
 			State state = element.getObject();
 			state.setBestContext(element.getWeight());
 			nOfDefined++;
-			
-System.out.println("state=" + state);
 
 			/* Find new rules that can be used. */
 			for (Rule r2 : state.getOutgoing()) {
@@ -109,17 +107,12 @@ System.out.println("state=" + state);
 					ruleContexts[r2.getID()] = newContext;
 				}
 				
-System.out.println("r2=" + r2);
 				Context context = ruleContexts[r2.getID()];
 				Context defContext = state.getBestContext();
 				
 				for (State s : r2.getStates()) {
-System.out.println("s=" + s);
-
-
 					if (s.getID() == state.getID()) {
 						for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
-System.out.println("Occurrence for state " + entry.getKey() + " is " + entry.getValue());
 							context.addStateOccurrence(entry.getKey(), entry.getValue());
 						}
 						missingIndices[r2.getID()]--;
@@ -139,14 +132,14 @@ System.out.println("Occurrence for state " + entry.getKey() + " is " + entry.get
 		}
 		
 		/*Print cheapest context-trees*/
-		for (State s : wta.getStates().values()) {
-			Context c = s.getBestContext();
-System.out.println(s + " : " + c.getWeight());
-System.out.println("Depth: " + c.getDepth());
-			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
-System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
-			}
-		}
+//		for (State s : wta.getStates().values()) {
+//			Context c = s.getBestContext();
+//System.out.println(s + " : " + c.getWeight());
+//System.out.println("Depth: " + c.getDepth());
+//			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
+//System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+//			}
+//		}
 	}
 
 	/* Search and combine the previously computed trees to achieve the contexts
@@ -155,19 +148,22 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 	private static void computeBestContextForEachState() {
 		int nOfStates = wta.getStateCount();
 		queue = new BinaryHeap<>();
-//		defined = new Context[nOfStates + 1];
 		qElems = new Node[nOfStates + 1];
 		usableRules = new ArrayList<>();
 		int nOfDefined = 0;
-		boolean done = false;
 		int usableStart = 0;
 		int usableSize = 0;
+		Context[] prevContexts = new Context[nOfStates + 1];
 
 		/* Initialise the contexts for the final states to be empty 
 		 * and to have weight one (according to semiring). */
 		for (State s : wta.getFinalStates()) {
 			Context newContext = new Context(wta.getSemiring().one());
+			s.getBestContext().setWeight(wta.getSemiring().one());
+			s.getBestContext().setDepth(0);
 			newContext.setDepth(0);
+			newContext.setStateOccurrence(s, 1);
+			prevContexts[s.getID()] = s.getBestContext();
 			s.setBestContext(newContext);
 			nOfDefined++;
 			
@@ -179,7 +175,7 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 
 		/* Iteratively define best context using the priority queue and update
 		 * what contexts can be created based on the currently defined states. */
-		while (!done && nOfDefined < nOfStates) {
+		while (!queue.empty() && nOfDefined < nOfStates) {
 			for (int k = usableStart; k < usableSize; k++) {
 				Rule r = usableRules.get(k);
 				State resState = r.getResultingState();
@@ -198,46 +194,61 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 						element = queue.createNode(s);
 						qElems[s.getID()] = element;
 					}
-
-//					Weight newWeight = r.getWeight().mult(
-//							defined[resState.getID()].getWeight());
+					
+					/* Compute new weight */ 
 					Weight newWeight = r.getWeight().mult(resState.getBestContext().getWeight());
-					Context oldContext = element.getWeight();
-					Context newContext = new Context();
-
+					
 					for (int j = 0; j < listSize; j++) {
 						State s2 = stateList.get(j);
 						Context cTemp = s2.getBestContext();
 						
 						if (i != j) {
 							newWeight = newWeight.mult(cTemp.getWeight());
-							int newStateOccurence = cTemp.getStateOccurrence(s) - 
-									cTemp.getStateOccurrence(s2) + 1; // TODO
-							newContext.addStateOccurrence(s2, newStateOccurence);
 						}
 					}
 					
-					newContext.addStateOccurrence(resState, 1);
+					/* Create new context with new weight and depth */
+					Context oldContext = element.getWeight();
+					Context newContext = new Context();
+					Context prevContext = prevContexts[s.getID()];
 					newContext.setDepth(resState.getBestContext().getDepth() + 1);
 					newContext.setWeight(newWeight);
+					
+					/* Compute state usage in best context */
+					if (prevContext == null) {
+						prevContext = s.getBestContext();
+						prevContexts[s.getID()] = prevContext;
+					}
+					
+					ArrayList<State> relevantStates = new ArrayList<State>(prevContexts[resState.getID()].getStateOccurrences().keySet());
+					relevantStates.addAll(resState.getBestContext().getStateOccurrences().keySet());
 
+					for (State s2 : relevantStates) {
+
+						if (newContext.getStateOccurrence(s2) > 0) {
+							continue;
+						}
+
+						int newStateOccurrence = resState.getBestContext().getStateOccurrence(s2) +
+								prevContexts[resState.getID()].getStateOccurrence(s2) - 
+								prevContext.getStateOccurrence(s2);
+						
+						if (s2.getID() == s.getID()) {
+							newStateOccurrence++;
+						}
+
+						if (resState.getID() == s2.getID()) {
+							newStateOccurrence--;
+						}
+						newContext.setStateOccurrence(s2, newStateOccurrence);
+					}
+
+					/* Add or update queue element */
 					if (oldContext == null) {
 						queue.insert(element, newContext);
 					} else if (newWeight.compareTo(oldContext.getWeight()) < 0) {
 						queue.decreaseWeight(element, newContext);
-					} //else {
-//						for (int j = 0; j < listSize; j++) {
-//							State s2 = stateList.get(j);
-//							if (i != j) {
-//								Context cTemp = s2.getBestContext();
-//								int newStateOccurence = cTemp.getStateOccurrence(s) - 
-//										cTemp.getStateOccurrence(s2);
-//								oldContext.addStateOccurrence(s2, newStateOccurence);
-//							}
-//						}
-//						oldContext.addStateOccurrence(resState, 1);
-//						oldContext.setDepth(resState.getBestContext().getDepth() + 1);
-//					}
+					} 
 				}
 
 				usableStart++;
@@ -253,41 +264,23 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 				BinaryHeap<State, Context>.Node element = queue.dequeue();
 				State state = element.getObject();
 				state.setBestContext(element.getWeight());
-//				defined[state.getID()] = element.getWeight();
 				nOfDefined++;
 
 				for (Rule r : state.getIncoming()) {
 					usableRules.add(r);
 					usableSize++;
 				}
-
-			} else {
-//				for (int i = 1; i < nOfStates + 1; i++) {
-//					if (defined[i] == null) {
-//						defined[i] = new Context(wta.getSemiring().zero());
-//					}
-//				}
-				
-//				for (State s : wta.getStates().values()) {
-//					if (s.getBestContext() == null) {
-//						s.setBestContext(new Context(wta.getSemiring().zero()));
-//					}
-//				}
-
-				done = true;
 			}
 		}
 		
 		/*Print cheapest contexts*/
-		for (State s : wta.getStates().values()) {
-			Context c = s.getBestContext();
-System.out.println(s + " : " + c.getWeight());
-System.out.println("Depth: " + c.getDepth());
-			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
-System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
-			}
-		}
-
-//		return defined;
+//		for (State s : wta.getStates().values()) {
+//			Context c = s.getBestContext();
+//System.out.println(s + " : " + c.getWeight());
+//System.out.println("Depth: " + c.getDepth());
+//			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
+//System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+//			}
+//		}
 	}
 }
