@@ -132,14 +132,14 @@ public class KnuthBestDerivations {
 		}
 		
 		/*Print cheapest context-trees*/
-//		for (State s : wta.getStates().values()) {
-//			Context c = s.getBestContext();
-//System.out.println(s + " : " + c.getWeight());
-//System.out.println("Depth: " + c.getDepth());
-//			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
-//System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
-//			}
-//		}
+		for (State s : wta.getStates().values()) {
+			Context c = s.getBestContext();
+System.out.println(s + " : " + c.getWeight());
+System.out.println("Depth: " + c.getDepth());
+			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
+System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+			}
+		}
 	}
 
 	/* Search and combine the previously computed trees to achieve the contexts
@@ -151,6 +151,7 @@ public class KnuthBestDerivations {
 		qElems = new Node[nOfStates + 1];
 		usableRules = new ArrayList<>();
 		int nOfDefined = 0;
+		boolean done = false;
 		int usableStart = 0;
 		int usableSize = 0;
 		Context[] prevContexts = new Context[nOfStates + 1];
@@ -274,13 +275,13 @@ public class KnuthBestDerivations {
 		}
 		
 		/*Print cheapest contexts*/
-//		for (State s : wta.getStates().values()) {
-//			Context c = s.getBestContext();
-//System.out.println(s + " : " + c.getWeight());
-//System.out.println("Depth: " + c.getDepth());
-//			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
-//System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
-//			}
-//		}
+		for (State s : wta.getStates().values()) {
+			Context c = s.getBestContext();
+System.out.println(s + " : " + c.getWeight());
+System.out.println("Depth: " + c.getDepth());
+			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
+System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+			}
+		}
 	}
 }

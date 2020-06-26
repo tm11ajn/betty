@@ -39,7 +39,6 @@ public class BestTrees2 {
 	private static RuleQueue ruleQueue;
 
 	public static List<String> run(WTA wta, int N, boolean derivations) {
-//		TreeKeeper2.init(smallestCompletions);
 
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();
@@ -60,8 +59,6 @@ public class BestTrees2 {
 			
 			// t <- dequeue(K)
 			TreeKeeper2 currentTree = ruleQueue.nextTree();
-			
-//System.out.println("Hej current=" + currentTree);
 
 			/* If there are no more derivations with a non-infinity weight,
 			 * we end the search. */
