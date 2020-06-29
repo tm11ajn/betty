@@ -98,8 +98,8 @@ public class RuleQueue {
 			int resSizeForState = resultConnector.getResultSize(state.getID());
 			int coveredTrees = 1 + (resSizeForState - 1) * stateUsageCount;
 			
-System.out.println("Covered trees: " + coveredTrees);
-System.out.println("Limit: " + limit);
+//System.out.println("Covered trees: " + coveredTrees);
+//System.out.println("Limit: " + limit);
 
 			if (coveredTrees >= limit) {
 				state.markAsSaturated();

@@ -311,13 +311,13 @@ public class KnuthBestDerivations {
 		}
 		
 		/*Print cheapest contexts*/
-		for (int i = 1; i < nOfStates + 1; i++) {
-			Context c = defined[i];
-System.out.println(i + " : " + c.getWeight());
-//			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
-//System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
-//			}
-		}
+//		for (int i = 1; i < nOfStates + 1; i++) {
+//			Context c = defined[i];
+//System.out.println(i + " : " + c.getWeight());
+////			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
+////System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+////			}
+//		}
 
 		return defined;
 	}
