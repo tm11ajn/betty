@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import se.umu.cs.flp.aj.nbest.helpers.RuleQueue;
+import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.wta.State;
@@ -38,7 +39,10 @@ public class BestTrees2 {
 	private static HashMap<State, HashMap<Node, Node>> seenTrees;
 	private static RuleQueue ruleQueue;
 
-	public static List<String> run(WTA wta, int N, boolean derivations) {
+//	public static List<String> run(WTA wta, int N, boolean derivations) {
+	public static List<String> run(WTA wta, int N, Context[] bestContexts, boolean derivations) {
+		
+		TreeKeeper2.init(bestContexts);
 
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();
@@ -110,9 +114,9 @@ public class BestTrees2 {
 			/* Blocks duplicates from being added to the state result lists 
 			 * unless we are solving the best derivations/runs */
 			if (derivations || !temp.containsKey(currentTree.getTree())) {
-//				if (currentTree.getResultingState().isSaturated()) {
-//System.out.println("TRICKET ANVÄNDS");
-//				}
+				if (currentTree.getResultingState().isSaturated()) {
+System.out.println("TRICKET ANVÄNDS");
+				}
 
 				// Expand search space with current tree
 				if (foundTrees < N && !currentTree.getResultingState().isSaturated()

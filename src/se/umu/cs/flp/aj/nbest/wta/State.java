@@ -20,7 +20,6 @@
 
 package se.umu.cs.flp.aj.nbest.wta;
 
-import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.util.Hypergraph;
 
 public class State extends Hypergraph.Node<Rule> implements Comparable<State> {
@@ -28,23 +27,23 @@ public class State extends Hypergraph.Node<Rule> implements Comparable<State> {
 	private Symbol label;
 	private boolean isFinal;
 	private boolean saturated;
-	private Context bestContext;
+//	private Context bestContext;
 
 	public State(Symbol label) {
 		super();
 		this.label = label;
 		isFinal = false;
 		saturated = false;
-		bestContext = null;
+//		bestContext = null;
 	}
 	
-	public void setBestContext(Context context) {
-		this.bestContext = context;
-	}
+//	public void setBestContext(Context context) {
+//		this.bestContext = context;
+//	}
 	
-	public Context getBestContext() {
-		return bestContext;
-	}
+//	public Context getBestContext() {
+//		return bestContext;
+//	}
 
 	public Symbol getLabel() {
 		return label;

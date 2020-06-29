@@ -37,12 +37,12 @@ public class Node implements Comparable<Node> {
 	private String treeString;
 	private String treeRTGString;
 	private int size;
-	private int depth;
+//	private int depth;
 	private int hash;
 	private boolean validString;
 	private boolean validRTGString;
 	private boolean validSize;
-	private boolean validDepth;
+//	private boolean validDepth;
 	private boolean validHash;
 	
 
@@ -51,14 +51,14 @@ public class Node implements Comparable<Node> {
 
 		treeString = "";
 		size = 1;
-		depth = 0;
+//		depth = 0;
 		hash = 0;
 
 		validLeaves = false;
 		validString = false;
 		validRTGString = false;
 		validSize = true;
-		validDepth = true;
+//		validDepth = true;
 		validHash = false;
 	}
 
@@ -72,7 +72,7 @@ public class Node implements Comparable<Node> {
 		validString = false;
 		validRTGString = false;
 		validSize = false;
-		validDepth = false;
+//		validDepth = false;
 		this.invalidateHash();
 		return child;
 	}

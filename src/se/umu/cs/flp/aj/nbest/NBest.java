@@ -34,6 +34,7 @@ import org.apache.commons.cli.ParseException;
 import se.umu.cs.flp.aj.knuth.KnuthBestDerivations;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.SemiringFactory;
+import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.parsers.Parser;
 import se.umu.cs.flp.aj.nbest.wta.parsers.RTGParser;
@@ -151,7 +152,7 @@ public class NBest {
 
 		System.out.println("Pre-computing smallest completions...");
 		threadTimer.start();
-		KnuthBestDerivations.computeBestContexts(wta);
+		Context[] bestContexts = KnuthBestDerivations.computeBestContexts(wta);
 		List<String> result = new LinkedList<>();
 		duration = threadTimer.elapsed();
 		accumulativeTime = duration;
@@ -161,8 +162,8 @@ public class NBest {
 		if (version.equals(RULE_QUEUE_ARG) || version.equals(ALL_ARG)) {
 			System.out.println("Running BestTrees version 2...");
 			threadTimer.start();
-			result = BestTrees2.run(wta, N, derivations);
-//			result = BestTrees2.run(wta, N, smallestCompletions, false);
+//			result = BestTrees2.run(wta, N, derivations);
+			result = BestTrees2.run(wta, N, bestContexts, false);
 			duration = threadTimer.elapsed();
 			printResult(result, derivations);
 
@@ -178,7 +179,7 @@ public class NBest {
 //			BestTrees.setSmallestCompletions(bestContexts);
 			
 			threadTimer.start();
-			result = BestTrees.run(wta, N);
+			result = BestTrees.run(wta, bestContexts, N);
 			duration = threadTimer.elapsed();
 
 			printResult(result, derivations);

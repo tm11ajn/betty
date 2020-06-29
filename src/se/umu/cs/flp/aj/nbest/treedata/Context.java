@@ -31,9 +31,9 @@ public class Context implements Comparable<Context> {
 		this.depth = depth;
 	}
 	
-//	public int getDepthOfState(State s) {
-//		return depth;
-//	}
+	public int getDepthOfState(State s) {
+		return depth;
+	}
 	
 //	public HashMap<State, Integer> getDepthOfStates() {
 //		return depth;
