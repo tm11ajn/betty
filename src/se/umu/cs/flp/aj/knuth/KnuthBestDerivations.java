@@ -54,11 +54,11 @@ public class KnuthBestDerivations {
 			
 			if (!element.isEnqueued()) {
 				Context context = new Context(r.getWeight());
-//				context.setStateOccurrence(resState, 1);
+				context.setStateOccurrence(resState, 1);
 				queue.insertUnordered(element, context);
 			} else if (element.getWeight().getWeight().compareTo(r.getWeight()) > 0) {
 				Context context = new Context(r.getWeight());
-//				context.setStateOccurrence(resState, 1);
+				context.setStateOccurrence(resState, 1);
 				element.setWeight(context);
 			}
 		}
@@ -151,11 +151,15 @@ public class KnuthBestDerivations {
 		}
 		
 		/*Print cheapest trees*/
+//System.out.println("cheapest trees");
 //		for (int i = 1; i < nOfStates + 1; i++) {
 //			Context c = defined[i];
-//System.out.println(i + " : " + c.getWeight());
-//			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
+//			BinaryHeap<State, Context>.Node elem = qElems[i];
+//			if (elem != null) {
+//System.out.println(elem.getObject() + " : " + c.getWeight());
+//				for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
 //System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+//				}
 //			}
 //		}
 
@@ -177,18 +181,7 @@ public class KnuthBestDerivations {
 		int usableSize = 0;
 
 		/* Initialise the contexts for the final states to be empty 
-		 * and to have weight one (according to semiring). */
-//		for (State s : wta.getFinalStates()) {
-//			Context newContext = new Context(wta.getSemiring().one());
-//			defined[s.getID()] = newContext;
-//			nOfDefined++;
-//			
-//			for (Rule r : s.getIncoming()) {
-//				usableRules.add(r);
-//				usableSize++;
-//			}
-//		}
-		
+		 * and to have weight one (according to semiring). */		
         for (State s : wta.getFinalStates()) {
             Context newContext = new Context(wta.getSemiring().one());
             newContext.setDepth(0);
@@ -265,7 +258,7 @@ public class KnuthBestDerivations {
                         if (resState.getID() == s2.getID()) {
                             newStateOccurrence--;
                         }
-                        newContext.setStateOccurrence(s2, newStateOccurrence);
+                        newContext.addStateOccurrence(s2, newStateOccurrence);
                     }
 
                     /* Add or update queue element */
@@ -310,13 +303,17 @@ public class KnuthBestDerivations {
 			}
 		}
 		
-		/*Print cheapest contexts*/
+		/*Print best contexts*/
+//System.out.println("best contexts");
 //		for (int i = 1; i < nOfStates + 1; i++) {
 //			Context c = defined[i];
-//System.out.println(i + " : " + c.getWeight());
-////			for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
-////System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
-////			}
+//			BinaryHeap<State, Context>.Node elem = qElems[i];
+//			if (elem != null) {
+//System.out.println(elem.getObject() + " : " + c.getWeight());
+//				for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
+//System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+//				}
+//			}
 //		}
 
 		return defined;
