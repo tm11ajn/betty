@@ -111,39 +111,22 @@ public class KnuthBestDerivations {
 				}
 				
 				Context context = ruleContexts[r2.getID()];
-//                Context defContext = state.getBestContext();
 				Context defContext = defined[state.getID()];
-                
-                for (State s : r2.getStates()) {
-                    if (s.getID() == state.getID()) {
-                    	
-                    	// Compute P(t_q,p) for each q,p in Q so that P(t_q,p) is 
-                    	// the number of p's in the best tree for q.
-                        for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
-                            context.addStateOccurrence(entry.getKey(), entry.getValue());
-                        }
-                        missingIndices[r2.getID()]--;
-                        Weight currentWeight = context.getWeight();
-//                        Weight newWeight = currentWeight.mult(s.getBestContext().getWeight());
-                        Weight newWeight = currentWeight.mult(defined[s.getID()].getWeight());
-                        context.setWeight(newWeight);
-                    }
-                }
 				
-//				for (State s : r2.getStates()) {
-//					if (s.getID() == state.getID()) {
-//						missingIndices[r2.getID()]--;
-//						Context context = ruleContexts[r2.getID()];
-//						Weight currentWeight = context.getWeight();
-//						Weight newWeight = currentWeight.mult(defined[s.getID()].getWeight());
-//						context.setWeight(newWeight);
-//						Context defContext = defined[s.getID()];
-//						
-////						for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
-////							context.addStateOccurrence(entry.getKey(), entry.getValue());
-////						}
-//					}
-//				}
+				for (State s : r2.getStates()) {
+					if (s.getID() == state.getID()) {
+						
+						// Compute P(t_q,p) for each q,p in Q so that P(t_q,p) is 
+						// the number of p's in the best tree for q.
+						for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
+							context.addStateOccurrence(entry.getKey(), entry.getValue());
+						}
+						missingIndices[r2.getID()]--;
+						Weight currentWeight = context.getWeight();
+						Weight newWeight = currentWeight.mult(defined[s.getID()].getWeight());
+						context.setWeight(newWeight);
+					}
+				}
 
 				/* Mark new rules as usable if all the states used to apply 
 				 * the rule are defined. */
@@ -186,23 +169,22 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 
 		/* Initialise the contexts for the final states to be empty 
 		 * and to have weight one (according to semiring). */		
-        for (State s : wta.getFinalStates()) {
-            Context newContext = new Context(wta.getSemiring().one());
-            HashMap<State, Integer> map = new HashMap<State, Integer>();
-            map.put(s, 0);
-            newContext.setDepth(0);
-            newContext.setP(new ArrayList<HashMap<State, Integer>>());
-            newContext.getP().add(map);
-            newContext.setf(new ArrayList<Integer>());
-            newContext.getf().add(1);
-            defined[s.getID()] = newContext;
-            nOfDefined++;
-            
-            for (Rule r : s.getIncoming()) {
-                usableRules.add(r);
-                usableSize++;
-            }
-        }
+		for (State s : wta.getFinalStates()) {
+			Context newContext = new Context(wta.getSemiring().one());
+			HashMap<State, Integer> map = new HashMap<State, Integer>();
+			map.put(s, 0);
+			newContext.setDepth(0);
+			newContext.setP(new ArrayList<HashMap<State, Integer>>());
+			newContext.getP().add(map);
+			newContext.setf(new ArrayList<Integer>());
+			newContext.getf().add(1);
+			defined[s.getID()] = newContext;
+			nOfDefined++;
+			for (Rule r : s.getIncoming()) {
+				usableRules.add(r);
+				usableSize++;
+			}
+		}
 
 		/* Iteratively define best context using the priority queue and update
 		 * what contexts can be created based on the currently defined states. */
@@ -229,9 +211,9 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 					/* Create new context */
 					Context oldContext = element.getWeight();
 					Context newContext = new Context();
-                    newContext.setDepth(defined[resState.getID()].getDepth() + 1);
-                    newContext.setP(new ArrayList<>(defined[resState.getID()].getP()));
-                    newContext.setf(new ArrayList<>(defined[resState.getID()].getf()));
+					newContext.setDepth(defined[resState.getID()].getDepth() + 1);
+					newContext.setP(new ArrayList<>(defined[resState.getID()].getP()));
+					newContext.setf(new ArrayList<>(defined[resState.getID()].getf()));
 
 //System.out.println("Current blank state: " + s);
 //System.out.println("P(" + resState + ")");
@@ -267,63 +249,38 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 						}
 					}
 
-                    newContext.getP().add(stateCount);
-                    newContext.setWeight(newWeight);
-                    
-                    //TODO: 
-                    // For p in Q, and i <= depth(newContext), let P(newContext,p)_i = P(d_0[...[d_i]...],p)
-                    // f(newContext) = sum_{i \in [depth(newContext)]} f(d_0[...[d_i]..]) * P(newContext,s2)_i
-                    
-                    // I kontext behöver vi en vektor som är lika stor som djupet på kontexten och som ärvs av 
-                    // barn-kontexterna och fylls på med värden
-                    // Tittar uppåt
-                    
-                    /*
-                     * Sedan behöver vi en likadan struktur för att hålla reda på P-värdena
-                     * under den i:te positionen, hur många av varje tillstånd har vi?
-                     */
+					newContext.getP().add(stateCount);
+					newContext.setWeight(newWeight);
+					
+					//TODO: 
+					// For p in Q, and i <= depth(newContext), let P(newContext,p)_i = P(d_0[...[d_i]...],p)
+					// f(newContext) = sum_{i \in [depth(newContext)]} f(d_0[...[d_i]..]) * P(newContext,s2)_i
+					
+					// I kontext behöver vi en vektor som är lika stor som djupet på kontexten och som ärvs av 
+					// barn-kontexterna och fylls på med värden
+					// Tittar uppåt
+					
+					/*
+					 * Sedan behöver vi en likadan struktur för att hålla reda på P-värdena
+					 * under den i:te positionen, hur många av varje tillstånd har vi?
+					 */
 					
 					int fNext = 1;
-                    for (int index = 0; index < newContext.getDepth(); index++) {
-                    	int sumP = 0;
-                    	for (int indexP = index; indexP < newContext.getDepth() + 1; indexP++) {
-                    		HashMap<State, Integer> h = newContext.getP().get(indexP);
+					for (int index = 0; index < newContext.getDepth(); index++) {
+						int sumP = 0;
+						for (int indexP = index; indexP < newContext.getDepth() + 1; indexP++) {
+							HashMap<State, Integer> h = newContext.getP().get(indexP);
 //System.out.println("h.get("+ s +")=" + h.get(s));
-                    		sumP += (h.get(s) == null) ? 0 : h.get(s);
-                    	}
-                    	
-                    	fNext += newContext.getf().get(index) * sumP;
-                    }
-                    
-                    newContext.getf().add(fNext);
-                    
+							sumP += (h.get(s) == null) ? 0 : h.get(s);
+						}
+						fNext += newContext.getf().get(index) * sumP;
+					}
+					
+					newContext.getf().add(fNext);
+					
 System.out.println("Next fValue: " + fNext);
-                    
-                    /* Compute state usage in best context */
-//                    ArrayList<State> relevantStates = new ArrayList<State>(bestTreeForState[resState.getID()].
-//                    		getStateOccurrences().keySet());
-//                    relevantStates.addAll(defined[resState.getID()].getStateOccurrences().keySet());
-//
-//                    for (State s2 : relevantStates) {
-////                        if (newContext.getStateOccurrence(s2) > 0) {
-////                            continue;
-////                        }
-////
-////                        int newStateOccurrence = defined[resState.getID()].getStateOccurrence(s2) +
-////                                bestTreeForState[resState.getID()].getStateOccurrence(s2) - 
-////                                bestTreeForState[s.getID()].getStateOccurrence(s2);
-////                        
-////                        if (s2.getID() == s.getID()) {
-////                            newStateOccurrence++;
-////                        }
-////
-////                        if (resState.getID() == s2.getID()) {
-////                            newStateOccurrence--;
-////                        }
-////                        newContext.addStateOccurrence(s2, newStateOccurrence);
-//                    }
 
-                    /* Add or update queue element */
+					/* Add or update queue element */
 					if (oldContext == null) {
 						queue.insert(element, newContext);
 					} else if (newWeight.compareTo(oldContext.getWeight()) < 0) {
