@@ -246,7 +246,8 @@ public class KnuthBestDerivations {
 //System.out.println(e);
 //}
 
-					 /* Compute new weight */ 
+					 /* Compute new weight and state occurrence in smallest context 
+					  * for current rule application */ 
 					Weight newWeight = r.getWeight().mult(
 							defined[resState.getID()].getWeight());
 					HashMap<State, Integer> stateCount = new HashMap<>();
@@ -287,6 +288,7 @@ public class KnuthBestDerivations {
                     	int sumP = 0;
                     	for (int indexP = index; indexP < newContext.getDepth() + 1; indexP++) {
                     		HashMap<State, Integer> h = newContext.getP().get(indexP);
+System.out.println("h.get("+ s +")=" + h.get(s));
                     		sumP += (h.get(s) == null) ? 0 : h.get(s);
                     	}
                     	
@@ -364,22 +366,22 @@ System.out.println("Next fValue: " + fNext);
 		}
 		
 		/*Print best contexts*/
-//System.out.println("best contexts");
-//		for (int i = 1; i < nOfStates + 1; i++) {
-//			Context c = defined[i];
-//			BinaryHeap<State, Context>.Node elem = qElems[i];
-//			if (elem != null) {
-//System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
-//			} else {
-//System.out.println("state with id=" + i + " : Weight=" + c.getWeight());
-//			}
-//			if (c.getP() != null) {
-//				for (Entry<State, Integer> e : c.getP().get(c.getDepth()).entrySet()) {
-//System.out.println("P(" + e.getKey() + ")=" + e.getValue());
-//				}
-//System.out.println("f=" + c.getfValue());
-//			}
-//		}
+System.out.println("best contexts");
+		for (int i = 1; i < nOfStates + 1; i++) {
+			Context c = defined[i];
+			BinaryHeap<State, Context>.Node elem = qElems[i];
+			if (elem != null) {
+System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
+			} else {
+System.out.println("state with id=" + i + " : Weight=" + c.getWeight());
+			}
+			if (c.getP() != null) {
+				for (Entry<State, Integer> e : c.getP().get(c.getDepth()).entrySet()) {
+System.out.println("P(" + e.getKey() + ")=" + e.getValue());
+				}
+System.out.println("f=" + c.getfValue());
+			}
+		}
 
 		return defined;
 	}
