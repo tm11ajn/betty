@@ -155,17 +155,17 @@ public class KnuthBestDerivations {
 		}
 		
 		/*Print cheapest trees*/
-//System.out.println("cheapest trees");
-//		for (int i = 1; i < nOfStates + 1; i++) {
-//			Context c = defined[i];
-//			BinaryHeap<State, Context>.Node elem = qElems[i];
-//			if (elem != null) {
-//System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
-//				for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
-//System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
-//				}
-//			}
-//		}
+System.out.println("cheapest trees");
+		for (int i = 1; i < nOfStates + 1; i++) {
+			Context c = defined[i];
+			BinaryHeap<State, Context>.Node elem = qElems[i];
+			if (elem != null) {
+System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
+				for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
+System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+				}
+			}
+		}
 
 		return defined;
 	}
@@ -288,7 +288,7 @@ public class KnuthBestDerivations {
                     	int sumP = 0;
                     	for (int indexP = index; indexP < newContext.getDepth() + 1; indexP++) {
                     		HashMap<State, Integer> h = newContext.getP().get(indexP);
-System.out.println("h.get("+ s +")=" + h.get(s));
+//System.out.println("h.get("+ s +")=" + h.get(s));
                     		sumP += (h.get(s) == null) ? 0 : h.get(s);
                     	}
                     	

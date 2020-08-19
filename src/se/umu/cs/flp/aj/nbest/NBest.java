@@ -139,6 +139,8 @@ public class NBest {
 		// TOOD: fix so that derivations still works for the old version, or not?
 		wta = parser.parseForBestTrees(fileName);
 		
+System.out.println(wta);
+		
 //		if (derivations) {
 //			wta = parser.parseForBestDerivations(fileName);
 //		} else {
