@@ -265,7 +265,7 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 					 * under den i:te positionen, hur många av varje tillstånd har vi?
 					 */
 					
-					int fNext = 1;
+					int fNext = 0;
 					for (int index = 0; index < newContext.getDepth(); index++) {
 						int sumP = 0;
 						for (int indexP = index; indexP < newContext.getDepth() + 1; indexP++) {
@@ -273,7 +273,7 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 //System.out.println("h.get("+ s +")=" + h.get(s));
 							sumP += (h.get(s) == null) ? 0 : h.get(s);
 						}
-						fNext += newContext.getf().get(index) * sumP;
+						fNext += newContext.getf().get(index) * (sumP + 1);
 					}
 					
 					newContext.getf().add(fNext);
