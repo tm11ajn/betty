@@ -163,7 +163,7 @@ public class NBest {
 			System.out.println("Running BestTrees version 2...");
 			threadTimer.start();
 //			result = BestTrees2.run(wta, N, derivations);
-			result = BestTrees2.run(wta, N, bestContexts, false);
+			result = BestTrees2.run(wta, N, bestContexts, derivations);
 			duration = threadTimer.elapsed();
 			printResult(result, derivations);
 

@@ -22,7 +22,6 @@ package se.umu.cs.flp.aj.nbest.helpers;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 
 import se.umu.cs.flp.aj.heap.BinaryHeap;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -92,21 +91,13 @@ public class RuleQueue {
 		boolean unseenState = resultConnector.isUnseen(resState.getID());
 		
 		/* START TRICK */
-		for (Entry<State, Integer> entry : newTree.getBestContext().getStateOccurrences().entrySet()) {
-			State state = entry.getKey();
-			int stateUsageCount = entry.getValue();
-			int resSizeForState = resultConnector.getResultSize(state.getID());
-			int coveredTrees = 1 + (resSizeForState - 1) * stateUsageCount;
-			
-//System.out.println("Covered trees: " + coveredTrees);
-//System.out.println("Limit: " + limit);
-
-			if (coveredTrees >= limit) {
-				state.markAsSaturated();
-System.out.println("Tricket initieras");
-			}
+		int resSizeForState = resultConnector.getResultSize(resState.getID());
+//System.out.println("fValue: " + newTree.getBestContext().getfValue());
+		if (resSizeForState * newTree.getBestContext().getfValue() >= limit) {
+System.out.println("Tricket används");
+			resState.markAsSaturated();
 		}
-		/* SLUT TRICK */
+		/* END TRICK */
 		
 		/* Create rulekeepers for the rules that we have not yet seen
 		 * and add them to the queue as well. */

@@ -1,6 +1,7 @@
 package se.umu.cs.flp.aj.knuth;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map.Entry;
 
 import se.umu.cs.flp.aj.heap.BinaryHeap;
@@ -115,6 +116,9 @@ public class KnuthBestDerivations {
                 
                 for (State s : r2.getStates()) {
                     if (s.getID() == state.getID()) {
+                    	
+                    	// Compute P(t_q,p) for each q,p in Q so that P(t_q,p) is 
+                    	// the number of p's in the best tree for q.
                         for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
                             context.addStateOccurrence(entry.getKey(), entry.getValue());
                         }
@@ -156,7 +160,7 @@ public class KnuthBestDerivations {
 //			Context c = defined[i];
 //			BinaryHeap<State, Context>.Node elem = qElems[i];
 //			if (elem != null) {
-//System.out.println(elem.getObject() + " : " + c.getWeight());
+//System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
 //				for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
 //System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
 //				}
@@ -184,8 +188,13 @@ public class KnuthBestDerivations {
 		 * and to have weight one (according to semiring). */		
         for (State s : wta.getFinalStates()) {
             Context newContext = new Context(wta.getSemiring().one());
+            HashMap<State, Integer> map = new HashMap<State, Integer>();
+            map.put(s, 1);
             newContext.setDepth(0);
-            newContext.setStateOccurrence(s, 1);
+            newContext.setP(new ArrayList<HashMap<State, Integer>>());
+            newContext.getP().add(map);
+            newContext.setf(new ArrayList<Integer>());
+            newContext.getf().add(1);
             defined[s.getID()] = newContext;
             nOfDefined++;
             
@@ -216,50 +225,101 @@ public class KnuthBestDerivations {
 						element = queue.createNode(s);
 						qElems[s.getID()] = element;
 					}
+					
+					/* Create new context */
+					Context oldContext = element.getWeight();
+					Context newContext = new Context();
+                    newContext.setDepth(defined[resState.getID()].getDepth() + 1);
+                    newContext.setP(new ArrayList<>(defined[resState.getID()].getP()));
+                    newContext.setf(new ArrayList<>(defined[resState.getID()].getf()));
+
+//System.out.println("Current blank state: " + s);
+//System.out.println("P(" + resState + ")");
+//for (HashMap<State, Integer> m : defined[resState.getID()].getP()) {
+//	for (Entry<State, Integer> e : m.entrySet()) {
+//System.out.println(e.getKey() + " : " + e.getValue());
+//	}
+//}
+//
+//System.out.println("f");
+//for (Integer e : defined[resState.getID()].getf()) {
+//System.out.println(e);
+//}
 
 					 /* Compute new weight */ 
 					Weight newWeight = r.getWeight().mult(
 							defined[resState.getID()].getWeight());
+					HashMap<State, Integer> stateCount = new HashMap<>();
 
 					for (int j = 0; j < listSize; j++) {
 						State s2 = stateList.get(j);
 						if (i != j) {
 							Context cTemp = bestTreeForState[s2.getID()];
 							newWeight = newWeight.mult(cTemp.getWeight());
+							
+							for(Entry<State, Integer> entry : cTemp.getStateOccurrences().entrySet()) {
+								State eState = entry.getKey();
+								int eVal = entry.getValue();
+								int val = (stateCount.get(eState) == null) ? 0 : stateCount.get(eState);
+								stateCount.put(eState, val + eVal);
+							}
 						}
 					}
-					
-					/* Create new context with new weight and depth */
-					Context oldContext = element.getWeight();
-					Context newContext = new Context();
-//					Context prevContext = bestTreeForState[s.getID()];
-                    newContext.setDepth(defined[resState.getID()].getDepth() + 1);
+
+                    newContext.getP().add(stateCount);
                     newContext.setWeight(newWeight);
                     
-                    /* Compute state usage in best context */
-                    ArrayList<State> relevantStates = new ArrayList<State>(bestTreeForState[resState.getID()].
-                    		getStateOccurrences().keySet());
-                    relevantStates.addAll(defined[resState.getID()].getStateOccurrences().keySet());
-
-                    for (State s2 : relevantStates) {
-
-                        if (newContext.getStateOccurrence(s2) > 0) {
-                            continue;
-                        }
-
-                        int newStateOccurrence = defined[resState.getID()].getStateOccurrence(s2) +
-                                bestTreeForState[resState.getID()].getStateOccurrence(s2) - 
-                                bestTreeForState[s.getID()].getStateOccurrence(s2);
-                        
-                        if (s2.getID() == s.getID()) {
-                            newStateOccurrence++;
-                        }
-
-                        if (resState.getID() == s2.getID()) {
-                            newStateOccurrence--;
-                        }
-                        newContext.addStateOccurrence(s2, newStateOccurrence);
+                    //TODO: 
+                    // For p in Q, and i <= depth(newContext), let P(newContext,p)_i = P(d_0[...[d_i]...],p)
+                    // f(newContext) = sum_{i \in [depth(newContext)]} f(d_0[...[d_i]..]) * P(newContext,s2)_i
+                    
+                    // I kontext behöver vi en vektor som är lika stor som djupet på kontexten och som ärvs av 
+                    // barn-kontexterna och fylls på med värden
+                    // Tittar uppåt
+                    
+                    /*
+                     * Sedan behöver vi en likadan struktur för att hålla reda på P-värdena
+                     * under den i:te positionen, hur många av varje tillstånd har vi?
+                     */
+					
+					int fNext = 0;
+                    for (int index = 0; index < newContext.getDepth(); index++) {
+                    	int sumP = 1;
+                    	for (int indexP = index; indexP < newContext.getDepth() + 1; indexP++) {
+                    		HashMap<State, Integer> h = newContext.getP().get(indexP);
+                    		sumP += (h.get(resState) == null) ? 0 : h.get(resState);
+                    	}
+                    	
+                    	fNext += newContext.getf().get(index) * sumP;
                     }
+                    
+                    newContext.getf().add(fNext);
+                    
+//System.out.println("Next fValue: " + fNext);
+                    
+                    /* Compute state usage in best context */
+//                    ArrayList<State> relevantStates = new ArrayList<State>(bestTreeForState[resState.getID()].
+//                    		getStateOccurrences().keySet());
+//                    relevantStates.addAll(defined[resState.getID()].getStateOccurrences().keySet());
+//
+//                    for (State s2 : relevantStates) {
+////                        if (newContext.getStateOccurrence(s2) > 0) {
+////                            continue;
+////                        }
+////
+////                        int newStateOccurrence = defined[resState.getID()].getStateOccurrence(s2) +
+////                                bestTreeForState[resState.getID()].getStateOccurrence(s2) - 
+////                                bestTreeForState[s.getID()].getStateOccurrence(s2);
+////                        
+////                        if (s2.getID() == s.getID()) {
+////                            newStateOccurrence++;
+////                        }
+////
+////                        if (resState.getID() == s2.getID()) {
+////                            newStateOccurrence--;
+////                        }
+////                        newContext.addStateOccurrence(s2, newStateOccurrence);
+//                    }
 
                     /* Add or update queue element */
 					if (oldContext == null) {
@@ -309,10 +369,15 @@ public class KnuthBestDerivations {
 //			Context c = defined[i];
 //			BinaryHeap<State, Context>.Node elem = qElems[i];
 //			if (elem != null) {
-//System.out.println(elem.getObject() + " : " + c.getWeight());
-//				for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
-//System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+//System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
+//			} else {
+//System.out.println("state with id=" + i + " : Weight=" + c.getWeight());
+//			}
+//			if (c.getP() != null) {
+//				for (Entry<State, Integer> e : c.getP().get(c.getDepth()).entrySet()) {
+//System.out.println("P(" + e.getKey() + ")=" + e.getValue());
 //				}
+//System.out.println("f=" + c.getfValue());
 //			}
 //		}
 

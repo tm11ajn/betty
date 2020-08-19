@@ -1,5 +1,6 @@
 package se.umu.cs.flp.aj.nbest.treedata;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -11,11 +12,16 @@ public class Context implements Comparable<Context> {
 //	private HashMap<State, Integer> depth;
 	private int depth;
 	
+	private ArrayList<Integer> f;
+	private ArrayList<HashMap<State, Integer>> P;
+	
 	public Context() {
 		occurrences = new HashMap<>();
 //		depth = new HashMap<>();
 		depth = 0;
 		this.weight = null;
+		this.f = null;
+		this.P = null;
 	}
 	
 	public Context(Weight weight) {
@@ -31,10 +37,34 @@ public class Context implements Comparable<Context> {
 		this.depth = depth;
 	}
 	
-	public int getDepthOfState(State s) {
-		return depth;
+	public void setf(ArrayList<Integer> f) {
+		this.f = f;
 	}
 	
+	public void setP(ArrayList<HashMap<State, Integer>> P) {
+		this.P = P;
+	}
+	
+	public ArrayList<Integer> getf() {
+		return f;
+	}
+	
+	public ArrayList<HashMap<State, Integer>> getP() {
+		return P;
+	}
+	
+	public int getfValue() {
+		return this.f.get(depth);
+	}
+	
+	public int getPValue(State s) {
+		return this.P.get(depth).get(s);
+	}
+	
+//	public int getDepthOfState(State s) {
+//		return depth;
+//	}
+//	
 //	public HashMap<State, Integer> getDepthOfStates() {
 //		return depth;
 //	}
