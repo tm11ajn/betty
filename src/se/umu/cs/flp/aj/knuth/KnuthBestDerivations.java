@@ -189,7 +189,7 @@ public class KnuthBestDerivations {
         for (State s : wta.getFinalStates()) {
             Context newContext = new Context(wta.getSemiring().one());
             HashMap<State, Integer> map = new HashMap<State, Integer>();
-            map.put(s, 1);
+            map.put(s, 0);
             newContext.setDepth(0);
             newContext.setP(new ArrayList<HashMap<State, Integer>>());
             newContext.getP().add(map);
@@ -282,12 +282,12 @@ public class KnuthBestDerivations {
                      * under den i:te positionen, hur många av varje tillstånd har vi?
                      */
 					
-					int fNext = 0;
+					int fNext = 1;
                     for (int index = 0; index < newContext.getDepth(); index++) {
-                    	int sumP = 1;
+                    	int sumP = 0;
                     	for (int indexP = index; indexP < newContext.getDepth() + 1; indexP++) {
                     		HashMap<State, Integer> h = newContext.getP().get(indexP);
-                    		sumP += (h.get(resState) == null) ? 0 : h.get(resState);
+                    		sumP += (h.get(s) == null) ? 0 : h.get(s);
                     	}
                     	
                     	fNext += newContext.getf().get(index) * sumP;
@@ -295,7 +295,7 @@ public class KnuthBestDerivations {
                     
                     newContext.getf().add(fNext);
                     
-//System.out.println("Next fValue: " + fNext);
+System.out.println("Next fValue: " + fNext);
                     
                     /* Compute state usage in best context */
 //                    ArrayList<State> relevantStates = new ArrayList<State>(bestTreeForState[resState.getID()].
