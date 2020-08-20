@@ -215,18 +215,18 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 					newContext.setP(new ArrayList<>(defined[resState.getID()].getP()));
 					newContext.setf(new ArrayList<>(defined[resState.getID()].getf()));
 
-//System.out.println("Current blank state: " + s);
-//System.out.println("P(" + resState + ")");
-//for (HashMap<State, Integer> m : defined[resState.getID()].getP()) {
-//	for (Entry<State, Integer> e : m.entrySet()) {
-//System.out.println(e.getKey() + " : " + e.getValue());
-//	}
-//}
-//
-//System.out.println("f");
-//for (Integer e : defined[resState.getID()].getf()) {
-//System.out.println(e);
-//}
+System.out.println("Current blank state: " + s);
+System.out.println("P(" + resState + ")");
+for (HashMap<State, Integer> m : defined[resState.getID()].getP()) {
+	for (Entry<State, Integer> e : m.entrySet()) {
+System.out.println(e.getKey() + " : " + e.getValue());
+	}
+}
+
+System.out.println("f");
+for (Integer e : defined[resState.getID()].getf()) {
+System.out.println(e);
+}
 
 					 /* Compute new weight and state occurrence in smallest context 
 					  * for current rule application */ 
@@ -265,17 +265,18 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 					 * under den i:te positionen, hur många av varje tillstånd har vi?
 					 */
 					
-					int fNext = 1;
+					int fNext = 0;
 					for (int index = 0; index < newContext.getDepth(); index++) {
 						int sumP = 0;
-						HashMap<State, Integer> h = newContext.getP().get(index+1);
-						fNext += (h.get(s) == null) ? 0 : h.get(s);
+//						HashMap<State, Integer> h = newContext.getP().get(index+1);
+//						fNext += (h.get(s) == null) ? 0 : h.get(s);
 						for (int indexP = index; indexP < newContext.getDepth() + 1; indexP++) {
-							h = newContext.getP().get(indexP);
-//System.out.println("h.get("+ s +")=" + h.get(s));
+							HashMap<State, Integer> h = newContext.getP().get(indexP);
+System.out.println("h.get("+ s +")=" + h.get(s));
 							sumP += (h.get(s) == null) ? 0 : h.get(s);
 						}
-						fNext += (newContext.getf().get(index) - 1) * (sumP + 1);
+						int fPrev = newContext.getf().get(index); 
+						fNext += fPrev * sumP;
 					}
 					
 					newContext.getf().add(fNext);
