@@ -265,20 +265,20 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 					 * under den i:te positionen, hur många av varje tillstånd har vi?
 					 */
 					
-					int fNext = 0;
-					int totalP = 0;
+					int fNext = 1;
 					for (int index = 0; index < newContext.getDepth(); index++) {
 						int sumP = 0;
+						HashMap<State, Integer> h = newContext.getP().get(index+1);
+						fNext += (h.get(s) == null) ? 0 : h.get(s);
 						for (int indexP = index; indexP < newContext.getDepth() + 1; indexP++) {
-							HashMap<State, Integer> h = newContext.getP().get(indexP);
+							h = newContext.getP().get(indexP);
 //System.out.println("h.get("+ s +")=" + h.get(s));
 							sumP += (h.get(s) == null) ? 0 : h.get(s);
 						}
 						fNext += (newContext.getf().get(index) - 1) * (sumP + 1);
-						if (index == 0) totalP = sumP + 1;
 					}
 					
-					newContext.getf().add(fNext + totalP);
+					newContext.getf().add(fNext);
 					
 System.out.println("Next fValue: " + fNext);
 
