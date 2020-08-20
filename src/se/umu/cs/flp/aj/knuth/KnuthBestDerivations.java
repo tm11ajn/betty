@@ -138,18 +138,18 @@ public class KnuthBestDerivations {
 		}
 		
 		/*Print cheapest trees*/
-//System.out.println("cheapest trees");
-//		for (int i = 1; i < nOfStates + 1; i++) {
-//			Context c = defined[i];
-//			BinaryHeap<State, Context>.Node elem = qElems[i];
-//			if (elem != null //&& elem.getObject().isFinal()
-//					) {
-//System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
-//				for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
-//System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
-//				}
-//			}
-//		}
+System.out.println("cheapest trees");
+		for (int i = 1; i < nOfStates + 1; i++) {
+			Context c = defined[i];
+			BinaryHeap<State, Context>.Node elem = qElems[i];
+			if (elem != null && elem.getObject().isFinal()
+					) {
+System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
+				for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
+System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+				}
+			}
+		}
 
 		return defined;
 	}
@@ -320,22 +320,22 @@ public class KnuthBestDerivations {
 		}
 		
 		/*Print best contexts*/
-System.out.println("best contexts");
-		for (int i = 1; i < nOfStates + 1; i++) {
-			Context c = defined[i];
-			BinaryHeap<State, Context>.Node elem = qElems[i];
-			if (elem != null) {
-System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
-			} else {
-System.out.println("state with id=" + i + " : Weight=" + c.getWeight());
-			}
-			if (c.getP() != null) {
-				for (Entry<State, Integer> e : c.getP().get(c.getDepth()).entrySet()) {
-System.out.println("P(" + e.getKey() + ")=" + e.getValue());
-				}
-System.out.println("f=" + c.getfValue());
-			}
-		}
+//System.out.println("best contexts");
+//		for (int i = 1; i < nOfStates + 1; i++) {
+//			Context c = defined[i];
+//			BinaryHeap<State, Context>.Node elem = qElems[i];
+//			if (elem != null) {
+//System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
+//			} else {
+//System.out.println("state with id=" + i + " : Weight=" + c.getWeight());
+//			}
+//			if (c.getP() != null) {
+//				for (Entry<State, Integer> e : c.getP().get(c.getDepth()).entrySet()) {
+//System.out.println("P(" + e.getKey() + ")=" + e.getValue());
+//				}
+//System.out.println("f=" + c.getfValue());
+//			}
+//		}
 
 		return defined;
 	}

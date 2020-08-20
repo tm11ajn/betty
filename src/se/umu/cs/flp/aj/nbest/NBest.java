@@ -208,7 +208,7 @@ public class NBest {
 
 		if (timer) {
 			System.out.println("Total time for BestTrees including "
-					+ "the preprocessing of smallest completions: " +
+					+ "the preprocessing of best contexts: " +
 					accumulativeTime + " ms");
 		}
 	}
