@@ -280,7 +280,7 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 					
 					newContext.getf().add(fNext + totalP);
 					
-System.out.println("Next fValue: " + fNext);
+//System.out.println("Next fValue: " + fNext);
 
 					/* Add or update queue element */
 					if (oldContext == null) {
