@@ -139,7 +139,7 @@ public class NBest {
 		// TOOD: fix so that derivations still works for the old version, or not?
 		wta = parser.parseForBestTrees(fileName);
 		
-System.out.println(wta);
+//System.out.println(wta);
 		
 //		if (derivations) {
 //			wta = parser.parseForBestDerivations(fileName);
@@ -152,13 +152,13 @@ System.out.println(wta);
 		
 		Timer threadTimer = new Timer();
 
-		System.out.println("Pre-computing smallest completions...");
+		System.out.println("Pre-computing best contexts...");
 		threadTimer.start();
 		Context[] bestContexts = KnuthBestDerivations.computeBestContexts(wta);
 		List<String> result = new LinkedList<>();
 		duration = threadTimer.elapsed();
 		accumulativeTime = duration;
-		System.out.println("Smallest completions done (took "
+		System.out.println("Best contexts done (took "
 				+ duration + " milliseconds).");
 
 		if (version.equals(RULE_QUEUE_ARG) || version.equals(ALL_ARG)) {

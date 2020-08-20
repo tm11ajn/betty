@@ -138,17 +138,18 @@ public class KnuthBestDerivations {
 		}
 		
 		/*Print cheapest trees*/
-System.out.println("cheapest trees");
-		for (int i = 1; i < nOfStates + 1; i++) {
-			Context c = defined[i];
-			BinaryHeap<State, Context>.Node elem = qElems[i];
-			if (elem != null) {
-System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
-				for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
-System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
-				}
-			}
-		}
+//System.out.println("cheapest trees");
+//		for (int i = 1; i < nOfStates + 1; i++) {
+//			Context c = defined[i];
+//			BinaryHeap<State, Context>.Node elem = qElems[i];
+//			if (elem != null //&& elem.getObject().isFinal()
+//					) {
+//System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
+//				for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
+//System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+//				}
+//			}
+//		}
 
 		return defined;
 	}
@@ -215,18 +216,18 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 					newContext.setP(new ArrayList<>(defined[resState.getID()].getP()));
 					newContext.setf(new ArrayList<>(defined[resState.getID()].getf()));
 
-System.out.println("Current blank state: " + s);
-System.out.println("P(" + resState + ")");
-for (HashMap<State, Integer> m : defined[resState.getID()].getP()) {
-	for (Entry<State, Integer> e : m.entrySet()) {
-System.out.println(e.getKey() + " : " + e.getValue());
-	}
-}
-
-System.out.println("f");
-for (Integer e : defined[resState.getID()].getf()) {
-System.out.println(e);
-}
+//System.out.println("Current blank state: " + s);
+//System.out.println("P(" + resState + ")");
+//for (HashMap<State, Integer> m : defined[resState.getID()].getP()) {
+//	for (Entry<State, Integer> e : m.entrySet()) {
+//System.out.println(e.getKey() + " : " + e.getValue());
+//	}
+//}
+//
+//System.out.println("f");
+//for (Integer e : defined[resState.getID()].getf()) {
+//System.out.println(e);
+//}
 
 					 /* Compute new weight and state occurrence in smallest context 
 					  * for current rule application */ 
@@ -265,18 +266,11 @@ System.out.println(e);
 					 * under den i:te positionen, hur många av varje tillstånd har vi?
 					 */
 					
-					int fNext = 0;
+					int fNext = 1;
 					for (int index = 0; index < newContext.getDepth(); index++) {
-						int sumP = 0;
-//						HashMap<State, Integer> h = newContext.getP().get(index+1);
-//						fNext += (h.get(s) == null) ? 0 : h.get(s);
-						for (int indexP = index; indexP < newContext.getDepth() + 1; indexP++) {
-							HashMap<State, Integer> h = newContext.getP().get(indexP);
-System.out.println("h.get("+ s +")=" + h.get(s));
-							sumP += (h.get(s) == null) ? 0 : h.get(s);
-						}
-						int fPrev = newContext.getf().get(index); 
-						fNext += fPrev * sumP;
+						HashMap<State, Integer> h = newContext.getP().get(index + 1);
+						int P = (h.get(s) == null) ? 0 : h.get(s);
+						fNext += newContext.getf().get(index) * P;
 					}
 					
 					newContext.getf().add(fNext);
