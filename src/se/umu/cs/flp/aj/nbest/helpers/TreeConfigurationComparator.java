@@ -26,6 +26,7 @@ import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 
+/* Compares treekeeper configurations */
 public class TreeConfigurationComparator
 			implements Comparator<Configuration<TreeKeeper2>> {
 
