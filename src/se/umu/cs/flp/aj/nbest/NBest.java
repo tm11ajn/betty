@@ -69,6 +69,10 @@ public class NBest {
 
 	private static final String DERIVATION_FLAG = "r";
 	private static final String DERIVATION_FLAG_LONG = "runs";
+	
+	private static final String TRICK_FLAG_LONG = "trick";
+	
+	
 
 	public static void main(String[] args) {
 
@@ -82,6 +86,7 @@ public class NBest {
 		String semiringType = DEFAULT_SEMIRING;
 		boolean derivations = false;
 		String fileType = DEFAULT_FILE_TYPE;
+		boolean trick = false;
 
 		try {
 			CommandLine cmd = clParser.parse(options, args);
@@ -111,6 +116,10 @@ public class NBest {
 
 			if (cmd.hasOption(DERIVATION_FLAG)) {
 				derivations = true;
+			}
+			
+			if (cmd.hasOption(TRICK_FLAG_LONG)) {
+				trick = true;
 			}
 
 		} catch (ParseException e) {
@@ -154,7 +163,7 @@ public class NBest {
 
 		System.out.println("Pre-computing best contexts...");
 		threadTimer.start();
-		Context[] bestContexts = KnuthBestDerivations.computeBestContexts(wta);
+		Context[] bestContexts = KnuthBestDerivations.computeBestContexts(wta, trick);
 		List<String> result = new LinkedList<>();
 		duration = threadTimer.elapsed();
 		accumulativeTime = duration;
@@ -164,8 +173,7 @@ public class NBest {
 		if (version.equals(RULE_QUEUE_ARG) || version.equals(ALL_ARG)) {
 			System.out.println("Running BestTrees version 2...");
 			threadTimer.start();
-//			result = BestTrees2.run(wta, N, derivations);
-			result = BestTrees2.run(wta, N, bestContexts, derivations);
+			result = BestTrees2.run(wta, N, bestContexts, derivations, trick);
 			duration = threadTimer.elapsed();
 			printResult(result, derivations);
 
@@ -237,6 +245,8 @@ public class NBest {
 		Option derivationsOpt = new Option(DERIVATION_FLAG,
 				DERIVATION_FLAG_LONG, false,
 				"finds the best runs instead of the best trees");
+		Option trickOpt = new Option(TRICK_FLAG_LONG, false, 
+				"uses trick that increases pruning for best runs");
 
 		wtaFileOpt.setArgName("wta file");
 		fileTypeOpt.setArgName("file type ('wta' or 'rtg')");
@@ -250,6 +260,7 @@ public class NBest {
 		timerOpt.setRequired(false);
 		semiringOpt.setRequired(false);
 		derivationsOpt.setRequired(false);
+		trickOpt.setRequired(false);
 
 		options.addOption(wtaFileOpt);
 		options.addOption(fileTypeOpt);
@@ -258,6 +269,7 @@ public class NBest {
 		options.addOption(timerOpt);
 		options.addOption(semiringOpt);
 		options.addOption(derivationsOpt);
+		options.addOption(trickOpt);
 
 		return options;
 	}

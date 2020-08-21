@@ -40,7 +40,8 @@ public class BestTrees2 {
 	private static RuleQueue ruleQueue;
 
 //	public static List<String> run(WTA wta, int N, boolean derivations) {
-	public static List<String> run(WTA wta, int N, Context[] bestContexts, boolean derivations) {
+	public static List<String> run(WTA wta, int N, Context[] bestContexts, 
+			boolean derivations, boolean trick) {
 		
 		TreeKeeper2.init(bestContexts);
 
@@ -53,7 +54,7 @@ public class BestTrees2 {
 		
 		// K <- empty
 		/* Initialises implicitly by enqueuing rules without states. */
-		ruleQueue = new RuleQueue(N, wta);
+		ruleQueue = new RuleQueue(N, wta, trick);
 
 		// i <- 0
 		int foundTrees = 0;
@@ -69,10 +70,6 @@ public class BestTrees2 {
 			if (currentTree.getDeltaWeight().compareTo(
 					wta.getSemiring().zero()) >= 0) {
 				break;
-			}
-			
-			if (outputtedTrees.containsKey(currentTree.getTree())) {
-//System.err.println("Dubblett upptäckt och kastad: " + currentTree);
 			}
 
 			/* Blocks duplicates unless we are solving the N best derivations/runs 
@@ -114,13 +111,9 @@ public class BestTrees2 {
 			/* Blocks duplicates from being added to the state result lists 
 			 * unless we are solving the best derivations/runs */
 			if (derivations || !temp.containsKey(currentTree.getTree())) {
-				if (currentTree.getResultingState().isSaturated()) {
-System.out.println("TRICKET ANVÄNDS");
-				}
 
 				// Expand search space with current tree
-				if (foundTrees < N && !currentTree.getResultingState().isSaturated()
-						) {
+				if (foundTrees < N && !currentTree.getResultingState().isSaturated()) {
 					ruleQueue.expandWith(currentTree);
 				}
 

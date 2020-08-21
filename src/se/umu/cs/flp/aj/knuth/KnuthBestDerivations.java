@@ -18,9 +18,11 @@ public class KnuthBestDerivations {
 	private static BinaryHeap<State, Context>.Node[] qElems;
 	private static Context[] defined;
 	private static ArrayList<Rule> usableRules;
+	private static boolean trick;
 
-	public static Context[] computeBestContexts(WTA wta) {
+	public static Context[] computeBestContexts(WTA wta, boolean trickVal) {
 		KnuthBestDerivations.wta = wta;
+		trick = trickVal;
 //		computeBestContextForEachState(computeBestTreeForEachState());
 		return computeBestContextForEachState(computeBestTreeForEachState());
 	}
@@ -115,11 +117,12 @@ public class KnuthBestDerivations {
 				
 				for (State s : r2.getStates()) {
 					if (s.getID() == state.getID()) {
-						
-						// Compute P(t_q,p) for each q,p in Q so that P(t_q,p) is 
-						// the number of p's in the best tree for q.
-						for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
-							context.addStateOccurrence(entry.getKey(), entry.getValue());
+						if (trick) {
+							// Compute P(t_q,p) for each q,p in Q so that P(t_q,p) is 
+							// the number of p's in the best tree for q.
+							for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
+								context.addStateOccurrence(entry.getKey(), entry.getValue());
+							}
 						}
 						missingIndices[r2.getID()]--;
 						Weight currentWeight = context.getWeight();
@@ -138,18 +141,18 @@ public class KnuthBestDerivations {
 		}
 		
 		/*Print cheapest trees*/
-System.out.println("cheapest trees");
-		for (int i = 1; i < nOfStates + 1; i++) {
-			Context c = defined[i];
-			BinaryHeap<State, Context>.Node elem = qElems[i];
-			if (elem != null && elem.getObject().isFinal()
-					) {
-System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
-				for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
-System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
-				}
-			}
-		}
+//System.out.println("cheapest trees");
+//		for (int i = 1; i < nOfStates + 1; i++) {
+//			Context c = defined[i];
+//			BinaryHeap<State, Context>.Node elem = qElems[i];
+//			if (elem != null && elem.getObject().isFinal()
+//					) {
+//System.out.println(elem.getObject() + " : Weight=" + c.getWeight());
+//				for (Entry<State, Integer> e : c.getStateOccurrences().entrySet()) {
+//System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue() );
+//				}
+//			}
+//		}
 
 		return defined;
 	}
@@ -241,11 +244,13 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 							Context cTemp = bestTreeForState[s2.getID()];
 							newWeight = newWeight.mult(cTemp.getWeight());
 							
-							for(Entry<State, Integer> entry : cTemp.getStateOccurrences().entrySet()) {
-								State eState = entry.getKey();
-								int eVal = entry.getValue();
-								int val = (stateCount.get(eState) == null) ? 0 : stateCount.get(eState);
-								stateCount.put(eState, val + eVal);
+							if (trick) {
+								for(Entry<State, Integer> entry : cTemp.getStateOccurrences().entrySet()) {
+									State eState = entry.getKey();
+									int eVal = entry.getValue();
+									int val = (stateCount.get(eState) == null) ? 0 : stateCount.get(eState);
+									stateCount.put(eState, val + eVal);
+								}
 							}
 						}
 					}
@@ -266,14 +271,15 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 					 * under den i:te positionen, hur många av varje tillstånd har vi?
 					 */
 					
-					int fNext = 1;
-					for (int index = 0; index < newContext.getDepth(); index++) {
-						HashMap<State, Integer> h = newContext.getP().get(index + 1);
-						int P = (h.get(s) == null) ? 0 : h.get(s);
-						fNext += newContext.getf().get(index) * P;
+					if (trick) {
+						int fNext = 1;
+						for (int index = 0; index < newContext.getDepth(); index++) {
+							HashMap<State, Integer> h = newContext.getP().get(index + 1);
+							int P = (h.get(s) == null) ? 0 : h.get(s);
+							fNext += newContext.getf().get(index) * P;
+						}
+						newContext.getf().add(fNext);
 					}
-					
-					newContext.getf().add(fNext);
 					
 //System.out.println("Next fValue: " + fNext);
 
@@ -299,22 +305,16 @@ System.out.println(e.getKey() + " id: " + e.getKey().getID() + "| " + e.getValue
 				State state = element.getObject();
 				defined[state.getID()] = element.getWeight();
 				nOfDefined++;
-
 				for (Rule r : state.getIncoming()) {
 					usableRules.add(r);
 					usableSize++;
 				}
-
 			} else {
-				
 				for (int i = 1; i < nOfStates + 1; i++) {
-//					BinaryHeap<State, Context>.Node elem = qElems[i];
 					if (defined[i] == null) {
 						defined[i] = new Context(wta.getSemiring().zero());
 					}
-//					elem.getObject().setBestContext(defined[i]);
 				}
-
 				done = true;
 			}
 		}
