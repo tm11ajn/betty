@@ -274,9 +274,12 @@ public class KnuthBestDerivations {
 					if (trick) {
 						int fNext = 1;
 						for (int index = 0; index < newContext.getDepth(); index++) {
-							HashMap<State, Integer> h = newContext.getP().get(index + 1);
-							int P = (h.get(s) == null) ? 0 : h.get(s);
-							fNext += newContext.getf().get(index) * P;
+							int sumP = 1;
+							for (int indexP = index; indexP < newContext.getDepth() + 1; indexP++) {
+								HashMap<State, Integer> h = newContext.getP().get(indexP);
+								sumP += (h.get(s) == null) ? 0 : h.get(s);
+							}
+							fNext = Math.max(fNext, newContext.getf().get(index) * sumP);
 						}
 						newContext.getf().add(fNext);
 					}
