@@ -1,0 +1,72 @@
+S
+S -> S(NP-SBJ VP .) #0.5
+NP-SBJ -> NP-SBJ(NP , ADJP ,) #0.333333
+NP -> NP(NNP NNP) #0.2
+NNP -> NNP('Pierre') #0.0714286
+NNP -> NNP('Vinken') #0.142857
+, -> ,(',') #1.0
+ADJP -> ADJP(NP JJ) #1.0
+NP -> NP(CD NNS) #0.133333
+CD -> CD('61') #0.333333
+NNS -> NNS('years') #1.0
+JJ -> JJ('old') #0.285714
+VP -> VP(MD VP) #0.2
+MD -> MD('will') #1.0
+VP -> VP(VB NP PP-CLR NP-TMP) #0.2
+VB -> VB('join') #1.0
+NP -> NP(DT NN) #0.0666667
+DT -> DT('the') #0.4
+NN -> NN('board') #0.142857
+PP-CLR -> PP-CLR(IN NP) #1.0
+IN -> IN('as') #0.25
+NP -> NP(DT JJ NN) #0.133333
+DT -> DT('a') #0.4
+JJ -> JJ('nonexecutive') #0.285714
+NN -> NN('director') #0.285714
+NP-TMP -> NP-TMP(NNP CD) #1.0
+NNP -> NNP('Nov.') #0.0714286
+CD -> CD('29') #0.333333
+. -> .('.') #1.0
+NP-SBJ -> NP-SBJ(NNP NNP) #0.333333
+NNP -> NNP('Mr.') #0.0714286
+VP -> VP(VBZ NP-PRD) #0.2
+VBZ -> VBZ('is') #1.0
+NP-PRD -> NP-PRD(NP PP) #1.0
+NP -> NP(NN) #0.0666667
+NN -> NN('chairman') #0.285714
+PP -> PP(IN NP) #1.0
+IN -> IN('of') #0.75
+NP -> NP(NP , NP) #0.0666667
+NNP -> NNP('Elsevier') #0.0714286
+NNP -> NNP('N.V.') #0.0714286
+NP -> NP(DT NNP VBG NN) #0.0666667
+NNP -> NNP('Dutch') #0.0714286
+VBG -> VBG('publishing') #1.0
+NN -> NN('group') #0.142857
+S -> S(NP-SBJ-1 VP .) #0.25
+NP-SBJ-1 -> NP-SBJ-1(NP , UCP ,) #1.0
+NNP -> NNP('Rudolph') #0.0714286
+NNP -> NNP('Agnew') #0.0714286
+UCP -> UCP(ADJP CC NP) #1.0
+CD -> CD('55') #0.333333
+CC -> CC('and') #1.0
+NP -> NP(NP PP) #0.0666667
+NP -> NP(JJ NN) #0.0666667
+JJ -> JJ('former') #0.142857
+NP -> NP(NNP NNP NNP NNP) #0.0666667
+NNP -> NNP('Consolidated') #0.0714286
+NNP -> NNP('Gold') #0.0714286
+NNP -> NNP('Fields') #0.0714286
+NNP -> NNP('PLC') #0.0714286
+VP -> VP(VBD VP) #0.2
+VBD -> VBD('was') #1.0
+VP -> VP(VBN S) #0.2
+VBN -> VBN('named') #1.0
+S -> S(NP-SBJ NP-PRD) #0.25
+NP-SBJ -> NP-SBJ(-NONE-) #0.333333
+-NONE- -> -NONE-('*-1') #1.0
+NP -> NP(DT JJ JJ NN) #0.0666667
+DT -> DT('this') #0.2
+JJ -> JJ('British') #0.142857
+JJ -> JJ('industrial') #0.142857
+NN -> NN('conglomerate') #0.142857

@@ -121,6 +121,10 @@ public class NBest {
 			if (cmd.hasOption(TRICK_FLAG_LONG)) {
 				trick = true;
 			}
+			
+			if (trick && !derivations) {
+				throw new ParseException("Trick only valid for best runs");
+			}
 
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
@@ -246,7 +250,7 @@ public class NBest {
 				DERIVATION_FLAG_LONG, false,
 				"finds the best runs instead of the best trees");
 		Option trickOpt = new Option(TRICK_FLAG_LONG, false, 
-				"uses trick that increases pruning for best runs");
+				"uses trick that increases pruning for best runs; not valid for best trees");
 
 		wtaFileOpt.setArgName("wta file");
 		fileTypeOpt.setArgName("file type ('wta' or 'rtg')");

@@ -92,9 +92,10 @@ public class RuleQueue {
 		State resState = newTree.getResultingState();
 		boolean unseenState = resultConnector.isUnseen(resState.getID());
 		
+		/* Trick cannot be applied to the very first trees for a given state. */
 		if (trick) {
 			int resSizeForState = resultConnector.getResultSize(resState.getID());
-			if (resSizeForState * newTree.getBestContext().getfValue() >= limit) {
+			if (resSizeForState > 1 && resSizeForState * newTree.getBestContext().getfValue() >= limit) {
 				resState.markAsSaturated();
 			}
 		}
