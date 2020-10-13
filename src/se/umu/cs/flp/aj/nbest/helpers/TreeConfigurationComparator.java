@@ -38,8 +38,6 @@ public class TreeConfigurationComparator
 		Weight weight1 = null;
 		Weight weight2 = null;
 
-		TreeKeeper2[] list1 = config1.getValues();
-		TreeKeeper2[] list2 = config2.getValues();
 		int size1 = config1.getSize();
 		int size2 = config2.getSize();
 
@@ -70,19 +68,6 @@ public class TreeConfigurationComparator
 			return -1;
 		} else if (sum1 > sum2) {
 			return 1;
-		}
-		
-		for (int i = 0; i < size1; i++) {
-			TreeKeeper2 t1 = list1[i];
-			TreeKeeper2 t2 = list2[i];
-			int compare = t1.compareTo(t2);
-			if (compare != 0) {
-				return compare;
-			}
-//			boolean equals = t1.getTree().equals(t2.getTree());
-//			if (!equals) {
-//				return 1;
-//			}
 		}
 
 		return 0;

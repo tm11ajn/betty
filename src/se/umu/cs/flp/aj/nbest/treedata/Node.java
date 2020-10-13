@@ -37,12 +37,10 @@ public class Node implements Comparable<Node> {
 	private String treeString;
 	private String treeRTGString;
 	private int size;
-//	private int depth;
 	private int hash;
 	private boolean validString;
 	private boolean validRTGString;
 	private boolean validSize;
-//	private boolean validDepth;
 	private boolean validHash;
 	
 
@@ -51,14 +49,12 @@ public class Node implements Comparable<Node> {
 
 		treeString = "";
 		size = 1;
-//		depth = 0;
 		hash = 0;
 
 		validLeaves = false;
 		validString = false;
 		validRTGString = false;
 		validSize = true;
-//		validDepth = true;
 		validHash = false;
 	}
 
@@ -72,7 +68,6 @@ public class Node implements Comparable<Node> {
 		validString = false;
 		validRTGString = false;
 		validSize = false;
-//		validDepth = false;
 		this.invalidateHash();
 		return child;
 	}
@@ -130,27 +125,6 @@ public class Node implements Comparable<Node> {
 
 		return size;
 	}
-	
-//	public int getDepth() {
-//
-//		if (validDepth) {
-//			return depth;
-//		}
-//
-//		validDepth = true;
-//		int maxDepth = 0;
-//
-//		for (Node child : children) {
-//			
-//			if (child.getDepth() > maxDepth) {
-//				maxDepth = child.getDepth();
-//			}
-//		}
-//		
-//		depth = 1 + maxDepth;
-//
-//		return depth;
-//	}
 
 	private void invalidateHash() {
 		this.validHash = false;
@@ -261,16 +235,6 @@ public class Node implements Comparable<Node> {
 
 	@Override
 	public int compareTo(Node o) {
-		
-//		int thisDepth = this.getDepth();
-//		int oDepth = o.getDepth();
-//		
-//		if (thisDepth < oDepth) {
-//			return -1;
-//		} else if (thisDepth > oDepth) {
-//			return 1;
-//		}
-
 		int thisSize = this.getSize();
 		int oSize = o.getSize();
 
@@ -297,12 +261,8 @@ public class Node implements Comparable<Node> {
 		
 		if (thisString == oString) {
 			return 0;
-		} 
-//		else {
-//			return 1;
-//		}
+		}
 
-		int comparison = thisString.compareTo(oString);
-		return comparison;
+		return thisString.compareTo(oString);
 	}
 }

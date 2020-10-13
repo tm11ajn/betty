@@ -26,13 +26,10 @@ import se.umu.cs.flp.aj.nbest.wta.State;
 public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 
 	private static Context[] bestContexts;
-//	private static HashMap<Node, HashMap<State, Weight>> optWeights =
-//			new HashMap<>();
 
 	private Node tree;
 	private Weight runWeight;
 	private State resultingState;
-//	private HashMap<State, Integer> stateUsage;
 	private boolean outputted;
 
 	public TreeKeeper2(Node tree, Weight treeWeight, State resultingState) {
@@ -40,8 +37,6 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		this.runWeight = treeWeight.duplicate();
 		this.resultingState = resultingState;
 		this.outputted = false;
-//		this.stateUsage = new HashMap<State, Integer>();
-//		addStateWeight(resultingState, treeWeight);
 	}
 
 	public static void init(Context[] bestContexts2) {
@@ -60,14 +55,6 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		return resultingState;
 	}
 	
-//	public HashMap<State, Integer> getStateUsage() {
-//		return stateUsage;
-//	}
-//	
-//	public void setStateUsage(HashMap<State, Integer> stateUsage) {
-//		this.stateUsage = stateUsage;
-//	}
-	
 	public void markAsOutputted() {
 		this.outputted = true;
 	}
@@ -75,36 +62,13 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 	public boolean hasBeenOutputted() {
 		return this.outputted;
 	}
-
-//	private void addStateWeight(State s, Weight w) {
-//
-//		if (!optWeights.containsKey(tree)) {
-//			optWeights.put(tree, new HashMap<>());
-//		}
-//
-//		HashMap<State, Weight> treeWeights = optWeights.get(tree);
-//
-//		if (!treeWeights.containsKey(s) || treeWeights.get(s).compareTo(w) > 0) {
-//			treeWeights.put(s, w);
-//		}
-//	}
-	
-//	public int getStateUsageInBestContext(State s) {
-//		return smallestCompletions[resultingState.getID()].getStateOccurrence(s);
-//	}
 	
 	public Context getBestContext() {
 		return bestContexts[resultingState.getID()];
-//		return resultingState.getBestContext();
 	}
 
 	public Weight getDeltaWeight() {		
-//		if (resultingState.getBestContext() == null) {
-//			return runWeight.zero();
-//		}
-		
 		return runWeight.mult(bestContexts[resultingState.getID()].getWeight());
-//		return runWeight.mult(resultingState.getBestContext().getWeight());
 	}
 
 	@Override
@@ -134,19 +98,11 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 			return false;
 		}
 		
-		int runWeightComparison = this.getRunWeight().compareTo(o.getRunWeight());
-		
-		if (runWeightComparison != 0) {
-			return false;
-		}
-		
-		if (!this.getTree().equals(o.getTree())) {
-			return false;
-		}
+		int stateDepthComparison = bestContexts[resultingState.getID()].getDepth();
 
-//		if (this.compareTo(o) == 0) {
-//			return true;
-//		}
+		if (stateDepthComparison != 0) {
+			return false;
+		}
 
 		return true;
 	}
@@ -159,29 +115,8 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 			return weightComparison;
 		}
 		
-		int runWeightComparison = this.getRunWeight().compareTo(o.getRunWeight());
-		
-		if (runWeightComparison != 0) {
-			return runWeightComparison;
-		}
-		
 		int stateDepthComparison = bestContexts[resultingState.getID()].getDepth();
-		
-		if (stateDepthComparison != 0) {
-			return stateDepthComparison;
-		}
-
-		int treeComparison = this.tree.compareTo(o.tree);
-
-		if (treeComparison != 0) {
-			return treeComparison;
-		}
-		
-		return treeComparison;
-
-//		int stateComparison = this.resultingState.compareTo(o.resultingState);
-
-//		return stateComparison;
+		return stateDepthComparison;
 	}
 }
 
