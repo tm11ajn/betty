@@ -210,7 +210,7 @@ public class Node implements Comparable<Node> {
 
 	@Override
 	public String toString() {
-		return toWTAString();
+		return toRTGString();
 	}
 
 	@Override
