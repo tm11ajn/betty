@@ -120,6 +120,10 @@ public class RuleQueue {
 		ArrayList<Integer> toUpdate = 
 				resultConnector.addResult(resState.getID(), newTree);
 		
+		if (resultConnector.getResultSize(resState.getID()) >= limit) {
+			resState.markAsSaturated();
+		}
+		
 		/* Then update the corresponding rulekeepers. */
 		for (Integer index : toUpdate) {
 			BinaryHeap<RuleKeeper, Weight>.Node elem = queueElems[index];
@@ -163,7 +167,7 @@ public class RuleQueue {
 		Configuration<TreeKeeper2> config = ladder.dequeue();
 		State resState = ruleKeeper.getRule().getResultingState();
 		
-		if (resultConnector.getResultSize(resState.getID()) < limit) {
+		if (!resState.isSaturated() || trick) {
 			
 			/* Add the new configs to the process. */
 			ArrayList<Configuration<TreeKeeper2>> nextConfigs = 
