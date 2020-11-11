@@ -120,10 +120,6 @@ public class RuleQueue {
 		ArrayList<Integer> toUpdate = 
 				resultConnector.addResult(resState.getID(), newTree);
 		
-		if (resultConnector.getResultSize(resState.getID()) >= limit) {
-			resState.markAsSaturated();
-		}
-		
 		/* Then update the corresponding rulekeepers. */
 		for (Integer index : toUpdate) {
 			BinaryHeap<RuleKeeper, Weight>.Node elem = queueElems[index];
@@ -147,6 +143,10 @@ public class RuleQueue {
 				rk.setBestTree(newBest);
 				queue.insert(elem, newBest.getDeltaWeight());
 			}
+		}
+		
+		if (resultConnector.getResultSize(resState.getID()) >= limit) {
+			resState.markAsSaturated();
 		}
 	}
 	
