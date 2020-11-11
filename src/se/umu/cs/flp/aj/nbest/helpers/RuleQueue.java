@@ -161,21 +161,24 @@ public class RuleQueue {
 		ruleKeeper.setBestTree(null);
 		LadderQueue<TreeKeeper2> ladder = ruleKeeper.getLadderQueue();
 		Configuration<TreeKeeper2> config = ladder.dequeue();
-		
-		/* Add the new configs to the process. */
-		ArrayList<Configuration<TreeKeeper2>> nextConfigs = 
-				ladder.getNextConfigs(config);
-		for (Configuration<TreeKeeper2> next : nextConfigs) {
-			resultConnector.makeConnections(next);
-		}
-		
-		/* Re-queue the rulekeeper if it has another element in its ladder. */
 		State resState = ruleKeeper.getRule().getResultingState();
-		if (!resState.isSaturated() && ladder.hasNext()) {
-			Configuration<TreeKeeper2> c = ruleKeeper.getLadderQueue().peek();
-			TreeKeeper2 newBest = ruleKeeper.getRule().apply(c);				
-			ruleKeeper.setBestTree(newBest);
-			queue.insert(elem, newBest.getDeltaWeight());
+		
+		if (resultConnector.getResultSize(resState.getID()) < limit) {
+			
+			/* Add the new configs to the process. */
+			ArrayList<Configuration<TreeKeeper2>> nextConfigs = 
+					ladder.getNextConfigs(config);
+			for (Configuration<TreeKeeper2> next : nextConfigs) {
+				resultConnector.makeConnections(next);
+			}
+
+			/* Re-queue the rulekeeper if it has another element in its ladder. */
+			if (!resState.isSaturated() && ladder.hasNext()) {
+				Configuration<TreeKeeper2> c = ruleKeeper.getLadderQueue().peek();
+				TreeKeeper2 newBest = ruleKeeper.getRule().apply(c);				
+				ruleKeeper.setBestTree(newBest);
+				queue.insert(elem, newBest.getDeltaWeight());
+			}
 		}
 		
 		return nextTree;
