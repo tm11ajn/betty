@@ -77,19 +77,19 @@ public class BestTrees2 {
 			if (derivations || !outputtedTrees.containsKey(currentTree.getTree())) {
 
 				if (currentTree.getResultingState().isFinal()) {
-					String outputString = "";
+//					String outputString = "";
 
-					if (wta.isGrammar()) {
-						outputString = currentTree.getTree().toRTGString();
-					} else {
-						outputString = currentTree.getTree().toWTAString();
-					}
+//					if (wta.isGrammar()) {
+//						outputString = currentTree.getTree().toRTGString();
+//					} else {
+//						outputString = currentTree.getTree().toWTAString();
+//					}
 
-					outputString += (" # " +
-								currentTree.getRunWeight().toString());
+//					outputString += (" # " +
+//								currentTree.getRunWeight().toString());
 
-					// output(t)
-					nBest.add(outputString);
+//					// output(t)
+//					nBest.add(outputString);
 					currentTree.markAsOutputted();
 					if (!derivations) {
 						outputtedTrees.put(currentTree.getTree(), null);

@@ -41,6 +41,9 @@ public class Node implements Comparable<Node> {
 	private boolean validSize;
 	private boolean validHash;
 	
+	public Node() {
+		
+	}
 
 	public Node(Symbol label) {
 		this.label = label;
