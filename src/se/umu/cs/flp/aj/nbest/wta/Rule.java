@@ -81,18 +81,17 @@ public class Rule extends Hypergraph.Edge<State> {
 			return node;
 		}
 
-//		Node newTree = new Node(t.getLabel());
-//
-//		for (int i = 0; i < t.getChildCount(); i++) {
-//			Node tempTree = buildTree(t.getChildAt(i), tklist);
-//			if (t.getChildAt(i).getLabel().isNonterminal()) {
-//				nonTermIndex++;
-//			}
-//			newTree.addChild(tempTree);
-//		}
+		Node newTree = new Node(t.getLabel());
 
-//		return newTree;
-		return new Node();
+		for (int i = 0; i < t.getChildCount(); i++) {
+			Node tempTree = buildTree(t.getChildAt(i), tklist);
+			if (t.getChildAt(i).getLabel().isNonterminal()) {
+				nonTermIndex++;
+			}
+			newTree.addChild(tempTree);
+		}
+
+		return newTree;
 	}
 	
 //	private HashMap<State, Integer> computeStateUsage(TreeKeeper2[] tklist) {
