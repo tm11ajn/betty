@@ -33,7 +33,7 @@ public class Timer {
 	 long threadId;
 	 long time;
 	
-	Timer() {
+	public Timer() {
 		threadMxBean = ManagementFactory.getThreadMXBean();
 		if (!threadMxBean.isThreadCpuTimeSupported()) {
 			throw new IllegalStateException("CPU time not supported on this platform");
@@ -43,12 +43,12 @@ public class Timer {
 	}
 	
 	/* Measure time elapsed from now on. */
-	void start() {
+	public void start() {
 		time = threadMxBean.getThreadCpuTime(threadId);
 	}
 	
 	/* How many milliseconds have elapsed until now? */
-    long elapsed() {
+    public long elapsed() {
 		return TimeUnit.NANOSECONDS.toMillis(threadMxBean.getThreadCpuTime(threadId) - time);
 	}
 	

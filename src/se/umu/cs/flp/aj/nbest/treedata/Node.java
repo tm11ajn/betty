@@ -24,10 +24,14 @@
 package se.umu.cs.flp.aj.nbest.treedata;
 
 import java.util.ArrayList;
-
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
+import se.umu.cs.flp.aj.nbest.Timer;
 
 public class Node implements Comparable<Node> {
+	static public int N_EQUALS = 0;
+	static public long TIME_EQUALS = 0;
+	static public int N_COMPARE_TO = 0;
+	static public long TIME_COMPARE_TO = 0;
 
 	private Symbol label;
 	private ArrayList<Node> children = new ArrayList<>();
@@ -210,14 +214,16 @@ public class Node implements Comparable<Node> {
 
 	@Override
 	public String toString() {
-		return toWTAString();
+		return toRTGString();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-
+		N_EQUALS++;
+		Timer t = new Timer();
+		t.start();
+		
 		Node n = null;
-
 		if (obj instanceof Node) {
 			n = (Node) obj;
 
@@ -229,40 +235,74 @@ public class Node implements Comparable<Node> {
 				return true;
 			}
 		}
+		
+		TIME_EQUALS += t.elapsed();
 
 		return false;
 	}
 
 	@Override
 	public int compareTo(Node o) {
+		N_COMPARE_TO++;
+		Timer t = new Timer();
+		t.start();
+		
 		int thisSize = this.getSize();
 		int oSize = o.getSize();
+		int retVal = 0;
+		boolean decided = false;
 
 		if (thisSize < oSize) {
-			return -1;
+//			return -1;
+			retVal = -1;
+			decided = true;
 		} else if (thisSize > oSize) {
-			return 1;
+//			return 1;
+			retVal = 1;
+			decided = true;
 		}
 
-		if (this.children.size() < o.children.size()) {
-			return -1;
-		} else if (o.children.size() > this.children.size()) {
-			return 1;
+		if (!decided) {
+			if (this.children.size() < o.children.size()) {
+//				return -1;
+				retVal = -1;
+				decided = true;
+			} else if (o.children.size() > this.children.size()) {
+//				return 1;
+				retVal = 1;
+				decided = true;
+			}
 		}
-
-		String thisString = this.toString();
-		String oString = o.toString();
 		
-		if (thisString.length() < oString.length()) {
-			return -1;
-		} else if (thisString.length() > oString.length()) {
-			return 1;
+		String thisString = null;
+		String oString = null;
+
+		if (!decided) {
+			thisString = this.toString();
+			oString = o.toString();
+
+			if (thisString.length() < oString.length()) {
+//				return -1;
+				retVal = -1;
+				decided = true;
+			} else if (thisString.length() > oString.length()) {
+//				return 1;
+				retVal = 1;
+				decided = true;
+			}
 		}
 		
-		if (thisString == oString) {
-			return 0;
+		if (!decided) {
+			if (thisString == oString) {
+//				return 0;
+				retVal = 0;
+				decided = true;
+			} else {
+				retVal = thisString.compareTo(oString);
+			}
 		}
 
-		return thisString.compareTo(oString);
+		TIME_COMPARE_TO += t.elapsed();
+		return retVal;
 	}
 }
