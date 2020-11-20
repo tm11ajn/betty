@@ -223,22 +223,31 @@ public class Node implements Comparable<Node> {
 		Timer t = new Timer();
 		t.start();
 		
+		boolean retVal = false;
+		boolean decided = false;
 		Node n = null;
 		if (obj instanceof Node) {
 			n = (Node) obj;
 
 			if (this.hashCode() != obj.hashCode()) {
-				return false;
+//				return false;
+				retVal = false;
+				decided = true;
 			}
 			
-			if (this.toString() == n.toString()) {
-				return true;
+			if (!decided) {
+				if (this.toString() == n.toString()) {
+	//				return true;
+					retVal = true;
+					decided = true;
+				}
 			}
 		}
 		
 		TIME_EQUALS += t.elapsed();
 
-		return false;
+//		return false;
+		return retVal;
 	}
 
 	@Override
