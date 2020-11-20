@@ -46,7 +46,7 @@ public class BestTrees2 {
 		TreeKeeper2.init(bestContexts);
 
 		/* For result. */
-		List<String> nBest = new ArrayList<String>();
+		List<String> nBest = new ArrayList<String>(N);
 
 		// T <- empty. 
 		outputtedTrees = new HashMap<>();

@@ -22,7 +22,6 @@ package se.umu.cs.flp.aj.nbest.helpers;
 
 import java.util.Comparator;
 
-import se.umu.cs.flp.aj.nbest.Timer;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
@@ -31,16 +30,10 @@ import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 public class TreeConfigurationComparator
 			implements Comparator<Configuration<TreeKeeper2>> {
 
-	static public int N_COMPARE = 0;
-	static public long TIME_COMPARE = 0;
-
 	@Override
 	public int compare(
 			Configuration<TreeKeeper2> config1,
 			Configuration<TreeKeeper2> config2) {
-		
-		se.umu.cs.flp.aj.nbest.Timer t = new Timer();
-		t.start();
 
 		Weight weight1 = null;
 		Weight weight2 = null;
@@ -49,14 +42,8 @@ public class TreeConfigurationComparator
 		int size2 = config2.getSize();
 
 		if (size1 < size2) {
-			
-			TIME_COMPARE += t.elapsed();
-			N_COMPARE++;
 			return -1;
 		} else if (size1 > size2) {
-			
-			TIME_COMPARE += t.elapsed();
-			N_COMPARE++;
 			return 1;
 		}
 		
@@ -64,9 +51,6 @@ public class TreeConfigurationComparator
 		weight2 = config2.getWeight();
 
 		int comparison = weight1.compareTo(weight2);
-		
-		TIME_COMPARE += t.elapsed();
-		N_COMPARE++;
 
 		if (comparison !=  0) {
 			return comparison;
@@ -79,7 +63,7 @@ public class TreeConfigurationComparator
 //			sum1 += config1.getIndices()[i];
 //			sum2 += config2.getIndices()[i];
 //		}
-		
+//		
 //		if (sum1 < sum2) {
 //			return -1;
 //		} else if (sum1 > sum2) {

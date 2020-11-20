@@ -224,12 +224,6 @@ public class NBest {
 					accumulativeTime + " ms");
 		}
 		
-		System.out.println("Number of node equals: " + se.umu.cs.flp.aj.nbest.treedata.Node.N_EQUALS);
-		System.out.println("Total time of node equals: " + se.umu.cs.flp.aj.nbest.treedata.Node.TIME_EQUALS);
-		System.out.println("Number of node compareTo: " + se.umu.cs.flp.aj.nbest.treedata.Node.N_COMPARE_TO);
-		System.out.println("Total time of node compareTo: " + se.umu.cs.flp.aj.nbest.treedata.Node.TIME_COMPARE_TO);
-		System.out.println("Number of config compare: " + se.umu.cs.flp.aj.nbest.helpers.TreeConfigurationComparator.N_COMPARE);
-		System.out.println("Total time of config compare: " + se.umu.cs.flp.aj.nbest.helpers.TreeConfigurationComparator.TIME_COMPARE);
 	}
 
 	private static Options createOptions() {
