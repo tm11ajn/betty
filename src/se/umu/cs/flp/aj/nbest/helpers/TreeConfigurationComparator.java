@@ -49,8 +49,14 @@ public class TreeConfigurationComparator
 		int size2 = config2.getSize();
 
 		if (size1 < size2) {
+			
+			TIME_COMPARE += t.elapsed();
+			N_COMPARE++;
 			return -1;
 		} else if (size1 > size2) {
+			
+			TIME_COMPARE += t.elapsed();
+			N_COMPARE++;
 			return 1;
 		}
 		
@@ -58,27 +64,27 @@ public class TreeConfigurationComparator
 		weight2 = config2.getWeight();
 
 		int comparison = weight1.compareTo(weight2);
+		
+		TIME_COMPARE += t.elapsed();
+		N_COMPARE++;
 
 		if (comparison !=  0) {
 			return comparison;
 		}
 		
-		int sum1 = 0;
-		int sum2 = 0;
+//		int sum1 = 0;
+//		int sum2 = 0;
+//		
+//		for (int i = 0; i < size1; i++) {
+//			sum1 += config1.getIndices()[i];
+//			sum2 += config2.getIndices()[i];
+//		}
 		
-		for (int i = 0; i < size1; i++) {
-			sum1 += config1.getIndices()[i];
-			sum2 += config2.getIndices()[i];
-		}
-		
-		TIME_COMPARE += t.elapsed();
-		N_COMPARE++;
-		
-		if (sum1 < sum2) {
-			return -1;
-		} else if (sum1 > sum2) {
-			return 1;
-		}
+//		if (sum1 < sum2) {
+//			return -1;
+//		} else if (sum1 > sum2) {
+//			return 1;
+//		}
 
 		return 0;
 	}
