@@ -33,7 +33,7 @@ public class Path<T> implements Comparable<Path<T>> {
         this.edges = edges;
         totalCost = semiring.one();
         for (Edge<T> edge : edges) {
-        	totalCost.mult(edge.getWeight());
+        	totalCost = totalCost.mult(edge.getWeight());
         }
     }
 

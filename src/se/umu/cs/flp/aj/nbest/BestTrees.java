@@ -81,13 +81,21 @@ public class BestTrees {
 			if (exploredTrees.contains(currentTree) && currentTree.getSmallestWeight().equals(currentTree.getDeltaWeight())) {
 
 				// output(t)
-				String outputString = currentTree.getTree().toString() + " " +
+				String outputString;
+				
+				if (wta.isGrammar()) {
+					outputString = currentTree.getTree().toRTGString();
+				} else {
+					outputString = currentTree.getTree().toWTAString();
+				}
+				
+				outputString = outputString + " # " +
 						currentTree.getDeltaWeight().toString();
 
 //				if (forDerivations) {
 //					outputString = outputString.replaceAll("//rule[0-9]*", "");
 //				}
-
+				
 				nBest.add(outputString);
 
 				// i <- i + 1
@@ -119,11 +127,11 @@ public class BestTrees {
 				tree = new TreeKeeper(r.getTree(), wta.getSemiring());
 				trees.put(symbol, tree);
 			}
-System.out.println(r.getResultingState().toString());
-if (r.getResultingState().toString().equals("in[6,6]_in_piat-hd-dat.pl.fem")) {
-System.out.println("NOOOO");
-System.exit(1);
-}
+//System.out.println(r.getResultingState().toString());
+//if (r.getResultingState().toString().equals("in[6,6]_in_piat-hd-dat.pl.fem")) {
+//System.out.println("NOOOO");
+//System.exit(1);
+//}
 
 			tree.addStateWeight(r.getResultingState(),
 					r.getWeight().duplicate());

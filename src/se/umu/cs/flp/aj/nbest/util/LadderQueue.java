@@ -32,7 +32,8 @@ public class LadderQueue<V extends Comparable<V>> {
 	private int rank;
 	private int limit;
 	private PriorityQueue<Configuration<V>> configQueue;
-	private Object[] seenConfigurations;
+//	private Object[] seenConfigurations;
+	private ArrayList<Object> seenConfigurations;
 	private int dequeueCounter;
 
 	public LadderQueue(int id, int rank,
@@ -41,7 +42,8 @@ public class LadderQueue<V extends Comparable<V>> {
 		this.id = id;
 		this.rank = rank;
 		this.configQueue = new PriorityQueue<>(comparator);
-		this.seenConfigurations = new Object[limit];
+//		this.seenConfigurations = new Object[limit];
+		this.seenConfigurations = new ArrayList<Object>();
 		this.limit = limit;
 		this.dequeueCounter = 0;
 	}
@@ -50,17 +52,29 @@ public class LadderQueue<V extends Comparable<V>> {
 	private boolean isSeen(Configuration<V> config) {
 		boolean answer = true;
 		int[] indices = config.getIndices();
-		Object[] currentList = seenConfigurations;
+//		Object[] currentList = seenConfigurations;
+		ArrayList<Object> currentList = seenConfigurations;
 		for (int i = 0; i < rank; i++) {
-			Object currentObject = currentList[indices[i]];
+//			Object currentObject = currentList[indices[i]];
+			Object currentObject = null;
+			
+			if (currentList.size() > indices[i]) {
+				currentObject = currentList.get(indices[i]);
+			}
 			
 			if (currentObject == null) {
 				answer = false;
-				Object[] newList = new Object[limit];
-				currentList[indices[i]] = newList;
+//				Object[] newList = new Object[limit];
+				ArrayList<Object> newList = new ArrayList<>();
+//				currentList[indices[i]] = newList;
+				while (currentList.size() <= indices[i]) {
+					currentList.add(null);
+				}
+				currentList.set(indices[i], newList);
 				currentList = newList;
 			} else {
-				currentList = (Object[]) currentObject;
+//				currentList = (Object[]) currentObject;
+				currentList = (ArrayList<Object>) currentObject;
 			}
 		}
 		

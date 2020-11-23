@@ -125,6 +125,10 @@ public class NBest {
 			if (trick && !derivations) {
 				throw new ParseException("Trick only valid for best runs");
 			}
+			
+			if (derivations && version.equals(TREE_QUEUE_ARG)) {
+				throw new ParseException("Best runs only available for version 2");
+			}
 
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
