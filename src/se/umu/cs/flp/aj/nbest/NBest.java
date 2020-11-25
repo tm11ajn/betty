@@ -1,21 +1,21 @@
 /*
  * Copyright 2018 Anna Jonsson for the research group Foundations of Language
- * Processing, Department of Computing Science, UmeÃ¥ university
+ * Processing, Department of Computing Science, Umeå university
  *
- * This file is part of BestTrees.
+ * This file is part of Betty.
  *
- * BestTrees is free software: you can redistribute it and/or modify
+ * Betty is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * BestTrees is distributed in the hope that it will be useful,
+ * Betty is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with BestTrees.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Betty.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package se.umu.cs.flp.aj.nbest;
@@ -134,7 +134,7 @@ public class NBest {
 			System.out.println(e.getMessage());
 			HelpFormatter help = new HelpFormatter();
 			System.out.println();
-			help.printHelp("BestTrees", options);
+			help.printHelp("Betty", options);
 			System.exit(1);
 		} catch (NumberFormatException e) {
 			System.out.println("N takes a nonnegative integer.");
@@ -179,7 +179,7 @@ public class NBest {
 				+ duration + " milliseconds).");
 
 		if (version.equals(RULE_QUEUE_ARG) || version.equals(ALL_ARG)) {
-			System.out.println("Running BestTrees version 2...");
+			System.out.println("Running Betty version 2...");
 			threadTimer.start();
 			result = BestTrees2.run(wta, N, bestContexts, derivations, trick);
 			duration = threadTimer.elapsed();
@@ -187,13 +187,13 @@ public class NBest {
 
 			if (timer) {
 				accumulativeTime += duration;
-				System.out.println("BestTrees version 2 took " + duration +
+				System.out.println("Betty version 2 took " + duration +
 						" milliseconds");
 			}
 		}
 
 		if (version.equals(TREE_QUEUE_ARG) || version.equals(ALL_ARG)) {
-			System.out.println("Running BestTrees version 1...");
+			System.out.println("Running Betty version 1...");
 //			BestTrees.setSmallestCompletions(bestContexts);
 			
 			threadTimer.start();
@@ -204,7 +204,7 @@ public class NBest {
 
 			if (timer) {
 				accumulativeTime += duration;
-				System.out.println("BestTrees version 1 took " + duration +
+				System.out.println("Betty version 1 took " + duration +
 						" milliseconds");
 			}
 		}
@@ -218,12 +218,12 @@ public class NBest {
 				outputType = "trees";
 			}
 
-			System.out.println("BestTrees only found " + result.size() +
+			System.out.println("Betty only found " + result.size() +
 					" of the " + N + " requested " + outputType);
 		}
 
 		if (timer) {
-			System.out.println("Total time for BestTrees including "
+			System.out.println("Total time for Betty including "
 					+ "the preprocessing of best contexts: " +
 					accumulativeTime + " ms");
 		}
@@ -239,7 +239,7 @@ public class NBest {
 				true, "file type (detault is "+ DEFAULT_FILE_TYPE + ")");
 		Option nOpt = new Option(N_FLAG, true, "number of trees wanted");
 		Option versionOpt = new Option(VERSION_FLAG, VERSION_FLAG_LONG,
-				true, "version of BestTrees; arg can be\n" + RULE_QUEUE_ARG +
+				true, "version of Betty; arg can be\n" + RULE_QUEUE_ARG +
 				" (uses a pruned rule queue), \n" +
 						TREE_QUEUE_ARG +
 				" (uses a pruned tree queue) or \n" +
@@ -249,7 +249,7 @@ public class NBest {
 		Option timerOpt = new Option(TIMER_FLAG, false,
 				"measures running time(s)");
 		Option semiringOpt = new Option(SEMIRING_FLAG, SEMIRING_FLAG_LONG, true,
-				"semiring used for BestTrees (the default semiring is the "
+				"semiring used for Betty (the default semiring is the "
 						+ DEFAULT_SEMIRING + " semiring)");
 		Option derivationsOpt = new Option(DERIVATION_FLAG,
 				DERIVATION_FLAG_LONG, false,
