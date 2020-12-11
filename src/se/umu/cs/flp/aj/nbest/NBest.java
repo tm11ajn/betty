@@ -290,7 +290,6 @@ public class NBest {
 //			if (derivations) {
 //				treeString = treeString.replaceAll("//rule[0-9]*", "");
 //			}
-
 			System.out.println(treeString);
 		}
 	}
