@@ -90,7 +90,7 @@ public class RTGParser implements Parser {
 				 * are thereby states; here we also check for all errors that
 				 * can occur in the input wrt format. */
 				while ((line = br.readLine()) != null) {
-					byte[] bytes = line.getBytes("UTF-8");
+					byte[] bytes = line.getBytes("iso-8859-1");
 					line = new String(bytes, Charset.forName("UTF-8"));
 					preprocessLine(line);
 					rowCounter++;
