@@ -21,10 +21,11 @@
 package se.umu.cs.flp.aj.nbest.wta.parsers;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -83,14 +84,12 @@ public class WTAParser implements Parser {
 		wta = new WTA(semiring);
 		int rowCounter = 1;
 
-		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName),  StandardCharsets.UTF_8))) {
 			String line;
 
 			try {
 
 				while ((line = br.readLine()) != null) {
-					byte[] bytes = line.getBytes("UTF-8");
-					line = new String(bytes, Charset.forName("UTF-8"));
 					parseLine(line);
 					rowCounter++;
 				}

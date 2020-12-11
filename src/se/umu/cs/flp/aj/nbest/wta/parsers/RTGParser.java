@@ -21,10 +21,11 @@
 package se.umu.cs.flp.aj.nbest.wta.parsers;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -79,7 +80,7 @@ public class RTGParser implements Parser {
 		wta = new WTA(semiring, true);
 		int rowCounter = 1;
 
-		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName),  StandardCharsets.UTF_8))) {
 			String line;
 
 			try {
@@ -90,8 +91,6 @@ public class RTGParser implements Parser {
 				 * are thereby states; here we also check for all errors that
 				 * can occur in the input wrt format. */
 				while ((line = br.readLine()) != null) {
-					byte[] bytes = line.getBytes("iso-8859-1");
-					line = new String(bytes, Charset.forName("UTF-8"));
 					preprocessLine(line);
 					rowCounter++;
 				}
