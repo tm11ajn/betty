@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -89,6 +90,8 @@ public class RTGParser implements Parser {
 				 * are thereby states; here we also check for all errors that
 				 * can occur in the input wrt format. */
 				while ((line = br.readLine()) != null) {
+					byte[] bytes = line.getBytes("UTF-8");
+					line = new String(bytes, Charset.forName("UTF-8"));
 					preprocessLine(line);
 					rowCounter++;
 				}

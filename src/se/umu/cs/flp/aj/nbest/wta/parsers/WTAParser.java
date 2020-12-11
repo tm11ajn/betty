@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
@@ -88,6 +89,8 @@ public class WTAParser implements Parser {
 			try {
 
 				while ((line = br.readLine()) != null) {
+					byte[] bytes = line.getBytes("UTF-8");
+					line = new String(bytes, Charset.forName("UTF-8"));
 					parseLine(line);
 					rowCounter++;
 				}
