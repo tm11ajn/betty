@@ -61,6 +61,7 @@ public class KnuthBestDerivations {
 		int nOfDefined = 0;
 		int usableStart = 0;
 		int usableSize = 0;
+		boolean done = false;
 
 		/* Initialise each state with the weight of the smallest source rule
 		 * leading to that state. The initial tree then consists of a tree
@@ -91,7 +92,7 @@ public class KnuthBestDerivations {
 		/* Main loop that picks the best tree in the queue and defines it. 
 		 * Based on what tree was previously defined, new rules can be used,
 		 * and these are added to the usableRules. */
-		while (nOfDefined < nOfStates) {
+		while (nOfDefined < nOfStates && !done) {
 			
 			/* Go over the rules that are currently usable but not previously seen,
 			 * and see if we can use them to get a better result. */ 
@@ -157,6 +158,15 @@ public class KnuthBestDerivations {
 					usableRules.add(r2);
 					usableSize++;
 				}
+			}
+			
+			if (queue.empty()) {
+				for (int i = 1; i < nOfStates + 1; i++) {
+					if (defined[i] == null) {
+						defined[i] = new Context(wta.getSemiring().zero());
+					}
+				}
+				done = true;
 			}
 		}
 		
