@@ -188,5 +188,16 @@ public class RuleQueue {
 	public int size() {
 		return queue.size();
 	}
+	
+	public void printFinalQueueSizes() {
+		for (BinaryHeap<RuleKeeper, Weight>.Node node : queueElems) {
+			if (node == null) {
+				continue;
+			}
+			int size = node.getObject().getLadderQueue().size();
+			Rule rule = node.getObject().getRule();
+			System.out.println(rule + "\n has " + size + "elements");
+		}
+	}
 
 }

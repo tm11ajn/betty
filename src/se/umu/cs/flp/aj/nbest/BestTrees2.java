@@ -122,7 +122,7 @@ public class BestTrees2 {
 				}
 			}			
 		}
-
+//		ruleQueue.printFinalQueueSizes();
 		return nBest;
 	}
 
