@@ -1,0 +1,6 @@
+a -> p1 
+g[p1] -> p2 
+a -> q 
+g[q] -> q 
+f[p2,q] -> qf
+final qf

@@ -64,6 +64,8 @@ public class BestTrees2 {
 			
 			// t <- dequeue(K)
 			TreeKeeper2 currentTree = ruleQueue.nextTree();
+			
+System.out.println("Current tree: " + currentTree);
 
 			/* If there are no more derivations with a non-infinity weight,
 			 * we end the search. */
@@ -78,7 +80,7 @@ public class BestTrees2 {
 
 				if (currentTree.getResultingState().isFinal()) {
 					String outputString = "";
-
+System.out.println("Outputting current string");
 					if (wta.isGrammar()) {
 						outputString = currentTree.getTree().toRTGString();
 					} else {

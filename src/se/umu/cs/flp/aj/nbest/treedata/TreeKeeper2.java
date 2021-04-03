@@ -98,9 +98,10 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 			return false;
 		}
 		
-		int stateDepthComparison = bestContexts[resultingState.getID()].getDepth();
-
-		if (stateDepthComparison != 0) {
+		int thisDepth = bestContexts[this.resultingState.getID()].getDepth();
+		int oDepth = bestContexts[o.resultingState.getID()].getDepth();
+		
+		if (thisDepth != oDepth) {
 			return false;
 		}
 
@@ -115,8 +116,15 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 			return weightComparison;
 		}
 		
-		int stateDepthComparison = bestContexts[resultingState.getID()].getDepth();
-		return stateDepthComparison;
+		int thisDepth = bestContexts[this.resultingState.getID()].getDepth();
+		int oDepth = bestContexts[o.resultingState.getID()].getDepth();
+		
+		if (thisDepth < oDepth) {
+			return -1;
+		} else if (thisDepth > oDepth) {
+			return 1;
+		}
+		return 0;
 	}
 }
 
