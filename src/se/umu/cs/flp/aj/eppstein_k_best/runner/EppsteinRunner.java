@@ -34,7 +34,7 @@ import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.Run;
-import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
+import se.umu.cs.flp.aj.nbest.treedata.Tree1;
 import se.umu.cs.flp.aj.nbest.util.NestedMap;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
@@ -42,17 +42,17 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class EppsteinRunner {
 
-	private ArrayList<TreeKeeper> exploredTrees;
+	private ArrayList<Tree1> exploredTrees;
 
 
-	public EppsteinRunner(ArrayList<TreeKeeper> exploredTrees) {
+	public EppsteinRunner(ArrayList<Tree1> exploredTrees) {
 		this.exploredTrees = exploredTrees;
 	}
 
-	public ArrayList<LinkedHashMap<Node, TreeKeeper>>
-			runEppstein(WTA wta, int k, TreeKeeper tree, State q) {
+	public ArrayList<LinkedHashMap<Node, Tree1>>
+			runEppstein(WTA wta, int k, Tree1 tree, State q) {
 
-		ArrayList<LinkedHashMap<Node,TreeKeeper>>
+		ArrayList<LinkedHashMap<Node,Tree1>>
 				kBestTreesForEachQRule = new ArrayList<>();
 //		ArrayList<Rule> rules = wta.getRulesByResultingState(q);
 		LinkedList<Rule> rules = q.getIncoming();
@@ -77,19 +77,19 @@ public class EppsteinRunner {
 //System.out.println(graph);
 				List<Path<Node>> pathList = epp.ksp(graph, "u0",
 						"v" + nOfStates, k);
-				LinkedHashMap<Node, TreeKeeper> treeList =
+				LinkedHashMap<Node, Tree1> treeList =
 						new LinkedHashMap<>();
 
 				for (Path<Node> path : pathList) {
 					Node node = extractTreeFromPath(path, r);
 
-					if (!node.equals(tree.getTree())) {
-						TreeKeeper keeper = new TreeKeeper(node,
+					if (!node.equals(tree.getNode())) {
+						Tree1 keeper = new Tree1(node,
 								wta.getSemiring());
 						Weight w = path.getTotalCost();
 						w = w.mult(r.getWeight());
 						keeper.addStateWeight(q, w);
-						treeList.put(keeper.getTree(), keeper);
+						treeList.put(keeper.getNode(), keeper);
 					}
 				}
 
@@ -101,7 +101,7 @@ public class EppsteinRunner {
 	}
 
 	private NestedMap<String, String, PriorityQueue<Run>> buildEdges(
-			ArrayList<State> states, TreeKeeper tree) {
+			ArrayList<State> states, Tree1 tree) {
 
 		NestedMap<String, String, PriorityQueue<Run>> edgeMap =
 				new NestedMap<>();
@@ -110,7 +110,7 @@ public class EppsteinRunner {
 		for (int i = 1; i < nOfStates + 1; i++) {
 			State currentState = states.get(i-1);
 
-			for (TreeKeeper n : exploredTrees) {
+			for (Tree1 n : exploredTrees) {
 				Weight w = n.getOptimalWeight(currentState);
 
 				if (w != null) {
@@ -118,7 +118,7 @@ public class EppsteinRunner {
 					PriorityQueue<Run> pv = edgeMap.get("v" + (i - 1), "v" + i);
 					String resultingNodeType = "";
 
-					if (!n.getTree().equals(tree.getTree())) {
+					if (!n.getNode().equals(tree.getNode())) {
 						resultingNodeType = "u";
 					} else {
 						resultingNodeType = "v";
@@ -147,7 +147,7 @@ public class EppsteinRunner {
 
 	private void addKSmallestEdgesToGraph(Graph<Node> graph,
 			int k, NestedMap<String, String, PriorityQueue<Run>> edgeMap,
-			TreeKeeper tree, Semiring semiring) {
+			Tree1 tree, Semiring semiring) {
 
 		int dummyCounter = 0;
 
@@ -162,7 +162,7 @@ public class EppsteinRunner {
 					String dummyNode = "d" + dummyCounter;
 					graph.addEdge(vertex1, dummyNode, semiring.one(), null);
 					graph.addEdge(dummyNode, vertex2, run.getWeight(),
-							run.getTree().getTree());
+							run.getTree().getNode());
 					dummyCounter++;
 					counter++;
 				}

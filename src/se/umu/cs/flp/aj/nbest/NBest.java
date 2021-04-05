@@ -31,10 +31,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import se.umu.cs.flp.aj.knuth.BestContexts;
 import se.umu.cs.flp.aj.knuth.KnuthBestDerivations;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.SemiringFactory;
-import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.parsers.Parser;
 import se.umu.cs.flp.aj.nbest.wta.parsers.RTGParser;
@@ -171,7 +171,7 @@ public class NBest {
 
 		System.out.println("Pre-computing best contexts...");
 		threadTimer.start();
-		Context[] bestContexts = KnuthBestDerivations.computeBestContexts(wta, trick);
+		BestContexts bestContexts = KnuthBestDerivations.computeBestContexts(wta, trick);
 		List<String> result = new LinkedList<>();
 		duration = threadTimer.elapsed();
 		accumulativeTime = duration;

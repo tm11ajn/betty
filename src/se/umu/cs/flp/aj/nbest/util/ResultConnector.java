@@ -24,15 +24,15 @@ import java.util.ArrayList;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
-import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
+import se.umu.cs.flp.aj.nbest.treedata.Tree;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class ResultConnector {
-	private ArrayList<TreeKeeper2>[] results;
+	private ArrayList<Tree>[] results;
 	private int[] resCount;
 	private int[] connections;
-	private ArrayList<ArrayList<Configuration<TreeKeeper2>>> configLists;
+	private ArrayList<ArrayList<Configuration<Tree>>> configLists;
 	private ArrayList<Rule> rules;
 	private WTA wta;
 
@@ -50,7 +50,7 @@ public class ResultConnector {
 
 	/* Connects a config to the elements that it is waiting for. Activates
 	 * the config if it is not waiting for any elements. */
-	public boolean makeConnections(Configuration<TreeKeeper2> config) {
+	public boolean makeConnections(Configuration<Tree> config) {
 		int[] indices = config.getIndices();
 		int size = indices.length;
 		int missingElements = 0;
@@ -80,7 +80,7 @@ public class ResultConnector {
 
 	/* Adds and propagates a result, and returns a list of ID's of rules 
 	 * that have updated as a result of the propagation. */
-	public ArrayList<Integer> addResult(int stateIndex, TreeKeeper2 result) {
+	public ArrayList<Integer> addResult(int stateIndex, Tree result) {
 		ArrayList<Integer> needUpdate = new ArrayList<Integer>();
 		
 		if (results[stateIndex] == null) {
@@ -92,7 +92,7 @@ public class ResultConnector {
 
 		int configIndex = connections[stateIndex];
 
-		for (Configuration<TreeKeeper2> config : configLists.get(configIndex)) {
+		for (Configuration<Tree> config : configLists.get(configIndex)) {
 			config.decreaseLeftToValuesBy(1);
 			boolean wasReady = activateConfigIfReady(config);
 			if (wasReady) {
@@ -106,16 +106,16 @@ public class ResultConnector {
 	
 	/* Checks if the config is ready, that is, if all its required data is 
 	 * in the results. Returns true if the input config triggers an update. */
-	private boolean activateConfigIfReady(Configuration<TreeKeeper2> config) {
+	private boolean activateConfigIfReady(Configuration<Tree> config) {
 		boolean triggersUpdate = false;
 		
 		if (config.getLeftToValues() == 0) {
-			TreeKeeper2[] result = extractResult(config);
+			Tree[] result = extractResult(config);
 			int size = config.getSize();
 			Weight weight = wta.getSemiring().one(); // Default value for leaf rules
 			
 			for (int i = 0; i < size; i++) {
-				TreeKeeper2 t1 = result[i];
+				Tree t1 = result[i];
 				weight = weight.mult(t1.getRunWeight());
 			}
 			
@@ -129,12 +129,12 @@ public class ResultConnector {
 	}
 
 	/* Returns the tree that corresponds to the input configuration. */
-	private TreeKeeper2[] extractResult(Configuration<TreeKeeper2> config) {
+	private Tree[] extractResult(Configuration<Tree> config) {
 		int[] indexList = config.getIndices();
 		int ruleIndex = config.getOrigin().getID();
 		Rule rule = rules.get(ruleIndex);
 		int size = indexList.length;
-		TreeKeeper2[] result = new TreeKeeper2[size];
+		Tree[] result = new Tree[size];
 
 		for (int i = 0; i < size; i++) {
 			result[i] = results[rule.getStates().get(i).getID()].get(indexList[i]);
@@ -144,7 +144,7 @@ public class ResultConnector {
 	}
 
 
-	public TreeKeeper2 getResult(int stateIndex, int resultIndex) {
+	public Tree getResult(int stateIndex, int resultIndex) {
 		return results[stateIndex].get(resultIndex);
 	}
 	

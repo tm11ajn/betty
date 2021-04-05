@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
-import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
+import se.umu.cs.flp.aj.nbest.treedata.Tree;
 import se.umu.cs.flp.aj.nbest.util.Hypergraph;
 
 public class Rule extends Hypergraph.Edge<State> {
@@ -50,30 +50,34 @@ public class Rule extends Hypergraph.Edge<State> {
 		}
 	}
 	
+	/* Applies this rule to the input configuration. */
+	public Tree apply(Configuration<Tree> config) {
+		Tree[] tlist = config.getValues();
+		return apply(tlist, config.getWeight());
+	}
+	
 	/* Applies this rule to the input list of trees. */
-	public TreeKeeper2 apply(Configuration<TreeKeeper2> config) {
-		TreeKeeper2 result = null; 
+	public Tree apply(Tree[] tlist, Weight weightSum) {
+		Tree result = null; 
 		Node t = tree;
 		Weight treeWeight = this.weight;
-		TreeKeeper2[] tklist = config.getValues();
 		nonTermIndex = 0;
-		Node newTree = buildTree(t, tklist);
-		treeWeight = treeWeight.mult(config.getWeight());
-		result = new TreeKeeper2(newTree, treeWeight, resultingState);
-//		result.setStateUsage(computeStateUsage(tklist));
+		Node newTree = buildTree(t, tlist);
+		treeWeight = treeWeight.mult(weightSum);
+		result = new Tree(newTree, treeWeight, resultingState);
 		return result;
 	}
 
 	/* Recursively builds the tree by combining the input list of trees
 	 * in the by this rule specified manner. 
 	 * Requires nonTermIndex to be set to zero beforehand. */
-	private Node buildTree(Node t, TreeKeeper2[] tklist) {
+	private Node buildTree(Node t, Tree[] tlist) {
 
 		if (t.getChildCount() == 0) {
 			Node node;
 
 			if (t.getLabel().isNonterminal()) {
-				node = tklist[nonTermIndex].getTree();
+				node = tlist[nonTermIndex].getNode();
 			} else {
 				node = t;
 			}
@@ -84,7 +88,7 @@ public class Rule extends Hypergraph.Edge<State> {
 		Node newTree = new Node(t.getLabel());
 
 		for (int i = 0; i < t.getChildCount(); i++) {
-			Node tempTree = buildTree(t.getChildAt(i), tklist);
+			Node tempTree = buildTree(t.getChildAt(i), tlist);
 			if (t.getChildAt(i).getLabel().isNonterminal()) {
 				nonTermIndex++;
 			}

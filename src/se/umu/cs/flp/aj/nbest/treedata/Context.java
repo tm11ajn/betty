@@ -24,12 +24,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class Context implements Comparable<Context> {
+	private Tree bestTree;
+	private Rule bestRule;
 	private Weight weight;
 	private HashMap<State, Integer> occurrences;
-//	private HashMap<State, Integer> depth;
 	private int depth;
 	
 	private ArrayList<Integer> f;
@@ -37,8 +39,8 @@ public class Context implements Comparable<Context> {
 	
 	public Context() {
 		occurrences = new HashMap<>();
-//		depth = new HashMap<>();
 		depth = 0;
+		this.bestTree = null;
 		this.weight = null;
 		this.f = null;
 		this.P = null;
@@ -47,6 +49,28 @@ public class Context implements Comparable<Context> {
 	public Context(Weight weight) {
 		this();
 		this.weight = weight;
+	}
+	
+	public Context(Weight weight, Tree bestTree, Rule bestRule) {
+		this(weight);
+		this.bestTree = bestTree;
+		this.bestRule = bestRule;
+	}
+	
+	public Rule getBestRule() {
+		return bestRule;
+	}
+	
+	public void setBestRule(Rule bestRule) {
+		this.bestRule = bestRule;
+	}
+	
+	public Tree getBestTree() {
+		return bestTree;
+	}
+	
+	public void setBestTree(Tree bestTree) {
+		this.bestTree = bestTree;
 	}
 	
 	public int getDepth() {
@@ -80,21 +104,6 @@ public class Context implements Comparable<Context> {
 	public int getPValue(State s) {
 		return this.P.get(depth).get(s);
 	}
-	
-//	public int getDepthOfState(State s) {
-//		return depth;
-//	}
-//	
-//	public HashMap<State, Integer> getDepthOfStates() {
-//		return depth;
-//	}
-	
-//	public void addToDepthOfState(State s, int increase) {
-//		if (this.depth.get(s) == null) {
-//			this.depth.put(s, 0);
-//		}
-//		this.depth.put(s, this.depth.get(s) + 1);
-//	}
 	
 	public void setStateOccurrence(State s, int occurrences) {
 		this.occurrences.put(s, occurrences);

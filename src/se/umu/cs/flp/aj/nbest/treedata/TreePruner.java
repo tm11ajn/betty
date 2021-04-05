@@ -29,7 +29,7 @@ import se.umu.cs.flp.aj.nbest.util.Pruner;
 import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class TreePruner<V>
-		implements Pruner<TreeKeeper,V> {
+		implements Pruner<Tree1,V> {
 
 	private static HashMap<State, Integer> optimalStatesUsage;
 	private static int N;
@@ -41,8 +41,8 @@ public class TreePruner<V>
 	}
 
 	@Override
-	public boolean prune(TreeKeeper insertedKey,
-			TreeMap<TreeKeeper, V> map) {
+	public boolean prune(Tree1 insertedKey,
+			TreeMap<Tree1, V> map) {
 
 		boolean pruned = false;
 		LinkedHashMap<State, State> optStates = insertedKey.getOptimalStates();
@@ -61,7 +61,7 @@ public class TreePruner<V>
 		for (State q : optStates.keySet()) {
 
 			if (optimalStatesUsage.get(q) > N) {
-				TreeKeeper removeTree = getRemoveKey(insertedKey,
+				Tree1 removeTree = getRemoveKey(insertedKey,
 						q, map);
 				LinkedHashMap<State, State> optStatesRemove =
 						removeTree.getOptimalStates();
@@ -79,15 +79,15 @@ public class TreePruner<V>
 		return pruned;
 	}
 
-	private TreeKeeper getRemoveKey(TreeKeeper tree,
-			State q, TreeMap<TreeKeeper, V> map) {
+	private Tree1 getRemoveKey(Tree1 tree,
+			State q, TreeMap<Tree1, V> map) {
 
-		TreeKeeper removeKey = null;
-		Iterator<TreeKeeper> iterator =
+		Tree1 removeKey = null;
+		Iterator<Tree1> iterator =
 				map.descendingKeySet().iterator();
 
 		while (removeKey == null && iterator.hasNext()) {
-			TreeKeeper currentTree = iterator.next();
+			Tree1 currentTree = iterator.next();
 
 			if (currentTree.getOptimalStates().containsKey(q)) {
 				removeKey = currentTree;

@@ -1,0 +1,6 @@
+qf
+p1 -> a 
+p2 -> g(p1) 
+q -> a 
+q -> g(q) 
+qf -> f(p2 q)

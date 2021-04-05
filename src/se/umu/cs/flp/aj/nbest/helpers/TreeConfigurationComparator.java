@@ -23,17 +23,17 @@ package se.umu.cs.flp.aj.nbest.helpers;
 import java.util.Comparator;
 
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
+import se.umu.cs.flp.aj.nbest.treedata.Tree;
 import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 
 /* Compares treekeeper configurations */
 public class TreeConfigurationComparator
-			implements Comparator<Configuration<TreeKeeper2>> {
+			implements Comparator<Configuration<Tree>> {
 
 	@Override
 	public int compare(
-			Configuration<TreeKeeper2> config1,
-			Configuration<TreeKeeper2> config2) {
+			Configuration<Tree> config1,
+			Configuration<Tree> config2) {
 
 		Weight weight1 = null;
 		Weight weight2 = null;

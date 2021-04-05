@@ -27,8 +27,8 @@ import se.umu.cs.flp.aj.nbest.wta.Rule;
 public class RuleKeeper implements Comparable<RuleKeeper> {
 
 	private Rule rule;
-	private LadderQueue<TreeKeeper2> ladder;
-	private TreeKeeper2 bestTree;
+	private LadderQueue<Tree> ladder;
+	private Tree bestTree;
 
 	public RuleKeeper(Rule rule, int limit) {
 		this.rule = rule;
@@ -38,15 +38,15 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 		this.bestTree = null;
 	}
 	
-	public TreeKeeper2 getBestTree() {
+	public Tree getBestTree() {
 		return bestTree;
 	}
 	
-	public void setBestTree(TreeKeeper2 smallestTree) {
+	public void setBestTree(Tree smallestTree) {
 		this.bestTree = smallestTree;
 	}
 	
-	public LadderQueue<TreeKeeper2> getLadderQueue() {
+	public LadderQueue<Tree> getLadderQueue() {
 		return ladder;
 	} 
 

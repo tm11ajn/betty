@@ -24,48 +24,63 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import se.umu.cs.flp.aj.knuth.BestContexts;
 import se.umu.cs.flp.aj.nbest.helpers.RuleQueue;
 import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
-import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper2;
+import se.umu.cs.flp.aj.nbest.treedata.Tree;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 
 public class BestTrees2 {
-
-	private static HashMap<Node, TreeKeeper2>
-			outputtedTrees;
+	private static WTA wta;
+	private static int N;
+	private static List<String> nBest;
+	private static boolean derivations;
+	private static int foundTrees;
+	private static HashMap<Node, Tree> outputtedTrees;
 	private static HashMap<State, HashMap<Node, Node>> seenTrees;
 	private static RuleQueue ruleQueue;
 
 //	public static List<String> run(WTA wta, int N, boolean derivations) {
-	public static List<String> run(WTA wta, int N, Context[] bestContexts, 
+	public static List<String> run(WTA wta, int N, BestContexts bestContexts, 
 			boolean derivations, boolean trick) {
-		
-		TreeKeeper2.init(bestContexts);
+		BestTrees2.wta = wta;
+		BestTrees2.N = N;
+		BestTrees2.derivations = derivations;
+		Tree.init(bestContexts.getBestContextsByState());
 
 		/* For result. */
-		List<String> nBest = new ArrayList<String>(N);
+		nBest = new ArrayList<String>(N);
 
 		// T <- empty. 
 		outputtedTrees = new HashMap<>();
 		seenTrees = new HashMap<>();
-		
-		// K <- empty
-		/* Initialises implicitly by enqueuing rules without states. */
-		ruleQueue = new RuleQueue(N, wta, trick);
 
 		// i <- 0
-		int foundTrees = 0;
+		foundTrees = 0;
+		
+		/* Considers the Knuth 1-best trees for output */
+		for (Context context : bestContexts.getOrderedBestTreesList()) {
+			if (context.getBestTree().getResultingState().isFinal()) {
+				considerForOutput(context.getBestTree(), false);
+			}
+		}
+		
+		// K <- empty
+		/* Initialises implicitly by enqueuing all rules and initialising them to
+		 * the start config, unless they were used in the 1-best tree and are in 
+		 * that case initialised to the configurations following the first one. */
+		ruleQueue = new RuleQueue(wta, N, bestContexts, trick);
 
 		// while i < N and K nonempty do
 		while (foundTrees < N && !ruleQueue.isEmpty()) {
 			
 			// t <- dequeue(K)
-			TreeKeeper2 currentTree = ruleQueue.nextTree();
+			Tree currentTree = ruleQueue.nextTree();
 			
-System.out.println("Current tree: " + currentTree);
+//System.out.println("Current tree: " + currentTree);
 
 			/* If there are no more derivations with a non-infinity weight,
 			 * we end the search. */
@@ -74,58 +89,64 @@ System.out.println("Current tree: " + currentTree);
 				break;
 			}
 
-			/* Blocks duplicates unless we are solving the N best derivations/runs 
-			 * problem */
-			if (derivations || !outputtedTrees.containsKey(currentTree.getTree())) {
-
-				if (currentTree.getResultingState().isFinal()) {
-					String outputString = "";
-System.out.println("Outputting current string");
-					if (wta.isGrammar()) {
-						outputString = currentTree.getTree().toRTGString();
-					} else {
-						outputString = currentTree.getTree().toWTAString();
-					}
-
-					outputString += (" # " +
-								currentTree.getRunWeight().toString());
-
-					// output(t)
-					nBest.add(outputString);
-					currentTree.markAsOutputted();
-					if (!derivations) {
-						outputtedTrees.put(currentTree.getTree(), null);
-					}
-					foundTrees++;
-				}
-			}
-
-			HashMap<Node, Node> temp = null;
-			if (!derivations) {
-				temp = seenTrees.get(currentTree.getResultingState());
-
-				if (temp == null) {
-					temp = new HashMap<>();
-					seenTrees.put(currentTree.getResultingState(), temp);
-				}
-			}
-
-			/* Blocks duplicates from being added to the state result lists 
-			 * unless we are solving the best derivations/runs */
-			if (derivations || !temp.containsKey(currentTree.getTree())) {
-
-				// Expand search space with current tree
-				if (foundTrees < N && !currentTree.getResultingState().isSaturated()) {
-					ruleQueue.expandWith(currentTree);
-				}
-
-				if (!derivations) {
-					temp.put(currentTree.getTree(), null);
-				}
-			}			
+			considerForOutput(currentTree, true);			
 		}
 //		ruleQueue.printFinalQueueSizes();
 		return nBest;
+	}
+	
+	private static void considerForOutput(Tree currentTree, boolean expand) {
+		
+		/* Blocks duplicates unless we are solving the N best derivations/runs 
+		 * problem */
+		if (derivations || !outputtedTrees.containsKey(currentTree.getNode())) {
+
+			if (currentTree.getResultingState().isFinal()) {
+				String outputString = "";
+				if (wta.isGrammar()) {
+					outputString = currentTree.getNode().toRTGString();
+				} else {
+					outputString = currentTree.getNode().toWTAString();
+				}
+
+				outputString += (" # " +
+							currentTree.getRunWeight().toString());
+
+//System.out.println("Outputting " + outputString);
+
+				// output(t)
+				nBest.add(outputString);
+				currentTree.markAsOutputted();
+				if (!derivations) {
+					outputtedTrees.put(currentTree.getNode(), null);
+				}
+				foundTrees++;
+			}
+		}
+
+		HashMap<Node, Node> temp = null;
+		if (!derivations) {
+			temp = seenTrees.get(currentTree.getResultingState());
+
+			if (temp == null) {
+				temp = new HashMap<>();
+				seenTrees.put(currentTree.getResultingState(), temp);
+			}
+		}
+
+		/* Blocks duplicates from being added to the state result lists 
+		 * unless we are solving the best derivations/runs */
+		if (derivations || !temp.containsKey(currentTree.getNode())) {
+
+			// Expand search space with current tree
+			if (expand && foundTrees < N && !currentTree.getResultingState().isSaturated()) {
+				ruleQueue.expandWith(currentTree);
+			}
+
+			if (!derivations) {
+				temp.put(currentTree.getNode(), null);
+			}
+		}
 	}
 
 }

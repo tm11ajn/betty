@@ -27,11 +27,11 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import se.umu.cs.flp.aj.eppstein_k_best.runner.EppsteinRunner;
+import se.umu.cs.flp.aj.knuth.BestContexts;
 import se.umu.cs.flp.aj.nbest.helpers.SortedListMerger;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
-import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
-import se.umu.cs.flp.aj.nbest.treedata.TreeKeeper;
+import se.umu.cs.flp.aj.nbest.treedata.Tree1;
 import se.umu.cs.flp.aj.nbest.treedata.TreePruner;
 import se.umu.cs.flp.aj.nbest.util.PruneableQueue;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
@@ -42,8 +42,8 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 
 public class BestTrees {
 
-	private static ArrayList<TreeKeeper> exploredTrees; // T
-	private static PruneableQueue<TreeKeeper,Weight> treeQueue; // K
+	private static ArrayList<Tree1> exploredTrees; // T
+	private static PruneableQueue<Tree1,Weight> treeQueue; // K
 
 
 //	public static void setSmallestCompletions(
@@ -52,15 +52,15 @@ public class BestTrees {
 //		TreeKeeper.init(smallestCompletions);
 //	}
 
-	public static List<String> run(WTA wta, Context[] bestContexts, int N) {
-		TreeKeeper.init(bestContexts);
+	public static List<String> run(WTA wta, BestContexts bestContexts, int N) {
+		Tree1.init(bestContexts.getBestContextsByState());
 
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();
 
 		// T <- empty. K <- empty
-		exploredTrees = new ArrayList<TreeKeeper>();
-		treeQueue = new PruneableQueue<TreeKeeper,Weight>(new TreePruner<Weight>(N));
+		exploredTrees = new ArrayList<Tree1>();
+		treeQueue = new PruneableQueue<Tree1,Weight>(new TreePruner<Weight>(N));
 
 		// enqueue(K, Sigma_0)
 		enqueueRankZeroSymbols(wta, N);
@@ -72,7 +72,7 @@ public class BestTrees {
 		while (counter < N && !treeQueue.isEmpty()) {
 
 			// t <- dequeue(K)
-			TreeKeeper currentTree = treeQueue.pollFirstEntry().getKey();
+			Tree1 currentTree = treeQueue.pollFirstEntry().getKey();
 
 			// T <- T u {t}
 			exploredTrees.add(currentTree);
@@ -84,9 +84,9 @@ public class BestTrees {
 				String outputString;
 				
 				if (wta.isGrammar()) {
-					outputString = currentTree.getTree().toRTGString();
+					outputString = currentTree.getNode().toRTGString();
 				} else {
-					outputString = currentTree.getTree().toWTAString();
+					outputString = currentTree.getNode().toWTAString();
 				}
 				
 				outputString = outputString + " # " +
@@ -113,18 +113,18 @@ public class BestTrees {
 	}
 
 	private static void enqueueRankZeroSymbols(WTA wta, int N) {
-		HashMap<Symbol, TreeKeeper> trees = new HashMap<>();
+		HashMap<Symbol, Tree1> trees = new HashMap<>();
 
 		/* TODO: Här köar vi på även de regler som inte leder någonstans,
 		 * vilket senare ger problem i Eppstein. */
 		for (Rule r : wta.getSourceRules()) {
 			Symbol symbol = r.getTree().getLabel();
-			TreeKeeper tree = null;
+			Tree1 tree = null;
 
 			if (trees.containsKey(symbol)) {
 				tree = trees.get(symbol);
 			} else {
-				tree = new TreeKeeper(r.getTree(), wta.getSemiring());
+				tree = new Tree1(r.getTree(), wta.getSemiring());
 				trees.put(symbol, tree);
 			}
 //System.out.println(r.getResultingState().toString());
@@ -137,17 +137,17 @@ public class BestTrees {
 					r.getWeight().duplicate());
 		}
 
-		for (TreeKeeper t : trees.values()) {
+		for (Tree1 t : trees.values()) {
 			treeQueue.put(t, null);
 		}
 	}
 
 	public static void enqueueWithExpansionAndPruning(WTA wta, int N,
-			TreeKeeper tree) {
+			Tree1 tree) {
 
-		HashMap<State, ArrayList<LinkedHashMap<Node,TreeKeeper>>> allRuns =
+		HashMap<State, ArrayList<LinkedHashMap<Node,Tree1>>> allRuns =
 				new HashMap<>();
-		HashMap<State, LinkedHashMap<Node,TreeKeeper>> nRuns = new HashMap<>();
+		HashMap<State, LinkedHashMap<Node,Tree1>> nRuns = new HashMap<>();
 
 		EppsteinRunner eRunner = new EppsteinRunner(exploredTrees);
 
@@ -157,12 +157,12 @@ public class BestTrees {
 		}
 
 		for (Entry<State, ArrayList<LinkedHashMap<Node,
-				TreeKeeper>>> e : allRuns.entrySet()) {
+				Tree1>>> e : allRuns.entrySet()) {
 
-			LinkedHashMap<Node,TreeKeeper> mergedTreeList = new LinkedHashMap<>();
+			LinkedHashMap<Node,Tree1> mergedTreeList = new LinkedHashMap<>();
 			State q = e.getKey();
 
-			for (LinkedHashMap<Node, TreeKeeper> treeList : e.getValue()) {
+			for (LinkedHashMap<Node, Tree1> treeList : e.getValue()) {
 				mergedTreeList = SortedListMerger.mergeTreeListsForState(treeList,
 						mergedTreeList, N, q);
 			}
@@ -170,15 +170,15 @@ public class BestTrees {
 			nRuns.put(q, mergedTreeList);
 		}
 
-		LinkedHashMap<Node,TreeKeeper> mergedList = new LinkedHashMap<>();
+		LinkedHashMap<Node,Tree1> mergedList = new LinkedHashMap<>();
 		int nOfStatesInWTA = wta.getStates().size();
 
-		for (LinkedHashMap<Node, TreeKeeper> currentList : nRuns.values()) {
+		for (LinkedHashMap<Node, Tree1> currentList : nRuns.values()) {
 			mergedList = SortedListMerger.mergeTreeListsByDeltaWeights(currentList, mergedList,
 					N*nOfStatesInWTA);
 		}
 
-		for (TreeKeeper n : mergedList.values()) {
+		for (Tree1 n : mergedList.values()) {
 			treeQueue.put(n, null);
 		}
 	}

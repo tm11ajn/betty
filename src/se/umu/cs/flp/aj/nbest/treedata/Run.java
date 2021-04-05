@@ -24,16 +24,16 @@ import se.umu.cs.flp.aj.nbest.semiring.Weight;
 
 public class Run implements Comparable<Run> {
 
-	private TreeKeeper tree;
+	private Tree1 tree;
 
 	private Weight weight;
 
-	public Run(TreeKeeper tree, Weight weight) {
+	public Run(Tree1 tree, Weight weight) {
 		this.tree = tree;
 		this.weight = weight;
 	}
 
-	public TreeKeeper getTree() {
+	public Tree1 getTree() {
 		return this.tree;
 	}
 

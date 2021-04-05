@@ -30,32 +30,32 @@ import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.Symbol;
 
-public class TreeKeeper implements Comparable<TreeKeeper> {
+public class Tree1 implements Comparable<Tree1> {
 	
 	private static Context[] bestContexts;
 
-	private Node tree;
+	private Node node;
 	private LinkedHashMap<State,State> optimalStates;
 	private State optimalState;
 	private HashMap<State, Weight> optWeights;
 	private Weight smallestWeight;
 
-	public TreeKeeper(Node tree, Semiring semiring) {
-		this.tree = tree;
+	public Tree1(Node node, Semiring semiring) {
+		this.node = node;
 		this.optWeights = new HashMap<>();
 		this.smallestWeight = semiring.zero();
 	}
 
-	public TreeKeeper(Symbol ruleLabel, Weight ruleWeight,
-			ArrayList<TreeKeeper> trees) {
+	public Tree1(Symbol ruleLabel, Weight ruleWeight,
+			ArrayList<Tree1> trees) {
 
-		tree = new Node(ruleLabel);
+		node = new Node(ruleLabel);
 		this.optWeights = new HashMap<>();
 
 		int counter = 0;
 
-		for (TreeKeeper currentTree : trees) {
-			tree.addChild(currentTree.getTree());
+		for (Tree1 currentTree : trees) {
+			node.addChild(currentTree.getNode());
 
 			if (counter == 0) {
 				smallestWeight = currentTree.getSmallestWeight();
@@ -79,8 +79,8 @@ public class TreeKeeper implements Comparable<TreeKeeper> {
 		bestContexts = smallestCompletionWeights;
 	}
 
-	public Node getTree() {
-		return tree;
+	public Node getNode() {
+		return node;
 	}
 
 	public LinkedHashMap<State, State> getOptimalStates() {
@@ -111,7 +111,7 @@ public class TreeKeeper implements Comparable<TreeKeeper> {
 		}
 	}
 
-	public void addWeightsFrom(TreeKeeper t) {
+	public void addWeightsFrom(Tree1 t) {
 		HashMap<State, Weight> map = t.optWeights;
 
 		for (Entry<State, Weight> e : map.entrySet()) {
@@ -132,7 +132,7 @@ public class TreeKeeper implements Comparable<TreeKeeper> {
 
 	@Override
 	public int hashCode() {
-		return this.tree.hashCode();
+		return this.node.hashCode();
 	}
 
 	@Override
@@ -144,20 +144,20 @@ public class TreeKeeper implements Comparable<TreeKeeper> {
 			optStatesString = optimalStates.toString();
 		}
 
-		return tree.toString() + optStatesString + optWeights.toString();
+		return node.toString() + optStatesString + optWeights.toString();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 
-		if (!(obj instanceof TreeKeeper)) {
+		if (!(obj instanceof Tree1)) {
 			return false;
 		}
 
-		TreeKeeper o = (TreeKeeper) obj;
+		Tree1 o = (Tree1) obj;
 
 		int weightComparison = this.smallestWeight.compareTo(o.smallestWeight);
-		int treeComparison = this.tree.compareTo(o.tree);
+		int treeComparison = this.node.compareTo(o.node);
 
 		if (weightComparison == 0 && treeComparison == 0) {
 			return true;
@@ -167,11 +167,11 @@ public class TreeKeeper implements Comparable<TreeKeeper> {
 	}
 
 	@Override
-	public int compareTo(TreeKeeper o) {
+	public int compareTo(Tree1 o) {
 		int weightComparison = this.smallestWeight.compareTo(o.smallestWeight);
 
 		if (weightComparison == 0) {
-			return this.tree.compareTo(o.tree);
+			return this.node.compareTo(o.node);
 		}
 
 		return weightComparison;

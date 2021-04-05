@@ -23,17 +23,17 @@ package se.umu.cs.flp.aj.nbest.treedata;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.wta.State;
 
-public class TreeKeeper2 implements Comparable<TreeKeeper2> {
+public class Tree implements Comparable<Tree> {
 
 	private static Context[] bestContexts;
 
-	private Node tree;
+	private Node node;
 	private Weight runWeight;
 	private State resultingState;
 	private boolean outputted;
 
-	public TreeKeeper2(Node tree, Weight treeWeight, State resultingState) {
-		this.tree = tree;
+	public Tree(Node node, Weight treeWeight, State resultingState) {
+		this.node = node;
 		this.runWeight = treeWeight.duplicate();
 		this.resultingState = resultingState;
 		this.outputted = false;
@@ -43,8 +43,8 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 		bestContexts = bestContexts2;
 	}
 
-	public Node getTree() {
-		return tree;
+	public Node getNode() {
+		return node;
 	}
 
 	public Weight getRunWeight() {
@@ -73,24 +73,27 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 
 	@Override
 	public int hashCode() {
-		return this.tree.hashCode();
+		return this.node.hashCode();
 	}
 
 	@Override
 	public String toString() {
-		return "Tree: " + tree + " RunWeight: " + runWeight +
-				" Delta weight: " + getDeltaWeight() +
-				" Resulting state: " + resultingState;
+		String s =  "Tree: " + node + " RunWeight: " + runWeight;
+		if (bestContexts != null) {
+			s += " Delta weight: " + getDeltaWeight();
+		}
+		s += " Resulting state: " + resultingState;
+		return s;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 
-		if (!(obj instanceof TreeKeeper2)) {
+		if (!(obj instanceof Tree)) {
 			return false;
 		}
 
-		TreeKeeper2 o = (TreeKeeper2) obj;
+		Tree o = (Tree) obj;
 		
 		int weightComparison = this.getDeltaWeight().compareTo(o.getDeltaWeight());
 
@@ -109,7 +112,7 @@ public class TreeKeeper2 implements Comparable<TreeKeeper2> {
 	}
 
 	@Override
-	public int compareTo(TreeKeeper2 o) {
+	public int compareTo(Tree o) {
 		int weightComparison = this.getDeltaWeight().compareTo(o.getDeltaWeight());
 
 		if (weightComparison != 0) {
