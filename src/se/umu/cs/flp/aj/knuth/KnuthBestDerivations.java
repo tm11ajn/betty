@@ -132,47 +132,50 @@ public class KnuthBestDerivations {
 
 				usableStart++;
 			}
+			
+			if (!queue.empty()) {
 
-			/* Pick the currently best tree and add it to output = define it. */
-			BinaryHeap<State, Context>.Node element = queue.dequeue();
-			State state = element.getObject();
-			defined[state.getID()] = element.getWeight();
-			orderedBestTreeList.add(element.getWeight());
-			nOfDefined++;
+				/* Pick the currently best tree and add it to output = define it. */
+				BinaryHeap<State, Context>.Node element = queue.dequeue();
+				State state = element.getObject();
+				defined[state.getID()] = element.getWeight();
+				orderedBestTreeList.add(element.getWeight());
+				nOfDefined++;
 
-			/* Find new rules that can be used. */
-			for (Rule r2 : state.getOutgoing()) {
-				if (missingIndices[r2.getID()] == null) {
-					missingIndices[r2.getID()] = r2.getNumberOfStates();
-					Context newContext = new Context(r2.getWeight());
-					newContext.addStateOccurrence(r2.getResultingState(), 1);
-					ruleContexts[r2.getID()] = newContext;
-				}
-				
-				Context context = ruleContexts[r2.getID()];
-				Context defContext = defined[state.getID()];
-				
-				for (State s : r2.getStates()) {
-					if (s.getID() == state.getID()) {
-						if (trick) {
-							// Compute P(t_q,p) for each q,p in Q so that P(t_q,p) is 
-							// the number of p's in the best tree for q.
-							for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
-								context.addStateOccurrence(entry.getKey(), entry.getValue());
-							}
-						}
-						missingIndices[r2.getID()]--;
-						Weight currentWeight = context.getWeight();
-						Weight newWeight = currentWeight.mult(defined[s.getID()].getWeight());
-						context.setWeight(newWeight);
+				/* Find new rules that can be used. */
+				for (Rule r2 : state.getOutgoing()) {
+					if (missingIndices[r2.getID()] == null) {
+						missingIndices[r2.getID()] = r2.getNumberOfStates();
+						Context newContext = new Context(r2.getWeight());
+						newContext.addStateOccurrence(r2.getResultingState(), 1);
+						ruleContexts[r2.getID()] = newContext;
 					}
-				}
 
-				/* Mark new rules as usable if all the states used to apply 
-				 * the rule are defined. */
-				if (missingIndices[r2.getID()] == 0) {
-					usableRules.add(r2);
-					usableSize++;
+					Context context = ruleContexts[r2.getID()];
+					Context defContext = defined[state.getID()];
+
+					for (State s : r2.getStates()) {
+						if (s.getID() == state.getID()) {
+							if (trick) {
+								// Compute P(t_q,p) for each q,p in Q so that P(t_q,p) is 
+								// the number of p's in the best tree for q.
+								for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
+									context.addStateOccurrence(entry.getKey(), entry.getValue());
+								}
+							}
+							missingIndices[r2.getID()]--;
+							Weight currentWeight = context.getWeight();
+							Weight newWeight = currentWeight.mult(defined[s.getID()].getWeight());
+							context.setWeight(newWeight);
+						}
+					}
+
+					/* Mark new rules as usable if all the states used to apply 
+					 * the rule are defined. */
+					if (missingIndices[r2.getID()] == 0) {
+						usableRules.add(r2);
+						usableSize++;
+					}
 				}
 			}
 			
@@ -269,6 +272,11 @@ public class KnuthBestDerivations {
 					newContext.setf(new ArrayList<>(defined[resState.getID()].getf()));
 					newContext.setBestTree(bestTreeForState[s.getID()].getBestTree());
 					newContext.setBestRule(bestTreeForState[s.getID()].getBestRule());
+					
+//					if (bestTreeForState[s.getID()].getBestTree() == null) {
+//System.out.println("ABORT");
+//System.exit(1);
+//					}
 
 //System.out.println("Current blank state: " + s);
 //System.out.println("P(" + resState + ")");
@@ -308,19 +316,6 @@ public class KnuthBestDerivations {
 
 					newContext.getP().add(stateCount);
 					newContext.setWeight(newWeight);
-					
-					//TODO: 
-					// For p in Q, and i <= depth(newContext), let P(newContext,p)_i = P(d_0[...[d_i]...],p)
-					// f(newContext) = sum_{i \in [depth(newContext)]} f(d_0[...[d_i]..]) * P(newContext,s2)_i
-					
-					// I kontext behöver vi en vektor som är lika stor som djupet på kontexten och som ärvs av 
-					// barn-kontexterna och fylls på med värden
-					// Tittar uppåt
-					
-					/*
-					 * Sedan behöver vi en likadan struktur för att hålla reda på P-värdena
-					 * under den i:te positionen, hur många av varje tillstånd har vi?
-					 */
 					
 					if (trick) {
 						int fNext = 1;

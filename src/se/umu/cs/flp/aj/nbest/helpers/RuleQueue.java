@@ -61,7 +61,7 @@ public class RuleQueue {
 		Context[] bestContextsByState = bestContexts.getBestContextsByState();
 		
 		for (Context context : bestContextsByState) {
-			if (context == null || context.getWeight().isZero()) {
+			if (context == null || context.getBestTree() == null) {
 				continue;
 			}
 			int stateIndex = context.getBestRule().getResultingState().getID();
@@ -69,7 +69,7 @@ public class RuleQueue {
 		}
 		
 		for (Context context : bestContextsByState) {
-			if (context == null || context.getWeight().isZero()) {
+			if (context == null || context.getBestTree() == null) {
 				continue;
 			}
 			Rule rule = context.getBestRule();
