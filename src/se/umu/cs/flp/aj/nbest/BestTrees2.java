@@ -63,7 +63,9 @@ public class BestTrees2 {
 		
 		/* Considers the Knuth 1-best trees for output */
 		for (Context context : bestContexts.getOrderedBestTreesList()) {
-			if (context.getBestTree().getResultingState().isFinal()) {
+			State s = context.getBestTree().getResultingState();
+			if (s.isFinal() //&& s.isInBestContext()
+					) {
 				considerForOutput(context.getBestTree(), false);
 			}
 		}

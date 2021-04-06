@@ -302,6 +302,7 @@ public class KnuthBestDerivations {
 						if (i != j) {
 							Context cTemp = bestTreeForState[s2.getID()];
 							newWeight = newWeight.mult(cTemp.getWeight());
+							s2.markAsFoundInBestContext();
 							
 							if (trick) {
 								for(Entry<State, Integer> entry : cTemp.getStateOccurrences().entrySet()) {
@@ -352,7 +353,7 @@ public class KnuthBestDerivations {
 			if (!queue.empty()) {
 				BinaryHeap<State, Context>.Node element = queue.dequeue();
 				State state = element.getObject();
-				state.setBestContext(element.getWeight());
+//				state.setBestContext(element.getWeight());
 				defined[state.getID()] = element.getWeight();
 				nOfDefined++;
 				for (Rule r : state.getIncoming()) {
