@@ -119,23 +119,23 @@ public class Tree implements Comparable<Tree> {
 			return weightComparison;
 		}
 		
-		int thisSize = this.getNode().getSize();
-		int oSize = o.getNode().getSize();
+//		int thisSize = this.getNode().getSize();
+//		int oSize = o.getNode().getSize();
+//		
+//		if (thisSize < oSize) {
+//			return 1;
+//		} else if (thisSize > oSize) {
+//			return -1;
+//		}
 		
-		if (thisSize < oSize) {
-			return 1;
-		} else if (thisSize > oSize) {
-			return -1;
-		}
-		
-		int thisDepth = bestContexts[this.resultingState.getID()].getDepth();
-		int oDepth = bestContexts[o.resultingState.getID()].getDepth();
-		
-		if (thisDepth < oDepth) {
-			return -1;
-		} else if (thisDepth > oDepth) {
-			return 1;
-		}
+//		int thisDepth = bestContexts[this.resultingState.getID()].getDepth();
+//		int oDepth = bestContexts[o.resultingState.getID()].getDepth();
+//		
+//		if (thisDepth < oDepth) {
+//			return -1;
+//		} else if (thisDepth > oDepth) {
+//			return 1;
+//		}
 		return 0;
 	}
 }
