@@ -67,7 +67,7 @@ public class ResultConnector {
 		resCount = new int[stateCount + 1];
 		connections = new int[stateCount + 1];
 		configLists = new ArrayList<>();
-		configLists.add(new ConfigLists());
+		configLists.add(new ConfigLists()); // Start from 1
 //		configLists.add(new ArrayList<>()); // Start from 1
 		rules = wta.getRules();
 		this.wta = wta;

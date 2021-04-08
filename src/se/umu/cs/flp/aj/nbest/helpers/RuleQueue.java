@@ -51,76 +51,61 @@ public class RuleQueue {
 		this.limit = limit;
 		this.trick = trick;
 		this.resultConnector = new ResultConnector(wta, limit);
-//		initialise(bestContexts, wta.getRules());
-		initialise2(bestContexts, wta.getSourceRules());
+		initialise(bestContexts, wta.getSourceRules());
+//		initialise2(bestContexts, wta.getSourceRules());
 	}
 	
 	/* Method that initialises the rule queue. It is only a separate method
 	 * so that we can use makeheap to get a linear performance of the 
 	 * initialisation instead of a n log n one. */
-//	private void initialise(BestContexts bestContexts, ArrayList<Rule> rules) {
-//		
-//		Context[] bestContextsByState = bestContexts.getBestContextsByState();
-//		
-//		for (Context context : bestContextsByState) {
-//			if (context == null || context.getBestTree() == null || !context.getBestRule().getResultingState().isInBestContext()) {
-//				continue;
-//			}
-//			int stateIndex = context.getBestRule().getResultingState().getID();
-//			resultConnector.addResult(stateIndex, context.getBestTree());
-//		}
-//		
-////		for (Context context : bestContextsByState) {
-////			if (context == null || context.getBestTree() == null || !context.getBestRule().getResultingState().isInBestContext()) {
-////				continue;
-////			}
-////			Rule rule = context.getBestRule();
-////			RuleKeeper keeper = new RuleKeeper(rule, limit);
-////			LadderQueue<Tree> ladder = keeper.getLadderQueue();
-////			BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
-////			queueElems[rule.getID()] = elem;
-////			Configuration<Tree> startConfig = ladder.getStartConfig();
-////			ladder.insert(startConfig);
-////			ladder.dequeue();
-////			ArrayList<Configuration<Tree>> nextConfigs = ladder.getNextConfigs(startConfig);
-////			for (Configuration<Tree> config : nextConfigs) {
-////				resultConnector.makeConnections(config);
-////			}
-////			if (!rule.getResultingState().isSaturated() && ladder.hasNext()) {
-////				Configuration<Tree> config = ladder.peek();
-////				keeper.setBestTree(rule.apply(config));
-////				queue.insertUnordered(elem, keeper.getBestTree());
-////			}
-////		}
-//		
-//		for (Rule r : rules) {
-//			State resState = r.getResultingState();
-//			if (resState.isInBestContext() || r.getNumberOfStates() == 0) {
-//			RuleKeeper keeper = new RuleKeeper(r, limit);
-//			LadderQueue<Tree> ladder = keeper.getLadderQueue();
-//			Configuration<Tree> startConfig = ladder.getStartConfig();
-//			BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
-//			queueElems[r.getID()] = elem;
-//			Context context = bestContextsByState[resState.getID()];
-//			if (context != null && context.getBestTree() != null && resState.isInBestContext()) {
-//				ladder.dequeue();
-//				ArrayList<Configuration<Tree>> nextConfigs = ladder.getNextConfigs(startConfig);
-//				for (Configuration<Tree> config : nextConfigs) {
-//					resultConnector.makeConnections(config);
-//				}
-//			} else {
-//				resultConnector.makeConnections(startConfig);
-//			}
-//			if (!r.getResultingState().isSaturated() && ladder.hasNext()) {
-//				Configuration<Tree> config = ladder.peek();
-//				keeper.setBestTree(r.apply(config));
-//				queue.insertUnordered(elem, keeper.getBestTree());
-//			}
-//			}
-//		}
-//
-//		queue.makeHeap();
-//	}
+	private void initialise(BestContexts bestContexts, LinkedList<Rule> sourceRules) {
+	
+	Context[] bestContextsByState = bestContexts.getBestContextsByState();
+	
+	for (Context context : bestContextsByState) {
+		if (context == null || context.getBestTree() == null || !context.getBestRule().getResultingState().isInBestContext()) {
+			continue;
+		}
+		Rule rule = context.getBestRule();
+//System.out.println("Init: current rule: " + rule);
+		RuleKeeper keeper = new RuleKeeper(rule, limit);
+		LadderQueue<Tree> ladder = keeper.getLadderQueue();
+		BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
+		queueElems[rule.getID()] = elem;
+		Configuration<Tree> startConfig = ladder.getStartConfig();
+		ladder.insert(startConfig); 
+		ladder.dequeue(); // keep the dequeue count correct
+	}
+	
+	for (Context context : bestContextsByState) {
+		if (context == null || context.getBestTree() == null || !context.getBestRule().getResultingState().isInBestContext()) {
+			continue;
+		}
+//		resultConnector.addResult(context.getBestTree());
+		expandWith(context.getBestTree());
+	}
+	
+	for (Rule r : sourceRules) {
+		if (queueElems[r.getID()] != null) {
+			continue;
+		}
+		
+		RuleKeeper keeper = new RuleKeeper(r, limit);
+		LadderQueue<Tree> ladder = keeper.getLadderQueue();
+		Configuration<Tree> startConfig = ladder.getStartConfig();
+		resultConnector.makeConnections(startConfig);
+		BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
+		queueElems[r.getID()] = elem;
+		if (ladder.hasNext()) {
+			Configuration<Tree> config = ladder.peek();
+			keeper.setBestTree(r.apply(config));
+			queue.insertUnordered(elem, keeper.getBestTree());
+//System.out.println("Initialise leaf rule " + keeper.getRule() + " with " + keeper.getBestTree());
+		}
+	}
+
+	queue.makeHeap();
+}
 	
 //	private void initialise(BestContexts bestContexts, ArrayList<Rule> rules) {
 //		
@@ -182,14 +167,6 @@ public class RuleQueue {
 		
 		Context[] bestContextsByState = bestContexts.getBestContextsByState();
 		
-//		for (Context context : bestContextsByState) {
-//			if (context == null || context.getBestTree() == null) {
-//				continue;
-//			}
-//			int stateIndex = context.getBestRule().getResultingState().getID();
-//			resultConnector.addResult(stateIndex, context.getBestTree());
-//		}
-		
 		for (Context context : bestContextsByState) {
 			if (context == null || context.getBestTree() == null) {
 				continue;
@@ -200,7 +177,6 @@ public class RuleQueue {
 			BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
 			queueElems[rule.getID()] = elem;
 			Configuration<Tree> startConfig = ladder.getStartConfig();
-//			resultConnector.makeConnections(startConfig);
 			ladder.insert(startConfig); 
 			keeper.setBestTree(context.getBestTree());
 			queue.insertUnordered(elem, keeper.getBestTree());
@@ -230,6 +206,7 @@ public class RuleQueue {
 	/* Initialises a never before seen rule: gives it a queue element etc. 
 	 * Finally adds it to the queue if it has a next config. */ 
 	private void initialiseRuleElement(Rule r) {
+//System.out.println("initialiseRuleElement");
 		RuleKeeper keeper = new RuleKeeper(r, limit);
 		LadderQueue<Tree> ladder = keeper.getLadderQueue();
 		Configuration<Tree> startConfig = ladder.getStartConfig();
