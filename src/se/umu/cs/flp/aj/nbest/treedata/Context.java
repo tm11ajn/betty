@@ -28,8 +28,8 @@ import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class Context implements Comparable<Context> {
-	private Tree bestTree;
-	private Rule bestRule;
+//	private Tree bestTree;
+//	private Rule bestRule;
 	private Weight weight;
 	private HashMap<State, Integer> occurrences;
 	private int depth;
@@ -40,7 +40,7 @@ public class Context implements Comparable<Context> {
 	public Context() {
 		occurrences = new HashMap<>();
 		depth = 0;
-		this.bestTree = null;
+//		this.bestTree = null;
 		this.weight = null;
 		this.f = null;
 		this.P = null;
@@ -51,27 +51,27 @@ public class Context implements Comparable<Context> {
 		this.weight = weight;
 	}
 	
-	public Context(Weight weight, Tree bestTree, Rule bestRule) {
-		this(weight);
-		this.bestTree = bestTree;
-		this.bestRule = bestRule;
-	}
+//	public Context(Weight weight, Tree bestTree, Rule bestRule) {
+//		this(weight);
+//		this.bestTree = bestTree;
+//		this.bestRule = bestRule;
+//	}
 	
-	public Rule getBestRule() {
-		return bestRule;
-	}
-	
-	public void setBestRule(Rule bestRule) {
-		this.bestRule = bestRule;
-	}
-	
-	public Tree getBestTree() {
-		return bestTree;
-	}
-	
-	public void setBestTree(Tree bestTree) {
-		this.bestTree = bestTree;
-	}
+//	public Rule getBestRule() {
+//		return bestRule;
+//	}
+//	
+//	public void setBestRule(Rule bestRule) {
+//		this.bestRule = bestRule;
+//	}
+//	
+//	public Tree getBestTree() {
+//		return bestTree;
+//	}
+//	
+//	public void setBestTree(Tree bestTree) {
+//		this.bestTree = bestTree;
+//	}
 	
 	public int getDepth() {
 		return depth;

@@ -8,6 +8,10 @@ public class BestContexts {
 	private Context[] bestContexts;
 	private ArrayList<Context> orderedBestTreeList;
 	
+	public BestContexts(Context[] bestContexts) {
+		this(bestContexts, null);
+	}
+	
 	public BestContexts(Context[] bestContexts, ArrayList<Context> orderedBestTreeList) {
 		this.bestContexts = bestContexts;
 		this.orderedBestTreeList = orderedBestTreeList;

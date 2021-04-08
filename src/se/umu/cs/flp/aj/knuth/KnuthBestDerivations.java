@@ -40,7 +40,7 @@ public class KnuthBestDerivations {
 	private static Context[] defined;
 	private static ArrayList<Rule> usableRules;
 	private static boolean trick;
-	private static ArrayList<Context> orderedBestTreeList;
+//	private static ArrayList<Context> orderedBestTreeList;
 
 	public static BestContexts computeBestContexts(WTA wta, boolean trickVal) {
 		KnuthBestDerivations.wta = wta;
@@ -57,7 +57,7 @@ public class KnuthBestDerivations {
 		qElems = new Node[nOfStates + 1];
 		defined = new Context[nOfStates + 1];
 		usableRules = new ArrayList<>(nOfRules);
-		orderedBestTreeList = new ArrayList<>();
+//		orderedBestTreeList = new ArrayList<>();
 		Context[] ruleContexts = new Context[nOfRules];
 		Integer[] missingIndices = new Integer[nOfRules];
 		int nOfDefined = 0;
@@ -70,7 +70,8 @@ public class KnuthBestDerivations {
 		 * in which we have reached the resulting state of the current rule once.*/
 		for (Rule r : wta.getSourceRules()) {
 			Tree tree = r.apply(new Tree[0], wta.getSemiring().one());
-			Context context =  new Context(r.getWeight(), tree, r);
+//			Context context =  new Context(r.getWeight(), tree, r);
+			Context context =  new Context(r.getWeight());
 			ruleContexts[r.getID()] = context;
 			State resState = r.getResultingState();
 			BinaryHeap<State, Context>.Node element = qElems[resState.getID()];
@@ -110,19 +111,19 @@ public class KnuthBestDerivations {
 				
 				Context oldContext = element.getWeight();
 				Context newContext = ruleContexts[r.getID()];
-				Tree[] tList = new Tree[r.getNumberOfStates()];
-				Weight weightSum = wta.getSemiring().one();
-				int index = 0;
-				
-				for (State s : r.getStates()) {
-					tList[index] = defined[s.getID()].getBestTree();
-					weightSum = weightSum.mult(tList[index].getRunWeight());
-					index++;
-				}
-				
-				Tree bestTree = r.apply(tList, weightSum);
-				newContext.setBestTree(bestTree);
-				newContext.setBestRule(r);
+//				Tree[] tList = new Tree[r.getNumberOfStates()];
+//				Weight weightSum = wta.getSemiring().one();
+//				int index = 0;
+//				
+//				for (State s : r.getStates()) {
+//					tList[index] = defined[s.getID()].getBestTree();
+//					weightSum = weightSum.mult(tList[index].getRunWeight());
+//					index++;
+//				}
+//				
+//				Tree bestTree = r.apply(tList, weightSum);
+//				newContext.setBestTree(bestTree);
+//				newContext.setBestRule(r);
 
 				if (oldContext == null) {
 					queue.insert(element, newContext);
@@ -139,7 +140,7 @@ public class KnuthBestDerivations {
 				BinaryHeap<State, Context>.Node element = queue.dequeue();
 				State state = element.getObject();
 				defined[state.getID()] = element.getWeight();
-				orderedBestTreeList.add(element.getWeight());
+//				orderedBestTreeList.add(element.getWeight());
 				nOfDefined++;
 
 				/* Find new rules that can be used. */
@@ -232,8 +233,8 @@ public class KnuthBestDerivations {
 			newContext.getP().add(map);
 			newContext.setf(new ArrayList<Integer>());
 			newContext.getf().add(1);
-			newContext.setBestTree(bestTreeForState[s.getID()].getBestTree());
-			newContext.setBestRule(bestTreeForState[s.getID()].getBestRule());
+//			newContext.setBestTree(bestTreeForState[s.getID()].getBestTree());
+//			newContext.setBestRule(bestTreeForState[s.getID()].getBestRule());
 			defined[s.getID()] = newContext;
 			nOfDefined++;
 			for (Rule r : s.getIncoming()) {
@@ -270,8 +271,8 @@ public class KnuthBestDerivations {
 					newContext.setDepth(defined[resState.getID()].getDepth() + 1);
 					newContext.setP(new ArrayList<>(defined[resState.getID()].getP()));
 					newContext.setf(new ArrayList<>(defined[resState.getID()].getf()));
-					newContext.setBestTree(bestTreeForState[s.getID()].getBestTree());
-					newContext.setBestRule(bestTreeForState[s.getID()].getBestRule());
+//					newContext.setBestTree(bestTreeForState[s.getID()].getBestTree());
+//					newContext.setBestRule(bestTreeForState[s.getID()].getBestRule());
 					
 //					if (bestTreeForState[s.getID()].getBestTree() == null) {
 //System.out.println("ABORT");
@@ -392,7 +393,7 @@ public class KnuthBestDerivations {
 //		}
 
 //		return defined;
-		return new BestContexts(defined, orderedBestTreeList);
+		return new BestContexts(defined);
 	}
 }
 
