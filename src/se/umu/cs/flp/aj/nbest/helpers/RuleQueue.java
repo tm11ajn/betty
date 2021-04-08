@@ -51,119 +51,130 @@ public class RuleQueue {
 		this.limit = limit;
 		this.trick = trick;
 		this.resultConnector = new ResultConnector(wta, limit);
-//		initialise(bestContexts, wta.getSourceRules());
-		initialise(bestContexts, wta.getRules());
+		initialise(bestContexts, wta.getSourceRules());
+//		initialise(bestContexts, wta.getRules());
 //		initialise2(bestContexts, wta.getSourceRules());
 	}
 	
 	/* Method that initialises the rule queue. It is only a separate method
 	 * so that we can use makeheap to get a linear performance of the 
 	 * initialisation instead of a n log n one. */
-//	private void initialise(BestContexts bestContexts, LinkedList<Rule> sourceRules) {
-//	
-//	Context[] bestContextsByState = bestContexts.getBestContextsByState();
-//	
-//	for (Context context : bestContextsByState) {
-//		if (context == null || context.getBestTree() == null || !context.getBestRule().getResultingState().isInBestContext()) {
-//			continue;
-//		}
-//		Rule rule = context.getBestRule();
+	private void initialise(BestContexts bestContexts, LinkedList<Rule> sourceRules) {
+	
+	Context[] bestContextsByState = bestContexts.getBestContextsByState();
+	
+	for (Context context : bestContextsByState) {
+		if (context == null || context.getBestTree() == null || !context.getBestRule().getResultingState().isInBestContext()) {
+			continue;
+		}
+		Rule rule = context.getBestRule();
 //System.out.println("Init: current rule: " + rule);
-//		RuleKeeper keeper = new RuleKeeper(rule, limit);
-//		LadderQueue<Tree> ladder = keeper.getLadderQueue();
-//		BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
-//		queueElems[rule.getID()] = elem;
-//		Configuration<Tree> startConfig = ladder.getStartConfig();
-//		ladder.insert(startConfig); 
-//		ladder.dequeue(); // keep the dequeue count correct
-//	}
-//	
-//	for (Context context : bestContextsByState) {
-//		if (context == null || context.getBestTree() == null || !context.getBestRule().getResultingState().isInBestContext()) {
-//			continue;
-//		}
-////		resultConnector.addResult(context.getBestTree());
-//		expandWith(context.getBestTree());
-//	}
-//	
-//	for (Rule r : sourceRules) {
-//		if (queueElems[r.getID()] != null) {
-//			continue;
+		RuleKeeper keeper = new RuleKeeper(rule, limit);
+		LadderQueue<Tree> ladder = keeper.getLadderQueue();
+		BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
+		queueElems[rule.getID()] = elem;
+		Configuration<Tree> startConfig = ladder.getStartConfig();
+		ladder.insert(startConfig); 
+		ladder.dequeue(); // keep the dequeue count correct
+		ArrayList<Configuration<Tree>> nextConfigs = ladder.getNextConfigs(startConfig);
+		for (Configuration<Tree> config : nextConfigs) {
+			resultConnector.makeConnections(config);
+		}
+		if (ladder.hasNext()) {
+			Configuration<Tree> config = ladder.peek();
+			keeper.setBestTree(rule.apply(config));
+			queue.insertUnordered(elem, keeper.getBestTree());
+//System.out.println("Initialise rule " + keeper.getRule() + " with " + keeper.getBestTree());
+		}
+	}
+	
+	for (Context context : bestContextsByState) {
+		if (context == null || context.getBestTree() == null || !context.getBestRule().getResultingState().isInBestContext()) {
+			continue;
+		}
+//		resultConnector.addResult(context.getBestTree());
+		expandWith(context.getBestTree());
+	}
+	
+	for (Rule r : sourceRules) {
+		if (queueElems[r.getID()] != null) {
+			continue;
+		}
+		
+		RuleKeeper keeper = new RuleKeeper(r, limit);
+		LadderQueue<Tree> ladder = keeper.getLadderQueue();
+		Configuration<Tree> startConfig = ladder.getStartConfig();
+		resultConnector.makeConnections(startConfig);
+		BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
+		queueElems[r.getID()] = elem;
+		if (ladder.hasNext()) {
+			Configuration<Tree> config = ladder.peek();
+			keeper.setBestTree(r.apply(config));
+			queue.insertUnordered(elem, keeper.getBestTree());
+//System.out.println("Initialise leaf rule " + keeper.getRule() + " with " + keeper.getBestTree());
+		}
+	}
+
+	queue.makeHeap();
+}
+	
+//	/* TODO: Last element in best trees list becomes wrong, fix if we want to use this version */
+//	private void initialise(BestContexts bestContexts, ArrayList<Rule> rules) {
+//		
+//		Context[] bestContextsByState = bestContexts.getBestContextsByState();
+//		
+//		for (Context context : bestContextsByState) {
+//			if (context == null || context.getBestTree() == null) {
+//				continue;
+//			}
+//			resultConnector.addResult(context.getBestTree());
 //		}
 //		
-//		RuleKeeper keeper = new RuleKeeper(r, limit);
-//		LadderQueue<Tree> ladder = keeper.getLadderQueue();
-//		Configuration<Tree> startConfig = ladder.getStartConfig();
-//		resultConnector.makeConnections(startConfig);
-//		BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
-//		queueElems[r.getID()] = elem;
-//		if (ladder.hasNext()) {
-//			Configuration<Tree> config = ladder.peek();
-//			keeper.setBestTree(r.apply(config));
-//			queue.insertUnordered(elem, keeper.getBestTree());
-//System.out.println("Initialise leaf rule " + keeper.getRule() + " with " + keeper.getBestTree());
+//		for (Context context : bestContextsByState) {
+//			if (context == null || context.getBestTree() == null) {
+//				continue;
+//			}
+//			Rule rule = context.getBestRule();
+////System.out.println("Init: current rule: " + rule);
+//			RuleKeeper keeper = new RuleKeeper(rule, limit);
+//			LadderQueue<Tree> ladder = keeper.getLadderQueue();
+//			BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
+//			queueElems[rule.getID()] = elem;
+//			Configuration<Tree> startConfig = ladder.getStartConfig();
+//			ArrayList<Configuration<Tree>> nextConfigs = ladder.getNextConfigs(startConfig);
+//			ladder.insert(startConfig); 
+//			ladder.dequeue(); // keep the dequeue count correct
+//			for (Configuration<Tree> config : nextConfigs) {
+//				resultConnector.makeConnections(config);
+//			}
+//			if (ladder.hasNext()) {
+//				Configuration<Tree> config = ladder.peek();
+//				keeper.setBestTree(rule.apply(config));
+//				queue.insertUnordered(elem, keeper.getBestTree());
+////System.out.println("Initialise rule " + keeper.getRule() + " with " + keeper.getBestTree());
+//			}
 //		}
-//	}
+//		
+//		for (Rule r : rules) {
+//			if (queueElems[r.getID()] != null) {
+//				continue;
+//			}
+//			
+//			RuleKeeper keeper = new RuleKeeper(r, limit);
+//			LadderQueue<Tree> ladder = keeper.getLadderQueue();
+//			Configuration<Tree> startConfig = ladder.getStartConfig();
+//			resultConnector.makeConnections(startConfig);
+//			BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
+//			queueElems[r.getID()] = elem;
+//			if (ladder.hasNext()) {
+//				Configuration<Tree> config = ladder.peek();
+//				keeper.setBestTree(r.apply(config));
+//				queue.insertUnordered(elem, keeper.getBestTree());
+//			}
+//		}
 //
-//	queue.makeHeap();
-//}
-	
-	private void initialise(BestContexts bestContexts, ArrayList<Rule> rules) {
-		
-		Context[] bestContextsByState = bestContexts.getBestContextsByState();
-		
-		for (Context context : bestContextsByState) {
-			if (context == null || context.getBestTree() == null) {
-				continue;
-			}
-			resultConnector.addResult(context.getBestTree());
-		}
-		
-		for (Context context : bestContextsByState) {
-			if (context == null || context.getBestTree() == null) {
-				continue;
-			}
-			Rule rule = context.getBestRule();
-//System.out.println("Init: current rule: " + rule);
-			RuleKeeper keeper = new RuleKeeper(rule, limit);
-			LadderQueue<Tree> ladder = keeper.getLadderQueue();
-			BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
-			queueElems[rule.getID()] = elem;
-			Configuration<Tree> startConfig = ladder.getStartConfig();
-			ArrayList<Configuration<Tree>> nextConfigs = ladder.getNextConfigs(startConfig);
-			ladder.insert(startConfig); 
-			ladder.dequeue(); // keep the dequeue count correct
-			for (Configuration<Tree> config : nextConfigs) {
-				resultConnector.makeConnections(config);
-			}
-			if (ladder.hasNext()) {
-				Configuration<Tree> config = ladder.peek();
-				keeper.setBestTree(rule.apply(config));
-				queue.insertUnordered(elem, keeper.getBestTree());
-//System.out.println("Initialise rule " + keeper.getRule() + " with " + keeper.getBestTree());
-			}
-		}
-		
-		for (Rule r : rules) {
-			if (queueElems[r.getID()] != null) {
-				continue;
-			}
-			
-			RuleKeeper keeper = new RuleKeeper(r, limit);
-			LadderQueue<Tree> ladder = keeper.getLadderQueue();
-			Configuration<Tree> startConfig = ladder.getStartConfig();
-			resultConnector.makeConnections(startConfig);
-			BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
-			queueElems[r.getID()] = elem;
-			if (ladder.hasNext()) {
-				Configuration<Tree> config = ladder.peek();
-				keeper.setBestTree(r.apply(config));
-				queue.insertUnordered(elem, keeper.getBestTree());
-			}
-		}
-
-		queue.makeHeap();
-	}
+//		queue.makeHeap();
+//	}
 	
 	private void initialise2(BestContexts bestContexts, LinkedList<Rule> sourceRules) {
 		
@@ -227,7 +238,7 @@ public class RuleQueue {
 
 	public void expandWith(Tree newTree) {
 		State resState = newTree.getResultingState();
-//		boolean unseenState = resultConnector.isUnseen(resState.getID());
+		boolean unseenState = resultConnector.isUnseen(resState.getID());
 		
 //System.out.println("Expands with " + newTree + " and is it unseen? " + unseenState);
 		
@@ -241,19 +252,19 @@ public class RuleQueue {
 		
 		/* Create rulekeepers for the rules that we have not yet seen
 		 * and add them to the queue as well. */
-//		if (unseenState && !resState.isSaturated()) {
-//			for (Rule r : resState.getOutgoing()) {
-//				if (queueElems[r.getID()] == null) {
+		if (unseenState && !resState.isSaturated()) {
+			for (Rule r : resState.getOutgoing()) {
+				if (queueElems[r.getID()] == null) {
 //System.out.println("Initialising rule element for " + r);
-//					initialiseRuleElement(r);
-//				} 
-//			}
-//		}
+					initialiseRuleElement(r);
+				} 
+			}
+		}
 
 		
-//		if (resState.isSaturated()) {
-//			return;
-//		}
+		if (resState.isSaturated()) {
+			return;
+		}
 				
 		/* Have the result connector propagate the result to the connected 
 		 * configs, and get info on which rulekeepers should be updated 
