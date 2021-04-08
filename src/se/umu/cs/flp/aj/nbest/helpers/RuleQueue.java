@@ -251,9 +251,9 @@ public class RuleQueue {
 //		}
 
 		
-		if (resState.isSaturated()) {
-			return;
-		}
+//		if (resState.isSaturated()) {
+//			return;
+//		}
 				
 		/* Have the result connector propagate the result to the connected 
 		 * configs, and get info on which rulekeepers should be updated 
