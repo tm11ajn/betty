@@ -239,9 +239,9 @@ public class Node implements Comparable<Node> {
 		}
 
 		if (this.children.size() < o.children.size()) {
-			return -1;
-		} else if (o.children.size() > this.children.size()) {
 			return 1;
+		} else if (o.children.size() > this.children.size()) {
+			return -1;
 		}
 
 		String thisString = this.toString();
