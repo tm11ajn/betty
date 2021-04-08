@@ -51,10 +51,28 @@ public class RuleQueue {
 		this.limit = limit;
 		this.trick = trick;
 		this.resultConnector = new ResultConnector(wta, limit);
-		initialise(bestContexts, wta.getSourceRules());
+		initialiseLeafRuleElements(wta.getSourceRules());
+//		initialise(bestContexts, wta.getSourceRules());
 //		initialise(bestContexts, wta.getRules());
 //		initialise2(bestContexts, wta.getSourceRules());
 	}
+	
+	private void initialiseLeafRuleElements(LinkedList<Rule> leafRules) {
+		for (Rule r : leafRules) {
+			RuleKeeper keeper = new RuleKeeper(r, limit);
+			LadderQueue<Tree> ladder = keeper.getLadderQueue();
+			Configuration<Tree> startConfig = ladder.getStartConfig();
+			resultConnector.makeConnections(startConfig);
+			BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
+			queueElems[r.getID()] = elem;
+			Configuration<Tree> config = ladder.peek();
+			keeper.setBestTree(r.apply(config));
+			queue.insertUnordered(elem, keeper.getBestTree());
+		}
+		
+		queue.makeHeap();
+	}
+
 	
 	/* Method that initialises the rule queue. It is only a separate method
 	 * so that we can use makeheap to get a linear performance of the 

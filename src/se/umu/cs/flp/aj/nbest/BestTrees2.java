@@ -62,13 +62,13 @@ public class BestTrees2 {
 		foundTrees = 0;
 		
 		/* Considers the Knuth 1-best trees for output */
-		for (Context context : bestContexts.getOrderedBestTreesList()) {
-			State s = context.getBestTree().getResultingState();
-			if (s.isFinal() && s.isInBestContext()
-					) {
-				considerForOutput(context.getBestTree(), false);
-			}
-		}
+//		for (Context context : bestContexts.getOrderedBestTreesList()) {
+//			State s = context.getBestTree().getResultingState();
+//			if (s.isFinal() && s.isInBestContext()
+//					) {
+//				considerForOutput(context.getBestTree(), false);
+//			}
+//		}
 		
 		// K <- empty
 		/* Initialises implicitly by enqueuing all rules and initialising them to
@@ -83,7 +83,7 @@ public class BestTrees2 {
 			Tree currentTree = ruleQueue.nextTree();
 			
 //System.out.println("Current tree: " + currentTree);
-
+//System.out.println("Main queue size: " + ruleQueue.size());
 			/* If there are no more derivations with a non-infinity weight,
 			 * we end the search. */
 			if (currentTree.getDeltaWeight().compareTo(
