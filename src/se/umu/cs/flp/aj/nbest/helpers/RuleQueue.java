@@ -136,7 +136,7 @@ public class RuleQueue {
 			for (Configuration<Tree> config : nextConfigs) {
 				resultConnector.makeConnections(config);
 			}
-			if (!rule.getResultingState().isSaturated() && ladder.hasNext()) {
+			if (ladder.hasNext()) {
 				Configuration<Tree> config = ladder.peek();
 				keeper.setBestTree(rule.apply(config));
 				queue.insertUnordered(elem, keeper.getBestTree());
@@ -155,7 +155,7 @@ public class RuleQueue {
 			resultConnector.makeConnections(startConfig);
 			BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
 			queueElems[r.getID()] = elem;
-			if (!r.getResultingState().isSaturated() && ladder.hasNext()) {
+			if (ladder.hasNext()) {
 				Configuration<Tree> config = ladder.peek();
 				keeper.setBestTree(r.apply(config));
 				queue.insertUnordered(elem, keeper.getBestTree());
