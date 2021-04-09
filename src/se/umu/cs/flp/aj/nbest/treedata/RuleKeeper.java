@@ -67,16 +67,25 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 		this.locked = true;
 	}
 	
+	/* Null marks that the list has already been used once */
 	public ArrayList<RuleKeeper> unlock() {
+		if (this.waitingList == null) {
+			return new ArrayList<>();
+		}
+		
 		this.locked = false;
-		for (RuleKeeper rk : this.waitingList) {
+		ArrayList<RuleKeeper> tempList = this.waitingList;
+		for (RuleKeeper rk : tempList) {
 			rk.unlock();
 		}
-		return this.waitingList;
+		this.waitingList = null;
+		return tempList;
 	}
 	
 	public void addToWaitingList(RuleKeeper rk) {
-		this.waitingList.add(rk);
+		if (this.waitingList != null) {
+			this.waitingList.add(rk);
+		}
 	}
 
 	@Override
