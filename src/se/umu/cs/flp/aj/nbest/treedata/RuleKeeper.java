@@ -20,6 +20,8 @@
 
 package se.umu.cs.flp.aj.nbest.treedata;
 
+import java.util.ArrayList;
+
 import se.umu.cs.flp.aj.nbest.helpers.TreeConfigurationComparator;
 import se.umu.cs.flp.aj.nbest.util.LadderQueue;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
@@ -29,6 +31,8 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 	private Rule rule;
 	private LadderQueue<Tree> ladder;
 	private Tree bestTree;
+	private boolean locked;
+	private ArrayList<RuleKeeper> waitingList;
 
 	public RuleKeeper(Rule rule, int limit) {
 		this.rule = rule;
@@ -36,6 +40,7 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 				rule.getNumberOfStates(), 
 				new TreeConfigurationComparator(), limit);
 		this.bestTree = null;
+		this.waitingList = new ArrayList<>();
 	}
 	
 	public Tree getBestTree() {
@@ -52,6 +57,26 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 
 	public Rule getRule() {
 		return rule;
+	}
+
+	public boolean isLocked() {
+		return locked;
+	}
+	
+	public void lock() {
+		this.locked = true;
+	}
+	
+	public ArrayList<RuleKeeper> unlock() {
+		this.locked = false;
+		for (RuleKeeper rk : this.waitingList) {
+			rk.unlock();
+		}
+		return this.waitingList;
+	}
+	
+	public void addToWaitingList(RuleKeeper rk) {
+		this.waitingList.add(rk);
 	}
 
 	@Override

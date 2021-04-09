@@ -21,6 +21,7 @@
 package se.umu.cs.flp.aj.nbest.helpers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import se.umu.cs.flp.aj.heap.BinaryHeap;
@@ -39,10 +40,11 @@ import se.umu.cs.flp.aj.nbest.wta.WTA;
 public class RuleQueue {
 	
 	private ResultConnector resultConnector;
-	private BinaryHeap<RuleKeeper, Weight> queue;
-	private BinaryHeap<RuleKeeper, Weight>.Node[] queueElems;
+	private BinaryHeap<RuleKeeper, Tree> queue;
+	private BinaryHeap<RuleKeeper, Tree>.Node[] queueElems;
 	int limit;
 	private boolean trick;
+//	private HashMap<Rule, LinkedList<RuleKeeper>> waitingList;
 
 	@SuppressWarnings("unchecked")
 	public RuleQueue(WTA wta, int limit, BestContexts bestContexts, boolean trick) {
@@ -50,6 +52,7 @@ public class RuleQueue {
 		this.queueElems = new BinaryHeap.Node[wta.getRuleCount()];
 		this.limit = limit;
 		this.trick = trick;
+//		this.waitingList = new HashMap<>(); 
 		this.resultConnector = new ResultConnector(wta, limit);
 		initialiseLeafRuleElements(wta.getSourceRules());
 //		initialise(bestContexts, wta.getSourceRules());
@@ -63,11 +66,11 @@ public class RuleQueue {
 			LadderQueue<Tree> ladder = keeper.getLadderQueue();
 			Configuration<Tree> startConfig = ladder.getStartConfig();
 			resultConnector.makeConnections(startConfig);
-			BinaryHeap<RuleKeeper, Weight>.Node elem = queue.createNode(keeper);
+			BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
 			queueElems[r.getID()] = elem;
 			Configuration<Tree> config = ladder.peek();
 			keeper.setBestTree(r.apply(config));
-			queue.insertUnordered(elem, keeper.getBestTree().getDeltaWeight());
+			queue.insertUnordered(elem, keeper.getBestTree());
 		}
 		
 		queue.makeHeap();
@@ -242,13 +245,13 @@ public class RuleQueue {
 		Configuration<Tree> startConfig = ladder.getStartConfig();
 //System.out.println("Startconfig: " + startConfig);
 		resultConnector.makeConnections(startConfig);
-		BinaryHeap<RuleKeeper, Weight>.Node elem = queue.createNode(keeper);
+		BinaryHeap<RuleKeeper, Tree>.Node elem = queue.createNode(keeper);
 		queueElems[r.getID()] = elem;
 
 		if (ladder.hasNext()) {
 			Configuration<Tree> config = ladder.peek();
 			keeper.setBestTree(r.apply(config));
-			queue.insert(elem, keeper.getBestTree().getDeltaWeight());
+			queue.insert(elem, keeper.getBestTree());
 //System.out.println("Enqeueued " + keeper.getBestTree());
 		}
 	}
@@ -291,7 +294,7 @@ public class RuleQueue {
 		
 		/* Then update the corresponding rulekeepers. */
 		for (Integer index : toUpdate) {
-			BinaryHeap<RuleKeeper, Weight>.Node elem = queueElems[index];
+			BinaryHeap<RuleKeeper, Tree>.Node elem = queueElems[index];
 			RuleKeeper rk = elem.getObject();
 			Rule rule = rk.getRule();
 			Tree currentBest = rk.getBestTree();
@@ -305,12 +308,14 @@ public class RuleQueue {
 				if (currentWeight.compareTo(newWeight) > 0) {
 					Tree newBest = rule.apply(config);
 					rk.setBestTree(newBest);
-					queue.decreaseWeight(elem, newBest.getDeltaWeight());
+					queue.decreaseWeight(elem, newBest);
 				} 
 			} else {
 				Tree newBest = rule.apply(config);
 				rk.setBestTree(newBest);
-				queue.insert(elem, newBest.getDeltaWeight());
+				if (!rk.isLocked()) {
+					queue.insert(elem, newBest);
+				}
 			}
 		}
 	}
@@ -320,18 +325,43 @@ public class RuleQueue {
 	 * configurations for that particular rule. */
 	public Tree nextTree() {
 //System.out.println("Next tree");
-		BinaryHeap<RuleKeeper, Weight>.Node elem;
+		BinaryHeap<RuleKeeper, Tree>.Node elem;
 		RuleKeeper ruleKeeper;
 		Tree nextTree;
 		
 		/* Dequeue the next tree. */
 		elem = queue.dequeue();
 		ruleKeeper = elem.getObject();
+//System.out.println("Rulekeeper: " + ruleKeeper);
 		nextTree = ruleKeeper.getBestTree();
 		ruleKeeper.setBestTree(null);
+		Rule rule = ruleKeeper.getRule();
+		State resState = rule.getResultingState();
 		LadderQueue<Tree> ladder = ruleKeeper.getLadderQueue();
+		boolean hasNotDequeued = ladder.hasNotDequeuedYet();
+		if (hasNotDequeued && !resState.isFinal() && rule.getNumberOfStates() > 0) {
+			ruleKeeper.lock();
+			for (Rule parentRule : rule.getTo().getOutgoing()) {
+				if (parentRule.getResultingState() != resState) {
+					if (queueElems[parentRule.getID()] == null) {
+						initialiseRuleElement(parentRule);
+					}
+					RuleKeeper parentRK = queueElems[parentRule.getID()].getObject();
+					parentRK.addToWaitingList(ruleKeeper);
+				}
+			}
+		}
+		
 		Configuration<Tree> config = ladder.dequeue();
 //System.out.println("Dequeueing config " + config);
+		
+		if (hasNotDequeued) {
+			for (RuleKeeper rk : ruleKeeper.unlock()) {
+				if (rk.getLadderQueue().hasNext() && !queueElems[rk.getRule().getID()].isEnqueued()) {
+					queue.insert(queueElems[rk.getRule().getID()], rk.getBestTree());
+				}
+			}
+		}
 		
 		/* Add the new configs to the process. */
 		ArrayList<Configuration<Tree>> nextConfigs = 
@@ -342,12 +372,14 @@ public class RuleQueue {
 		}
 		
 		/* Re-queue the rulekeeper if it has another element in its ladder. */
-		State resState = ruleKeeper.getRule().getResultingState();
+//		State resState = ruleKeeper.getRule().getResultingState();
 		if (!resState.isSaturated() && ladder.hasNext()) {
 			Configuration<Tree> c = ruleKeeper.getLadderQueue().peek();
 			Tree newBest = ruleKeeper.getRule().apply(c);
 			ruleKeeper.setBestTree(newBest);
-			queue.insert(elem, newBest.getDeltaWeight());
+			if (!ruleKeeper.isLocked()) {
+				queue.insert(elem, newBest);
+			}
 //System.out.println("Re-queueing with " + newBest);
 		}
 		
@@ -363,7 +395,7 @@ public class RuleQueue {
 	}
 	
 	public void printFinalQueueSizes() {
-		for (BinaryHeap<RuleKeeper, Weight>.Node node : queueElems) {
+		for (BinaryHeap<RuleKeeper, Tree>.Node node : queueElems) {
 			if (node == null) {
 				continue;
 			}
