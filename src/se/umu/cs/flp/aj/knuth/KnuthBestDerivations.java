@@ -69,7 +69,7 @@ public class KnuthBestDerivations {
 		 * leading to that state. The initial tree then consists of a tree
 		 * in which we have reached the resulting state of the current rule once.*/
 		for (Rule r : wta.getSourceRules()) {
-			Tree tree = r.apply(new Tree[0], wta.getSemiring().one());
+//			Tree tree = r.apply(new Tree[0], wta.getSemiring().one());
 //			Context context =  new Context(r.getWeight(), tree, r);
 			Context context =  new Context(r.getWeight());
 			ruleContexts[r.getID()] = context;
