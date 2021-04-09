@@ -134,7 +134,7 @@ public class KnuthBestDerivations {
 				usableStart++;
 			}
 			
-			if (!queue.empty()) {
+//			if (!queue.empty()) {
 
 				/* Pick the currently best tree and add it to output = define it. */
 				BinaryHeap<State, Context>.Node element = queue.dequeue();
@@ -180,15 +180,15 @@ public class KnuthBestDerivations {
 				}
 			}
 			
-			if (queue.empty() && usableStart == usableSize) {
-				for (int i = 1; i < nOfStates + 1; i++) {
-					if (defined[i] == null) {
-						defined[i] = new Context(wta.getSemiring().zero());
-					}
-				}
-				done = true;
-			}
-		}
+//			if (queue.empty() && usableStart == usableSize) {
+//				for (int i = 1; i < nOfStates + 1; i++) {
+//					if (defined[i] == null) {
+//						defined[i] = new Context(wta.getSemiring().zero());
+//					}
+//				}
+//				done = true;
+//			}
+//		}
 		
 		/*Print cheapest trees*/
 //System.out.println("cheapest trees");
@@ -303,7 +303,7 @@ public class KnuthBestDerivations {
 						if (i != j) {
 							Context cTemp = bestTreeForState[s2.getID()];
 							newWeight = newWeight.mult(cTemp.getWeight());
-							s2.markAsFoundInBestContext();
+//							s2.markAsFoundInBestContext();
 							
 							if (trick) {
 								for(Entry<State, Integer> entry : cTemp.getStateOccurrences().entrySet()) {
