@@ -15,13 +15,6 @@ public class Edge<T> implements Cloneable, Comparable<Edge<?>> {
     private Weight weight;
     private T label;
 
-//    public Edge() {
-//        this.fromNode = null;
-//        this.toNode = null;
-//        this.weight = (new TropicalWeight()).zero();
-//        this.label = null;
-//    }
-
     public Edge(String fromNode, String toNode, Weight weight, T label) {
         this.fromNode = fromNode;
         this.toNode = toNode;

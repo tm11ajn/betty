@@ -24,14 +24,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import se.umu.cs.flp.aj.knuth.BestContexts;
 import se.umu.cs.flp.aj.nbest.helpers.RuleQueue;
 import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.Tree;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
-
 
 public class BestTrees2 {
 	private static WTA wta;
@@ -43,13 +41,12 @@ public class BestTrees2 {
 	private static HashMap<State, HashMap<Node, Node>> seenTrees;
 	private static RuleQueue ruleQueue;
 
-//	public static List<String> run(WTA wta, int N, boolean derivations) {
-	public static List<String> run(WTA wta, int N, BestContexts bestContexts, 
+	public static List<String> run(WTA wta, int N, Context[] bestContexts, 
 			boolean derivations, boolean trick) {
 		BestTrees2.wta = wta;
 		BestTrees2.N = N;
 		BestTrees2.derivations = derivations;
-		Tree.init(bestContexts.getBestContextsByState());
+		Tree.init(bestContexts);
 
 		/* For result. */
 		nBest = new ArrayList<String>(N);
@@ -61,20 +58,11 @@ public class BestTrees2 {
 		// i <- 0
 		foundTrees = 0;
 		
-		/* Considers the Knuth 1-best trees for output */
-//		for (Context context : bestContexts.getOrderedBestTreesList()) {
-//			State s = context.getBestTree().getResultingState();
-//			if (s.isFinal() && s.isInBestContext()
-//					) {
-//				considerForOutput(context.getBestTree(), false);
-//			}
-//		}
-		
 		// K <- empty
 		/* Initialises implicitly by enqueuing all rules and initialising them to
 		 * the start config, unless they were used in the 1-best tree and are in 
 		 * that case initialised to the configurations following the first one. */
-		ruleQueue = new RuleQueue(wta, N, bestContexts, trick);
+		ruleQueue = new RuleQueue(wta, N, trick);
 
 		// while i < N and K nonempty do
 		while (foundTrees < N && !ruleQueue.isEmpty()) {
@@ -82,8 +70,6 @@ public class BestTrees2 {
 			// t <- dequeue(K)
 			Tree currentTree = ruleQueue.nextTree();
 			
-//System.out.println("Current tree: " + currentTree);
-//System.out.println("Main queue size: " + ruleQueue.size());
 			/* If there are no more derivations with a non-infinity weight,
 			 * we end the search. */
 			if (currentTree.getDeltaWeight().compareTo(
@@ -91,13 +77,13 @@ public class BestTrees2 {
 				break;
 			}
 
-			considerForOutput(currentTree, true);			
+			considerForOutput(currentTree);			
 		}
-//		ruleQueue.printFinalQueueSizes();
+		
 		return nBest;
 	}
 	
-	private static void considerForOutput(Tree currentTree, boolean expand) {
+	private static void considerForOutput(Tree currentTree) {
 		
 		/* Blocks duplicates unless we are solving the N best derivations/runs 
 		 * problem */
@@ -113,8 +99,6 @@ public class BestTrees2 {
 
 				outputString += (" # " +
 							currentTree.getRunWeight().toString());
-
-//System.out.println("Outputting " + outputString);
 
 				// output(t)
 				nBest.add(outputString);
@@ -141,7 +125,7 @@ public class BestTrees2 {
 		if (derivations || !temp.containsKey(currentTree.getNode())) {
 
 			// Expand search space with current tree
-			if (expand && foundTrees < N && !currentTree.getResultingState().isSaturated()) {
+			if (foundTrees < N && !currentTree.getResultingState().isSaturated()) {
 				ruleQueue.expandWith(currentTree);
 			}
 

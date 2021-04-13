@@ -79,7 +79,6 @@ public class RTGParser implements Parser {
 		wta = new WTA(semiring, true);
 		int rowCounter = 1;
 
-//		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName),  StandardCharsets.UTF_8))) {
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)))) {
 			String line;
 

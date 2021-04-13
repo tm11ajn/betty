@@ -31,10 +31,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import se.umu.cs.flp.aj.knuth.BestContexts;
 import se.umu.cs.flp.aj.knuth.KnuthBestDerivations;
 import se.umu.cs.flp.aj.nbest.semiring.Semiring;
 import se.umu.cs.flp.aj.nbest.semiring.SemiringFactory;
+import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
 import se.umu.cs.flp.aj.nbest.wta.parsers.Parser;
 import se.umu.cs.flp.aj.nbest.wta.parsers.RTGParser;
@@ -171,7 +171,7 @@ public class NBest {
 
 		System.out.println("Pre-computing best contexts...");
 		threadTimer.start();
-		BestContexts bestContexts = KnuthBestDerivations.computeBestContexts(wta, trick);
+		Context[] bestContexts = KnuthBestDerivations.computeBestContexts(wta, trick);
 		List<String> result = new LinkedList<>();
 		duration = threadTimer.elapsed();
 		accumulativeTime = duration;
@@ -184,7 +184,6 @@ public class NBest {
 			result = BestTrees2.run(wta, N, bestContexts, derivations, trick);
 			duration = threadTimer.elapsed();
 			printResult(result, derivations);
-
 			if (timer) {
 				accumulativeTime += duration;
 				System.out.println("Betty version 2 took " + duration +
@@ -194,14 +193,10 @@ public class NBest {
 
 		if (version.equals(TREE_QUEUE_ARG) || version.equals(ALL_ARG)) {
 			System.out.println("Running Betty version 1...");
-//			BestTrees.setSmallestCompletions(bestContexts);
-			
 			threadTimer.start();
 			result = BestTrees.run(wta, bestContexts, N);
 			duration = threadTimer.elapsed();
-
 			printResult(result, derivations);
-
 			if (timer) {
 				accumulativeTime += duration;
 				System.out.println("Betty version 1 took " + duration +
@@ -211,13 +206,11 @@ public class NBest {
 
 		if (result.size() < N) {
 			String outputType;
-
 			if (derivations) {
 				outputType = "runs";
 			} else {
 				outputType = "trees";
 			}
-
 			System.out.println("Betty only found " + result.size() +
 					" of the " + N + " requested " + outputType);
 		}

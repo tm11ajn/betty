@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import se.umu.cs.flp.aj.eppstein_k_best.runner.EppsteinRunner;
-import se.umu.cs.flp.aj.knuth.BestContexts;
 import se.umu.cs.flp.aj.nbest.helpers.SortedListMerger;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
+import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.Tree1;
 import se.umu.cs.flp.aj.nbest.treedata.TreePruner;
@@ -52,8 +52,8 @@ public class BestTrees {
 //		TreeKeeper.init(smallestCompletions);
 //	}
 
-	public static List<String> run(WTA wta, BestContexts bestContexts, int N) {
-		Tree1.init(bestContexts.getBestContextsByState());
+	public static List<String> run(WTA wta, Context[] bestContexts, int N) {
+		Tree1.init(bestContexts);
 
 		/* For result. */
 		List<String> nBest = new ArrayList<String>();

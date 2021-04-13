@@ -123,7 +123,6 @@ public class LadderQueue<V extends Comparable<V>> {
 	public Configuration<V> dequeue() {
 		Configuration<V> config = configQueue.poll();
 		dequeueCounter++;
-//System.out.println("Dequeuecounter now " + dequeueCounter);
 		return config;
 	}
 

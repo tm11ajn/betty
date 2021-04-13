@@ -27,25 +27,14 @@ public class State extends Hypergraph.Node<Rule> {
 	private Symbol label;
 	private boolean isFinal;
 	private boolean saturated;
-	private boolean inBestContext;
-//	private Context bestContext;
 
 	public State(Symbol label) {
 		super();
 		this.label = label;
 		isFinal = false;
 		saturated = false;
-		inBestContext = false;
-//		bestContext = null;
 	}
-	
-//	public void setBestContext(Context context) {
-//		this.bestContext = context;
-//	}
-	
-//	public Context getBestContext() {
-//		return bestContext;
-//	}
+
 
 	public Symbol getLabel() {
 		return label;
@@ -65,14 +54,6 @@ public class State extends Hypergraph.Node<Rule> {
 	
 	public boolean isSaturated() {
 		return saturated;
-	}
-	
-	public void markAsFoundInBestContext() {
-		this.inBestContext = true;
-	}
-	
-	public boolean isInBestContext() {
-		return inBestContext;
 	}
 
 	@Override

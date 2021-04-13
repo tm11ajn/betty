@@ -28,7 +28,6 @@ import se.umu.cs.flp.aj.heap.BinaryHeap;
 import se.umu.cs.flp.aj.heap.BinaryHeap.Node;
 import se.umu.cs.flp.aj.nbest.semiring.Weight;
 import se.umu.cs.flp.aj.nbest.treedata.Context;
-import se.umu.cs.flp.aj.nbest.treedata.Tree;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 import se.umu.cs.flp.aj.nbest.wta.State;
 import se.umu.cs.flp.aj.nbest.wta.WTA;
@@ -40,9 +39,8 @@ public class KnuthBestDerivations {
 	private static Context[] defined;
 	private static ArrayList<Rule> usableRules;
 	private static boolean trick;
-//	private static ArrayList<Context> orderedBestTreeList;
 
-	public static BestContexts computeBestContexts(WTA wta, boolean trickVal) {
+	public static Context[] computeBestContexts(WTA wta, boolean trickVal) {
 		KnuthBestDerivations.wta = wta;
 		trick = trickVal;
 		return computeBestContextForEachState(computeBestTreeForEachState());
@@ -57,7 +55,6 @@ public class KnuthBestDerivations {
 		qElems = new Node[nOfStates + 1];
 		defined = new Context[nOfStates + 1];
 		usableRules = new ArrayList<>(nOfRules);
-//		orderedBestTreeList = new ArrayList<>();
 		Context[] ruleContexts = new Context[nOfRules];
 		Integer[] missingIndices = new Integer[nOfRules];
 		int nOfDefined = 0;
@@ -69,8 +66,6 @@ public class KnuthBestDerivations {
 		 * leading to that state. The initial tree then consists of a tree
 		 * in which we have reached the resulting state of the current rule once.*/
 		for (Rule r : wta.getSourceRules()) {
-//			Tree tree = r.apply(new Tree[0], wta.getSemiring().one());
-//			Context context =  new Context(r.getWeight(), tree, r);
 			Context context =  new Context(r.getWeight());
 			ruleContexts[r.getID()] = context;
 			State resState = r.getResultingState();
@@ -103,27 +98,14 @@ public class KnuthBestDerivations {
 				Rule r = usableRules.get(i);
 				State resState = r.getResultingState();
 				BinaryHeap<State, Context>.Node element = qElems[resState.getID()];
-				
+
 				if (element == null) {
 					element = queue.createNode(resState);
 					qElems[resState.getID()] = element;
 				}
-				
+
 				Context oldContext = element.getWeight();
 				Context newContext = ruleContexts[r.getID()];
-//				Tree[] tList = new Tree[r.getNumberOfStates()];
-//				Weight weightSum = wta.getSemiring().one();
-//				int index = 0;
-//				
-//				for (State s : r.getStates()) {
-//					tList[index] = defined[s.getID()].getBestTree();
-//					weightSum = weightSum.mult(tList[index].getRunWeight());
-//					index++;
-//				}
-//				
-//				Tree bestTree = r.apply(tList, weightSum);
-//				newContext.setBestTree(bestTree);
-//				newContext.setBestRule(r);
 
 				if (oldContext == null) {
 					queue.insert(element, newContext);
@@ -133,62 +115,49 @@ public class KnuthBestDerivations {
 
 				usableStart++;
 			}
-			
-//			if (!queue.empty()) {
 
-				/* Pick the currently best tree and add it to output = define it. */
-				BinaryHeap<State, Context>.Node element = queue.dequeue();
-				State state = element.getObject();
-				defined[state.getID()] = element.getWeight();
-//				orderedBestTreeList.add(element.getWeight());
-				nOfDefined++;
+			/* Pick the currently best tree and add it to output = define it. */
+			BinaryHeap<State, Context>.Node element = queue.dequeue();
+			State state = element.getObject();
+			defined[state.getID()] = element.getWeight();
+			nOfDefined++;
 
-				/* Find new rules that can be used. */
-				for (Rule r2 : state.getOutgoing()) {
-					if (missingIndices[r2.getID()] == null) {
-						missingIndices[r2.getID()] = r2.getNumberOfStates();
-						Context newContext = new Context(r2.getWeight());
-						newContext.addStateOccurrence(r2.getResultingState(), 1);
-						ruleContexts[r2.getID()] = newContext;
-					}
+			/* Find new rules that can be used. */
+			for (Rule r2 : state.getOutgoing()) {
+				if (missingIndices[r2.getID()] == null) {
+					missingIndices[r2.getID()] = r2.getNumberOfStates();
+					Context newContext = new Context(r2.getWeight());
+					newContext.addStateOccurrence(r2.getResultingState(), 1);
+					ruleContexts[r2.getID()] = newContext;
+				}
 
-					Context context = ruleContexts[r2.getID()];
-					Context defContext = defined[state.getID()];
+				Context context = ruleContexts[r2.getID()];
+				Context defContext = defined[state.getID()];
 
-					for (State s : r2.getStates()) {
-						if (s.getID() == state.getID()) {
-							if (trick) {
-								// Compute P(t_q,p) for each q,p in Q so that P(t_q,p) is 
-								// the number of p's in the best tree for q.
-								for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
-									context.addStateOccurrence(entry.getKey(), entry.getValue());
-								}
+				for (State s : r2.getStates()) {
+					if (s.getID() == state.getID()) {
+						if (trick) {
+							// Compute P(t_q,p) for each q,p in Q so that P(t_q,p) is 
+							// the number of p's in the best tree for q.
+							for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
+								context.addStateOccurrence(entry.getKey(), entry.getValue());
 							}
-							missingIndices[r2.getID()]--;
-							Weight currentWeight = context.getWeight();
-							Weight newWeight = currentWeight.mult(defined[s.getID()].getWeight());
-							context.setWeight(newWeight);
 						}
-					}
-
-					/* Mark new rules as usable if all the states used to apply 
-					 * the rule are defined. */
-					if (missingIndices[r2.getID()] == 0) {
-						usableRules.add(r2);
-						usableSize++;
+						missingIndices[r2.getID()]--;
+						Weight currentWeight = context.getWeight();
+						Weight newWeight = currentWeight.mult(defined[s.getID()].getWeight());
+						context.setWeight(newWeight);
 					}
 				}
+
+				/* Mark new rules as usable if all the states used to apply 
+				 * the rule are defined. */
+				if (missingIndices[r2.getID()] == 0) {
+					usableRules.add(r2);
+					usableSize++;
+				}
 			}
-			
-//			if (queue.empty() && usableStart == usableSize) {
-//				for (int i = 1; i < nOfStates + 1; i++) {
-//					if (defined[i] == null) {
-//						defined[i] = new Context(wta.getSemiring().zero());
-//					}
-//				}
-//				done = true;
-//			}
-//		}
+		}
 		
 		/*Print cheapest trees*/
 //System.out.println("cheapest trees");
@@ -211,7 +180,7 @@ public class KnuthBestDerivations {
 	/* Search and combine the previously computed trees to achieve the contexts
 	 * of best weights. */
 	@SuppressWarnings("unchecked")
-	private static BestContexts computeBestContextForEachState(Context[] bestTreeForState) {
+	private static Context[] computeBestContextForEachState(Context[] bestTreeForState) {
 		int nOfStates = wta.getStateCount();
 		queue = new BinaryHeap<>();
 		defined = new Context[nOfStates + 1];
@@ -233,8 +202,6 @@ public class KnuthBestDerivations {
 			newContext.getP().add(map);
 			newContext.setf(new ArrayList<Integer>());
 			newContext.getf().add(1);
-//			newContext.setBestTree(bestTreeForState[s.getID()].getBestTree());
-//			newContext.setBestRule(bestTreeForState[s.getID()].getBestRule());
 			defined[s.getID()] = newContext;
 			nOfDefined++;
 			for (Rule r : s.getIncoming()) {
@@ -271,26 +238,6 @@ public class KnuthBestDerivations {
 					newContext.setDepth(defined[resState.getID()].getDepth() + 1);
 					newContext.setP(new ArrayList<>(defined[resState.getID()].getP()));
 					newContext.setf(new ArrayList<>(defined[resState.getID()].getf()));
-//					newContext.setBestTree(bestTreeForState[s.getID()].getBestTree());
-//					newContext.setBestRule(bestTreeForState[s.getID()].getBestRule());
-					
-//					if (bestTreeForState[s.getID()].getBestTree() == null) {
-//System.out.println("ABORT");
-//System.exit(1);
-//					}
-
-//System.out.println("Current blank state: " + s);
-//System.out.println("P(" + resState + ")");
-//for (HashMap<State, Integer> m : defined[resState.getID()].getP()) {
-//	for (Entry<State, Integer> e : m.entrySet()) {
-//System.out.println(e.getKey() + " : " + e.getValue());
-//	}
-//}
-//
-//System.out.println("f");
-//for (Integer e : defined[resState.getID()].getf()) {
-//System.out.println(e);
-//}
 
 					 /* Compute new weight and state occurrence in smallest context 
 					  * for current rule application */ 
@@ -303,7 +250,6 @@ public class KnuthBestDerivations {
 						if (i != j) {
 							Context cTemp = bestTreeForState[s2.getID()];
 							newWeight = newWeight.mult(cTemp.getWeight());
-//							s2.markAsFoundInBestContext();
 							
 							if (trick) {
 								for(Entry<State, Integer> entry : cTemp.getStateOccurrences().entrySet()) {
@@ -331,8 +277,6 @@ public class KnuthBestDerivations {
 						}
 						newContext.getf().add(fNext);
 					}
-					
-//System.out.println("Next fValue: " + fNext);
 
 					/* Add or update queue element */
 					if (oldContext == null) {
@@ -354,7 +298,6 @@ public class KnuthBestDerivations {
 			if (!queue.empty()) {
 				BinaryHeap<State, Context>.Node element = queue.dequeue();
 				State state = element.getObject();
-//				state.setBestContext(element.getWeight());
 				defined[state.getID()] = element.getWeight();
 				nOfDefined++;
 				for (Rule r : state.getIncoming()) {
@@ -392,8 +335,7 @@ public class KnuthBestDerivations {
 ////			}
 //		}
 
-//		return defined;
-		return new BestContexts(defined);
+		return defined;
 	}
 }
 

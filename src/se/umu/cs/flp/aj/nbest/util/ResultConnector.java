@@ -33,32 +33,8 @@ public class ResultConnector {
 	private int[] resCount;
 	private int[] connections;
 	private ArrayList<ArrayList<Configuration<Tree>>> configLists;
-//	private ArrayList<ConfigLists> configLists;
 	private ArrayList<Rule> rules;
 	private WTA wta;
-	
-//	private class ConfigLists {
-//		private ArrayList<Configuration<Tree>> current;
-//		private ArrayList<Configuration<Tree>> next;
-//		
-//		public ConfigLists() {
-//			this.current = new ArrayList<>();
-//			this.next = new ArrayList<>();
-//		}
-//		
-//		public ArrayList<Configuration<Tree>> getCurrent() {
-//			return current;
-//		}
-//		public void setCurrent(ArrayList<Configuration<Tree>> current) {
-//			this.current = current;
-//		}
-//		public ArrayList<Configuration<Tree>> getNext() {
-//			return next;
-//		}
-//		public void setNext(ArrayList<Configuration<Tree>> next) {
-//			this.next = next;
-//		}
-//	}
 
 	@SuppressWarnings("unchecked")
 	public ResultConnector(WTA wta, int maxResults) {
@@ -67,7 +43,6 @@ public class ResultConnector {
 		resCount = new int[stateCount + 1];
 		connections = new int[stateCount + 1];
 		configLists = new ArrayList<>();
-//		configLists.add(new ConfigLists()); // Start from 1
 		configLists.add(new ArrayList<>()); // Start from 1
 		rules = wta.getRules();
 		this.wta = wta;
@@ -85,31 +60,17 @@ public class ResultConnector {
 			int currentState = rule.getStates().get(i).getID(); 
 
 			if (indices[i] >= resCount[currentState]) {
-//			if (indices[i] == resCount[currentState]) {
 				int configIndex = connections[currentState];
 				
 				if (configIndex == 0) {
 					configIndex = configLists.size();
 					connections[currentState] = configIndex;
 					configLists.add(new ArrayList<>());
-//					configLists.add(new ConfigLists());
 				}
 				
 				configLists.get(configIndex).add(config);
-//				configLists.get(configIndex).getCurrent().add(config);
 				missingElements++;
-			}// else if (indices[i] > resCount[currentState]) {
-//				int configIndex = connections[currentState];
-//				
-//				if (configIndex == 0) {
-//					configIndex = configLists.size();
-//					connections[currentState] = configIndex;
-//					configLists.add(new ConfigLists());
-//				}
-//				
-//				configLists.get(configIndex).getNext().add(config);
-//				missingElements++;
-//			}
+			}
 		}
 
 		config.decreaseLeftToValuesBy(size - missingElements);
@@ -121,34 +82,22 @@ public class ResultConnector {
 	 * that have updated as a result of the propagation. */
 	public ArrayList<Integer> addResult(Tree result) {
 		int stateIndex = result.getResultingState().getID();
-//System.out.println("Add result " + result);
 		ArrayList<Integer> needUpdate = new ArrayList<Integer>();
-		
 		if (results[stateIndex] == null) {
 			results[stateIndex] = new ArrayList<>();
 		}
-
 		results[stateIndex].add(result);
 		resCount[stateIndex] += 1;
-
+		
 		int configIndex = connections[stateIndex];
-
 		for (Configuration<Tree> config : configLists.get(configIndex)) {
-//		for (Configuration<Tree> config : configLists.get(configIndex).getCurrent()) {
-//System.out.println("Rescount for stateindex " + resCount[stateIndex]);
-//System.out.println("Config decreaselefttovalue " + config + "has left " + config.getLeftToValues());
 			config.decreaseLeftToValuesBy(1);
 			boolean wasReady = activateConfigIfReady(config);
 			if (wasReady) {
-//System.out.println("Needs update");
 				needUpdate.add(config.getOrigin().getID());
 			}
-		}
-		
+		}		
 		configLists.set(configIndex, new ArrayList<>());
-//		configLists.get(configIndex).setCurrent(configLists.get(configIndex).getNext());
-//		configLists.get(configIndex).setNext(new ArrayList<>());
-
 		return needUpdate;
 	}
 	
@@ -158,7 +107,6 @@ public class ResultConnector {
 		boolean triggersUpdate = false;
 		
 		if (config.getLeftToValues() == 0) {
-//System.out.println("Config: " + config);
 			Tree[] result = extractResult(config);
 			int size = config.getSize();
 			Weight weight = wta.getSemiring().one(); // Default value for leaf rules
@@ -204,7 +152,6 @@ public class ResultConnector {
 		}
 		
 		return resCount[stateIndex];
-//		return results[stateIndex].size();
 	}
 	
 	public boolean isUnseen(int stateIndex) {
