@@ -115,47 +115,58 @@ public class KnuthBestDerivations {
 
 				usableStart++;
 			}
+			
+			if (!queue.empty()) {
+				/* Pick the currently best tree and add it to output = define it. */
+				BinaryHeap<State, Context>.Node element = queue.dequeue();
+				State state = element.getObject();
+				defined[state.getID()] = element.getWeight();
+				nOfDefined++;
 
-			/* Pick the currently best tree and add it to output = define it. */
-			BinaryHeap<State, Context>.Node element = queue.dequeue();
-			State state = element.getObject();
-			defined[state.getID()] = element.getWeight();
-			nOfDefined++;
+				/* Find new rules that can be used. */
+				for (Rule r2 : state.getOutgoing()) {
+					if (missingIndices[r2.getID()] == null) {
+						missingIndices[r2.getID()] = r2.getNumberOfStates();
+						Context newContext = new Context(r2.getWeight());
+						newContext.addStateOccurrence(r2.getResultingState(), 1);
+						ruleContexts[r2.getID()] = newContext;
+					}
 
-			/* Find new rules that can be used. */
-			for (Rule r2 : state.getOutgoing()) {
-				if (missingIndices[r2.getID()] == null) {
-					missingIndices[r2.getID()] = r2.getNumberOfStates();
-					Context newContext = new Context(r2.getWeight());
-					newContext.addStateOccurrence(r2.getResultingState(), 1);
-					ruleContexts[r2.getID()] = newContext;
-				}
+					Context context = ruleContexts[r2.getID()];
+					Context defContext = defined[state.getID()];
 
-				Context context = ruleContexts[r2.getID()];
-				Context defContext = defined[state.getID()];
-
-				for (State s : r2.getStates()) {
-					if (s.getID() == state.getID()) {
-						if (trick) {
-							// Compute P(t_q,p) for each q,p in Q so that P(t_q,p) is 
-							// the number of p's in the best tree for q.
-							for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
-								context.addStateOccurrence(entry.getKey(), entry.getValue());
+					for (State s : r2.getStates()) {
+						if (s.getID() == state.getID()) {
+							if (trick) {
+								// Compute P(t_q,p) for each q,p in Q so that P(t_q,p) is 
+								// the number of p's in the best tree for q.
+								for (Entry<State, Integer> entry : defContext.getStateOccurrences().entrySet()) {
+									context.addStateOccurrence(entry.getKey(), entry.getValue());
+								}
 							}
+							missingIndices[r2.getID()]--;
+							Weight currentWeight = context.getWeight();
+							Weight newWeight = currentWeight.mult(defined[s.getID()].getWeight());
+							context.setWeight(newWeight);
 						}
-						missingIndices[r2.getID()]--;
-						Weight currentWeight = context.getWeight();
-						Weight newWeight = currentWeight.mult(defined[s.getID()].getWeight());
-						context.setWeight(newWeight);
+					}
+
+					/* Mark new rules as usable if all the states used to apply 
+					 * the rule are defined. */
+					if (missingIndices[r2.getID()] == 0) {
+						usableRules.add(r2);
+						usableSize++;
 					}
 				}
+			}
 
-				/* Mark new rules as usable if all the states used to apply 
-				 * the rule are defined. */
-				if (missingIndices[r2.getID()] == 0) {
-					usableRules.add(r2);
-					usableSize++;
+			if (queue.empty() && usableStart == usableSize) {
+				for (int i = 1; i < nOfStates + 1; i++) {
+					if (defined[i] == null) {
+						defined[i] = new Context(wta.getSemiring().zero());
+					}
 				}
+				done = true;
 			}
 		}
 		
