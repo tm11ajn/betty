@@ -178,8 +178,8 @@ public class LadderQueue<V extends Comparable<V>> {
 		return dequeueCounter >= limit;
 	}
 	
-	public boolean hasNotDequeuedYet() {
-		return dequeueCounter == 0;
+	public boolean hasDequeuedAtLeastOnce() {
+		return dequeueCounter != 0;
 	}
 
 }

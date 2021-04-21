@@ -87,7 +87,7 @@ public class LadderQueueTest {
 	@Test 
 	public void shouldNotHaveDequeuedYet() {
 		init(3);
-		assertThat(lq.hasNotDequeuedYet(), is(true));
+		assertThat(lq.hasDequeuedAtLeastOnce(), is(false));
 	}
 	
 	@Test 
@@ -97,7 +97,7 @@ public class LadderQueueTest {
 		startConfig.setWeight(new TropicalSemiring().createWeight(2));
 		lq.insert(startConfig);
 		lq.dequeue();
-		assertThat(lq.hasNotDequeuedYet(), is(false));
+		assertThat(lq.hasDequeuedAtLeastOnce(), is(true));
 	}
 	
 	@Test 

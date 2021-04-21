@@ -20,9 +20,15 @@
 
 package se.umu.cs.flp.aj.nbest.wta;
 
+import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.util.Hypergraph;
 
 public class State extends Hypergraph.Node<Rule> {
+	private static Context[] bestContexts;
+
+	public static void init(Context[] bestContexts2) {
+		bestContexts = bestContexts2;
+	}
 
 	private Symbol label;
 	private boolean isFinal;
@@ -35,9 +41,12 @@ public class State extends Hypergraph.Node<Rule> {
 		saturated = false;
 	}
 
-
 	public Symbol getLabel() {
 		return label;
+	}
+	
+	public Context getBestContext() {
+		return bestContexts[this.getID()];
 	}
 
 	protected void setFinal() {

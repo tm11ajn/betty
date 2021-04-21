@@ -20,9 +20,8 @@
 
 package se.umu.cs.flp.aj.nbest.treedata;
 
-import java.util.ArrayList;
-
 import se.umu.cs.flp.aj.nbest.helpers.TreeConfigurationComparator;
+import se.umu.cs.flp.aj.nbest.util.AppendList;
 import se.umu.cs.flp.aj.nbest.util.LadderQueue;
 import se.umu.cs.flp.aj.nbest.wta.Rule;
 
@@ -32,7 +31,7 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 	private LadderQueue<Tree> ladder;
 	private Tree bestTree;
 	private boolean locked;
-	private ArrayList<RuleKeeper> waitingList;
+	private AppendList<RuleKeeper> waitingList;
 
 	public RuleKeeper(Rule rule, int limit) {
 		this.rule = rule;
@@ -40,7 +39,8 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 				rule.getNumberOfStates(), 
 				new TreeConfigurationComparator(), limit);
 		this.bestTree = null;
-		this.waitingList = new ArrayList<>();
+		this.locked = false;
+		this.waitingList = new AppendList<>();
 	}
 	
 	public Tree getBestTree() {
@@ -68,23 +68,24 @@ public class RuleKeeper implements Comparable<RuleKeeper> {
 	}
 	
 	/* Null marks that the list has already been used once */
-	public ArrayList<RuleKeeper> unlock() {
+	public AppendList<RuleKeeper> unlock() {
 		if (this.waitingList == null) {
-			return new ArrayList<>();
+			return new AppendList<>();
 		}
 		
 		this.locked = false;
-		ArrayList<RuleKeeper> tempList = this.waitingList;
-		for (RuleKeeper rk : tempList) {
-			rk.unlock();
+		AppendList<RuleKeeper> concatList = new AppendList<>();
+		for (RuleKeeper rk : this.waitingList) {
+			concatList.concatenate(rk.unlock());
 		}
+		concatList.concatenate(this.waitingList);
 		this.waitingList = null;
-		return tempList;
+		return concatList;
 	}
 	
 	public void addToWaitingList(RuleKeeper rk) {
 		if (this.waitingList != null) {
-			this.waitingList.add(rk);
+			this.waitingList.appendLast(rk);
 		}
 	}
 

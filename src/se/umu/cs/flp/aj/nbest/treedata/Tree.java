@@ -25,22 +25,18 @@ import se.umu.cs.flp.aj.nbest.wta.State;
 
 public class Tree implements Comparable<Tree> {
 
-	private static Context[] bestContexts;
-
 	private Node node;
 	private Weight runWeight;
+	private Weight deltaWeight;
 	private State resultingState;
 	private boolean outputted;
 
 	public Tree(Node node, Weight treeWeight, State resultingState) {
 		this.node = node;
-		this.runWeight = treeWeight.duplicate();
+		this.runWeight = treeWeight;
+		this.deltaWeight = this.runWeight.mult(resultingState.getBestContext().getWeight());
 		this.resultingState = resultingState;
 		this.outputted = false;
-	}
-
-	public static void init(Context[] bestContexts2) {
-		bestContexts = bestContexts2;
 	}
 
 	public Node getNode() {
@@ -64,11 +60,11 @@ public class Tree implements Comparable<Tree> {
 	}
 	
 	public Context getBestContext() {
-		return bestContexts[resultingState.getID()];
+		return resultingState.getBestContext();
 	}
 
 	public Weight getDeltaWeight() {		
-		return runWeight.mult(bestContexts[resultingState.getID()].getWeight());
+		return deltaWeight;
 	}
 
 	@Override
@@ -79,9 +75,7 @@ public class Tree implements Comparable<Tree> {
 	@Override
 	public String toString() {
 		String s =  "Tree: " + node + " RunWeight: " + runWeight;
-		if (bestContexts != null) {
-			s += " Delta weight: " + getDeltaWeight();
-		}
+		s += " Delta weight: " + deltaWeight;
 		s += " Resulting state: " + resultingState;
 		return s;
 	}
@@ -101,8 +95,8 @@ public class Tree implements Comparable<Tree> {
 			return false;
 		}
 		
-		int thisDepth = bestContexts[this.resultingState.getID()].getDepth();
-		int oDepth = bestContexts[o.resultingState.getID()].getDepth();
+		int thisDepth = this.resultingState.getBestContext().getDepth();
+		int oDepth = o.resultingState.getBestContext().getDepth();
 		
 		if (thisDepth != oDepth) {
 			return false;

@@ -11,6 +11,7 @@ import se.umu.cs.flp.aj.nbest.treedata.Configuration;
 import se.umu.cs.flp.aj.nbest.treedata.Context;
 import se.umu.cs.flp.aj.nbest.treedata.Node;
 import se.umu.cs.flp.aj.nbest.treedata.Tree;
+import se.umu.cs.flp.aj.nbest.util.Hypergraph;
 
 public class RuleTest {
 
@@ -48,6 +49,7 @@ public class RuleTest {
 	Rule rule = new Rule(fNode, semiring.createWeight(0.5), resState, q0, q1);
 	Rule rule2 = new Rule(fNode, semiring.createWeight(0.5), resState);
 	Tree[] tklist = new Tree[rule.getNumberOfStates()];
+	Hypergraph<State, Rule> graph = new Hypergraph<>();
 
 	Node n0 = new Node(q0Sym);
 	Node n1 = new Node(q1Sym);
@@ -59,7 +61,13 @@ public class RuleTest {
 //		q1.setBestContext(new Context(semiring.createWeight(2)));
 //		q2.setBestContext(new Context(semiring.createWeight(1)));
 
-		Tree.init(smallestCompletions);
+		State.init(smallestCompletions);
+		
+		graph.addNode(resState);
+		graph.addNode(q0);
+		graph.addNode(q1);
+		graph.addNode(q2);
+		graph.addNode(q3);
 
 		q0Sym.setNonterminal(true);
 		q1Sym.setNonterminal(true);

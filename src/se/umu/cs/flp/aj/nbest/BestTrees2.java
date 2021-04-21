@@ -46,7 +46,7 @@ public class BestTrees2 {
 		BestTrees2.wta = wta;
 		BestTrees2.N = N;
 		BestTrees2.derivations = derivations;
-		Tree.init(bestContexts);
+		State.init(bestContexts);
 
 		/* For result. */
 		nBest = new ArrayList<String>(N);

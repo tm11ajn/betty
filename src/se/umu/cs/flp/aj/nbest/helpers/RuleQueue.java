@@ -167,8 +167,8 @@ public class RuleQueue {
 		Rule rule = ruleKeeper.getRule();
 		State resState = rule.getResultingState();
 		LadderQueue<Tree> ladder = ruleKeeper.getLadderQueue();
-		boolean hasNotDequeued = ladder.hasNotDequeuedYet();
-		if (hasNotDequeued && !resState.isFinal() && rule.getNumberOfStates() > 0) {
+		boolean hasDequeued = ladder.hasDequeuedAtLeastOnce();
+		if (!hasDequeued && !resState.isFinal() && rule.getNumberOfStates() > 0 && rule.getWeight().isOne()) {
 			ruleKeeper.lock();
 			for (Rule parentRule : rule.getTo().getOutgoing()) {
 				if (parentRule.getResultingState() != resState) {
@@ -182,7 +182,7 @@ public class RuleQueue {
 		}
 		
 		Configuration<Tree> config = ladder.dequeue();		
-		if (hasNotDequeued) {
+		if (!hasDequeued) {
 			for (RuleKeeper rk : ruleKeeper.unlock()) {
 				if (rk.getLadderQueue().hasNext() && !queueElems[rk.getRule().getID()].isEnqueued()) {
 					queue.insert(queueElems[rk.getRule().getID()], rk.getBestTree());
