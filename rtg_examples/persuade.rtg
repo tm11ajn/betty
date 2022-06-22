@@ -1,0 +1,24 @@
+s
+s -> x 
+s -> zs1(s') 
+s -> zs2(s') 
+s -> zs3(s) 
+s -> zs4(u) 
+s -> trys(c) 
+s -> persuades1(c)
+s -> persuades2(u')
+
+c -> zc1(s')
+c -> zc2(s')
+c -> zc3(s)
+c -> zc4(u)
+c -> tryc(c) 
+c -> persuadec1(c)
+c -> persuadec2(u')
+
+u' -> unionSC(s' c)
+u -> unionSS(s' s)
+
+ty -> y
+tx -> x
+s' -> x

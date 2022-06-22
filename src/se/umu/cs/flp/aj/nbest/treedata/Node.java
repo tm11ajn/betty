@@ -32,6 +32,7 @@ public class Node implements Comparable<Node> {
 	private String treeString;
 	private String treeRTGString;
 	private int size;
+	private int depth;
 	private int hash;
 	private boolean validString;
 	private boolean validRTGString;
@@ -44,6 +45,7 @@ public class Node implements Comparable<Node> {
 
 		treeString = "";
 		size = 1;
+		depth = 0;
 		hash = 0;
 
 		validLeaves = false;
@@ -59,6 +61,9 @@ public class Node implements Comparable<Node> {
 
 	public Node addChild(Node child) {
 		children.add(child);
+		if (child.depth >= this.depth) {
+			this.depth = child.depth + 1;
+		}
 		validLeaves = false;
 		validString = false;
 		validRTGString = false;
@@ -73,6 +78,10 @@ public class Node implements Comparable<Node> {
 
 	public int getChildCount() {
 		return children.size();
+	}
+
+	public int getDepth() {
+		return depth;
 	}
 
 	public boolean isLeaf() {
