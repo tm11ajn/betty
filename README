@@ -7,7 +7,11 @@ Semiring" by Johanna Björklund, Frank Drewes, and Niklas Zechner
 for generating the N best trees given a weighted tree automaton (WTA).
 
 It now also contains as the default the implementation of the improved, 
-transition-based algorithm (here called version 2). [Paper not yet published.]
+transition-based algorithm (here called version 2). The corresponding paper
+is called "Improved N-Best Extraction with an Evaluation on Language Data" and
+can be found here: 
+https://direct.mit.edu/coli/article/48/1/119/108848/Improved-N-Best-Extraction-with-an-Evaluation-on
+
 
 The file wta.format contains the description of the format of the input WTAs.
 The example WTA from the paper (wta0.rtg) can be found along with other examples
